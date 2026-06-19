@@ -1,0 +1,37 @@
+<div class="w-full flex flex-col space-y-1.5 text-left">
+  @if (label()) {
+    <label [for]="inputId()" class="text-sm font-medium text-slate-700 block">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="relative rounded-xl shadow-sm">
+    <input
+      [id]="inputId()"
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [value]="value()"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+      class="block w-full px-4 py-2.5 text-sm bg-white border rounded-xl transition-all duration-200 outline-none focus:ring-2 focus:ring-offset-0 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
+      [class]="errorMessage() 
+        ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500/20' 
+        : 'border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-blue-500/20'"
+    />
+  </div>
+
+  @if (errorMessage()) {
+    <p class="text-xs text-red-600 mt-1 flex items-center">
+      <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+      </svg>
+      {{ errorMessage() }}
+    </p>
+  } @else if (hint()) {
+    <p class="text-xs text-slate-500 mt-1">{{ hint() }}</p>
+  }
+</div>

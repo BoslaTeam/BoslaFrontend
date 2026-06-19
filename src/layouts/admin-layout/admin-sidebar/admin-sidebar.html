@@ -1,0 +1,90 @@
+<aside class="w-64 bg-slate-950 text-slate-400 min-h-screen border-r border-slate-900 flex flex-col sticky top-0">
+  
+  <div class="h-16 flex items-center px-6 border-b border-slate-900 bg-slate-900/50">
+    <div class="flex items-center space-x-2">
+      <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+      <span class="text-base font-bold text-white tracking-wider uppercase">Bosla Admin</span>
+    </div>
+  </div>
+
+  <nav class="grow p-4 space-y-1 flex flex-col overflow-y-auto">
+    
+    <a 
+      routerLink="/admin/dashboard" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+      </svg>
+      Dashboard
+    </a>
+
+    <a 
+      routerLink="/admin/specialists/pending" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+      </svg>
+      Specialist Requests
+    </a>
+
+    <a 
+      routerLink="/admin/users" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+      </svg>
+      Users Management
+    </a>
+
+    <a 
+      routerLink="/admin/appointments" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+      </svg>
+      Appointments
+    </a>
+
+    <a 
+      routerLink="/admin/payments" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75m0 .75v.75m0 .75v.75m0 .75V9m8.25-4.5v.75m0 .75v.75m0 .75v.75m0 .75V9m1.285-3.833.462-.154a1.125 1.125 0 0 1 1.098.115l3.85 2.566a1.125 1.125 0 0 1 .284 1.548l-1.487 2.23a1.125 1.125 0 0 1-1.42.361l-.437-.218a1.125 1.125 0 0 0-1.092.052l-1.614 1.076a1.125 1.125 0 0 1-1.332 0L8.857 11.5a1.125 1.125 0 0 0-1.091-.052l-.437.218a1.125 1.125 0 0 1-1.42-.361l-1.488-2.23a1.125 1.125 0 0 1 .284-1.548l3.85-2.566a1.125 1.125 0 0 1 1.097-.115l.462.154Z" />
+      </svg>
+      Payments
+    </a>
+
+    <a 
+      routerLink="/admin/audit-logs" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 2.24a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM4.5 11.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      </svg>
+      Audit Logs
+    </a>
+
+    <a 
+      routerLink="/admin/ai/embeddings" 
+      routerLinkActive="bg-indigo-600 text-white font-medium"
+      class="flex items-center px-4 py-2.5 rounded-xl text-sm hover:bg-slate-900 hover:text-white transition-all duration-200 group"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white transition-colors">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l3.75-2.143L16.5 21l-.813-5.096M19.5 11.25a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+      </svg>
+      AI Embeddings
+    </a>
+
+  </nav>
+</aside>

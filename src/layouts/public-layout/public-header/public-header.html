@@ -1,0 +1,30 @@
+<header class="w-full bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+        <div class="shrink-0">
+            <a routerLink="/"
+                class="text-2xl font-black text-blue-600 tracking-tight hover:opacity-90 transition-opacity">
+                Bosla
+            </a>
+        </div>
+
+        <nav class="flex items-center space-x-6 space-x-reverse">
+            <a routerLink="/specialists" routerLinkActive="text-blue-600 font-semibold"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-200">
+                specialists
+            </a>
+
+            <a routerLink="/auth/login" routerLinkActive="text-blue-600 font-semibold"
+                class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-200">
+                login
+            </a>
+
+            <a routerLink="/auth/register" routerLinkActive="bg-blue-700 shadow-inner"
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm">
+                register
+            </a>
+        </nav>
+
+    </div>
+</header>

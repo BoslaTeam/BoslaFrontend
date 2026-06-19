@@ -1,0 +1,23 @@
+<div class="fixed top-4 right-4 z-9999 flex flex-col space-y-3 w-full max-w-sm pointer-events-none">
+    @for (toast of toastService.toasts(); track toast.id) {
+    <div role="alert"
+        class="pointer-events-auto flex items-start justify-between w-full p-4 rounded-xl bg-white border shadow-lg transition-all duration-300 animate-slide-in-right"
+        [class]="getVariantClasses(toast.variant)">
+        <div class="flex items-start space-x-3 flex-1 min-w-0">
+            <span class="text-lg shrink-0 mt-0.5" aria-hidden="true">
+                {{ getVariantIcon(toast.variant) }}
+            </span>
+            <p class="text-sm font-medium text-slate-800 wrap-break-word pr-2">
+                {{ toast.message }}
+            </p>
+        </div>
+
+        <button type="button" (click)="toastService.dismiss(toast.id)" aria-label="Close notification"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-colors duration-150 outline-none shrink-0">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    }
+</div>

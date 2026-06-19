@@ -1,0 +1,32 @@
+@if (open()) {
+<div (click)="onBackdropClick()"
+    class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex justify-end animate-fade-in"
+    [class.justify-start]="position() === 'start'">
+    <div (click)="$event.stopPropagation()"
+        class="bg-white h-full w-full max-w-md shadow-2xl border-slate-100 flex flex-col transform transition-transform duration-300 ease-in-out"
+        [class]="position() === 'start' 
+        ? 'border-r animate-slide-in-left' 
+        : 'border-l animate-slide-in-right'">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            @if (title()) {
+            <h2 class="text-lg font-semibold text-slate-900 tracking-tight">
+                {{ title() }}
+            </h2>
+            } @else {
+            <div></div>
+            }
+
+            <button type="button" (click)="close.emit()" aria-label="Close drawer"
+                class="text-slate-400 hover:text-slate-600 hover:bg-slate-50 p-2 rounded-xl transition-colors duration-200 outline-none focus:ring-2 focus:ring-slate-200">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 text-sm text-slate-600">
+            <ng-content />
+        </div>
+    </div>
+</div>
+}

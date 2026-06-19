@@ -1,0 +1,90 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans" dir="ltr">
+  <div
+    class="max-w-md w-full bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/40 p-8 sm:p-10 transition-all duration-300">
+
+    <div class="text-center mb-8">
+      <a routerLink="/" class="text-3xl font-black text-blue-600 tracking-tight hover:opacity-90 transition-opacity">
+        Compass
+      </a>
+      <h2 class="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">Create a new account</h2>
+      <p class="mt-2 text-sm text-slate-500 font-normal">
+        Already have an account?
+        <a routerLink="/auth/login" class="font-bold text-blue-600 hover:text-blue-500 transition-colors duration-200">
+          Sign In
+        </a>
+      </p>
+    </div>
+
+    @if (errorMessage()) {
+    <div
+      class="mb-6 p-4 bg-red-50 border border-red-100 text-red-700 text-sm rounded-2xl flex items-start gap-2.5 animate-fade-in">
+      <svg class="w-5 h-5 shrink-0 mt-0.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          clip-rule="evenodd"></path>
+      </svg>
+      <span class="font-medium">{{ errorMessage() }}</span>
+    </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+      <ui-input formControlName="fullName" label="Full Name" type="text" placeholder="e.g., John Doe" [required]="true"
+        [errorMessage]="
+          registerForm.get('fullName')?.touched && registerForm.get('fullName')?.errors?.['required'] 
+            ? 'Full name is required' 
+            : (registerForm.get('fullName')?.touched && registerForm.get('fullName')?.errors?.['minlength'] 
+                ? 'Full name must be at least 3 characters' 
+                : '')
+        " />
+
+      <ui-input formControlName="email" label="Email Address" type="email" placeholder="yourname@example.com"
+        [required]="true" [errorMessage]="
+          registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required'] 
+            ? 'Email address is required' 
+            : (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['email'] 
+                ? 'Please enter a valid email address' 
+                : '')
+        " />
+
+      <ui-select formControlName="role" label="Account Type" [required]="true" [options]="roleOptions" [errorMessage]="
+          registerForm.get('role')?.touched && registerForm.get('role')?.errors?.['required'] 
+            ? 'Account type is required' 
+            : ''
+        " />
+
+      <ui-input formControlName="password" label="Password" type="password" placeholder="••••••••" [required]="true"
+        [errorMessage]="
+          registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required'] 
+            ? 'Password is required' 
+            : (registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['minlength'] 
+                ? 'Password must be at least 6 characters' 
+                : '')
+        " />
+
+      <ui-input formControlName="confirmPassword" label="Confirm Password" type="password" placeholder="••••••••"
+        [required]="true" [errorMessage]="
+          registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required'] 
+            ? 'Please confirm your password' 
+            : (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['mismatch'] 
+                ? 'Passwords do not match' 
+                : '')
+        " />
+
+      <div class="flex items-start text-sm">
+        <ui-checkbox [disabled]="loading()">
+          <span class="text-slate-600 leading-normal">
+            I agree to the <a class="font-bold text-blue-600 hover:underline cursor-pointer">Terms of Service</a> and <a
+              class="font-bold text-blue-600 hover:underline cursor-pointer">Privacy Policy</a> of Compass.
+          </span>
+        </ui-checkbox>
+      </div>
+
+      <ui-button type="submit" variant="primary" size="lg" [fullWidth]="true" [loading]="loading()">
+        Create Account
+      </ui-button>
+
+    </form>
+  </div>
+</div>
