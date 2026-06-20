@@ -1,61 +1,123 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import { Button } from '@shared/ui/button/button';
-import { Checkbox } from '@shared/ui/checkbox/checkbox';
-import { InputComponent } from '@shared/ui/input/input';
+import { AuthService } from '../../../../core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
+declare var google: any;
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, InputComponent, Button, Checkbox],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html'
 })
-export class LoginComponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+export class Login implements AfterViewInit {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  protected readonly loginForm: FormGroup = this.fb.group({
+  loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required]]
   });
 
-  protected readonly loading = signal(false);
-  protected readonly errorMessage = signal('');
+  isLoading = false;
+  errorMessage = '';
 
-  onSubmit(): void {
+  // TODO: Replace with actual Google Client ID
+  private googleClientId = '818109149867-jlbj83dcs95rknac2g38asnefamefj5o.apps.googleusercontent.com';
+
+  ngAfterViewInit() {
+    this.initializeGoogleSignIn();
+  }
+
+  private initializeGoogleSignIn() {
+    if (typeof google === 'undefined' || !google.accounts) {
+      setTimeout(() => this.initializeGoogleSignIn(), 100);
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: this.handleGoogleCredentialResponse.bind(this)
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById('google-btn-wrapper'),
+      { theme: 'outline', size: 'large' } // Customize button as needed
+    );
+  }
+
+  private handleGoogleCredentialResponse(response: any) {
+    if (response.credential) {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      this.authService.googleLogin({ idToken: response.credential }).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.router.navigate(['/']);
+          } else {
+            this.errorMessage = res.message || 'Google Login failed.';
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
+        },
+        error: (err: any) => {
+          this.errorMessage = err.title || 'Failed to authenticate with Google.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }
+  }
+
+  onSubmit() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    this.loading.set(true);
-    this.errorMessage.set('');
+    this.isLoading = true;
+    this.errorMessage = '';
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: (response) => {
-        this.loading.set(false);
-        const user = response.data.user;
+    const { email, password } = this.loginForm.value;
+    console.log('[Login] Sending request to:', `/api/v1/auth/login`);
 
-        // Navigation Handling based on User Role Matrix
-        if (user.role === 1) {
-          this.router.navigate(['/specialist']);
-        } else if (user.role === 2) {
-          this.router.navigate(['/admin']);
+    this.authService.login({ email: email!, password: password! }).subscribe({
+      next: (res) => {
+        console.log('[Login] Response:', res);
+        if (res.success) {
+          this.router.navigate(['/']).then(navigated => {
+            console.log('[Login] Navigated:', navigated);
+            this.isLoading = false;
+          });
         } else {
-          this.router.navigate(['/user']);
+          this.errorMessage = res.message || 'Login failed.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
         }
       },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorMessage.set(
-          err.error?.message || 'Invalid email or password. Please try again.'
-        );
-      },
+      error: (err: any) => {
+        console.error('[Login] Error:', err);
+        if (err.status === 0) {
+          this.errorMessage = 'Cannot connect to the server. Please make sure the backend is running.';
+        } else if (err.status === 403 || err.status === 401) {
+          this.errorMessage = err.title || 'Invalid email or password.';
+        } else if (err.status === 400) {
+          const validationErrors = err.errors;
+          if (validationErrors) {
+            this.errorMessage = Object.values(validationErrors).flat().join(', ');
+          } else {
+            this.errorMessage = err.title || 'Validation error.';
+          }
+        } else {
+          this.errorMessage = err.title || `Server error (${err.status})`;
+        }
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 }

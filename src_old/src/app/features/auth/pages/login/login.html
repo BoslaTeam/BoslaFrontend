@@ -1,0 +1,108 @@
+<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
+    <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-burgundy to-burgundy-dark flex items-center justify-center shadow-lg shadow-burgundy/30 mb-6">
+      <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    </div>
+    <h2 class="text-3xl font-black tracking-tight text-white">Welcome back</h2>
+    <p class="mt-2 text-sm text-white/60">
+      Don't have an account?
+      <a routerLink="/auth/register" class="font-semibold text-gold hover:text-white transition-colors ml-1">Get started</a>
+    </p>
+  </div>
+
+  <!-- Card -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="relative rounded-3xl p-[1px] bg-gradient-to-b from-white/20 to-white/5 shadow-2xl shadow-black/20">
+      <div class="rounded-3xl bg-white/[0.07] backdrop-blur-2xl py-10 px-8 border border-white/10">
+        <form class="space-y-5" [formGroup]="loginForm" (ngSubmit)="onSubmit($event)">
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="rounded-2xl bg-red-500/10 p-4 border border-red-500/20 flex items-start gap-3">
+              <svg class="h-5 w-5 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <span class="text-sm text-red-300">{{ errorMessage }}</span>
+            </div>
+          }
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-semibold text-white/80 mb-2">Email address</label>
+            <div class="relative group">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </div>
+              <input id="email" type="email" formControlName="email" placeholder="you@example.com"
+                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-semibold text-white/80 mb-2">Password</label>
+            <div class="relative group">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              <input id="password" type="password" formControlName="password" placeholder="Enter your password"
+                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+            </div>
+          </div>
+
+          <!-- Remember / Forgot -->
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2.5 cursor-pointer group">
+              <div class="relative">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-5 h-5 rounded-md border-2 border-white/20 bg-white/5 peer-checked:bg-gold peer-checked:border-gold transition-all duration-200 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <span class="text-sm text-white/60 group-hover:text-white/80 transition-colors">Remember me</span>
+            </label>
+            <a routerLink="/auth/forgot-password" class="text-sm font-medium text-gold/80 hover:text-gold transition-colors">Forgot password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" [disabled]="loginForm.invalid || isLoading"
+            class="relative w-full rounded-2xl bg-gradient-to-r from-burgundy to-burgundy-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-burgundy/25 hover:shadow-xl hover:shadow-burgundy/30 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:hover:shadow-lg overflow-hidden mt-2">
+            <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700"></span>
+            <span class="relative flex items-center justify-center gap-2">
+              @if (isLoading) {
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              } @else {
+                Sign in
+              }
+            </span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative mt-8 mb-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-white/10"></div>
+          </div>
+          <div class="relative flex justify-center text-xs uppercase tracking-widest">
+            <span class="px-3 text-white/30">or continue with</span>
+          </div>
+        </div>
+
+        <!-- Google Sign In -->
+        <div id="google-btn-wrapper" class="flex justify-center w-full rounded-2xl overflow-hidden transition-all duration-300 hover:ring-2 hover:ring-white/20" style="cursor: pointer;"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,90 +1,212 @@
-<div class="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans" dir="ltr">
-  <div
-    class="max-w-md w-full bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/40 p-8 sm:p-10 transition-all duration-300">
-
-    <div class="text-center mb-8">
-      <a routerLink="/" class="text-3xl font-black text-blue-600 tracking-tight hover:opacity-90 transition-opacity">
-        Compass
-      </a>
-      <h2 class="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">Create a new account</h2>
-      <p class="mt-2 text-sm text-slate-500 font-normal">
-        Already have an account?
-        <a routerLink="/auth/login" class="font-bold text-blue-600 hover:text-blue-500 transition-colors duration-200">
-          Sign In
-        </a>
-      </p>
-    </div>
-
-    @if (errorMessage()) {
-    <div
-      class="mb-6 p-4 bg-red-50 border border-red-100 text-red-700 text-sm rounded-2xl flex items-start gap-2.5 animate-fade-in">
-      <svg class="w-5 h-5 shrink-0 mt-0.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd"
-          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-          clip-rule="evenodd"></path>
+<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
+    <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-burgundy to-burgundy-dark flex items-center justify-center shadow-lg shadow-burgundy/30 mb-6">
+      <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0-15.357-5.36l-3.447 1.96A11.037 11.037 0 0 1 14.6 3.63a11.052 11.052 0 0 1 7.84 8.61 11.037 11.037 0 0 1-3.447 5.36L18 18.72z" />
       </svg>
-      <span class="font-medium">{{ errorMessage() }}</span>
     </div>
-    }
+    <h2 class="text-3xl font-black tracking-tight text-white">Create account</h2>
+    <p class="mt-2 text-sm text-white/60">
+      Already have an account?
+      <a routerLink="/auth/login" class="font-semibold text-gold hover:text-white transition-colors ml-1">Sign in</a>
+    </p>
+  </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Card -->
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="relative rounded-3xl p-[1px] bg-gradient-to-b from-white/20 to-white/5 shadow-2xl shadow-black/20">
+      <div class="rounded-3xl bg-white/[0.07] backdrop-blur-2xl py-10 px-8 border border-white/10">
+        <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="rounded-2xl bg-red-500/10 p-4 border border-red-500/20 flex items-start gap-3">
+              <svg class="h-5 w-5 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <span class="text-sm text-red-300">{{ errorMessage }}</span>
+            </div>
+          }
 
-      <ui-input formControlName="fullName" label="Full Name" type="text" placeholder="e.g., John Doe" [required]="true"
-        [errorMessage]="
-          registerForm.get('fullName')?.touched && registerForm.get('fullName')?.errors?.['required'] 
-            ? 'Full name is required' 
-            : (registerForm.get('fullName')?.touched && registerForm.get('fullName')?.errors?.['minlength'] 
-                ? 'Full name must be at least 3 characters' 
-                : '')
-        " />
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <!-- First Name -->
+            <div>
+              <label for="firstName" class="block text-sm font-semibold text-white/80 mb-2">First Name</label>
+              <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A7.5 7.5 0 0014.5 20.118z" />
+                  </svg>
+                </div>
+                <input id="firstName" type="text" formControlName="firstName" placeholder="John"
+                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+              </div>
+              @if ((registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty) && registerForm.get('firstName')?.invalid) {
+                <div class="mt-1.5 text-sm text-red-400 pl-2">
+                  @if (registerForm.get('firstName')?.hasError('required')) {
+                    <span>First name is required.</span>
+                  }
+                </div>
+              }
+            </div>
 
-      <ui-input formControlName="email" label="Email Address" type="email" placeholder="yourname@example.com"
-        [required]="true" [errorMessage]="
-          registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required'] 
-            ? 'Email address is required' 
-            : (registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['email'] 
-                ? 'Please enter a valid email address' 
-                : '')
-        " />
+            <!-- Last Name -->
+            <div>
+              <label for="lastName" class="block text-sm font-semibold text-white/80 mb-2">Last Name</label>
+              <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A7.5 7.5 0 0014.5 20.118z" />
+                  </svg>
+                </div>
+                <input id="lastName" type="text" formControlName="lastName" placeholder="Doe"
+                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+              </div>
+              @if ((registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty) && registerForm.get('lastName')?.invalid) {
+                <div class="mt-1.5 text-sm text-red-400 pl-2">
+                  @if (registerForm.get('lastName')?.hasError('required')) {
+                    <span>Last name is required.</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
 
-      <ui-select formControlName="role" label="Account Type" [required]="true" [options]="roleOptions" [errorMessage]="
-          registerForm.get('role')?.touched && registerForm.get('role')?.errors?.['required'] 
-            ? 'Account type is required' 
-            : ''
-        " />
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-semibold text-white/80 mb-2">Email address</label>
+            <div class="relative group">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              </div>
+                <input id="email" type="email" formControlName="email" placeholder="you@example.com"
+                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+            </div>
+            @if ((registerForm.get('email')?.touched || registerForm.get('email')?.dirty) && registerForm.get('email')?.invalid) {
+              <div class="mt-1.5 text-sm text-red-400 pl-2">
+                @if (registerForm.get('email')?.hasError('required')) {
+                  <span>Email is required.</span>
+                }
+                @if (registerForm.get('email')?.hasError('email')) {
+                  <span>Please enter a valid email.</span>
+                }
+              </div>
+            }
+          </div>
 
-      <ui-input formControlName="password" label="Password" type="password" placeholder="••••••••" [required]="true"
-        [errorMessage]="
-          registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required'] 
-            ? 'Password is required' 
-            : (registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['minlength'] 
-                ? 'Password must be at least 6 characters' 
-                : '')
-        " />
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-semibold text-white/80 mb-2">Password</label>
+            <div class="relative group">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+                <input id="password" type="password" formControlName="password" placeholder="Create a strong password"
+                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+            </div>
+            @if ((registerForm.get('password')?.touched || registerForm.get('password')?.dirty) && registerForm.get('password')?.invalid) {
+              <div class="mt-1.5 text-sm text-red-400 pl-2">
+                @if (registerForm.get('password')?.hasError('required')) {
+                  <span>Password is required.</span>
+                }
+                @if (registerForm.get('password')?.hasError('pattern')) {
+                  <span>Must contain 8 characters, one uppercase, one lowercase and one number.</span>
+                }
+              </div>
+            }
+          </div>
 
-      <ui-input formControlName="confirmPassword" label="Confirm Password" type="password" placeholder="••••••••"
-        [required]="true" [errorMessage]="
-          registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required'] 
-            ? 'Please confirm your password' 
-            : (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['mismatch'] 
-                ? 'Passwords do not match' 
-                : '')
-        " />
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label for="phoneNumber" class="block text-sm font-semibold text-white/80 mb-2">Phone Number</label>
+              <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0-1.036.84-1.875 1.875-1.875h15.75c1.035 0 1.875.84 1.875 1.875v10.5c0 1.035-.84 1.875-1.875 1.875H4.125c-1.036 0-1.875-.84-1.875-1.875V6.75z" />
+                  </svg>
+                </div>
+                <input id="phoneNumber" type="text" formControlName="phoneNumber" placeholder="+1234567890"
+                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
+              </div>
+              @if ((registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty) && registerForm.get('phoneNumber')?.invalid) {
+                <div class="mt-1.5 text-sm text-red-400 pl-2">
+                  @if (registerForm.get('phoneNumber')?.hasError('required')) {
+                    <span>Phone number is required.</span>
+                  }
+                </div>
+              }
+            </div>
 
-      <div class="flex items-start text-sm">
-        <ui-checkbox [disabled]="loading()">
-          <span class="text-slate-600 leading-normal">
-            I agree to the <a class="font-bold text-blue-600 hover:underline cursor-pointer">Terms of Service</a> and <a
-              class="font-bold text-blue-600 hover:underline cursor-pointer">Privacy Policy</a> of Compass.
-          </span>
-        </ui-checkbox>
+            <div>
+              <label for="country" class="block text-sm font-semibold text-white/80 mb-2">Country</label>
+              <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm13.5-6.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm-13.5 0a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm13.5 6.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm-13.5 0a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0z" />
+                  </svg>
+                </div>
+                <select id="country" formControlName="country"
+                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200 appearance-none">
+                  <option value="Egypt" class="bg-charcoal text-white">Egypt</option>
+                  <option value="Saudi Arabia" class="bg-charcoal text-white">Saudi Arabia</option>
+                  <option value="UAE" class="bg-charcoal text-white">UAE</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </div>
+              </div>
+              @if ((registerForm.get('country')?.touched || registerForm.get('country')?.dirty) && registerForm.get('country')?.invalid) {
+                <div class="mt-1.5 text-sm text-red-400 pl-2">
+                  @if (registerForm.get('country')?.hasError('required')) {
+                    <span>Country is required.</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" [disabled]="isLoading"
+            class="relative w-full rounded-2xl bg-gradient-to-r from-burgundy to-burgundy-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-burgundy/25 hover:shadow-xl hover:shadow-burgundy/30 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:hover:shadow-lg overflow-hidden mt-2">
+            <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700"></span>
+            <span class="relative flex items-center justify-center gap-2">
+              @if (isLoading) {
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating account...
+              } @else {
+                Create account
+              }
+            </span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative mt-8 mb-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-white/10"></div>
+          </div>
+          <div class="relative flex justify-center text-xs uppercase tracking-widest">
+            <span class="px-3 text-white/30">or</span>
+          </div>
+        </div>
+
+        <!-- Back to login -->
+        <a routerLink="/auth/login" class="flex items-center justify-center gap-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3.5 text-sm font-semibold text-white/80 hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          Back to sign in
+        </a>
       </div>
-
-      <ui-button type="submit" variant="primary" size="lg" [fullWidth]="true" [loading]="loading()">
-        Create Account
-      </ui-button>
-
-    </form>
+    </div>
   </div>
 </div>

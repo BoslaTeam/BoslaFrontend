@@ -1,0 +1,31 @@
+<header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-charcoal/30 backdrop-blur-md border-b border-white/10">
+  <div class="container mx-auto px-4 h-20 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 group">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-terracotta to-terracotta-dark flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:scale-105 transition-transform">
+        B
+      </div>
+      <span class="text-2xl font-black tracking-tight text-white">Bosla<span class="text-terracotta">.</span></span>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-8 font-medium text-white/80">
+      <a href="#" class="hover:text-terracotta transition-colors">Home</a>
+      <a href="#" class="hover:text-terracotta transition-colors">Specialists</a>
+      <a href="#" class="hover:text-terracotta transition-colors">About</a>
+      <a href="#" class="hover:text-terracotta transition-colors">Contact</a>
+    </nav>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-4">
+      <a routerLink="/auth/login" class="hidden md:block font-medium text-white hover:text-terracotta transition-colors">
+        Sign in
+      </a>
+      <a routerLink="/auth/register" class="px-6 py-2.5 rounded-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95">
+        Get Started
+      </a>
+    </div>
+  </div>
+</header>
+<!-- Spacer to prevent content from going under the fixed header -->
+<div class="h-20 w-full"></div>

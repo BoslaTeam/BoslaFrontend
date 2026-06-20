@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@source "./app";
+
+@theme {
+  --color-burgundy: #8c3a30;
+  --color-burgundy-dark: #732f27;
+  --color-olive: #5e6b54;
+  --color-gold: #aa8f6e;
+  --color-cream: #f4ecdf;
+  --color-sandy-beige: #eadecd;
+  --color-charcoal: #3c322b;
+  --color-warm-brown: #5d4037;
+  --color-white: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-charcoal font-sans antialiased;
+  }
+}
