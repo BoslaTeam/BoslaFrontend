@@ -1,0 +1,21 @@
+<nav class="flex items-center text-[13px] font-sans" dir="rtl" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-reverse space-x-2.5">
+        @for (item of items(); track item.label; let isLast = $last) {
+        <li class="flex items-center gap-2.5">
+
+            <span (click)="onItemClick(item, isLast)" [class]="isLast 
+            ? 'text-bosla-charcoal font-bold select-none' 
+            : 'text-bosla-charcoal/50 hover:text-bosla-blue cursor-pointer transition-colors'">
+                {{ item.label }}
+            </span>
+
+            @if (!isLast) {
+            <span class="text-bosla-charcoal/30 text-[11px] select-none pointer-events-none">
+                <i class="fa-solid fa-chevron-left"></i>
+            </span>
+            }
+
+        </li>
+        }
+    </ol>
+</nav>

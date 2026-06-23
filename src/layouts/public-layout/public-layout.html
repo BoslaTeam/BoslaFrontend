@@ -11,12 +11,12 @@
   </video>
   
   <!-- Gradient Overlay -->
-  <div class="absolute inset-0 bg-gradient-to-br from-charcoal/90 via-charcoal/80 to-burgundy/40 z-0"></div>
+  <div class="absolute inset-0 bg-linear-to-br from-charcoal/90 via-charcoal/80 to-burgundy/40 z-0"></div>
 
   <!-- Content -->
   <div class="relative z-10 flex flex-col min-h-screen w-full">
     <app-public-header></app-public-header>
-    <main class="flex-grow flex flex-col w-full">
+    <main class="grow flex flex-col w-full">
       <router-outlet></router-outlet>
     </main>
     <app-public-footer></app-public-footer>

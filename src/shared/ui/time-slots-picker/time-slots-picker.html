@@ -1,0 +1,33 @@
+<div class="w-full max-w-170 bg-white border border-bosla-charcoal/5 p-5 rounded-xs shadow-sm flex flex-col gap-4"
+    dir="rtl">
+
+    <div class="flex items-center justify-between">
+        <h4 class="text-[15px] font-bold text-bosla-charcoal font-sans">
+            {{ title() }}
+        </h4>
+
+        @if (showNavigation()) {
+        <div class="flex items-center gap-3">
+            <button type="button" (click)="prevPage()" [disabled]="!canPrev()"
+                class="p-1 outline-none transition-colors duration-150 rounded-xs
+                       disabled:opacity-30 disabled:cursor-not-allowed enabled:text-bosla-blue enabled:hover:text-bosla-blue/70 enabled:cursor-pointer">
+                <i class="fa-solid fa-chevron-right text-sm"></i>
+            </button>
+
+            <button type="button" (click)="nextPage()" [disabled]="!canNext()"
+                class="p-1 outline-none transition-colors duration-150 rounded-xs
+                       disabled:opacity-30 disabled:cursor-not-allowed enabled:text-bosla-blue enabled:hover:text-bosla-blue/70 enabled:cursor-pointer">
+                <i class="fa-solid fa-chevron-left text-sm"></i>
+            </button>
+        </div>
+        }
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 w-full min-h-24">
+        @for (slot of visibleSlots(); track slot.time) {
+        <ui-time-slot [time]="slot.time" [state]="getSlotState(slot)" (slotClick)="onSlotSelect($event)">
+        </ui-time-slot>
+        }
+    </div>
+
+</div>

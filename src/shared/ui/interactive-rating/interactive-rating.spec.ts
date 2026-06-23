@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Spinner } from './spinner';
+import { InteractiveRating } from './interactive-rating';
 
-describe('Spinner', () => {
-  let component: Spinner;
-  let fixture: ComponentFixture<Spinner>;
+describe('InteractiveRating', () => {
+  let component: InteractiveRating;
+  let fixture: ComponentFixture<InteractiveRating>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Spinner],
+      imports: [InteractiveRating],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Spinner);
+    fixture = TestBed.createComponent(InteractiveRating);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

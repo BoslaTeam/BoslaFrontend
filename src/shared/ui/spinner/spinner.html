@@ -1,3 +1,5 @@
-<div role="status" [class]="'inline-block animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] ' + getSizeClasses()">
-  <span class="sr-only">Loading...</span>
+<div role="status" class="inline-flex items-center justify-center text-current">
+  <i [class]="spinnerClasses()"></i>
+
+  <span class="sr-only">جاري التحميل...</span>
 </div>

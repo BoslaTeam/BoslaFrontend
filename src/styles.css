@@ -1,23 +1,28 @@
 @import "tailwindcss";
+
 @source "./app";
 @source "./features";
 @source "./layouts";
 @source "./shared";
 
 @theme {
-  --color-burgundy: #8c3a30;
-  --color-burgundy-dark: #732f27;
-  --color-olive: #5e6b54;
-  --color-gold: #aa8f6e;
-  --color-cream: #f4ecdf;
-  --color-sandy-beige: #eadecd;
-  --color-charcoal: #3c322b;
-  --color-warm-brown: #5d4037;
-  --color-white: #ffffff;
+  --color-bosla-offwhite: #F7F9FA;
+  --color-bosla-charcoal: #2C3E50;
+  --color-bosla-blue: #2EB6AB;
+  --color-bosla-orange: #F39C12;
+  --color-bosla-primary: #1B4F72;
+  --color-bosla-success: #16a34a;
+  --color-bosla-error: #ba1a1a;
+
+  --font-sans: 'Cairo', sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-cream text-charcoal font-sans antialiased;
+    @apply bg-bosla-offwhite text-bosla-charcoal font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold text-bosla-primary;
   }
 }

@@ -1,0 +1,45 @@
+<div class="w-full max-w-[360px] min-h-[180px] bg-white border border-bosla-charcoal/10 p-5 rounded-xs 
+            shadow-xs hover:shadow-md hover:border-bosla-blue transition-all duration-300 
+            flex flex-col gap-3 select-none" dir="rtl">
+
+    <div class="flex items-center justify-between gap-3 w-full">
+
+        <div class="flex items-center gap-3">
+            <div
+                class="w-11 h-11 rounded-full bg-bosla-charcoal/5 border border-bosla-charcoal/10 overflow-hidden flex items-center justify-center shrink-0">
+                @if (review().avatarUrl) {
+                <img [src]="review().avatarUrl" [alt]="review().authorName" class="w-full h-full object-cover" />
+                } @else {
+                <i class="fa-regular fa-user text-bosla-charcoal/30 text-lg"></i>
+                }
+            </div>
+
+            <div class="flex flex-col items-start gap-0.5">
+                <div class="flex items-center gap-1.5">
+                    <h4 class="text-[15px] font-sans font-bold text-bosla-primary leading-tight">
+                        {{ review().authorName }}
+                    </h4>
+                    @if (review().isVerified) {
+                    <i class="fa-solid fa-circle-check text-[13px] text-bosla-orange"></i>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <span class="text-[12px] font-sans text-bosla-charcoal/40 font-medium shrink-0">
+            {{ review().timeAgo }}
+        </span>
+
+    </div>
+
+    <div class="flex justify-start gap-0.5 text-bosla-orange text-[13px]">
+        @for (star of stars(); track $index) {
+        <i class="fa-solid fa-star"></i>
+        }
+    </div>
+
+    <p class="text-[13px] font-sans text-bosla-charcoal/80 font-medium leading-[22px] text-right line-clamp-4">
+        {{ review().comment }}
+    </p>
+
+</div>

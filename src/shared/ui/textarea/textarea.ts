@@ -3,18 +3,19 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'ui-textarea',
+  standalone: true,
   imports: [],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => Textarea),
+      useExisting: forwardRef(() => UiTextarea),
       multi: true,
     },
   ],
   templateUrl: './textarea.html',
   styleUrl: './textarea.css',
 })
-export class Textarea implements ControlValueAccessor {
+export class UiTextarea implements ControlValueAccessor {
 
   readonly label = input<string>('');
   readonly placeholder = input<string>('');
@@ -27,8 +28,8 @@ export class Textarea implements ControlValueAccessor {
   readonly value = signal('');
   readonly disabled = signal(false);
 
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => { };
+  private onTouched: () => void = () => { };
 
   writeValue(value: string): void {
     this.value.set(value ?? '');
@@ -55,5 +56,4 @@ export class Textarea implements ControlValueAccessor {
   onBlur(): void {
     this.onTouched();
   }
-  
 }

@@ -1,5 +1,7 @@
 import { environment } from '../../environments/environment';
+
 const V = environment.apiBaseUrl;
+
 export const API_ENDPOINTS = {
   auth: {
     register: `${V}/auth/register`,

@@ -1,0 +1,237 @@
+<ui-toast></ui-toast>
+
+<div class="p-10 space-y-12 bg-bosla-offwhite min-h-screen" dir="rtl">
+    <h1 class="text-2xl font-bold border-b border-bosla-charcoal/10 pb-2">لوحة تجارب المكونات — Bosla</h1>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-bosla-primary">شعار النظام (Logo)</h2>
+        <div class="flex gap-6 items-center bg-white p-6 rounded-xl shadow-xs w-fit">
+            <div class="flex flex-col items-center gap-1">
+                <ui-logo size="sm"></ui-logo>
+                <span class="text-xs text-bosla-charcoal/60">صغير (sm)</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <ui-logo size="md"></ui-logo>
+                <span class="text-xs text-bosla-charcoal/60">متوسط (md)</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+                <ui-logo size="lg"></ui-logo>
+                <span class="text-xs text-bosla-charcoal/60">كبير (lg)</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">تجارب أزرار النظام (اضغط لتجربة التنبيهات)
+        </h2>
+
+        <div class="flex flex-col gap-4 max-w-75 bg-white p-6 rounded-xl shadow-xs">
+            <ui-button variant="primary" (btnClick)="triggerSuccess()">تأكيد الحجز</ui-button>
+
+            <ui-button variant="primary" [loading]="true">تأكيد الحجز</ui-button>
+
+            <ui-button variant="primary" [inputDisabled]="true">تأكيد الحجز (معطل)</ui-button>
+
+            <ui-button variant="secondary" (btnClick)="triggerInfo()">عرض الملف الشخصي</ui-button>
+
+            <ui-button variant="secondary">
+                <span class="text-sm"><i class="fa-solid fa-magnifying-glass"></i></span> بحث
+            </ui-button>
+
+            <ui-button variant="ghost">تخطي</ui-button>
+
+            <ui-button variant="danger" (btnClick)="triggerDanger()">إلغاء الموعد</ui-button>
+
+            <ui-button variant="danger" [outline]="true" (btnClick)="triggerDanger()">حذف الحساب</ui-button>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">تجارب عناصر النماذج (Forms)</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl bg-white p-8 rounded-xl shadow-xs">
+            <ui-input label="الاسم الكامل" placeholder="أدخل اسمك" [required]="true"></ui-input>
+            <ui-input label="مجال الاستشارة" placeholder="استشارات قانونية"></ui-input>
+            <ui-input label="البريد الإلكتروني" type="email" placeholder="example@bosla.com"></ui-input>
+            <ui-input label="الرسالة (مع خطأ)" placeholder="" errorMessage="هذا الحقل مطلوب."></ui-input>
+
+            <ui-textarea label="تفاصيل الاستشارة" placeholder="اكتب هنا تفاصيل المشكلة القانونية أو الاستفسار..."
+                [rows]="5" hint="يرجى كتابة التفاصيل بوضوح لضمان دقة الرد.">
+            </ui-textarea>
+
+            <div class="flex items-center gap-3 py-2 md:col-span-2">
+                <input type="checkbox" id="terms"
+                    class="w-5 h-5 rounded-xs border-bosla-charcoal/30 text-bosla-blue focus:ring-bosla-blue accent-bosla-blue cursor-pointer" />
+                <label id="terms-label" for="terms"
+                    class="text-[14px] font-sans text-bosla-charcoal select-none cursor-pointer">
+                    موافق على الشروط
+                </label>
+            </div>
+
+            <div class="flex items-center gap-6 py-2 md:col-span-2">
+                <div class="flex items-center gap-2">
+                    <input type="radio" id="opt1" name="options" checked
+                        class="w-5 h-5 border-bosla-charcoal/30 text-bosla-blue accent-bosla-blue cursor-pointer" />
+                    <label id="opt1-label" for="opt1"
+                        class="text-[14px] font-sans text-bosla-charcoal select-none cursor-pointer">
+                        خيار 1
+                    </label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="radio" id="opt2" name="options"
+                        class="w-5 h-5 border-bosla-charcoal/30 text-bosla-blue accent-bosla-blue cursor-pointer" />
+                    <label id="opt2-label" for="opt2"
+                        class="text-[14px] font-sans text-bosla-charcoal select-none cursor-pointer">
+                        خيار 2
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">2. التنقل والتصفية (Navigation & Filters)
+        </h2>
+
+        <div class="flex flex-col gap-6 w-full bg-white p-8 rounded-xl shadow-xs">
+
+            <div class="py-2">
+                <ui-breadcrumbs [items]="myBreadcrumbs"></ui-breadcrumbs>
+            </div>
+
+            <ui-tabs [items]="myTabs" [(activeId)]="selectedTabId" (tabChange)="onTabChanged($event)">
+            </ui-tabs>
+
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">بطاقة المستشار (Expert Card)</h2>
+
+        <ui-expert-card [expert]="mockExpert" (bookClick)="onBookingTriggered($event)">
+        </ui-expert-card>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">لوحة اختيار المواعيد (Time Slots)</h2>
+
+        <ui-time-slots-picker [slots]="mySlots" [(selectedTime)]="activeTimeSlot">
+        </ui-time-slots-picker>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">بطاقات لوحة التحكم (Dashboard Cards)</h2>
+
+        <div class="flex flex-wrap gap-4 items-center">
+
+            <ui-stat-card title="إجمالي الحجوزات" value="124" icon="fa-regular fa-calendar" variant="blue">
+            </ui-stat-card>
+
+            <ui-stat-card title="الرصيد المتاح" value="2,450 ر.س" icon="fa-solid fa-wallet" variant="orange">
+            </ui-stat-card>
+
+            <ui-empty-state-card message="لا توجد استشارات حالية" icon="fa-regular fa-image">
+            </ui-empty-state-card>
+
+        </div>
+    </section>
+
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">4. التفاعلات والنوافذ المنبثقة (Interactive
+            & Overlays)</h2>
+
+        <div class="flex flex-wrap gap-6 items-start">
+
+            <!-- عرض حاوية هيكل التحميل بالمقاسات الدقيقة المفروضة -->
+            <div>
+                <span class="text-xs text-bosla-charcoal/40 block mb-2 font-sans">حالة التحميل (Loading Skeleton)</span>
+                <ui-loading-skeleton></ui-loading-skeleton>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">التحكم بالنوافذ المنبثقة</h2>
+
+        <button (click)="openModal()" class="px-4 py-2 bg-bosla-primary text-white font-bold rounded-xs cursor-pointer">
+            فتح نافذة تأكيد الإلغاء
+        </button>
+
+        <ui-modal [isOpen]="isCancelModalOpen" title="تأكيد الإلغاء"
+            message="هل أنت متأكد من رغبتك في إلغاء هذا الموعد؟ لا يمكن التراجع عن هذا الإجراء."
+            (close)="isCancelModalOpen = false" (confirm)="handleCancelConfirm()">
+        </ui-modal>
+    </section>
+
+    <section class="space-y-6 p-6 bg-white rounded-xs shadow-xs">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">5. شارات الحالة (Status Badges)</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8" dir="rtl">
+
+            <div class="flex flex-col gap-3">
+                <h4 class="text-sm font-bold text-bosla-primary mb-2">حالة الاستشارة (Consultation Status)</h4>
+                <div class="flex flex-wrap gap-3">
+                    <ui-status-badge type="scheduled"></ui-status-badge>
+                    <ui-status-badge type="confirmed"></ui-status-badge>
+                    <ui-status-badge type="live"></ui-status-badge>
+                    <ui-status-badge type="completed"></ui-status-badge>
+                    <ui-status-badge type="cancelled"></ui-status-badge>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <h4 class="text-sm font-bold text-bosla-primary mb-2">حالة التوفر (Availability)</h4>
+                <div class="flex flex-wrap gap-3 items-center">
+                    <ui-status-badge type="available"></ui-status-badge>
+                    <ui-status-badge type="busy"></ui-status-badge>
+                    <ui-status-badge type="offline"></ui-status-badge>
+
+                    <span class="text-xs text-bosla-charcoal/30 px-2">|</span>
+                    <ui-status-badge type="available" [isMuted]="true"></ui-status-badge>
+                    <ui-status-badge type="busy" [isMuted]="true"></ui-status-badge>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">آراء وتقييمات العملاء (Review Cards)</h2>
+
+        <div class="flex flex-wrap gap-4 justify-start" dir="rtl">
+            @for (item of mockReviews; track item.id) {
+            <ui-review-card [review]="item"></ui-review-card>
+            }
+        </div>
+    </section>
+
+    <section class="p-8 space-y-8 bg-white" dir="rtl">
+
+        <!-- 1. استعراض التقييم الشامل وملخص الأشرطة -->
+        <div class="space-y-3">
+            <h3 class="text-sm font-bold text-bosla-primary">Rating Summary</h3>
+            <ui-rating-summary [averageRating]="4.8" [totalReviews]="124" [distribution]="[
+        { stars: 5, percentage: 80 },
+        { stars: 4, percentage: 15 },
+        { stars: 3, percentage: 5 },
+        { stars: 2, percentage: 0 },
+        { stars: 1, percentage: 0 }
+      ]"></ui-rating-summary>
+        </div>
+
+        <!-- 2. استعراض الحالات التفاعلية للنجوم المطلوبة بالرسم -->
+        <div class="space-y-4 pt-4 border-t border-bosla-charcoal/5">
+            <h3 class="text-sm font-bold text-bosla-primary">Interactive Star Rating</h3>
+
+            <div class="space-y-2">
+                <p class="text-[12px] text-bosla-charcoal/40 font-medium">جرب التفاعل بالضغط والتمرير هنا:</p>
+                <ui-interactive-rating></ui-interactive-rating>
+            </div>
+        </div>
+
+    </section>
+
+</div>

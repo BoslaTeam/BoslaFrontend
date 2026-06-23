@@ -5,26 +5,22 @@ import { Component, input, output } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './modal.html',
-  styleUrl: './modal.css',
 })
-export class Modal {
-  readonly open = input(false);
-  readonly title = input<string>('');
-  readonly size = input<'sm' | 'md' | 'lg'>('md');
-  readonly closeOnBackdrop = input(true);
+export class UiModal {
+  // المدخلات الأساسية للتحكم بالنافذة المنبثقة
+  readonly isOpen = input.required<boolean>();
+  readonly title = input<string>('تأكيد الإجراء');
+  readonly message = input<string>('');
 
+  // الأحداث التفاعلية للأزرار
   readonly close = output<void>();
+  readonly confirm = output<void>();
 
-  onBackdropClick(): void {
-    if (this.closeOnBackdrop()) this.close.emit();
+  onClose(): void {
+    this.close.emit();
   }
 
-  getSizeClasses(): string {
-    const sizes = {
-      sm: 'max-w-md',
-      md: 'max-w-lg',
-      lg: 'max-w-3xl'
-    };
-    return sizes[this.size()];
+  onConfirm(): void {
+    this.confirm.emit();
   }
 }
