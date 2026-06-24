@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 
 export type SpinnerSize = 'sm' | 'md' | 'lg';
 
@@ -9,15 +9,16 @@ export type SpinnerSize = 'sm' | 'md' | 'lg';
   templateUrl: './spinner.html',
   styleUrl: './spinner.css',
 })
-export class Spinner {
+export class UiSpinner {
   readonly size = input<SpinnerSize>('md');
 
-  getSizeClasses(): string {
+  readonly spinnerClasses = computed(() => {
     const sizes: Record<SpinnerSize, string> = {
-      sm: 'h-4 w-4 border',
-      md: 'h-6 w-6 border-2',
-      lg: 'h-8 w-8 border-3'
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-xl'
     };
-    return sizes[this.size()];
-  }
+
+    return `fa-solid fa-spinner fa-spin ${sizes[this.size()] || sizes['md']}`;
+  });
 }

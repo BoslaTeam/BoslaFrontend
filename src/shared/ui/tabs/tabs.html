@@ -1,0 +1,13 @@
+<div class="w-full border-b border-bosla-charcoal/10" dir="rtl">
+    <nav class="flex gap-8 -mb-px" aria-label="Tabs">
+        @for (tab of items(); track tab.id) {
+        <button type="button" (click)="selectTab(tab.id)"
+            class="pb-3 text-[14px] font-sans font-medium transition-all duration-200 outline-none cursor-pointer select-none relative"
+            [class]="activeId() === tab.id 
+          ? 'text-bosla-blue border-b-2 border-bosla-blue font-bold' 
+          : 'text-bosla-charcoal/60 hover:text-bosla-charcoal border-b-2 border-transparent'">
+            {{ tab.label }}
+        </button>
+        }
+    </nav>
+</div>

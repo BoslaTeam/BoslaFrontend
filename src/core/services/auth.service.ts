@@ -49,10 +49,40 @@ export class AuthService {
             .pipe(tap((res) => this.setSession(res.data)));
     }
 
-    register(payload: RegisterPayload): Observable<ApiResponse<AuthTokensResponse>> {
+    register(payload: any): Observable<ApiResponse<AuthTokensResponse>> {
         return this.http
             .post<ApiResponse<AuthTokensResponse>>(API_ENDPOINTS.auth.register, payload)
-            .pipe(tap((res) => this.setSession(res.data)));
+            .pipe(tap((res) => {
+                if (res.data) {
+                    this.setSession(res.data);
+                }
+            }));
+    }
+
+    googleLogin(payload: any): Observable<ApiResponse<AuthTokensResponse>> {
+        return this.http
+            .post<ApiResponse<AuthTokensResponse>>(API_ENDPOINTS.auth.googleLogin, payload)
+            .pipe(tap((res) => {
+                if (res.data) {
+                    this.setSession(res.data);
+                }
+            }));
+    }
+
+    forgotPassword(payload: any): Observable<ApiResponse<boolean>> {
+        return this.http.post<ApiResponse<boolean>>(API_ENDPOINTS.auth.forgotPassword, payload);
+    }
+
+    resetPassword(payload: any): Observable<ApiResponse<boolean>> {
+        return this.http.post<ApiResponse<boolean>>(API_ENDPOINTS.auth.resetPassword, payload);
+    }
+
+    confirmEmail(payload: any): Observable<ApiResponse<boolean>> {
+        return this.http.post<ApiResponse<boolean>>(API_ENDPOINTS.auth.confirmEmail, payload);
+    }
+
+    resendConfirmationEmail(payload: any): Observable<ApiResponse<boolean>> {
+        return this.http.post<ApiResponse<boolean>>(API_ENDPOINTS.auth.resendConfirmationEmail, payload);
     }
 
     refreshToken(): Observable<ApiResponse<AuthTokensResponse>> {
@@ -71,8 +101,27 @@ export class AuthService {
 
     setSession(data: AuthTokensResponse): void {
         this.tokenService.setTokens(data.accessToken, data.refreshToken);
-        this.storage.setJson(STORAGE_KEYS.currentUser, data.user);
-        this._currentUser.set(data.user);
+        
+        let user = data.user;
+        if (!user && data.accessToken) {
+            const decoded = this.tokenService.decodeToken(data.accessToken);
+            if (decoded) {
+                user = {
+                    id: decoded.sub || decoded['nameid'] || '',
+                    email: decoded['email'] as string || '',
+                    fullName: decoded['name'] as string || decoded['unique_name'] as string || '',
+                    role: decoded.role !== undefined ? Number(decoded.role) : 0,
+                } as CurrentUser;
+            }
+        }
+
+        if (user) {
+            this.storage.setJson(STORAGE_KEYS.currentUser, user);
+            this._currentUser.set(user);
+        } else {
+            // Minimum fallback to pass guards
+            this._currentUser.set({ id: '', email: '', fullName: '', role: 0 } as CurrentUser);
+        }
     }
 
     clearSession(): void {

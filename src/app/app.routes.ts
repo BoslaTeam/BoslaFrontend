@@ -8,12 +8,13 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('@layouts/public-layout/public-layout/public-layout').then(
+      import('@layouts/public-layout/public-layout').then(
         (m) => m.PublicLayout,
       ),
     children: [
       {
         path: '',
+        // canActivate: [authGuard],
         loadChildren: () => import('@features/home/routes').then((m) => m.HOME_ROUTES),
       },
       {
@@ -27,7 +28,7 @@ export const routes: Routes = [
     path: 'auth',
     canActivate: [guestGuard],
     loadComponent: () =>
-      import('@layouts/public-layout/public-layout/public-layout').then(
+      import('@layouts/public-layout/public-layout').then(
         (m) => m.PublicLayout,
       ),
     children: [
@@ -41,7 +42,7 @@ export const routes: Routes = [
     path: 'user',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('@layouts/user-layout/user-layout/user-layout').then(
+      import('@layouts/user-layout/user-layout').then(
         (m) => m.UserLayout,
       ),
     children: [
@@ -78,7 +79,7 @@ export const routes: Routes = [
     path: 'specialist',
     canActivate: [authGuard, specialistGuard],
     loadComponent: () =>
-      import('@layouts/specialist-layout/specialist-layout/specialist-layout').then(
+      import('@layouts/specialist-layout/specialist-layout').then(
         (m) => m.SpecialistLayout,
       ),
     children: [
@@ -108,7 +109,7 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>
-      import('@layouts/admin-layout/admin-layout/admin-layout').then(
+      import('@layouts/admin-layout/admin-layout').then(
         (m) => m.AdminLayout,
       ),
     children: [

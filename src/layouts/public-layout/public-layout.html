@@ -1,0 +1,24 @@
+<div class="min-h-screen flex flex-col relative overflow-hidden bg-charcoal text-white">
+  <!-- Video Background -->
+  <video 
+    autoplay 
+    loop 
+    [muted]="true"
+    playsinline 
+    oncontextmenu="return false;"
+    class="absolute inset-0 w-full h-full object-cover z-0 opacity-60 pointer-events-none">
+    <source src="assets/videos/login.mp4" type="video/mp4">
+  </video>
+  
+  <!-- Gradient Overlay -->
+  <div class="absolute inset-0 bg-linear-to-br from-charcoal/90 via-charcoal/80 to-burgundy/40 z-0"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-col min-h-screen w-full">
+    <app-public-header></app-public-header>
+    <main class="grow flex flex-col w-full">
+      <router-outlet></router-outlet>
+    </main>
+    <app-public-footer></app-public-footer>
+  </div>
+</div>

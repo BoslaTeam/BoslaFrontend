@@ -1,0 +1,13 @@
+<div class="flex flex-row items-center gap-1.5" (mouseleave)="onMouseLeave()">
+    @for (star of [1, 2, 3, 4, 5]; track star) {
+    <button type="button" (mouseenter)="onMouseEnter(star)" (click)="selectRating(star)"
+        class="cursor-pointer transition-transform duration-150 hover:scale-110 focus:outline-none bg-transparent border-none p-0 text-[24px]">
+        <!-- تحديد أي نجمة تضيء بناءً على حالة الـ Hover أو الاختيار الفعلي -->
+        @if (hoverRating() !== null ? star <= hoverRating()! : star <=selectedRating()) { <i
+            class="fa-solid fa-star text-[#F39C12]"></i>
+            } @else {
+            <i class="fa-regular fa-star text-bosla-charcoal/20"></i>
+            }
+    </button>
+    }
+</div>

@@ -1,0 +1,35 @@
+<div class="min-h-screen flex flex-col bg-cream text-charcoal">
+  <!-- Authenticated Header -->
+  <header [ngClass]="{'bg-transparent border-transparent': !isScrolled, 'bg-white/90 backdrop-blur-md border-burgundy/10 shadow-sm': isScrolled}" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b">
+    <div class="container mx-auto px-4 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center gap-3 group">
+        <div class="w-12 h-12 rounded-xl bg-linear-to-br from-burgundy to-burgundy-dark flex items-center justify-center text-white font-bold text-2xl shadow-md group-hover:scale-105 transition-transform">
+          B
+        </div>
+        <span [ngClass]="{'text-white': !isScrolled, 'text-burgundy': isScrolled}" class="text-2xl font-black tracking-tight transition-colors">Bosla<span class="text-gold">.</span></span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="hidden md:flex items-center gap-8 font-medium">
+        <a routerLink="/" [ngClass]="{'text-white border-white': !isScrolled, 'text-burgundy border-burgundy': isScrolled}" class="font-bold border-b-2 pb-1 transition-colors">Dashboard</a>
+        <a href="#" [ngClass]="{'text-white/80 hover:text-white': !isScrolled, 'text-charcoal/80 hover:text-burgundy': isScrolled}" class="transition-colors">Specialists</a>
+        <a href="#" [ngClass]="{'text-white/80 hover:text-white': !isScrolled, 'text-charcoal/80 hover:text-burgundy': isScrolled}" class="transition-colors">Appointments</a>
+        <a href="#" [ngClass]="{'text-white/80 hover:text-white': !isScrolled, 'text-charcoal/80 hover:text-burgundy': isScrolled}" class="transition-colors">Messages</a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-4">
+        <!-- Profile / Logout -->
+        <button (click)="logout()" [ngClass]="{'border-white text-white hover:bg-white hover:text-burgundy': !isScrolled, 'border-burgundy text-burgundy hover:bg-burgundy hover:text-white': isScrolled}" class="px-6 py-2 rounded-full border font-bold transition-all duration-300">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="grow flex flex-col">
+    <router-outlet></router-outlet>
+  </main>
+</div>

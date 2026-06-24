@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { APP_CONFIG } from '@core/config/app.config';
 
-export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+export type ToastVariant = 'success' | 'danger' | 'warning' | 'info';
 
 export interface ToastMessage {
   id: string;
@@ -18,8 +18,8 @@ export class ToastService {
     this.show('success', message);
   }
 
-  error(message: string): void {
-    this.show('error', message);
+  danger(message: string): void {
+    this.show('danger', message);
   }
 
   warning(message: string): void {

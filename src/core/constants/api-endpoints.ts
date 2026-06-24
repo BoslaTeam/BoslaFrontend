@@ -1,13 +1,18 @@
-const V = 'api/v1';
+import { environment } from '../../environments/environment';
+
+const V = environment.apiBaseUrl;
 
 export const API_ENDPOINTS = {
   auth: {
     register: `${V}/auth/register`,
     login: `${V}/auth/login`,
+    googleLogin: `${V}/auth/google-login`,
     refresh: `${V}/auth/refresh`,
     logout: `${V}/auth/logout`,
     forgotPassword: `${V}/auth/forgot-password`,
     resetPassword: `${V}/auth/reset-password`,
+    confirmEmail: `${V}/auth/confirm-email`,
+    resendConfirmationEmail: `${V}/auth/resend-confirmation-email`,
   },
   users: {
     me: `${V}/users/me`,

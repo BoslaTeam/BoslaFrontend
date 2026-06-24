@@ -1,15 +1,9 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import { NotificationService } from '@core/services/notification.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-user-header',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './user-header.html',
-  styleUrl: './user-header.css',
+  styles: ``,
 })
-export class UserHeader {
-  readonly authService = inject(AuthService);
-  readonly notificationService = inject(NotificationService);
-}
+export class UserHeader {}

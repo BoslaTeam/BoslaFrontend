@@ -1,97 +1,81 @@
-import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import { UserRole } from '@core/enums/user-role.enum';
-import { SelectOption } from '@shared/types/select-option.type';
-import { Button } from '@shared/ui/button/button';
-import { Checkbox } from '@shared/ui/checkbox/checkbox';
-import { Select } from '@shared/ui/select/select';
-import { InputComponent } from '@shared/ui/input/input';
+import { AuthService } from '../../../../core/services/auth.service';
+import { RegisterRequest } from '../../contracts/auth.contracts';
 
 @Component({
   selector: 'app-register',
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, InputComponent, Button, Select, Checkbox],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrl: '../../auth.css'
 })
-export class RegisterComponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+export class Register {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
-  protected readonly roleOptions: SelectOption[] = [
-    { label: 'Client (Looking for a consultant)', value: String(UserRole.User) },
-    { label: 'Expert Consultant (Providing advice)', value: String(UserRole.Specialist) },
-  ];
-
-  protected readonly registerForm: FormGroup = this.fb.group({
-    fullName: ['', [Validators.required, Validators.minLength(3)]],
+  registerForm = this.fb.group({
+    firstName: ['', [Validators.required, Validators.maxLength(100)]],
+    lastName: ['', [Validators.required, Validators.maxLength(100)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', [Validators.required]],
-    role: [String(UserRole.User), [Validators.required]],
-  }, {
-    validators: this.passwordMatchValidator
+    password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)]],
+    phoneNumber: ['', [Validators.required]],
+    country: ['', [Validators.required]],
+    role: ['user', [Validators.required]]
   });
 
-  protected readonly loading = signal(false);
-  protected readonly errorMessage = signal('');
+  isLoading = false;
+  errorMessage = '';
 
-  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-    
-    if (confirmPassword?.errors && !confirmPassword.errors['mismatch']) {
-      return null;
-    }
-
-    if (password?.value !== confirmPassword?.value) {
-      confirmPassword?.setErrors({ mismatch: true });
-      return { mismatch: true };
-    } else {
-      confirmPassword?.setErrors(null);
-      return null;
-    }
-  }
-
-  onSubmit(): void {
+  onSubmit() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    this.loading.set(true);
-    this.errorMessage.set('');
+    this.isLoading = true;
+    this.errorMessage = '';
 
-    const { fullName, email, password, role } = this.registerForm.value;
-    
-    this.authService.register({
-      fullName,
-      email,
-      password,
-      role: Number(role) as UserRole
-    }).subscribe({
-      next: (response) => {
-        this.loading.set(false);
-        const user = response.data.user;
-        
-        // Navigation Matrix Routing based on Role
-        if (user.role === 1) {
-          this.router.navigate(['/specialist']);
-        } else if (user.role === 2) {
-          this.router.navigate(['/admin']);
+    const formValue = this.registerForm.value;
+    const req: RegisterRequest = {
+      ...formValue,
+      name: `${formValue.firstName} ${formValue.lastName}`,
+      preferredLanguage: 'ar'
+    } as RegisterRequest;
+    console.log('[Register] Sending request:', req);
+
+    this.authService.register(req).subscribe({
+      next: (res) => {
+        console.log('[Register] Response:', res);
+        if (res.success) {
+          this.router.navigate(['/auth/check-email'], { queryParams: { email: req.email } });
         } else {
-          this.router.navigate(['/user']);
+          this.errorMessage = res.message || 'Registration failed.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
         }
       },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorMessage.set(
-          err.error?.message || 'An error occurred while creating your account. Please try again.'
-        );
-      },
+      error: (err: any) => {
+        console.error('[Register] Error:', err);
+        if (err.status === 0) {
+          this.errorMessage = 'Cannot connect to the server. Please make sure the backend is running.';
+        } else if (err.status === 409) {
+          this.errorMessage = err.title || 'Email already exists.';
+        } else if (err.status === 400) {
+          const validationErrors = err.errors;
+          if (validationErrors) {
+            this.errorMessage = Object.values(validationErrors).flat().join(', ');
+          } else {
+            this.errorMessage = err.title || 'Validation error.';
+          }
+        } else {
+          this.errorMessage = err.title || `Server error (${err.status})`;
+        }
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 }

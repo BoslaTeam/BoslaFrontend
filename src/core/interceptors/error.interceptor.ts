@@ -16,7 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const apiError = normalizeError(error);
 
-      if (error.status === 403) {
+      if (error.status === 403 && !req.url.includes('/auth/')) {
         router.navigateByUrl(AUTH_CONFIG.unauthorizedRoute);
       } else if (!SILENT_STATUSES.includes(error.status)) {
         // Hook point: ToastService.error(apiError.title) once shared/ui/toast is implemented.
@@ -34,7 +34,7 @@ function normalizeError(error: HttpErrorResponse): ApiError {
   return {
     type: body?.type,
     title: body?.title ?? 'حدث خطأ غير متوقع',
-    status: error.status || 500,
+    status: error.status ?? 500,
     detail: body?.detail,
     instance: body?.instance,
     errors: body?.errors,

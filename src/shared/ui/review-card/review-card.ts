@@ -1,0 +1,26 @@
+import { Component, input, computed } from '@angular/core';
+
+export interface ReviewItem {
+  id: string | number;
+  authorName: string;
+  avatarUrl?: string;
+  timeAgo: string;
+  rating: number;
+  comment: string;
+  isVerified?: boolean;
+}
+
+@Component({
+  selector: 'ui-review-card',
+  standalone: true,
+  imports: [],
+  templateUrl: './review-card.html',
+})
+export class UiReviewCard {
+  readonly review = input.required<ReviewItem>();
+
+  readonly stars = computed(() => {
+    const count = Math.min(5, Math.max(1, this.review().rating));
+    return Array(count).fill(0);
+  });
+}

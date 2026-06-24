@@ -11,13 +11,13 @@ export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputComponent),
+      useExisting: forwardRef(() => UiInput),
       multi: true,
     },
   ],
   styleUrl: './input.css',
 })
-export class InputComponent implements ControlValueAccessor {
+export class UiInput implements ControlValueAccessor {
 
   readonly label = input<string>('');
   readonly type = input<InputType>('text');
@@ -30,8 +30,8 @@ export class InputComponent implements ControlValueAccessor {
   readonly value = signal('');
   readonly disabled = signal(false);
 
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => { };
+  private onTouched: () => void = () => { };
 
   writeValue(value: string): void {
     this.value.set(value ?? '');
@@ -58,5 +58,4 @@ export class InputComponent implements ControlValueAccessor {
   onBlur(): void {
     this.onTouched();
   }
-  
 }

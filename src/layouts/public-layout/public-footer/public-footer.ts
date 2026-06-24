@@ -2,11 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-public-footer',
-  standalone: true,
   imports: [],
   templateUrl: './public-footer.html',
-  styleUrl: './public-footer.css',
+  styles: ``,
 })
-export class PublicFooter {
-  readonly year = new Date().getFullYear();
-}
+export class PublicFooter {}

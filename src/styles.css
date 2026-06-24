@@ -1,3 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
 
-@import 'tailwindcss';
+@source "./app";
+@source "./features";
+@source "./layouts";
+@source "./shared";
+
+@theme {
+  --color-bosla-offwhite: #F7F9FA;
+  --color-bosla-charcoal: #2C3E50;
+  --color-bosla-blue: #2E86AB;
+  --color-bosla-orange: #F39C12;
+  --color-bosla-primary: #1B4F72;
+  --color-bosla-success: #16a34a;
+  --color-bosla-error: #ba1a1a;
+
+  --font-sans: 'Cairo', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bosla-offwhite text-bosla-charcoal font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-bold text-bosla-primary;
+  }
+}

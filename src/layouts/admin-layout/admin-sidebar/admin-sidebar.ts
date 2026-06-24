@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-admin-sidebar',
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [],
   templateUrl: './admin-sidebar.html',
-  styleUrl: './admin-sidebar.css',
+  styles: ``,
 })
-export class AdminSidebar { }
+export class AdminSidebar {}

@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "3d08de86-ac83-496f-86ae-50ae725727dc"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -54,6 +55,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "headers": {
+              "Cross-Origin-Opener-Policy": "unsafe-none",
+              "Cross-Origin-Embedder-Policy": "unsafe-none"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "BoslaFrontend:build:production"
