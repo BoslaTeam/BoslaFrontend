@@ -6,7 +6,8 @@ import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-forgot-password',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './forgot-password.html'
+  templateUrl: './forgot-password.html',
+  styleUrl: '../../auth.css'
 })
 export class ForgotPassword {
   private fb = inject(FormBuilder);

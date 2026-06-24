@@ -1,212 +1,177 @@
-<div class="flex min-h-full flex-col justify-center pt-28 pb-12 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
-    <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-burgundy to-burgundy-dark flex items-center justify-center shadow-lg shadow-burgundy/30 mb-6">
-      <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0-15.357-5.36l-3.447 1.96A11.037 11.037 0 0 1 14.6 3.63a11.052 11.052 0 0 1 7.84 8.61 11.037 11.037 0 0 1-3.447 5.36L18 18.72z" />
-      </svg>
-    </div>
-    <h2 class="text-3xl font-black tracking-tight text-white">إنشاء حساب</h2>
-    <p class="mt-2 text-sm text-white/60">
-      لديك حساب بالفعل؟
-      <a routerLink="/auth/login" class="font-semibold text-gold hover:text-white transition-colors ms-1">تسجيل الدخول</a>
-    </p>
-  </div>
+<div class="bosla-auth-page">
+  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;" class="bosla-auth-video">
+    <source src="assets/videos/login.mp4" type="video/mp4">
+  </video>
+  <div class="bosla-auth-overlay"></div>
+  
+  <div class="bosla-auth-content w-full px-4">
+    <div class="bosla-auth-form-wrapper" style="max-width: 560px;">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="bosla-auth-icon-wrap">
+          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black text-bosla-primary mt-4 mb-1">إنشاء حساب جديد</h2>
+        <p class="text-sm text-bosla-charcoal/50">
+          لديك حساب بالفعل؟
+          <a routerLink="/auth/login" class="font-bold ms-1" style="color: #F39C12;">تسجيل الدخول</a>
+        </p>
+      </div>
 
-  <!-- Card -->
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="relative rounded-3xl p-[1px] bg-gradient-to-b from-white/20 to-white/5 shadow-2xl shadow-black/20">
-      <div class="rounded-3xl bg-white/[0.07] backdrop-blur-2xl py-10 px-8 border border-white/10">
-        <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          <!-- Error Message -->
-          @if (errorMessage) {
-            <div class="rounded-2xl bg-red-500/10 p-4 border border-red-500/20 flex items-start gap-3">
-              <svg class="h-5 w-5 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <span class="text-sm text-red-300">{{ errorMessage }}</span>
-            </div>
-          }
+      <!-- Error -->
+      @if (errorMessage) {
+        <div class="bosla-alert-error mb-5">
+          <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+          <span class="text-sm">{{ errorMessage }}</span>
+        </div>
+      }
 
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <!-- First Name -->
-            <div>
-              <label for="firstName" class="block text-sm font-semibold text-white/80 mb-2">الاسم الأول</label>
-              <div class="relative group">
-                <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A7.5 7.5 0 0014.5 20.118z" />
-                  </svg>
-                </div>
-                <input id="firstName" type="text" formControlName="firstName" placeholder="أحمد"
-                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
-              </div>
-              @if ((registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty) && registerForm.get('firstName')?.invalid) {
-                <div class="mt-1.5 text-sm text-red-400 ps-2">
-                  @if (registerForm.get('firstName')?.hasError('required')) {
-                    <span>الاسم الأول مطلوب.</span>
-                  }
-                </div>
-              }
-            </div>
+      <!-- Single Form: role selection + all fields -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
 
-            <!-- Last Name -->
-            <div>
-              <label for="lastName" class="block text-sm font-semibold text-white/80 mb-2">الاسم الأخير</label>
-              <div class="relative group">
-                <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A7.5 7.5 0 0014.5 20.118z" />
-                  </svg>
-                </div>
-                <input id="lastName" type="text" formControlName="lastName" placeholder="محمد"
-                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
-              </div>
-              @if ((registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty) && registerForm.get('lastName')?.invalid) {
-                <div class="mt-1.5 text-sm text-red-400 ps-2">
-                  @if (registerForm.get('lastName')?.hasError('required')) {
-                    <span>الاسم الأخير مطلوب.</span>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Email -->
-          <div>
-            <label for="email" class="block text-sm font-semibold text-white/80 mb-2">البريد الإلكتروني</label>
-            <div class="relative group">
-              <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        <!-- Account Type -->
+        <div class="mb-2">
+          <label class="bosla-label mb-3">أنا...</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="bosla-role-card" [class.bosla-role-card-active]="registerForm.get('role')?.value === 'user'">
+              <input type="radio" formControlName="role" value="user" class="sr-only">
+              <div class="bosla-role-icon" style="background: rgba(27,79,114,0.1);">
+                <svg class="w-6 h-6" style="color: #1B4F72;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
                 </svg>
               </div>
-                <input id="email" type="email" formControlName="email" placeholder="you@example.com"
-                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
-            </div>
-            @if ((registerForm.get('email')?.touched || registerForm.get('email')?.dirty) && registerForm.get('email')?.invalid) {
-              <div class="mt-1.5 text-sm text-red-400 ps-2">
-                @if (registerForm.get('email')?.hasError('required')) {
-                  <span>البريد الإلكتروني مطلوب.</span>
-                }
-                @if (registerForm.get('email')?.hasError('email')) {
-                  <span>يرجى إدخال بريد إلكتروني صحيح.</span>
-                }
-              </div>
-            }
-          </div>
+              <div class="bosla-role-title">عميل</div>
+              <div class="bosla-role-desc">أبحث عن استشارة</div>
+              @if (registerForm.get('role')?.value === 'user') {
+                <div class="bosla-role-check">
+                  <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+              }
+            </label>
 
-          <!-- Password -->
-          <div>
-            <label for="password" class="block text-sm font-semibold text-white/80 mb-2">كلمة المرور</label>
-            <div class="relative group">
-              <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            <label class="bosla-role-card" [class.bosla-role-card-active]="registerForm.get('role')?.value === 'specialist'">
+              <input type="radio" formControlName="role" value="specialist" class="sr-only">
+              <div class="bosla-role-icon" style="background: rgba(243,156,18,0.1);">
+                <svg class="w-6 h-6" style="color: #F39C12;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
                 </svg>
               </div>
-                <input id="password" type="password" formControlName="password" placeholder="أدخل كلمة مرور قوية"
-                class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
-            </div>
-            @if ((registerForm.get('password')?.touched || registerForm.get('password')?.dirty) && registerForm.get('password')?.invalid) {
-              <div class="mt-1.5 text-sm text-red-400 ps-2">
-                @if (registerForm.get('password')?.hasError('required')) {
-                  <span>كلمة المرور مطلوبة.</span>
-                }
-                @if (registerForm.get('password')?.hasError('pattern')) {
-                  <span>يجب أن تحتوي على 8 أحرف، حرف كبير، حرف صغير ورقم.</span>
-                }
-              </div>
-            }
-          </div>
-
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-            <div>
-              <label for="phoneNumber" class="block text-sm font-semibold text-white/80 mb-2">رقم الهاتف</label>
-              <div class="relative group">
-                <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0-1.036.84-1.875 1.875-1.875h15.75c1.035 0 1.875.84 1.875 1.875v10.5c0 1.035-.84 1.875-1.875 1.875H4.125c-1.036 0-1.875-.84-1.875-1.875V6.75z" />
-                  </svg>
-                </div>
-                <input id="phoneNumber" type="text" formControlName="phoneNumber" placeholder="+1234567890"
-                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200">
-              </div>
-              @if ((registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty) && registerForm.get('phoneNumber')?.invalid) {
-                <div class="mt-1.5 text-sm text-red-400 ps-2">
-                  @if (registerForm.get('phoneNumber')?.hasError('required')) {
-                    <span>رقم الهاتف مطلوب.</span>
-                  }
+              <div class="bosla-role-title">متخصص</div>
+              <div class="bosla-role-desc">أقدّم استشارات</div>
+              @if (registerForm.get('role')?.value === 'specialist') {
+                <div class="bosla-role-check" style="background: #F39C12;">
+                  <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 </div>
               }
-            </div>
-
-            <div>
-              <label for="country" class="block text-sm font-semibold text-white/80 mb-2">الدولة</label>
-              <div class="relative group">
-                <div class="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-white/30 group-focus-within:text-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm13.5-6.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm-13.5 0a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm13.5 6.75a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0zm-13.5 0a3.375 3.375 0 01-6.75 0 .75.75 0 01-1.5 0 .75.75 0 01 1.5 0z" />
-                  </svg>
-                </div>
-                <select id="country" formControlName="country"
-                  class="block w-full rounded-2xl bg-white/[0.06] border border-white/10 py-3.5 ps-12 pe-4 text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold/50 sm:text-sm transition-all duration-200 appearance-none">
-                  <option value="Egypt" class="bg-charcoal text-white">مصر</option>
-                  <option value="Saudi Arabia" class="bg-charcoal text-white">السعودية</option>
-                  <option value="UAE" class="bg-charcoal text-white">الإمارات</option>
-                </select>
-                <div class="absolute inset-y-0 end-0 pe-4 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </div>
-              </div>
-              @if ((registerForm.get('country')?.touched || registerForm.get('country')?.dirty) && registerForm.get('country')?.invalid) {
-                <div class="mt-1.5 text-sm text-red-400 ps-2">
-                  @if (registerForm.get('country')?.hasError('required')) {
-                    <span>الدولة مطلوبة.</span>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <button type="submit" [disabled]="isLoading"
-            class="relative w-full rounded-2xl bg-gradient-to-r from-burgundy to-burgundy-dark py-3.5 text-sm font-bold text-white shadow-lg shadow-burgundy/25 hover:shadow-xl hover:shadow-burgundy/30 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:hover:shadow-lg overflow-hidden mt-2">
-            <span class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700"></span>
-            <span class="relative flex items-center justify-center gap-2">
-              @if (isLoading) {
-                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                جاري إنشاء الحساب...
-              } @else {
-                إنشاء حساب
-              }
-            </span>
-          </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="relative mt-8 mb-6">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-white/10"></div>
-          </div>
-          <div class="relative flex justify-center text-xs uppercase tracking-widest">
-            <span class="px-3 text-white/30">أو</span>
+            </label>
           </div>
         </div>
 
-        <!-- Back to login -->
-        <a routerLink="/auth/login" class="flex items-center justify-center gap-2 w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3.5 text-sm font-semibold text-white/80 hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all duration-200">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
-          العودة لتسجيل الدخول
-        </a>
-      </div>
+        <!-- Name Row -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="firstName" class="bosla-label">الاسم الأول</label>
+            <input id="firstName" type="text" formControlName="firstName" placeholder="أحمد" class="bosla-input">
+            @if ((registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty) && registerForm.get('firstName')?.invalid) {
+              <p class="bosla-field-error">الاسم الأول مطلوب.</p>
+            }
+          </div>
+          <div>
+            <label for="lastName" class="bosla-label">الاسم الأخير</label>
+            <input id="lastName" type="text" formControlName="lastName" placeholder="محمد" class="bosla-input">
+            @if ((registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty) && registerForm.get('lastName')?.invalid) {
+              <p class="bosla-field-error">الاسم الأخير مطلوب.</p>
+            }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="regEmail" class="bosla-label">البريد الإلكتروني</label>
+          <div class="relative">
+            <div class="bosla-input-icon">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+              </svg>
+            </div>
+            <input id="regEmail" type="email" formControlName="email" placeholder="you@example.com" class="bosla-input">
+          </div>
+          @if ((registerForm.get('email')?.touched || registerForm.get('email')?.dirty) && registerForm.get('email')?.invalid) {
+            <p class="bosla-field-error">
+              @if (registerForm.get('email')?.hasError('required')) { البريد الإلكتروني مطلوب. }
+              @if (registerForm.get('email')?.hasError('email')) { يرجى إدخال بريد إلكتروني صحيح. }
+            </p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="regPassword" class="bosla-label">كلمة المرور</label>
+          <div class="relative">
+            <div class="bosla-input-icon">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+              </svg>
+            </div>
+            <input id="regPassword" type="password" formControlName="password" placeholder="8 أحرف على الأقل" class="bosla-input">
+          </div>
+          @if ((registerForm.get('password')?.touched || registerForm.get('password')?.dirty) && registerForm.get('password')?.invalid) {
+            <p class="bosla-field-error">
+              @if (registerForm.get('password')?.hasError('required')) { كلمة المرور مطلوبة. }
+              @if (registerForm.get('password')?.hasError('pattern')) { يجب 8 أحرف على الأقل، حرف كبير، حرف صغير، ورقم. }
+            </p>
+          }
+        </div>
+
+        <!-- Phone & Country -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="phone" class="bosla-label">رقم الهاتف</label>
+            <div class="relative">
+              <div class="bosla-input-icon">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                </svg>
+              </div>
+              <input id="phone" type="tel" formControlName="phoneNumber" placeholder="+201234567890" class="bosla-input">
+            </div>
+            @if ((registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty) && registerForm.get('phoneNumber')?.invalid) {
+              <p class="bosla-field-error">رقم الهاتف مطلوب.</p>
+            }
+          </div>
+          <div>
+            <label for="country" class="bosla-label">الدولة</label>
+            <div class="relative">
+              <div class="bosla-input-icon">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
+                </svg>
+              </div>
+              <input id="country" type="text" formControlName="country" placeholder="مصر" class="bosla-input">
+            </div>
+            @if ((registerForm.get('country')?.touched || registerForm.get('country')?.dirty) && registerForm.get('country')?.invalid) {
+              <p class="bosla-field-error">الدولة مطلوبة.</p>
+            }
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" [disabled]="isLoading" class="bosla-btn-primary mt-2">
+          @if (isLoading) {
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            جاري إنشاء الحساب...
+          } @else {
+            إنشاء الحساب
+          }
+        </button>
+      </form>
     </div>
   </div>
 </div>

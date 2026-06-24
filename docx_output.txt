@@ -1,0 +1,255 @@
+BOSLA
+
+بوصلة
+
+BRAND GUIDELINES
+
+Version 1.0  ·  June 2026
+
+Your Compass to the Right Expert.
+
+1. Brand Concept
+
+Bosla (بوصلة — “compass”) is a multi-domain consultation platform connecting individuals and businesses with verified specialists — through booking, video, chat, and reviews.
+
+The core positioning is not “a platform for consultations.” That is table stakes — every competitor in this category says the same thing. The brand is built on what the name already promises: direction. A compass doesn’t just connect two points — it tells you which way to go when you don’t know the way yourself. That is the actual emotional job Bosla does: the user arrives unsure who to trust or where to start, and leaves pointed at the right specialist.
+
+“Your Compass to the Right Expert.”
+
+Core idea: Connecting people with the right expertise at the right time.
+
+Why this framing
+
+“Professional / modern / reliable” is the minimum bar for any consultation marketplace — it does not differentiate Bosla from Calendly-style booking tools or generic coaching directories.
+
+“Compass” as a metaphor carries precision, direction, and trust simultaneously — a compass is only valuable if it’s accurate. This maps directly onto the product’s real value: not just access to experts, but the right expert for this specific problem.
+
+This also gives the brand a future-proof narrative: today, direction is delivered through good UX and verified profiles; tomorrow, through AI-powered matching that finds the “true north” specialist automatically. The story doesn’t need to change — only the mechanism.
+
+2. Brand Pillars
+
+Four pillars, ranked by current priority. Note: “Innovation” and “Simplicity” (from the original values) can conflict if not sequenced — promising AI-level innovation before the product delivers it undermines the Trust pillar. For V1 (pre-AI), Simplicity and Verified Trust take priority; Innovation is framed as roadmap, not current-state promise.
+
+Pillar
+
+Meaning
+
+How it shows up in product
+
+True Direction
+
+Pointing the user at the right expert, not just any expert.
+
+Sharp filtering, clear specialist profiles, AI matching (future).
+
+Frictionless Access
+
+Consultation happens in minutes, not days.
+
+Fast booking flow, minimal steps, no bureaucracy.
+
+Verified Trust
+
+Every specialist is actually vetted.
+
+Visible verification badges, real reviews, credential transparency.
+
+Human-Centered Growth
+
+Real growth for both client and expert.
+
+Warm, human tone — never corporate-cold.
+
+3. Audience, Values & Personality
+
+Target Audience
+
+Individuals seeking professional advice and mentoring.
+
+Specialists, consultants, coaches, and experts offering services online.
+
+Businesses and startups requiring consultation services.
+
+Brand Values
+
+Trust
+
+Accessibility
+
+Growth
+
+Simplicity
+
+Innovation
+
+Brand Personality
+
+Professional
+
+Modern
+
+Reliable
+
+Human-Centered
+
+Empowering
+
+Innovative
+
+Future Vision
+
+An AI-powered platform that intelligently matches users with the most relevant specialists, providing a seamless digital consultation experience end-to-end.
+
+4. Color Palette
+
+Strategy: blue carries trust, stability, and direction — it’s the color of sky, sea, and navigation, which reinforces the compass metaphor visually. Orange carries warmth and action, preventing the palette from reading as cold/corporate. This blue+orange pairing is a proven pattern in booking and professional-services products for the same reason.
+
+Primary
+
+Swatch
+
+Name / Hex
+
+Usage
+
+Deep Trust Blue
+
+#1B4F72
+
+Logo, primary headers, main navigation, primary buttons (non-CTA).
+
+Compass Blue
+
+#2E86AB
+
+Links, secondary buttons, interactive UI elements, icons.
+
+Accent
+
+Swatch
+
+Name / Hex
+
+Usage
+
+True North Orange
+
+#F39C12
+
+Primary CTA (“Book Now”), notifications, highlights, key moments of action.
+
+Neutral
+
+Swatch
+
+Name / Hex
+
+Usage
+
+Charcoal
+
+#2C3E50
+
+Body text, primary readable content.
+
+Off-White
+
+#F7F9FA
+
+Page and app backgrounds.
+
+Grey
+
+#95A5A6
+
+Borders, disabled states, secondary/muted text.
+
+Usage rule: orange is reserved for action and key moments only. If everything is orange, nothing reads as urgent — it must stay rare to stay effective.
+
+5. Typography
+
+Arabic
+
+Primary: Cairo — modern, geometric, light enough for UI at small sizes. Use for headings and UI.
+
+Alternative: IBM Plex Sans Arabic — slightly more neutral/technical; good for dense text (specialist bios, articles).
+
+Latin / English
+
+Primary: Inter — designed specifically for screens, excellent legibility at UI sizes.
+
+Alternative: IBM Plex Sans — pairs well with IBM Plex Sans Arabic if full bilingual consistency is needed.
+
+Avoid
+
+Tahoma, Arial (Arabic fallback), Droid Arabic Kufi, or any decorative/calligraphic Arabic typeface — these read as traditional/governmental, which contradicts “Modern” and “Innovative.”
+
+Type Scale (reference)
+
+H1 / Page titles: 32–40px, Bold
+
+H2 / Section titles: 24–28px, Semibold
+
+Body: 16px, Regular
+
+Caption / Meta: 13–14px, Regular, Grey (#95A5A6)
+
+6. Voice & Tone
+
+Voice (constant)
+
+Clear and direct — never bureaucratic-formal.
+
+Confident without being salesy or exaggerated.
+
+Human — speaks with people, not at an audience.
+
+Tone (context-dependent)
+
+Context
+
+Tone
+
+Onboarding / Marketing
+
+Energetic, moderately inspiring — “start your journey,” growth-forward.
+
+Booking flow / Transactional
+
+Direct and practical — zero fluff, every word earns its place.
+
+Specialist communication
+
+Professional — respects the expert’s time and expertise.
+
+Error states / Support
+
+Empathetic and solution-first — not over-apologetic.
+
+Examples
+
+Arabic
+
+✗  نحن في بصلة نسعى جاهدين لتقديم أفضل خدمة استشارية لكم
+
+✓  احجز استشارتك مع الخبير المناسب في دقايق
+
+English
+
+✗  Empowering your journey towards professional excellence.
+
+✓  Find the right expert. Book in minutes.
+
+7. Logo Direction
+
+“Bosla” (بوصلة) means compass. The wordmark and icon should lean into this literally and avoid generic “tech platform” shapes (abstract blobs, speech bubbles, generic checkmarks) that say nothing about what the brand stands for.
+
+Recommended direction
+
+Compass needle / cardinal point as the icon — simplified to a single clean mark, not a literal illustrated compass face (avoid looking dated or like a travel-app icon).
+
+The needle can double as a subtle “P” or arrow form to stay modern and abstract rather than literal-skeuomorphic.
+
+Avoid rounded/organic blob shapes for the icon — they undercut the precision and direction the name promises.
+
+Orange (#F39C12) works well as the needle tip / pointer color against a deep blue (#1B4F72) body — reinforcing “this points you somewhere specific,” not just “this is a nice rounded logo.”
