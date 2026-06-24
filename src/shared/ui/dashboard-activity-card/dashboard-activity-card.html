@@ -1,0 +1,49 @@
+<!-- تم تغيير الـ h-full والـ min-h إلى h-40 الثابت ليتطابق مع بقية كروت لوحة التحكم -->
+<div class="bg-white border border-bosla-charcoal/10 rounded-xl p-5 flex flex-col h-40 transition-all duration-200 hover:shadow-sm"
+    dir="rtl">
+
+    <div class="text-right mb-3">
+        <h4 class="text-xs font-sans text-bosla-charcoal/60 font-medium select-none">
+            {{ title() }}
+        </h4>
+    </div>
+
+    <!-- تم تعديل الـ max-h إلى max-[96px] (أي ما يعادل h-24) لتناسب حجم الكارت الصغير وتفعل التمرير مباشرة عند زيادة العناصر -->
+    <div class="flex flex-col relative flex-1 max-h-24 overflow-y-auto custom-scrollbar px-1">
+
+        @for (activity of activities(); track activity.id; let last = $last) {
+        <div class="flex items-start gap-4 relative pb-4 last:pb-1">
+
+            @if (!last) {
+            <!-- تم تعديل حساب الارتفاع العمودي للخط ليناسب المساحة المضغوطة الجديدة -->
+            <div class="absolute right-4.75 top-10 w-0.5 h-[calc(100%-20px)] bg-bosla-charcoal/10 z-0"></div>
+            }
+
+            <div
+                class="w-10 h-10 bg-bosla-primary/10 rounded-lg flex items-center justify-center text-bosla-primary text-base shrink-0 z-10 relative">
+                <i [class]="activity.icon" [class.text-bosla-orange]="activity.iconColorClass === 'orange'"></i>
+            </div>
+
+            <div class="flex flex-col flex-1 text-right pt-0.5">
+                <p class="text-[13px] font-sans text-bosla-charcoal leading-snug">
+                    {{ activity.title }}
+                    @if (activity.highlightedText) {
+                    <span class="font-bold text-bosla-primary">{{ activity.highlightedText }}</span>
+                    }
+                </p>
+                <span class="text-[11px] font-sans text-bosla-charcoal/40 mt-0.5">
+                    {{ activity.time }}
+                </span>
+            </div>
+
+        </div>
+        } @empty {
+        <div
+            class="flex flex-col items-center justify-center flex-1 text-center py-2 text-bosla-charcoal/40 font-sans text-xs">
+            <i class="fa-solid fa-clock-rotate-left text-base mb-1 opacity-50"></i>
+            <span>لا توجد أنشطة</span>
+        </div>
+        }
+
+    </div>
+</div>

@@ -1,0 +1,16 @@
+/* ربط ألوان الـ tokens الخاصة بالتصميم المرفق */
+.bg-bosla-blue {
+  background-color: #1B4F72; /* Deep Trust Blue */
+}
+
+.text-bosla-charcoal\/70 {
+  color: rgba(44, 62, 80, 0.7); /* Charcoal */
+}
+
+.hover\:text-bosla-blue:hover {
+  color: #1B4F72;
+}
+
+.hover\:border-bosla-blue:hover {
+  border-color: #2E86AB; /* Compass Blue كلون تفاعلي ناعم عند الـ Hover */
+}
