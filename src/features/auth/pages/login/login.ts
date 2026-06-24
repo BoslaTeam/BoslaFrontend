@@ -9,7 +9,8 @@ declare var google: any;
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './login.html'
+  templateUrl: './login.html',
+  styleUrl: '../../auth.css'
 })
 export class Login implements AfterViewInit {
   private fb = inject(FormBuilder);

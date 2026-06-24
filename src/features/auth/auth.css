@@ -1,0 +1,265 @@
+/* ── Auth Layout ── */
+.bosla-auth-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  direction: rtl;
+  padding: 7rem 1rem 3rem 1rem; /* 7rem top padding prevents hiding under fixed header */
+  overflow: hidden;
+}
+
+.bosla-auth-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bosla-auth-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(27,79,114,0.85) 0%, rgba(46,134,171,0.6) 100%);
+}
+
+.bosla-auth-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.bosla-auth-form-wrapper {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.bosla-auth-icon-wrap {
+  width: 4rem; height: 4rem;
+  border-radius: 1rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1B4F72, #2E86AB);
+  box-shadow: 0 8px 25px rgba(27,79,114,0.3);
+}
+
+/* ── Badge ── */
+.bosla-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #F39C12;
+  background: rgba(243,156,18,0.15);
+  border: 1px solid rgba(243,156,18,0.25);
+}
+
+/* ── Form Elements ── */
+.bosla-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2C3E50;
+}
+
+.bosla-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(27,79,114,0.15);
+  padding-block: 0.75rem;
+  padding-inline-start: 2.75rem;
+  padding-inline-end: 1rem;
+  font-size: 0.875rem;
+  background: #F7F9FA;
+  color: #2C3E50;
+  outline: none;
+  transition: all 0.2s;
+}
+.bosla-input::placeholder { color: #95A5A6; }
+.bosla-input:focus {
+  border-color: #2E86AB;
+  box-shadow: 0 0 0 3px rgba(46,134,171,0.12);
+  background: #fff;
+}
+
+.bosla-input-icon {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  padding-inline-start: 0.875rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  color: #95A5A6;
+}
+
+.bosla-field-error {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  padding-inline-start: 0.25rem;
+  color: #ba1a1a;
+}
+
+/* ── Buttons ── */
+.bosla-btn-primary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: linear-gradient(135deg, #1B4F72, #2E86AB);
+  box-shadow: 0 4px 15px rgba(27,79,114,0.3);
+  text-decoration: none;
+}
+.bosla-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(27,79,114,0.4);
+}
+.bosla-btn-primary:active { transform: scale(0.98); }
+.bosla-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.bosla-btn-secondary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(27,79,114,0.15);
+  padding: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2C3E50;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.bosla-btn-secondary:hover {
+  background: rgba(27,79,114,0.05);
+  border-color: rgba(27,79,114,0.3);
+}
+
+/* ── Alerts ── */
+.bosla-alert-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(186,26,26,0.06);
+  border: 1px solid rgba(186,26,26,0.2);
+  color: #ba1a1a;
+}
+.bosla-alert-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(22,163,74,0.06);
+  border: 1px solid rgba(22,163,74,0.2);
+  color: #15803d;
+}
+
+/* ── Divider ── */
+.bosla-divider {
+  position: relative;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+}
+.bosla-divider::before,
+.bosla-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid rgba(27,79,114,0.1);
+}
+.bosla-divider span {
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #95A5A6;
+}
+
+/* ── Role Cards (Register) ── */
+.bosla-role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(27,79,114,0.12);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  background: #F7F9FA;
+}
+.bosla-role-card:hover {
+  border-color: rgba(27,79,114,0.3);
+  background: #fff;
+}
+.bosla-role-card-active {
+  border-color: #1B4F72 !important;
+  background: rgba(27,79,114,0.04) !important;
+  box-shadow: 0 0 0 4px rgba(27,79,114,0.08);
+}
+.bosla-role-icon {
+  width: 3rem; height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bosla-role-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1B4F72;
+}
+.bosla-role-desc {
+  font-size: 0.75rem;
+  color: #95A5A6;
+}
+.bosla-role-check {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-end: 0.5rem;
+  width: 1.25rem; height: 1.25rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1B4F72;
+}

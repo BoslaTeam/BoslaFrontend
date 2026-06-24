@@ -5,7 +5,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-verify-email',
   imports: [RouterLink],
-  templateUrl: './verify-email.html'
+  templateUrl: './verify-email.html',
+  styleUrl: '../../auth.css'
 })
 export class VerifyEmail implements OnInit {
   private route = inject(ActivatedRoute);

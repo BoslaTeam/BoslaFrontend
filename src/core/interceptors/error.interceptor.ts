@@ -34,7 +34,7 @@ function normalizeError(error: HttpErrorResponse): ApiError {
   return {
     type: body?.type,
     title: body?.title ?? 'حدث خطأ غير متوقع',
-    status: error.status || 500,
+    status: error.status ?? 500,
     detail: body?.detail,
     instance: body?.instance,
     errors: body?.errors,

@@ -6,7 +6,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-reset-password',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './reset-password.html'
+  templateUrl: './reset-password.html',
+  styleUrl: '../../auth.css'
 })
 export class ResetPassword implements OnInit {
   private fb = inject(FormBuilder);

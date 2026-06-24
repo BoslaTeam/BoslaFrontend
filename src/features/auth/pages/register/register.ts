@@ -7,7 +7,8 @@ import { RegisterRequest } from '../../contracts/auth.contracts';
 @Component({
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './register.html'
+  templateUrl: './register.html',
+  styleUrl: '../../auth.css'
 })
 export class Register {
   private fb = inject(FormBuilder);

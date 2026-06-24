@@ -1,18 +1,41 @@
-<div class="flex min-h-full flex-col justify-center pt-28 pb-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white/80 backdrop-blur-xl py-12 px-8 shadow-2xl shadow-terracotta/5 sm:rounded-3xl border border-white/50 text-center">
-      <div class="w-16 h-16 mx-auto bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+<div class="bosla-auth-page">
+  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;" class="bosla-auth-video">
+    <source src="assets/videos/login.mp4" type="video/mp4">
+  </video>
+  <div class="bosla-auth-overlay"></div>
+  
+  <div class="bosla-auth-content w-full px-4">
+    <div class="bosla-auth-form-wrapper">
+      <div class="text-center mb-8">
+        <div class="bosla-auth-icon-wrap">
+          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black text-bosla-primary mt-4 mb-2">تأكيد البريد الإلكتروني</h2>
       </div>
 
-      <h2 class="text-2xl font-black text-charcoal mb-2">تحقق من بريدك الإلكتروني</h2>
-      <p class="text-sm text-charcoal/70 mb-8">
-        لقد أرسلنا رابط تفعيل إلى <span class="font-semibold text-charcoal">{{ email }}</span>. يرجى التحقق من صندوق الوارد والضغط على الرابط لتفعيل حسابك.
-      </p>
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background: rgba(46,134,171,0.1);">
+          <svg class="w-8 h-8" style="color: #2E86AB;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-bosla-primary mb-2">تفقد صندوق الوارد</h3>
+        <p class="text-sm text-bosla-charcoal/70 leading-relaxed">
+          لقد أرسلنا رابط تفعيل الحساب إلى:<br>
+          <span class="font-bold text-bosla-primary" dir="ltr">{{ email }}</span>
+        </p>
+      </div>
 
-      <a routerLink="/auth/login" class="inline-block w-full rounded-xl bg-charcoal px-3 py-3 text-sm font-semibold text-white shadow-md hover:bg-charcoal/90 transition-all">
-        العودة لتسجيل الدخول
-      </a>
+      <div class="space-y-4">
+        <button class="bosla-btn-primary">
+          إعادة إرسال الرابط
+        </button>
+        <a routerLink="/auth/login" class="bosla-btn-secondary">
+          العودة لتسجيل الدخول
+        </a>
+      </div>
     </div>
   </div>
 </div>

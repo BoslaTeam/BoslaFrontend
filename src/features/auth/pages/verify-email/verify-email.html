@@ -1,28 +1,53 @@
-<div class="flex min-h-full flex-col justify-center pt-28 pb-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white/80 backdrop-blur-xl py-12 px-4 shadow-2xl shadow-terracotta/5 sm:rounded-3xl sm:px-10 border border-white/50 text-center">
-      @if (isVerifying) {
-        <svg class="animate-spin mx-auto h-12 w-12 text-terracotta mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      } @else if (isSuccess) {
-        <div class="w-16 h-16 mx-auto bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+<div class="bosla-auth-page">
+  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;" class="bosla-auth-video">
+    <source src="assets/videos/login.mp4" type="video/mp4">
+  </video>
+  <div class="bosla-auth-overlay"></div>
+  
+  <div class="bosla-auth-content w-full px-4">
+    <div class="bosla-auth-form-wrapper">
+      <div class="text-center mb-8">
+        <div class="bosla-auth-icon-wrap">
+          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
         </div>
-      } @else {
-        <div class="w-16 h-16 mx-auto bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </div>
-      }
+        <h2 class="text-2xl font-black text-bosla-primary mt-4 mb-2">تأكيد الحساب</h2>
+      </div>
 
-      <h2 class="text-2xl font-black text-charcoal mb-2">{{ isVerifying ? 'جاري التحقق...' : (isSuccess ? 'تم بنجاح!' : 'عذراً!') }}</h2>
-      <p class="text-sm text-charcoal/70 mb-8">{{ message }}</p>
+      <div class="text-center mb-8">
+        @if (isVerifying) {
+          <div class="flex flex-col items-center justify-center py-4">
+            <svg class="animate-spin h-10 w-10 text-bosla-blue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-bosla-primary font-bold">{{ message }}</p>
+          </div>
+        } @else {
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" 
+               [style.background]="isSuccess ? 'rgba(22,163,74,0.1)' : 'rgba(186,26,26,0.1)'">
+            <svg class="w-8 h-8" [style.color]="isSuccess ? '#16a34a' : '#ba1a1a'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              @if (isSuccess) {
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+              } @else {
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              }
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold mb-2" [class.text-bosla-success]="isSuccess" [class.text-bosla-error]="!isSuccess">
+            {{ isSuccess ? 'تم التأكيد بنجاح!' : 'فشل التأكيد' }}
+          </h3>
+          <p class="text-sm text-bosla-charcoal/70 leading-relaxed">{{ message }}</p>
+        }
+      </div>
 
       @if (!isVerifying) {
-        <a routerLink="/auth/login" class="inline-block w-full rounded-xl bg-terracotta px-3 py-3 text-sm font-semibold text-white shadow-md hover:bg-terracotta-dark transition-all">
-          المتابعة لتسجيل الدخول
-        </a>
+        <div class="mt-6">
+          <a routerLink="/auth/login" class="bosla-btn-primary">
+            المتابعة لتسجيل الدخول
+          </a>
+        </div>
       }
     </div>
   </div>
