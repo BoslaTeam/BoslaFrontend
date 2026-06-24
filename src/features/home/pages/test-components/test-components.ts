@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, inject, model, signal } from '@angular/core';
 import { UiLogo } from "@shared/ui/logo/logo";
 import { UiButton } from "@shared/ui/button/button";
 import { UiInput } from "@shared/ui/input/input";
@@ -17,10 +17,29 @@ import { UiStatusBadge } from '@shared/ui/status-badge/status-badge';
 import { ReviewItem, UiReviewCard } from '@shared/ui/review-card/review-card';
 import { UiInteractiveRating } from "@shared/ui/interactive-rating/interactive-rating";
 import { UiRatingSummary } from "@shared/ui/rating-summary/rating-summary";
+import { UiTableRowSkeleton } from '@shared/ui/table-row-skeleton/table-row-skeleton';
+import { UiKpiCardSkeleton } from '@shared/ui/kpi-card-skeleton/kpi-card-skeleton';
+import { DropdownOption, UiDropdown } from '@shared/ui/dropdown/dropdown';
+import { FormsModule } from '@angular/forms';
+import { FilterOption, UiMultiSelectFilter } from '@shared/ui/multi-select-filter/multi-select-filter';
+import { JsonPipe } from '@angular/common';
+import { UiEmptyState } from "@shared/ui/empty-state/empty-state";
+import { DashboardActivity, UiDashboardActivityCard } from '@shared/ui/dashboard-activity-card/dashboard-activity-card';
+import { UiDashboardStatCard } from "@shared/ui/dashboard-stat-card/dashboard-stat-card";
+import { UiPagination } from '@shared/ui/pagination/pagination';
 
 @Component({
   selector: 'app-test-components',
-  imports: [UiLogo, UiButton, UiInput, UiTextarea, UiToast, UiTabs, UiBreadcrumbs, UiExpertCard, UiTimeSlotsPicker, UiStatCard, UiEmptyStateCard, UiLoadingSkeleton, UiModal, UiStatusBadge, UiReviewCard, UiInteractiveRating, UiRatingSummary],
+  imports: [
+    FormsModule, JsonPipe,
+    UiLogo, UiButton, UiInput, UiTextarea, UiToast, UiTabs, UiBreadcrumbs,
+    UiExpertCard, UiTimeSlotsPicker, UiStatCard, UiEmptyStateCard,
+    UiLoadingSkeleton, UiModal, UiStatusBadge, UiReviewCard,
+    UiInteractiveRating, UiRatingSummary, UiTableRowSkeleton,
+    UiKpiCardSkeleton, UiDropdown, UiMultiSelectFilter,
+    UiEmptyState, UiDashboardStatCard, UiDashboardActivityCard,
+    UiPagination
+  ],
   templateUrl: './test-components.html',
   styleUrl: './test-components.css',
 })
@@ -51,11 +70,10 @@ export class TestComponents {
   ];
   selectedTabId = 'upcoming';
 
-  // بيانات الـ Breadcrumbs المحاكية للسكتش
   myBreadcrumbs: BreadcrumbItem[] = [
     { label: 'الرئيسية', url: '/home' },
     { label: 'المستشارين', url: '/consultants' },
-    { label: 'د. أحمد المنصوري' } // الأخير ثابت بدون رابط
+    { label: 'د. أحمد المنصوري' }
   ];
 
   onTabChanged(tabId: string) {
@@ -63,20 +81,18 @@ export class TestComponents {
   }
 
   // **********************************************
-  // بيانات المستشار المحاكية تماماً للسكتش الخاص بك
   mockExpert: ExpertData = {
     id: 'exp_01',
     name: 'د. أحمد المنصوري',
     title: 'مستشار قانوني وتجاري',
     rating: 4.9,
     price: 150,
-    avatarUrl: 'assets/icons/BoslaLogo.svg', // ضع مسار أي صورة تجريبية متوفرة لديك
+    avatarUrl: 'assets/icons/BoslaLogo.svg',
     isOnline: true,
     isVerified: true
   };
 
   onBookingTriggered(expertId: string) {
-    // ربط مدمج مع نظام التنبيهات الذي قمنا ببنائه سابقاً ليعطي تجربة ممتعة!
     this.toastService.success(`تم فتح بوابة الحجز للمستشار ذو المعرف: ${expertId}`);
   }
 
@@ -85,7 +101,7 @@ export class TestComponents {
     { time: '10:00 ص' },
     { time: '11:30 ص' },
     { time: '01:00 م' },
-    { time: '08:00 م', isDisabled: true }, // فترة محجوزة/معطلة
+    { time: '08:00 م', isDisabled: true },
     { time: '02:30 م' },
     { time: '03:00 م' },
     { time: '04:30 م' },
@@ -99,10 +115,9 @@ export class TestComponents {
     { time: '05:30 م' }
   ];
 
-  activeTimeSlot = '11:30 ص'; // القيمة النشطة الافتراضية بالرسم
+  activeTimeSlot = '11:30 ص';
 
   // **************************************************
-
   isCancelModalOpen = false;
 
   openModal() {
@@ -115,7 +130,6 @@ export class TestComponents {
   }
 
   // ******************************************************
-
   readonly mockReviews: ReviewItem[] = [
     {
       id: 1,
@@ -143,7 +157,83 @@ export class TestComponents {
     }
   ];
 
-  // *************************************************************
+  // ******************************************************
+  specialties: DropdownOption[] = [
+    { value: 'management', label: 'الاستشارات الإدارية' },
+    { value: 'financial', label: 'الاستشارات المالية' },
+    { value: 'marketing', label: 'التسويق والمبيعات' },
+    { value: 'hr', label: 'الموارد البشرية' }
+  ];
 
-  
+  selectedSpecialty = 'financial';
+
+  // ******************************************************
+  filterSpecialties: FilterOption[] = [
+    { value: 'financial', label: 'الاستشارات المالية' },
+    { value: 'management', label: 'الاستشارات الإدارية' },
+    { value: 'marketing', label: 'التسويق والمبيعات' },
+    { value: 'hr', label: 'الموارد البشرية' }
+  ];
+
+  // مصفوفة تجريبية تحتوي على قيمتين تم اختيارهم مسبقاً لمحاكاة حالة "Active (With Tags)" بالصورة
+  selectedFilterValues = ['financial', 'management'];
+
+  // ******************************************************
+  recentActivities: DashboardActivity[] = [
+    {
+      id: 1,
+      title: 'تم تأكيد جلسة استشارية جديدة مع ',
+      highlightedText: 'أحمد محمود',
+      time: 'قبل 10 دقائق',
+      icon: 'fa-regular fa-calendar-check'
+    },
+    {
+      id: 2,
+      title: 'اكتملت عملية الدفع للاستشارة رقم #8920',
+      time: 'قبل ساعتين',
+      icon: 'fa-regular fa-credit-card',
+      iconColorClass: 'orange' // لعرض أيقونة الدفع باللون البرتقالي المتوافق مع الصورة
+    },
+    {
+      id: 3,
+      title: 'اكتملت عملية الدفع للاستشارة رقم #8920',
+      time: 'قبل ساعتين',
+      icon: 'fa-regular fa-credit-card',
+      iconColorClass: 'orange' // لعرض أيقونة الدفع باللون البرتقالي المتوافق مع الصورة
+    },
+    {
+      id: 4,
+      title: 'اكتملت عملية الدفع للاستشارة رقم #8920',
+      time: 'قبل ساعتين',
+      icon: 'fa-regular fa-credit-card',
+      iconColorClass: 'orange' // لعرض أيقونة الدفع باللون البرتقالي المتوافق مع الصورة
+    },
+    {
+      id: 4,
+      title: 'اكتملت عملية الدفع للاستشارة رقم #8920',
+      time: 'قبل ساعتين',
+      icon: 'fa-regular fa-credit-card',
+      iconColorClass: 'orange' // لعرض أيقونة الدفع باللون البرتقالي المتوافق مع الصورة
+    },
+    {
+      id: 4,
+      title: 'اكتملت عملية الدفع للاستشارة رقم #8920',
+      time: 'قبل ساعتين',
+      icon: 'fa-regular fa-credit-card',
+      iconColorClass: 'orange' // لعرض أيقونة الدفع باللون البرتقالي المتوافق مع الصورة
+    },
+  ];
+
+  // ******************************************************
+  activePage = signal<number>(1);
+
+  // إجمالي عدد الصفحات (مثلاً 6 صفحات كما في صورتك المرفقة)
+  totalAmountOfPages = signal<number>(100);
+
+  // دالة تُستدعى فور الانتقال لصفحة جديدة
+  onPageSelected(newPage: number): void {
+    this.activePage.set(newPage);
+    console.log(`تم الانتقال بنجاح إلى الصفحة رقم: ${newPage}`);
+    // هنا يمكنك استدعاء الـ API الخاص بك لجلب بيانات الصفحة الجديدة
+  }
 }

@@ -1,0 +1,20 @@
+/* تخصيص شريط التمرير ليظهر بشكل جمالي متناسق مع Bosla */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(44, 62, 80, 0.15);
+    /* لون الـ Charcoal بنسبة شفافية */
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(44, 62, 80, 0.3);
+    /* يغمق اللون قليلاً عند تمرير الماوس فوقه */
+}
