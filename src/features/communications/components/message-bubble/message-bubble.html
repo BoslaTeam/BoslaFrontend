@@ -1,0 +1,49 @@
+<div
+  [class]="message().isOwn
+    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-inter'
+    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-inter'"
+>
+  <!-- Incoming avatar -->
+  @if (!message().isOwn) {
+    @if (showAvatar()) {
+      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 select-none shadow-sm" aria-hidden="true">
+        {{ initials() }}
+      </div>
+    } @else {
+      <div class="w-8 h-8 shrink-0" aria-hidden="true"></div>
+    }
+  }
+
+  <!-- Bubble -->
+  <div
+    [class]="message().isOwn
+      ? 'px-4 py-2.5 text-xs leading-relaxed bg-bosla-primary text-white rounded-2xl rounded-br-sm shadow-sm relative'
+      : 'px-4 py-2.5 text-xs leading-relaxed bg-white text-bosla-charcoal border border-bosla-primary/10 rounded-2xl rounded-bl-sm shadow-sm relative'"
+    [attr.aria-label]="(message().isOwn ? 'You: ' : '') + content()"
+  >
+    <p class="whitespace-pre-wrap font-inter">{{ content() }}</p>
+
+    <!-- Meta time + status -->
+    <div class="flex items-center justify-end gap-1 mt-1.5 shrink-0 select-none">
+      <span [class]="message().isOwn ? 'text-[9px] text-white/75 font-inter' : 'text-[9px] text-bosla-grey/85 font-inter'">{{ formattedTime() }}</span>
+      @if (message().isOwn) {
+        @if (statusIcon() === 'clock') {
+          <svg class="w-2.5 h-2.5 text-white/70 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        }
+        @else if (statusIcon() === 'check') {
+          <svg class="w-2.5 h-2.5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        }
+        @else {
+          <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="18 6 7 17 2 12"/>
+            <polyline points="22 6 11 17 6 12"/>
+          </svg>
+        }
+      }
+    </div>
+  </div>
+</div>

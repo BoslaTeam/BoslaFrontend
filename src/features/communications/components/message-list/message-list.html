@@ -1,0 +1,73 @@
+<div class="flex-1 overflow-y-auto p-4 space-y-4 bg-bosla-offwhite" aria-label="Messages" role="log" aria-live="polite">
+
+  <!-- Loading State -->
+  @if (store.isLoadingMessages()) {
+    <div class="flex flex-col gap-4 py-2">
+      <!-- Incoming skeleton -->
+      <div class="flex items-end gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-bosla-primary/10 shrink-0"></div>
+        <div class="h-10 bg-white border border-bosla-primary/5 rounded-2xl rounded-bl-sm w-[55%] animate-pulse"></div>
+      </div>
+      <!-- Outgoing skeleton -->
+      <div class="flex items-end gap-2.5 flex-row-reverse">
+        <div class="h-12 bg-bosla-primary/10 rounded-2xl rounded-br-sm w-[45%] animate-pulse"></div>
+      </div>
+      <!-- Incoming skeleton (longer) -->
+      <div class="flex items-end gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-bosla-primary/10 shrink-0"></div>
+        <div class="h-20 bg-white border border-bosla-primary/5 rounded-2xl rounded-bl-sm w-[65%] animate-pulse"></div>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (store.isErrorMessages()) {
+    <div class="flex flex-col items-center justify-center p-8 text-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-bosla-error/5 flex items-center justify-center text-bosla-error">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-inter">Messages failed to load</h4>
+      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">Could not retrieve messages. Check your connection.</p>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-inter" (click)="store.loadMessages(store.activeConversationId()!)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- Messages -->
+  @else {
+    @for (group of messageGroups(); track trackByLabel($index, group)) {
+      <!-- Date Divider -->
+      <div class="flex items-center gap-3 my-4" role="separator" [attr.aria-label]="group.dateLabel">
+        <div class="flex-1 border-t border-bosla-primary/10"></div>
+        <span class="text-[10px] font-bold text-bosla-grey uppercase tracking-wider bg-transparent px-1 font-inter">{{ group.dateLabel }}</span>
+        <div class="flex-1 border-t border-bosla-primary/10"></div>
+      </div>
+
+      <!-- Messages in group -->
+      @for (msg of group.messages; track trackById($index, msg); let i = $index) {
+        @if (isTextMsg(msg)) {
+          <chat-message-bubble [message]="msg" [showAvatar]="i === 0 || group.messages[i-1]?.isOwn !== msg.isOwn" />
+        } @else if (isAppointmentMsg(msg)) {
+          <chat-appointment-card-message [message]="msg" />
+        } @else if (isVideoMsg(msg)) {
+          <chat-video-invitation-message [message]="msg" />
+        }
+      }
+    }
+
+    <!-- Typing Indicator -->
+    @if (store.isTyping()) {
+      <chat-typing-indicator />
+    }
+
+    <!-- Scroll anchor -->
+    <div #listEnd class="h-px"></div>
+  }
+
+</div>
