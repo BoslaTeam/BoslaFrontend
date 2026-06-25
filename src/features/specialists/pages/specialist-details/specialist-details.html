@@ -54,20 +54,8 @@
 
           <div class="w-32 h-32 rounded-2xl overflow-hidden border-2 border-white/10">
 
-            @if (specialist.imageUrl) {
-
-            <img [src]="specialist.imageUrl" [alt]="specialist.name" class="w-full h-full object-cover">
-
-            } @else {
-
-            <div class="w-full h-full bg-white/5 flex items-center justify-center">
-
-              <i class="fa-regular fa-user text-white/30 text-5xl">
-              </i>
-
-            </div>
-
-            }
+            <img [src]="specialist.imageUrl.trim() || 'assets/icons/favicon.ico'" [alt]="specialist.name"
+              class="w-full h-full object-cover">
 
           </div>
 

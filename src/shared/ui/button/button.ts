@@ -40,7 +40,7 @@ export class UiButton implements ControlValueAccessor {
 
   readonly buttonClasses = computed(() => {
     const baseClasses =
-      'relative inline-flex items-center justify-center gap-2 rounded-[2px] font-sans font-medium transition-all duration-300 ease-in-out cursor-pointer select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+      'relative inline-flex items-center justify-center gap-2 rounded-xl font-sans font-medium transition-all duration-300 ease-in-out cursor-pointer select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
     const sizes = {
       sm: 'h-8 px-4 text-[13px]',
@@ -55,7 +55,7 @@ export class UiButton implements ControlValueAccessor {
     const variants = {
       primary: isSelected
         ? 'bg-bosla-primary text-white hover:shadow-md'
-        : 'bg-bosla-orange text-white hover:bg-bosla-orange/90 hover:shadow-md active:bg-bosla-orange/95',
+        : 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-md',
 
       secondary:
         'bg-transparent text-bosla-blue border border-bosla-blue hover:bg-bosla-blue/10 active:bg-bosla-blue/20',
