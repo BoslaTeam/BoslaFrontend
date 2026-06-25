@@ -5,12 +5,11 @@ import { SpecialistsStore } from '@features/specialists/store/specialists.store'
 import { UiPagination } from "@shared/ui/pagination/pagination";
 import { SpecialistsGridComponent } from "@features/specialists/components/specialists-grid/specialists-grid";
 import { UiEmptyState } from "@shared/ui/empty-state/empty-state";
-import { UiLoadingSkeleton } from "@shared/ui/loading-skeleton/loading-skeleton";
 import { SpecialistsFiltersComponent } from '@features/specialists/components/specialist-filters/specialist-filters';
 
 @Component({
   selector: 'app-specialist-list-page',
-  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState, UiLoadingSkeleton],
+  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState],
   standalone: true,
   templateUrl: './specialist-list.html',
   styleUrl: './specialist-list.css',

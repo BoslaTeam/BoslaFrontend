@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SpecialistApiService } from '../../data-access/specialist-api.service';
+import { SpecialistsApiService } from '../../data-access/specialist-api.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class SpecialistOnboarding {
   private fb = inject(FormBuilder);
-  private specialistApi = inject(SpecialistApiService);
+  private specialistApi = inject(SpecialistsApiService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -37,7 +37,7 @@ export class SpecialistOnboarding {
 
       this.specialistApi.onboard(this.onboardingForm.value).subscribe({
         next: (res) => {
-          if (res.isSuccess || res.message) {
+          if (res.success && res.data) {
             // Trigger token refresh to get Specialist role
             const isAuthenticated = this.authService.isAuthenticated();
             if (isAuthenticated) {

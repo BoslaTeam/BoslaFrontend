@@ -30,7 +30,7 @@ export class SpecialistsGridComponent {
       title: specialist.title ?? '',
       rating: specialist.rating,
       price: specialist.hourlyRate,
-      avatarUrl: specialist.imageUrl ?? 'assets/icons/favicon.ico',
+      avatarUrl: specialist.imageUrl?.trim() ? specialist.imageUrl : 'assets/icons/favicon.ico',
       isOnline: specialist.isOnline,
       isVerified: specialist.isVerified,
     };

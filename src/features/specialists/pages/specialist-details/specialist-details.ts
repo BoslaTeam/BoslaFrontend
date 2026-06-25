@@ -5,11 +5,8 @@ import { SpecialistsStore } from '@features/specialists/store/specialists.store'
 import { UiButton } from '@shared/ui/button/button';
 import { UiRatingSummary, RatingDistribution } from '@shared/ui/rating-summary/rating-summary';
 import { UiReviewCard, ReviewItem } from '@shared/ui/review-card/review-card';
-import { UiStatusBadge } from '@shared/ui/status-badge/status-badge';
 import { UiTabs, TabItem } from '@shared/ui/tabs/tabs';
 import { UiEmptyState } from '@shared/ui/empty-state/empty-state';
-import { Badge } from '@shared/ui/badge/badge';
-import { Review } from '@features/specialists/models/review.model';
 
 @Component({
   selector: 'app-specialist-details-page',
@@ -20,10 +17,8 @@ import { Review } from '@features/specialists/models/review.model';
     UiButton,
     UiRatingSummary,
     UiReviewCard,
-    UiStatusBadge,
     UiTabs,
     UiEmptyState,
-    Badge,
   ],
   templateUrl: './specialist-details.html',
   styleUrl: './specialist-details.css',
