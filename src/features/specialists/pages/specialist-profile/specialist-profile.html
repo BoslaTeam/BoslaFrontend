@@ -1,0 +1,145 @@
+<div class="bosla-sp-profile-page" dir="rtl">
+  
+  <div class="bosla-sp-header">
+    <h1 class="bosla-sp-title">لوحة تحكم الاختصاصي</h1>
+    <p class="bosla-sp-subtitle">إدارة ملفك المهني وأوقات عملك وسياسات الحجز</p>
+  </div>
+
+  <div class="bosla-sp-container">
+    
+    <!-- Stats Overview -->
+    @if (profile) {
+      <div class="bosla-sp-card bosla-sp-stats mb-6">
+        <div class="bosla-sp-stat-item">
+          <span class="bosla-sp-stat-label">سنوات الخبرة</span>
+          <strong class="bosla-sp-stat-value">{{profile.yearsOfExperience}} سنوات</strong>
+        </div>
+        <div class="bosla-sp-stat-item">
+          <span class="bosla-sp-stat-label">سعر الاستشارة / ساعة</span>
+          <strong class="bosla-sp-stat-value">${{profile.hourlyRate}}</strong>
+        </div>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Availability Area -->
+      <div class="bosla-sp-card">
+        <div class="bosla-sp-card-header">
+          <h3>أوقات العمل المتاحة</h3>
+        </div>
+        
+        <div class="mb-6">
+          @if(availabilities.length === 0) {
+            <p class="text-gray-500 text-sm">لم يتم تحديد أوقات عمل.</p>
+          }
+          <div class="space-y-3">
+            @for (av of availabilities; track av.id) {
+              <div class="bosla-sp-list-item">
+                <div>
+                  <strong>{{getDayName(av.dayOfWeek)}}</strong>
+                  <span class="text-sm text-gray-500 mr-2">{{av.startTime}} - {{av.endTime}}</span>
+                </div>
+                <button (click)="deleteAvailability(av.id)" class="bosla-btn-danger-sm">حذف</button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <form [formGroup]="availabilityForm" (ngSubmit)="addAvailability()" class="bosla-sp-form-box">
+          <h4 class="text-sm font-bold mb-3">إضافة وقت جديد</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <select formControlName="dayOfWeek" class="bosla-input">
+                <option value="" disabled>اليوم</option>
+                @for (day of daysOfWeek; track day.value) {
+                  <option [value]="day.value">{{day.name}}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <input type="time" formControlName="startTime" class="bosla-input" placeholder="من">
+            </div>
+            <div>
+              <input type="time" formControlName="endTime" class="bosla-input" placeholder="إلى">
+            </div>
+          </div>
+          <button type="submit" [disabled]="availabilityForm.invalid" class="bosla-btn-primary mt-3 w-full">إضافة الوقت</button>
+        </form>
+      </div>
+
+      <!-- Policies Area -->
+      <div class="bosla-sp-card">
+        <div class="bosla-sp-card-header">
+          <h3>السياسات والشروط</h3>
+        </div>
+        <form [formGroup]="policyForm" (ngSubmit)="updatePolicies()">
+          <div class="bosla-form-group mb-4">
+            <label class="bosla-label">سياسة الحجز</label>
+            <textarea formControlName="bookingPolicy" rows="3" class="bosla-input bosla-textarea"></textarea>
+          </div>
+          <div class="bosla-form-group mb-4">
+            <label class="bosla-label">سياسة الإلغاء</label>
+            <textarea formControlName="cancellationPolicy" rows="3" class="bosla-input bosla-textarea" placeholder="مثال: يرجى الإلغاء قبل 24 ساعة..."></textarea>
+          </div>
+          <button type="submit" [disabled]="policyForm.invalid" class="bosla-btn-primary w-full">حفظ السياسات</button>
+        </form>
+      </div>
+
+      <!-- Experience Area -->
+      <div class="bosla-sp-card lg:col-span-2">
+        <div class="bosla-sp-card-header">
+          <h3>الخبرات المهنية</h3>
+        </div>
+
+        <div class="mb-6">
+          @if(experiences.length === 0) {
+            <p class="text-gray-500 text-sm">لم يتم إضافة خبرات.</p>
+          }
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (exp of experiences; track exp.id) {
+              <div class="bosla-sp-experience-card">
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-bosla-primary">{{exp.title}}</h4>
+                  <button (click)="deleteExperience(exp.id)" class="bosla-btn-danger-sm">حذف</button>
+                </div>
+                <h5 class="text-sm font-semibold text-gray-700">{{exp.company}}</h5>
+                <p class="text-xs text-gray-500 mb-2">{{exp.startDate | date:'yyyy-MM'}} إلى {{exp.endDate ? (exp.endDate | date:'yyyy-MM') : 'الآن'}}</p>
+                <p class="text-sm text-gray-600 line-clamp-3">{{exp.description}}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <form [formGroup]="experienceForm" (ngSubmit)="addExperience()" class="bosla-sp-form-box">
+          <h4 class="text-sm font-bold mb-3">إضافة خبرة جديدة</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bosla-form-group">
+              <label class="bosla-label">المسمى الوظيفي</label>
+              <input type="text" formControlName="title" class="bosla-input">
+            </div>
+            <div class="bosla-form-group">
+              <label class="bosla-label">الشركة / الجهة</label>
+              <input type="text" formControlName="company" class="bosla-input">
+            </div>
+            <div class="bosla-form-group">
+              <label class="bosla-label">تاريخ البدء</label>
+              <input type="date" formControlName="startDate" class="bosla-input">
+            </div>
+            <div class="bosla-form-group">
+              <label class="bosla-label">تاريخ الانتهاء</label>
+              <input type="date" formControlName="endDate" class="bosla-input">
+            </div>
+            <div class="bosla-form-group md:col-span-2">
+              <label class="bosla-label">وصف المهام والإنجازات</label>
+              <textarea formControlName="description" rows="3" class="bosla-input bosla-textarea"></textarea>
+            </div>
+          </div>
+          <button type="submit" [disabled]="experienceForm.invalid" class="bosla-btn-primary mt-3">إضافة الخبرة</button>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
