@@ -1,0 +1,69 @@
+<div class="bg-white border border-bosla-charcoal/10 rounded-md p-5 shadow-xs" dir="rtl">
+  <form [formGroup]="form" class="flex flex-col gap-4">
+
+    <div class="flex items-center gap-3">
+      <div class="flex-1 relative">
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-bosla-charcoal/30 text-sm"></i>
+        <input type="text" formControlName="searchTerm" placeholder="ابحث عن متخصص..."
+          class="w-full h-11 pr-10 pl-4 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[14px] font-sans text-bosla-charcoal placeholder:text-bosla-charcoal/40 focus:outline-none focus:border-bosla-blue focus:ring-1 focus:ring-bosla-blue/20 transition-all" />
+      </div>
+
+      <button type="button" (click)="applyFilters()"
+        class="h-11 px-6 bg-bosla-orange hover:bg-bosla-orange/90 text-white text-[14px] font-sans font-bold rounded-md transition-all active:scale-[0.98] cursor-pointer shrink-0">
+        بحث
+      </button>
+
+      <button type="button" (click)="resetFilters()"
+        class="h-11 px-4 bg-transparent border border-bosla-charcoal/20 text-bosla-charcoal/70 text-[14px] font-sans font-medium rounded-md hover:border-bosla-charcoal/40 hover:text-bosla-charcoal transition-all cursor-pointer shrink-0">
+        إعادة ضبط
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      <select formControlName="expertiseId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue cursor-pointer">
+        <option value="">التخصص</option>
+        @for (item of expertise; track item.id) {
+          <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="skillId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue cursor-pointer">
+        <option value="">المهارة</option>
+        @for (item of skills; track item.id) {
+          <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="toolId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue cursor-pointer">
+        <option value="">الأداة</option>
+        @for (item of tools; track item.id) {
+          <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="experienceLevel"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue cursor-pointer">
+        <option [ngValue]="null">مستوى الخبرة</option>
+        <option [ngValue]="1">مبتدئ</option>
+        <option [ngValue]="2">متوسط</option>
+        <option [ngValue]="3">متقدم</option>
+        <option [ngValue]="4">خبير</option>
+      </select>
+
+      <input type="number" formControlName="minHourlyRate" placeholder="الحد الأدنى (ر.س)"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal placeholder:text-bosla-charcoal/40 focus:outline-none focus:border-bosla-blue" />
+
+      <input type="number" formControlName="maxHourlyRate" placeholder="الحد الأقصى (ر.س)"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-md text-[13px] font-sans text-bosla-charcoal placeholder:text-bosla-charcoal/40 focus:outline-none focus:border-bosla-blue" />
+
+      <button type="button" (click)="applyFilters()"
+        class="h-10 px-4 bg-bosla-blue hover:bg-bosla-blue/90 text-white text-[13px] font-sans font-bold rounded-md transition-all active:scale-[0.98] cursor-pointer lg:hidden">
+        تطبيق
+      </button>
+    </div>
+
+  </form>
+</div>

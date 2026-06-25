@@ -1,0 +1,21 @@
+<div class="bg-bosla-offwhite min-h-screen">
+    <div class="max-w-7xl mx-auto p-6 space-y-6">
+
+        <specialist-filters [expertise]="store.expertise()" [skills]="store.skills()" [tools]="store.tools()"
+            (filtersChanged)="onFiltersChanged($event)" />
+
+        @if (store.loading()) {
+        <ui-loading-skeleton />
+        }
+        @else if (store.isEmpty()) {
+        <ui-empty-state title="لا يوجد مستشارون" description="لم يتم العثور على نتائج مطابقة لأدوات البحث المستخدمة." />
+        }
+        @else {
+        <specialists-grid [specialists]="store.specialists()" (detailsClick)="onSpecialistSelected($event)" />
+
+        <ui-pagination [currentPage]="store.currentPage()" [totalPages]="store.totalPages()"
+            (pageChange)="onPageChanged($event)" />
+        }
+
+    </div>
+</div>
