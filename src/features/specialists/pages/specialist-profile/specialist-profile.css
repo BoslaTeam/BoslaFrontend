@@ -1,0 +1,164 @@
+.bosla-sp-profile-page {
+  background-color: #F7F9FA;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.bosla-sp-header {
+  margin-bottom: 2rem;
+}
+
+.bosla-sp-title {
+  color: #1B4F72;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+}
+
+.bosla-sp-subtitle {
+  color: #95A5A6;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.bosla-sp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bosla-sp-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.05);
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.bosla-sp-stats {
+  display: flex;
+  gap: 2rem;
+  background: linear-gradient(135deg, #2E86AB 0%, #1B4F72 100%);
+  color: #ffffff;
+}
+
+.bosla-sp-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.bosla-sp-stat-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.bosla-sp-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.bosla-sp-card-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.bosla-sp-card-header h3 {
+  color: #2C3E50;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.bosla-sp-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.bosla-sp-experience-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.bosla-sp-form-box {
+  background-color: #F7F9FA;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  margin-top: 1rem;
+}
+
+.bosla-btn-danger-sm {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bosla-btn-danger-sm:hover {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+
+/* Base form styles reused from previous */
+.bosla-form-group {
+  margin-bottom: 1rem;
+}
+
+.bosla-label {
+  display: block;
+  color: #2C3E50;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.bosla-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #95A5A6;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #2C3E50;
+  font-size: 0.95rem;
+}
+
+.bosla-input:focus {
+  outline: none;
+  border-color: #2E86AB;
+}
+
+.bosla-textarea {
+  resize: vertical;
+}
+
+.bosla-btn-primary {
+  background-color: #1B4F72;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bosla-btn-primary:hover:not([disabled]) {
+  background-color: #154360;
+}
+
+.bosla-btn-primary[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

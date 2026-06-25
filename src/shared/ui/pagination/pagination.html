@@ -1,0 +1,29 @@
+<div class="flex items-center justify-center gap-4 select-none" dir="rtl">
+
+    <button type="button" (click)="prevPage()" [disabled]="currentPage() === 1"
+        class="w-9 h-11 bg-white border border-bosla-charcoal/20 rounded-md flex items-center justify-center text-bosla-charcoal/70 transition-all duration-200 hover:border-bosla-blue disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-bosla-charcoal/20 cursor-pointer text-xs">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+    <div class="flex items-center gap-4 font-sans text-[15px]">
+        @for (page of pages(); track $index) {
+        @if (page === '...') {
+        <span class="text-bosla-charcoal/30 tracking-widest px-1 select-none">...</span>
+        } @else {
+        <button type="button" (click)="onPageSelect(page)"
+            class="min-w-9 h-11 px-2 flex items-center justify-center rounded-md font-medium transition-colors cursor-pointer"
+            [class.bg-bosla-blue]="currentPage() === page" [class.text-white]="currentPage() === page"
+            [class.text-bosla-charcoal/70]="currentPage() !== page"
+            [class.hover:text-bosla-blue]="currentPage() !== page">
+            {{ page }}
+        </button>
+        }
+        }
+    </div>
+
+    <button type="button" (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+        class="w-9 h-11 bg-white border border-bosla-charcoal/20 rounded-md flex items-center justify-center text-bosla-charcoal/70 transition-all duration-200 hover:border-bosla-blue disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-bosla-charcoal/20 cursor-pointer text-xs">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+</div>

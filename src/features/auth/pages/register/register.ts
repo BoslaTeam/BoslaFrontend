@@ -22,8 +22,7 @@ export class Register {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)]],
     phoneNumber: ['', [Validators.required]],
-    country: ['', [Validators.required]],
-    role: ['user', [Validators.required]]
+    country: ['', [Validators.required]]
   });
 
   isLoading = false;
@@ -42,7 +41,8 @@ export class Register {
     const req: RegisterRequest = {
       ...formValue,
       name: `${formValue.firstName} ${formValue.lastName}`,
-      preferredLanguage: 'ar'
+      preferredLanguage: 'ar',
+      role: 'user'
     } as RegisterRequest;
     console.log('[Register] Sending request:', req);
 

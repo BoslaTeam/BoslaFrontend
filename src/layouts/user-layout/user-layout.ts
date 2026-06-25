@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { PublicHeader } from '../public-layout/public-header/public-header';
+import { PublicFooter } from '../public-layout/public-footer/public-footer';
 
 @Component({
   selector: 'app-user-layout',
-  imports: [],
+  imports: [RouterOutlet, PublicHeader, PublicFooter],
   templateUrl: './user-layout.html',
   styles: ``,
 })
