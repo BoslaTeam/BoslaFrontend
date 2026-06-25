@@ -69,22 +69,32 @@
         </div>
 
         <!-- Info -->
-        <div class="flex-1 space-y-4">
+        <div class="flex-1 space-y-6">
 
-          <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex items-center gap-3 flex-wrap">
 
             <h1 class="text-4xl md:text-5xl font-black text-white">
-
               {{ specialist.name }}
-
             </h1>
 
             @if (specialist.isVerified) {
 
-            <i class="fa-solid fa-circle-check text-bosla-orange text-xl">
-            </i>
-
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold">
+              <i class="fa-solid fa-circle-check"></i>
+              موثق
+            </span>
             }
+
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold"
+              [class.bg-green-500/20]="specialist.isOnline" [class.text-green-400]="specialist.isOnline"
+              [class.bg-white/10]="!specialist.isOnline" [class.text-white/70]="!specialist.isOnline">
+
+              <span class="w-2 h-2 rounded-full" [class.bg-green-400]="specialist.isOnline"
+                [class.bg-white/40]="!specialist.isOnline">
+              </span>
+              {{ specialist.isOnline ? 'متصل الآن' : 'غير متصل' }}
+            </span>
 
           </div>
 
@@ -96,21 +106,16 @@
 
             <span class="flex items-center gap-2">
 
-              <i class="fa-solid fa-briefcase text-bosla-orange">
-              </i>
-
+              <i class="fa-solid fa-briefcase text-bosla-orange"></i>
               {{ experienceLevelLabel() }}
-
               @if (specialist.experienceYears) {
               ({{ specialist.experienceYears }} سنوات)
               }
-
             </span>
 
             <span class="flex items-center gap-2">
 
-              <i class="fa-solid fa-star text-bosla-orange">
-              </i>
+              <i class="fa-solid fa-star text-bosla-orange"></i>
 
               {{ specialist.rating | number:'1.1-1' }}
 
@@ -122,12 +127,48 @@
 
             <span class="flex items-center gap-2">
 
-              <i class="fa-solid fa-earth-americas text-bosla-orange">
-              </i>
+              <i class="fa-solid fa-earth-americas text-bosla-orange"></i>
 
               {{ specialist.country }}
 
             </span>
+
+            }
+
+          </div>
+
+          <!-- Quick Info -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+            @if (specialist.preferredLanguage) {
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+
+              <p class="text-white/50 text-xs mb-1">
+                اللغة
+              </p>
+
+              <p class="text-white font-semibold">
+                {{ specialist.preferredLanguage }}
+              </p>
+
+            </div>
+
+            }
+
+            @if (specialist.gender) {
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+
+              <p class="text-white/50 text-xs mb-1">
+                الجنس
+              </p>
+
+              <p class="text-white font-semibold">
+                {{ specialist.gender }}
+              </p>
+
+            </div>
 
             }
 
@@ -139,9 +180,7 @@
             @for (skill of specialist.skills; track skill.id) {
 
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
-
               {{ skill.name }}
-
             </span>
 
             }
@@ -149,9 +188,7 @@
             @for (tool of specialist.tools; track tool.id) {
 
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
-
               {{ tool.name }}
-
             </span>
 
             }
@@ -159,9 +196,7 @@
             @for (industry of specialist.industries; track industry.id) {
 
             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
-
               {{ industry.name }}
-
             </span>
 
             }
@@ -219,7 +254,34 @@
       </p>
 
     </div>
+    }
 
+    @if (specialist.introVideoUrl) {
+    <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-xl">
+
+      <div class="flex items-center justify-between flex-wrap gap-4">
+
+        <div>
+
+          <h2 class="text-2xl font-bold text-white">
+            الفيديو التعريفي
+          </h2>
+
+          <p class="text-white/60 mt-2">
+            تعرف على المتخصص بشكل أفضل من خلال الفيديو التعريفي.
+          </p>
+
+        </div>
+
+        <a [href]="specialist.introVideoUrl" target="_blank" rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-bosla-orange text-white font-semibold hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-play"></i>
+          مشاهدة الفيديو
+        </a>
+
+      </div>
+
+    </div>
     }
 
     <!-- Tabs -->
