@@ -1,0 +1,401 @@
+<div dir="rtl" class="p-8 pt-32">
+
+    <header class="mb-8 flex items-center justify-between">
+
+        <div class="flex items-center gap-4">
+
+            <button class="flex h-10 w-10 items-center justify-center rounded-full  text-blue-950 bg-white shadow-sm">
+                ?
+            </button>
+
+            <button class="relative flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+                🔔
+
+                <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500">
+                </span>
+
+            </button>
+
+            <div
+                class="flex h-12 w-[320px] items-center rounded-xl border text-blue-950 border-slate-200 bg-white px-4">
+
+
+                <input #search type="text" (input)="searchTerm.set(search.value)"
+                    placeholder="البحث عن مواعيد أو عملاء..." class="w-full border-none bg-transparent outline-none" />
+
+
+            </div>
+            @if (searchTerm()) {
+
+            <p class=" mt-2  text-sm text-sky-900 ">
+
+                تم العثور عل ى {{ filteredAppointments().length }} نتيجة
+
+            </p>
+
+            }
+        </div>
+
+        <div class="text-sm text-slate-900">
+
+            الرئيسية /
+
+            <span class="font-medium text-slate-900">
+                لوحة التحكم
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <div class="mb-8 flex items-center justify-between">
+
+        <button class="rounded-2xl bg-indigo-600 px-8 py-4 font-medium text-white">
+            + موعد جديد
+        </button>
+
+        <div class="text-right">
+
+            <h1 class="text-2xl font-bold text-slate-900">
+                👋 صباح الخير ، {{ profile()?.name }}
+            </h1>
+
+            <p class="mt-2 text-slate-950">
+                لديك {{ dashboard()?.upcomingAppointments ?? 0 }} جلسات استشارية مقررة اليوم
+            </p>
+
+        </div>
+
+
+    </div>
+    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
+                    ⭐
+                </div>
+
+                <span class="text-sm font-medium text-slate-600">
+                    {{ dashboard()?.averageRatingGrowthPercentage ?? 0 }}%+
+                </span>
+
+            </div>
+
+            <h3 class="text-slate-500">
+                التقييم العام
+            </h3>
+
+            <p class="mt-2 text-3xl font-bold text-blue-950">
+                {{ dashboard()?.averageRating ?? 0 }}
+            </p>
+            <p class="mt-2 text-sm text-slate-500">
+                {{ dashboard()?.totalReviews ?? 0 }} تقييم
+            </p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+                    💳
+                </div>
+
+                <span class="font-medium text-emerald-500 ">
+                    {{ dashboard()?.earningsGrowthPercentage ?? 0 }}%+
+                </span>
+
+            </div>
+
+            <h3 class="text-slate-500">
+                أرباح الشهر
+            </h3>
+
+            <p class="mt-2 text-3xl font-bold text-blue-950">
+                {{ dashboard()?.monthlyEarnings ?? 0 }}
+            </p>
+
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl text-amber-500 bg-violet-100">
+                    ✓
+                </div>
+
+                <span class="font-medium text-emerald-500">
+                    {{ dashboard()?.completedAppointmentsGrowthPercentage ?? 0 }}%+
+                </span>
+
+            </div>
+
+            <h3 class="text-slate-500">
+                جلسات مكتملة
+            </h3>
+
+            <p class="mt-2 text-3xl font-bold  text-blue-950">
+                {{ dashboard()?.completedAppointments ?? 0 }}
+            </p>
+
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100">
+                    📅
+                </div>
+
+                <span class="font-medium text-emerald-500">
+                    {{ dashboard()?.upcomingAppointmentsGrowthPercentage ?? 0 }}%+
+                </span>
+
+            </div>
+
+            <h3 class="text-slate-500">
+                مواعيد قادمة
+            </h3>
+
+            <p class="mt-2 text-3xl font-bold  text-blue-950">
+                {{ dashboard()?.upcomingAppointments ?? 0 }}
+            </p>
+
+        </div>
+
+
+
+    </div>
+    <div class="mb-8">
+
+        <div class="xl:col-span-2 rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <div>
+
+                    <h2 class="text-xl font-bold text-slate-900">
+                        تحليلات الإيرادات
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        الإيرادات الشهرية خلال السنة
+                    </p>
+
+                </div>
+
+                <div class="rounded-xl bg-slate-100 px-4 py-2 text-blue-950 text-sm">
+                    2026
+                </div>
+
+            </div>
+
+            <div class="flex h-[320px] items-end gap-3">
+
+                @for (item of dashboard()?.monthlyRevenue; track item.month) {
+
+                <div class="flex flex-1 flex-col items-center gap-3">
+                    <span class="text-xs font-semibold text-slate-700">
+                    {{ item.amount }}
+                    </span>
+                    <div class="w-full rounded-t-2xl bg-indigo-600"
+                        [style.height.px]="item.amount > 0 ? ((item.amount / maxRevenue()) * 250) : 12">
+                    </div>
+
+                    <span class="text-xs text-slate-500">
+                        {{ item.month }}
+                    </span>
+
+                </div>
+
+                }
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="rounded-3xl bg-white p-6 shadow-sm">
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <h2 class="text-xl font-bold text-slate-900">
+                المواعيد القادمة
+            </h2>
+
+            <span class="text-sm text-slate-500">
+                {{ dashboard()?.upcomingAppointments }} موعد
+            </span>
+
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-slate-200">
+
+            <table class="w-full">
+
+                <thead class="bg-slate-800 text-slate-50 font-semibold text-sm">
+
+                    <tr>
+
+                        <th class="px-4 py-4 text-right">
+                            العميل
+                        </th>
+
+                        <th class="px-4 py-4 text-right">
+                            الخدمة
+                        </th>
+
+                        <th class="px-4 py-4 text-right">
+                            التاريخ
+                        </th>
+
+                        <th class="px-4 py-4 text-right">
+                            الحالة
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @for (appointment of filteredAppointments(); track appointment.appointmentId){
+
+                    <tr class="border-t text-slate-700">
+
+                        <td class="px-4 py-4">
+                            {{ appointment.clientName }}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {{ appointment.serviceName }}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {{ appointment.startTimeUtc | date:'dd/MM/yyyy' }}
+                        </td>
+
+                        <td class="px-4 py-4">
+
+                            <span class="rounded-full px-3 py-1 text-sm"
+                                [class.bg-amber-100]="appointment.status === 'Pending'"
+                                [class.text-amber-700]="appointment.status === 'Pending'"
+                                [class.bg-green-100]="appointment.status === 'Completed'"
+                                [class.text-green-700]="appointment.status === 'Completed'"
+                                [class.bg-red-100]="appointment.status === 'Cancelled'"
+                                [class.text-red-700]="appointment.status === 'Cancelled'">
+                                {{
+                                appointment.status === 'Pending'
+                                ? 'قيد الانتظار'
+                                : appointment.status === 'Completed'
+                                ? 'مكتمل'
+                                : appointment.status === 'Cancelled'
+                                ? 'ملغي'
+                                : appointment.status
+                                }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="mt-8 rounded-3xl bg-white p-6 shadow-sm">
+
+            <div class="mb-6 flex items-center justify-between">
+
+                <h2 class="text-xl font-bold text-slate-900">
+                    آخر التقييمات
+                </h2>
+
+                <div class="flex items-center gap-2">
+
+                    <span class="text-amber-500">
+                        ★
+                    </span>
+
+                    <span class="font-semibold text-blue-950">
+                        {{ reviews()?.averageRating ?? 0 }}
+                    </span>
+
+                    <span class="text-slate-500">
+                        ({{ reviews()?.totalReviews ?? 0 }})
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div class="space-y-4">
+
+
+                @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
+
+                <div class="rounded-2xl border border-dashed p-6 text-center text-slate-500">
+
+                    لا توجد تقييمات حتى الآن
+
+                </div>
+
+                }
+
+                @for (review of reviews()?.reviews?.items; track review.createdAtUtc) {
+
+                <div class="rounded-2xl border border-slate-200 p-4">
+
+                    <div class="mb-3 flex items-center justify-between">
+
+                        <h3 class="font-semibold">
+                            {{ review.reviewerName }}
+                        </h3>
+
+                        <div class="flex items-center gap-1">
+
+                            <span class="text-amber-500">
+                                ★
+                            </span>
+
+                            <span class="font-semibold text-blue-950">
+                                {{ review.rating }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <p class="mb-3 text-slate-600">
+                        {{ review.comment }}
+                    </p>
+
+                    <span class="text-sm text-slate-400">
+                        {{ review.createdAtUtc | date:'dd/MM/yyyy' }}
+                    </span>
+
+                </div>
+
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
