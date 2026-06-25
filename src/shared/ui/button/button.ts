@@ -39,31 +39,36 @@ export class UiButton implements ControlValueAccessor {
   );
 
   readonly buttonClasses = computed(() => {
-    const baseClasses = 'w-[245.5px] relative flex items-center justify-center gap-2 py-2 px-4 rounded-[2px] text-[14px] font-sans font-medium transition-all duration-300 ease-in-out cursor-pointer select-none active:scale-[0.98]';
+    const baseClasses =
+      'relative inline-flex items-center justify-center gap-2 rounded-[2px] font-sans font-medium transition-all duration-300 ease-in-out cursor-pointer select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
     const sizes = {
-      sm: 'h-[32px] text-[13px] w-[180px]',
-      md: 'h-[36px]',
-      lg: 'h-[44px] text-[16px] w-[280px]'
+      sm: 'h-8 px-4 text-[13px]',
+      md: 'h-9 px-5 text-[14px]',
+      lg: 'h-11 px-6 text-[16px]',
     };
 
-    const isSelected = this.buttonValue() !== null && this.formValue() === this.buttonValue();
+    const isSelected =
+      this.buttonValue() !== null &&
+      this.formValue() === this.buttonValue();
 
     const variants = {
       primary: isSelected
         ? 'bg-bosla-primary text-white hover:shadow-md'
-        : 'bg-bosla-orange text-white hover:bg-bosla-orange/90 hover:shadow-md active:bg-bosla-orange/95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none',
-      secondary: 'bg-transparent text-bosla-blue border border-bosla-blue h-[38px] hover:bg-bosla-blue/10 active:bg-bosla-blue/20 disabled:opacity-50 disabled:active:scale-100',
-      ghost: 'bg-transparent text-bosla-charcoal hover:bg-bosla-charcoal/5 active:bg-bosla-charcoal/10 disabled:opacity-50 disabled:active:scale-100',
+        : 'bg-bosla-orange text-white hover:bg-bosla-orange/90 hover:shadow-md active:bg-bosla-orange/95',
+
+      secondary:
+        'bg-transparent text-bosla-blue border border-bosla-blue hover:bg-bosla-blue/10 active:bg-bosla-blue/20',
+
+      ghost:
+        'bg-transparent text-bosla-charcoal hover:bg-bosla-charcoal/5 active:bg-bosla-charcoal/10',
+
       danger: this.outline()
-        ? 'bg-transparent text-bosla-error border border-bosla-error h-[38px] hover:bg-bosla-error/10 active:bg-bosla-error/20 disabled:opacity-50 disabled:active:scale-100'
-        : 'bg-bosla-error text-white hover:bg-bosla-error/90 hover:shadow-md active:bg-bosla-error/95 disabled:opacity-50 disabled:active:scale-100 disabled:shadow-none'
+        ? 'bg-transparent text-bosla-error border border-bosla-error hover:bg-bosla-error/10 active:bg-bosla-error/20'
+        : 'bg-bosla-error text-white hover:bg-bosla-error/90 hover:shadow-md active:bg-bosla-error/95',
     };
 
-    const selectedSize = sizes[this.size()] || sizes['md'];
-    const selectedVariant = variants[this.variant()] || variants.primary;
-
-    return `${baseClasses} ${selectedSize} ${selectedVariant}`;
+    return `${baseClasses} ${sizes[this.size()]} ${variants[this.variant()]}`;
   });
 
   private onChange: (value: any) => void = () => { };

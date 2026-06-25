@@ -1,0 +1,10 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+  @for (specialist of specialists; track specialist.id) {
+
+  <ui-expert-card [expert]="mapToExpertCard(specialist)" (cardClick)="detailsClick.emit($event)">
+  </ui-expert-card>
+
+  }
+
+</div>

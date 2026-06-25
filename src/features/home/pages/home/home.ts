@@ -10,7 +10,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-home',
   imports: [RouterLink, FormsModule, CommonModule],
-  templateUrl: './home.html'
+  templateUrl: './home.html',
+  styleUrl: './home.css'
 })
 export class Home implements OnInit {
   private lookupService = inject(LookupService);

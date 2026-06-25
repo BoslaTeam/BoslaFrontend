@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { UiButton } from '../button/button';
 import { DecimalPipe } from '@angular/common';
 
 export interface ExpertData {
@@ -16,18 +15,16 @@ export interface ExpertData {
 @Component({
   selector: 'ui-expert-card',
   standalone: true,
-  imports: [UiButton, DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './expert-card.html',
-  styleUrl: './expert-card.css'
+  styleUrl: './expert-card.css',
 })
 export class UiExpertCard {
-  // استقبال بيانات المستشار بالكامل كـ Input
   readonly expert = input.required<ExpertData>();
 
-  // حدث مخصص عند الضغط على زر الحجز
-  readonly bookClick = output<string>();
+  readonly cardClick = output<string>();
 
-  onBook() {
-    this.bookClick.emit(this.expert().id);
+  onCardClick(): void {
+    this.cardClick.emit(this.expert().id);
   }
 }

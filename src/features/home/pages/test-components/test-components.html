@@ -87,7 +87,8 @@
 
     <section class="space-y-4">
         <h2 class="text-xl font-bold border-b border-bosla-charcoal/10 pb-2">بطاقة المستشار (Expert Card)</h2>
-        <ui-expert-card [expert]="mockExpert" (bookClick)="onBookingTriggered($event)"></ui-expert-card>
+        <ui-expert-card [expert]="mockExpert" (cardClick)="onBookingTriggered($event)">
+        </ui-expert-card>
     </section>
 
     <section class="space-y-4">

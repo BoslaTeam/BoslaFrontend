@@ -1,96 +1,124 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import {
-  SpecialistOnboardRequest,
-  SpecialistOnboardResponse,
-  SpecialistProfileResponse,
-  AvailabilityResponse,
-  AddAvailabilityRequest,
-  ExperienceDto,
-  AddExperienceRequestDTO,
-  UpdateExperienceRequest,
-  AddExpertiseRequest,
-  AddSkillRequest,
-  UpdateCancellationPolicyRequest,
-  UpdateBookingPolicyRequest
-} from '../models/specialist.contracts';
+import { inject, Injectable } from "@angular/core";
+import { API_ENDPOINTS } from "@core/constants/api-endpoints";
+import { ApiResponse } from "@core/models/api-response.model";
+import { LookupResponse } from "../contracts/lookup.contract";
+import { HttpClient } from "@angular/common/http";
+import { SpecialistsFilters } from "../contracts/specialist-filters.contract";
+import { buildHttpParams } from "@core/utils/http-params.util";
+import { SpecialistResponse } from "../contracts/specialist.contract";
+import { SpecialistAvailabilityResponse } from "../contracts/specialist-availability.contract";
+import { SpecialistDetailsResponse } from "../contracts/specialist-details.contract";
+import { OnboardSpecialistRequest, OnboardSpecialistResponse } from "../contracts/specialist-onboard.contract";
+import { SpecialistReviewResponse } from "../contracts/specialist-review.contract";
+import { PaginatedResponse } from "@core/models/paginated-response.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class SpecialistApiService {
-  private http = inject(HttpClient);
-  private baseUrl = `${environment.apiBaseUrl}/api/v1/specialists`;
+export class SpecialistsApiService {
+  private readonly http = inject(HttpClient);
 
-  // Onboarding
-  onboard(request: SpecialistOnboardRequest): Observable<SpecialistOnboardResponse> {
-    return this.http.post<SpecialistOnboardResponse>(`${this.baseUrl}/onboard`, request);
+  getExpertise() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.expertise
+    );
   }
 
-  // Profile
-  getProfile(): Observable<SpecialistProfileResponse> {
-    return this.http.get<SpecialistProfileResponse>(`${this.baseUrl}/me`);
+  getSkills() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.skills
+    );
   }
 
-  updateProfile(request: any): Observable<SpecialistProfileResponse> {
-    return this.http.put<SpecialistProfileResponse>(`${this.baseUrl}/me`, request);
+  getTools() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.tools
+    );
   }
 
-  // Availability
-  getAvailability(): Observable<AvailabilityResponse[]> {
-    return this.http.get<AvailabilityResponse[]>(`${this.baseUrl}/me/availability`);
+  getIndustries() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.industries
+    );
   }
 
-  addAvailability(request: AddAvailabilityRequest): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/me/availability`, request);
+  getSpecialists(filters: SpecialistsFilters) {
+    const params = buildHttpParams(filters);
+
+    return this.http.get<
+      ApiResponse<PaginatedResponse<SpecialistResponse>>
+    >(
+      API_ENDPOINTS.specialists.all,
+      { params }
+    );
   }
 
-  deleteAvailability(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/availability/${id}`);
+  getSpecialistById(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistDetailsResponse>
+    >(
+      API_ENDPOINTS.specialists.byId(id)
+    );
   }
 
-  // Experience
-  getExperience(): Observable<ExperienceDto[]> {
-    return this.http.get<ExperienceDto[]>(`${this.baseUrl}/me/experience`);
+  getReviews(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistReviewResponse[]>
+    >(
+      API_ENDPOINTS.specialists.reviewsFor(id)
+    );
   }
 
-  addExperience(request: AddExperienceRequestDTO): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/me/experience`, request);
+  getAvailability(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistAvailabilityResponse[]>
+    >(
+      API_ENDPOINTS.specialists.availabilityFor(id)
+    );
   }
 
-  updateExperience(id: string, request: UpdateExperienceRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/experience/${id}`, request);
+  onboard(
+    request: OnboardSpecialistRequest
+  ) {
+    return this.http.post<
+      ApiResponse<OnboardSpecialistResponse>
+    >(
+      API_ENDPOINTS.specialists.onboard,
+      request
+    );
   }
 
-  deleteExperience(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/experience/${id}`);
+  addExpertise(expertiseId: string) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.expertise,
+      { expertiseId }
+    );
   }
 
-  // Skills & Expertise
-  addExpertise(request: AddExpertiseRequest): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/me/expertise`, request);
+  addSkill(skillId: string) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.skills,
+      { skillId }
+    );
   }
 
-  deleteExpertise(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/expertise/${id}`);
+  addTool(toolId: string) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.tools,
+      { toolId }
+    );
   }
 
-  addSkill(request: AddSkillRequest): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/me/skills`, request);
-  }
-
-  deleteSkill(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/skills/${id}`);
-  }
-
-  // Policies
-  updateCancellationPolicy(request: UpdateCancellationPolicyRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/cancellation-policy`, request);
-  }
-
-  updateBookingPolicy(request: UpdateBookingPolicyRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/booking-policy`, request);
+  addAvailability(
+    start: string,
+    end: string,
+  ) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.availability,
+      {
+        start,
+        end,
+      }
+    );
   }
 }
