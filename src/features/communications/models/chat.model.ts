@@ -1,3 +1,16 @@
+import type { MessagePayload } from './message.model';
+
+export interface AppointmentDto {
+  id: string;
+  specialistId: string;
+  userId: string;
+  start: string;
+  end: string;
+  status: number;
+  sessionTopic: string;
+  notes: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -38,6 +51,7 @@ export interface ConversationDto {
   lastMessage?: string | null;
   lastMessageAt?: string | null;
   unreadCount: number;
+  appointmentId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -51,8 +65,9 @@ export interface MessageDto {
   isEdited: boolean;
   createdAtUtc: string;
   lastModifiedUtc: string;
+  isDeleted?: boolean;
   // Optional client-side state / event fields
   status?: 'sending' | 'delivered' | 'read';
-  payload?: any;
+  payload?: MessagePayload;
   isOwn?: boolean;
 }

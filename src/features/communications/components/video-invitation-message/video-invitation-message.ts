@@ -33,6 +33,14 @@ export class VideoInvitationMessage {
     return this.message().isEdited ? `${timeStr} Edited` : timeStr;
   });
 
+  readonly initials = computed(() => {
+    const name = this.message().senderName;
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  });
+
   onJoin() {
     const url = this.session()?.joinUrl;
     if (url) window.open(url, '_blank', 'noopener,noreferrer');

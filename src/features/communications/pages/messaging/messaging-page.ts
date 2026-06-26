@@ -1,9 +1,12 @@
 import {
-  Component, inject, OnInit, OnDestroy, HostListener
+  Component, inject, OnInit, OnDestroy, HostListener, effect
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatStore } from '../../store/chat.store';
 import { ChatSignalrService } from '../../services/chat-signalr.service';
+import { ConversationSidebar } from '../../components/conversation-sidebar/conversation-sidebar';
+import { ChatArea } from '../../components/chat-area/chat-area';
+import { ContextPanel } from '../../components/context-panel/context-panel';
 
 @Component({
   selector: 'app-messaging-page',
@@ -17,29 +20,27 @@ export class MessagingPage implements OnInit, OnDestroy {
   readonly signalrService = inject(ChatSignalrService);
   private readonly route = inject(ActivatedRoute);
 
-  // Route param: /chat/:id → auto-open that conversation
   private readonly conversationId = this.route.snapshot.paramMap.get('id');
+  private routeConversationOpened = false;
+
+  constructor() {
+    effect(() => {
+      const id = this.conversationId;
+      if (!id || this.routeConversationOpened) return;
+      if (this.store.isLoadingConversations()) return;
+
+      this.store.selectConversation(id);
+      this.routeConversationOpened = true;
+    });
+  }
 
   ngOnInit(): void {
-    // Connect to SignalR hub
     this.store.connectSignalR();
-
-    // Load conversation list
     this.store.loadConversations();
-
-    // If a conversation ID is in the URL, auto-open it after loading
-    if (this.conversationId) {
-      setTimeout(() => {
-        this.store.selectConversation(this.conversationId!);
-      }, 900);
-    }
-
-    // Detect viewport size for responsive layout
     this.checkViewport();
   }
 
   ngOnDestroy(): void {
-    // Clean up connections and leave active conversation group
     const activeId = this.store.activeConversationId();
     if (activeId) {
       this.store.leaveConversation(activeId);
@@ -56,8 +57,3 @@ export class MessagingPage implements OnInit, OnDestroy {
     this.store.isMobileView.set(window.innerWidth < 768);
   }
 }
-
-// Re-import imports needed for template
-import { ConversationSidebar } from '../../components/conversation-sidebar/conversation-sidebar';
-import { ChatArea } from '../../components/chat-area/chat-area';
-import { ContextPanel } from '../../components/context-panel/context-panel';

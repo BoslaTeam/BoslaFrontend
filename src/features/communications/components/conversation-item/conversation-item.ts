@@ -44,7 +44,12 @@ export class ConversationItem {
   });
 
   readonly formattedTime = computed(() => {
-    const d = new Date(this.conversation().lastMessageAt);
+    const lastMessageAt = this.conversation().lastMessageAt;
+    if (!lastMessageAt) return '';
+
+    const d = new Date(lastMessageAt);
+    if (isNaN(d.getTime())) return '';
+
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
     const diffMin = Math.floor(diffMs / 60000);

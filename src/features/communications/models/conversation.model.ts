@@ -19,6 +19,7 @@ export interface ConversationPreview {
   lastMessage: string;
   lastMessageAt: string;  // ISO datetime
   unreadCount: number;
+  appointmentId?: string;
 }
 
 export type ChatFilter = 'all' | 'unread';

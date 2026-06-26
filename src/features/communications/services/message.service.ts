@@ -43,8 +43,8 @@ export class MessageService {
     );
   }
 
-  deleteMessage(conversationId: string, messageId: string): Observable<void> {
-    return this.http.delete<void>(
+  deleteMessage(conversationId: string, messageId: string): Observable<ApiResponse<MessageDto | null> | null> {
+    return this.http.delete<ApiResponse<MessageDto | null> | null>(
       API_ENDPOINTS.conversations.messageById(conversationId, messageId)
     );
   }

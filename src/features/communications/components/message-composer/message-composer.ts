@@ -1,5 +1,5 @@
 import {
-  Component, inject, ElementRef, ViewChild, signal, HostListener
+  Component, inject, ElementRef, ViewChild, HostListener, signal, DestroyRef
 } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { ChatSignalrService } from '../../services/chat-signalr.service';
@@ -17,12 +17,22 @@ import { ChatSignalrService } from '../../services/chat-signalr.service';
 export class MessageComposer {
   readonly store = inject(ChatStore);
   readonly signalr = inject(ChatSignalrService);
+  private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
   readonly message = signal('');
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isCurrentlyTyping = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.typingTimeout) {
+        clearTimeout(this.typingTimeout);
+      }
+      this.stopTypingSignal();
+    });
+  }
 
   onInput(event: Event) {
     const value = (event.target as HTMLTextAreaElement).value;
@@ -33,7 +43,6 @@ export class MessageComposer {
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    // Send on Enter (not Shift+Enter)
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.send();
@@ -48,7 +57,6 @@ export class MessageComposer {
     this.message.set('');
     this.stopTypingSignal();
 
-    // Reset textarea height
     if (this.textareaRef?.nativeElement) {
       this.textareaRef.nativeElement.style.height = 'auto';
       this.textareaRef.nativeElement.focus();

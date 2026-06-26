@@ -49,5 +49,6 @@ export interface Message {
   createdAtUtc: string;   // ISO datetime string
   lastModifiedUtc?: string | null;
   isEdited?: boolean;
+  isDeleted?: boolean;
   isOwn: boolean;
 }

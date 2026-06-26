@@ -1,12 +1,20 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, inject, signal, computed, effect, WritableSignal, untracked } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { ConversationService } from '../services/conversation.service';
 import { MessageService } from '../services/message.service';
 import { ChatSignalrService } from '../services/chat-signalr.service';
 import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@core/services/toast.service';
-import { ConversationDto, ConversationParticipantDto, MessageDto } from '../models/chat.model';
-import { ChatFilter } from '../models/conversation.model';
+import {
+  ConversationDto,
+  MessageDto,
+  PaginationMetadata
+} from '../models/chat.model';
+import { ChatFilter, ConversationPreview, UserRole } from '../models/conversation.model';
 import { Message } from '../models/message.model';
+
+const DELETED_MESSAGE_TEXT = 'This message was deleted';
 
 @Injectable({ providedIn: 'root' })
 export class ChatStore {
@@ -16,31 +24,34 @@ export class ChatStore {
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
-  // ── Requested Store Signals ───────────────────────────────────────────────
+  private messagesRequestId = 0;
+
   readonly conversations = signal<ConversationDto[]>([]);
   readonly selectedConversation = signal<ConversationDto | null>(null);
-  readonly selectedConversationDetails = signal<any | null>(null);
   readonly messages = signal<MessageDto[]>([]);
-  readonly loading = signal<boolean>(false);
+  readonly messagesMetadata = signal<PaginationMetadata | null>(null);
+
+  readonly conversationsLoading = signal<boolean>(false);
+  readonly messagesLoading = signal<boolean>(false);
   readonly sending = signal<boolean>(false);
-  readonly error = signal<string | null>(null);
+  readonly editingMessageIds = signal<ReadonlySet<string>>(new Set());
+  readonly deletingMessageIds = signal<ReadonlySet<string>>(new Set());
+  readonly conversationsError = signal<string | null>(null);
+  readonly messagesError = signal<string | null>(null);
+
   readonly connectionState = computed(() => this.signalr.connectionState());
+  readonly isLoadingConversations = computed(() => this.conversationsLoading());
+  readonly isErrorConversations = computed(() => !!this.conversationsError());
+  readonly isLoadingMessages = computed(() => this.messagesLoading());
+  readonly isErrorMessages = computed(() => !!this.messagesError());
+  readonly isSendingMessage = computed(() => this.sending());
 
-  // ── Compatibility Loader and Error Signals ──────────────────────────────
-  readonly isLoadingConversations = computed(() => this.loading());
-  readonly isErrorConversations = computed(() => !!this.error());
-  readonly isLoadingMessages = computed(() => this.loading());
-  readonly isErrorMessages = computed(() => !!this.error());
-
-  // ── Compatibility UI State Signals ───────────────────────────────────────────
   readonly searchQuery = signal('');
   readonly activeFilter = signal<ChatFilter>('all');
   readonly isContextPanelOpen = signal(true);
   readonly isMobileView = signal(false);
   readonly activeMobilePanel = signal<'list' | 'chat'>('list');
-  readonly isSendingMessage = computed(() => this.sending());
 
-  // ── Derived State ─────────────────────────────────────────────────────────
   readonly activeConversationId = computed(() => this.selectedConversation()?.id ?? null);
 
   readonly totalUnread = computed(() =>
@@ -50,19 +61,25 @@ export class ChatStore {
   readonly isTyping = computed(() => {
     const convId = this.activeConversationId();
     if (!convId) return false;
-    const typingMap = this.signalr.typingUsers();
-    const typers = typingMap.get(convId);
-    return (typers?.size ?? 0) > 0;
+
+    const currentUserId = this.authService.currentUser()?.id;
+    const typers = this.signalr.typingUsers().get(convId);
+    if (!typers?.size) return false;
+
+    for (const userId of typers) {
+      if (userId !== currentUserId) {
+        return true;
+      }
+    }
+    return false;
   });
 
-  // Map selectedConversation to legacy format for template compatibility
   readonly activeConversation = computed(() => {
     const selected = this.selectedConversation();
     if (!selected) return null;
     return this.mapToConversationPreview(selected);
   });
 
-  // Filter conversations after mapping them to ConversationPreview for legacy layout
   readonly filteredConversations = computed(() => {
     const list = this.conversations();
     const q = this.searchQuery().toLowerCase().trim();
@@ -81,19 +98,12 @@ export class ChatStore {
     return mapped;
   });
 
-  // Expose messages mapped to compatibility format for the UI (Message interface)
   readonly uiMessages = computed<Message[]>(() => {
     const list = this.messages().map(m => this.mapToUiMessage(m));
-    return [...list].sort((a, b) => {
-      if (!a.createdAtUtc && b.createdAtUtc) return 1;
-      if (a.createdAtUtc && !b.createdAtUtc) return -1;
-      if (!a.createdAtUtc && !b.createdAtUtc) return 0;
-      return a.createdAtUtc.localeCompare(b.createdAtUtc);
-    });
+    return this.sortMessagesAsc(list);
   });
 
   constructor() {
-    // Set up reactive reactions to SignalR events using Angular effects
     effect(() => {
       const msg = this.signalr.messageReceived();
       if (msg) {
@@ -110,13 +120,26 @@ export class ChatStore {
 
     effect(() => {
       const data = this.signalr.messageDeleted();
-      if (data) {
-        this.handleIncomingMessageDeleted(data.messageId);
+      if (!data) return;
+
+      untracked(() => {
+        this.handleIncomingMessageDeleted(
+          data.conversationId,
+          data.messageId
+        );
+      });
+    });
+
+    effect(() => {
+      if (this.signalr.connectionState() === 'connected') {
+        const activeId = this.activeConversationId();
+        if (activeId) {
+          this.joinConversation(activeId);
+        }
       }
     });
   }
 
-  // ── Connection Handling Methods ──────────────────────────────────────────
   connectSignalR(): void {
     this.signalr.connect();
   }
@@ -133,11 +156,11 @@ export class ChatStore {
     this.signalr.leaveConversation(conversationId);
   }
 
-  // ── Actions / Methods ──────────────────────────────────────────────────────
   loadConversations(pageNumber = 1, pageSize = 50): void {
-    if (this.loading()) return;
-    this.loading.set(true);
-    this.error.set(null);
+    if (this.conversationsLoading()) return;
+
+    this.conversationsLoading.set(true);
+    this.conversationsError.set(null);
 
     this.conversationService.getConversations(pageNumber, pageSize).subscribe({
       next: (res) => {
@@ -145,16 +168,16 @@ export class ChatStore {
           this.conversations.set(res.data.items);
         } else {
           const errMsg = res.message || 'Failed to load conversations';
-          this.error.set(errMsg);
+          this.conversationsError.set(errMsg);
           this.toastService.danger(errMsg);
         }
-        this.loading.set(false);
+        this.conversationsLoading.set(false);
       },
       error: (err) => {
         const errMsg = err.message || 'An error occurred while loading conversations';
-        this.error.set(errMsg);
+        this.conversationsError.set(errMsg);
         this.toastService.danger(errMsg);
-        this.loading.set(false);
+        this.conversationsLoading.set(false);
       }
     });
   }
@@ -167,70 +190,73 @@ export class ChatStore {
 
     const existing = this.conversations().find(c => c.id === conversationId);
     if (existing) {
-      this.selectedConversation.set(existing);
-      this.selectedConversationDetails.set(existing);
-      this.messages.set([]);
-      this.activeMobilePanel.set('chat');
-
-      this.joinConversation(conversationId);
-
-      this.loadMessages(conversationId);
-      this.markConversationRead(conversationId);
-    } else {
-      this.loading.set(true);
-      this.error.set(null);
-      this.conversationService.getConversationById(conversationId).subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            this.selectedConversation.set(res.data);
-            this.selectedConversationDetails.set(res.data);
-            this.messages.set([]);
-            this.activeMobilePanel.set('chat');
-
-            this.joinConversation(conversationId);
-
-            this.loadMessages(conversationId);
-            this.markConversationRead(conversationId);
-          } else {
-            const errMsg = res.message || 'Conversation not found';
-            this.error.set(errMsg);
-            this.toastService.danger(errMsg);
-          }
-          this.loading.set(false);
-        },
-        error: (err) => {
-          const errMsg = err.message || 'Failed to select conversation';
-          this.error.set(errMsg);
-          this.toastService.danger(errMsg);
-          this.loading.set(false);
-        }
-      });
+      this.applyConversationSelection(existing, conversationId);
+      return;
     }
+
+    this.conversationsLoading.set(true);
+    this.conversationsError.set(null);
+
+    this.conversationService.getConversationById(conversationId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.applyConversationSelection(res.data, conversationId);
+        } else {
+          const errMsg = res.message || 'Conversation not found';
+          this.conversationsError.set(errMsg);
+          this.toastService.danger(errMsg);
+        }
+        this.conversationsLoading.set(false);
+      },
+      error: (err) => {
+        const errMsg = err.message || 'Failed to select conversation';
+        this.conversationsError.set(errMsg);
+        this.toastService.danger(errMsg);
+        this.conversationsLoading.set(false);
+      }
+    });
   }
 
   loadMessages(conversationId?: string, pageNumber = 1, pageSize = 50): void {
     const targetId = conversationId || this.activeConversationId();
     if (!targetId) return;
 
-    this.loading.set(true);
-    this.error.set(null);
+    const requestId = ++this.messagesRequestId;
+
+    this.messagesLoading.set(true);
+    this.messagesError.set(null);
 
     this.messageService.getMessages(targetId, pageNumber, pageSize).subscribe({
       next: (res) => {
+        if (requestId !== this.messagesRequestId || targetId !== this.activeConversationId()) {
+          return;
+        }
+
         if (res.success && res.data) {
-          this.messages.set(res.data.items);
+          this.messagesMetadata.set(res.data.metadata);
+          const sortedItems = this.sortMessageDtosAsc(res.data.items);
+
+          if (pageNumber > 1) {
+            this.messages.update(existing => this.mergeMessageDtos(sortedItems, existing));
+          } else {
+            this.messages.set(sortedItems);
+          }
         } else {
           const errMsg = res.message || 'Failed to load messages';
-          this.error.set(errMsg);
+          this.messagesError.set(errMsg);
           this.toastService.danger(errMsg);
         }
-        this.loading.set(false);
+        this.messagesLoading.set(false);
       },
       error: (err) => {
+        if (requestId !== this.messagesRequestId || targetId !== this.activeConversationId()) {
+          return;
+        }
+
         const errMsg = err.message || 'Failed to load messages';
-        this.error.set(errMsg);
+        this.messagesError.set(errMsg);
         this.toastService.danger(errMsg);
-        this.loading.set(false);
+        this.messagesLoading.set(false);
       }
     });
   }
@@ -240,16 +266,15 @@ export class ChatStore {
     if (!activeId || !messageText.trim() || this.sending()) return;
 
     this.sending.set(true);
-    this.error.set(null);
 
     const optimisticId = `optimistic-${Date.now()}`;
     const cleanText = messageText.trim();
+    const currentUserId = this.authService.currentUser()?.id || 'current-user';
 
-    // Optimistic update - Do not fabricate timestamps or Date.now() or copy conversation timestamps
     const optimisticMsg: MessageDto = {
       id: optimisticId,
       conversationId: activeId,
-      senderId: this.authService.currentUser()?.id || 'current-user',
+      senderId: currentUserId,
       senderName: this.authService.currentUser()?.fullName || 'You',
       messageText: cleanText,
       isEdited: false,
@@ -259,12 +284,11 @@ export class ChatStore {
       payload: { type: 'text', content: cleanText }
     };
 
-    this.messages.update(msgs => [...msgs, optimisticMsg]);
+    this.messages.update(msgs => this.insertMessageCreatedAtAsc(msgs, optimisticMsg));
 
-    // Update last message in conversation preview optimistically
     this.conversations.update(convs =>
       convs.map(c => c.id === activeId
-        ? { ...c, lastMessage: cleanText, lastMessageAt: '' }
+        ? { ...c, lastMessage: cleanText, lastMessageAt: c.lastMessageAt ?? '' }
         : c
       )
     );
@@ -272,15 +296,12 @@ export class ChatStore {
     this.messageService.sendMessage(activeId, cleanText).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          // Append exactly the backend response payload on success
           const finalMsg: MessageDto = {
             ...res.data,
             status: 'read'
           };
 
-          this.messages.update(msgs =>
-            msgs.map(m => m.id === optimisticId ? finalMsg : m)
-          );
+          this.messages.update(msgs => this.replaceOptimisticMessage(msgs, optimisticId, finalMsg));
 
           this.conversations.update(convs =>
             convs.map(c => c.id === activeId
@@ -289,7 +310,6 @@ export class ChatStore {
             )
           );
         } else {
-          // Rollback on API error
           this.messages.update(msgs => msgs.filter(m => m.id !== optimisticId));
           const errMsg = res.message || 'Failed to send message';
           this.toastService.danger(errMsg);
@@ -297,7 +317,6 @@ export class ChatStore {
         this.sending.set(false);
       },
       error: (err) => {
-        // Rollback on HTTP error
         this.messages.update(msgs => msgs.filter(m => m.id !== optimisticId));
         const errMsg = err.message || 'An error occurred while sending message';
         this.toastService.danger(errMsg);
@@ -306,86 +325,107 @@ export class ChatStore {
     });
   }
 
-  editMessage(messageId: string, messageText: string): void {
+  editMessage(messageId: string, messageText: string): Observable<boolean> {
     const activeId = this.activeConversationId();
-    if (!activeId || !messageText.trim()) return;
+    if (!activeId || !messageText.trim() || this.isEditingMessage(messageId) || !this.canModifyMessage(messageId)) return of(false);
 
     const originalMessages = this.messages();
     const cleanText = messageText.trim();
+    this.setMessagePending(this.editingMessageIds, messageId, true);
 
-    // Optimistic update
     this.messages.update(msgs =>
       msgs.map(m => m.id === messageId
         ? {
-            ...m,
-            messageText: cleanText,
-            isEdited: true,
-            payload: m.payload && m.payload.type === 'text' ? { ...m.payload, content: cleanText } : m.payload
-          }
+          ...m,
+          messageText: cleanText,
+          isEdited: true,
+          payload: m.payload && m.payload.type === 'text'
+            ? { ...m.payload, content: cleanText }
+            : m.payload
+        }
         : m
       )
     );
 
-    this.messageService.editMessage(activeId, messageId, cleanText).subscribe({
-      next: (res) => {
+    return this.messageService.editMessage(activeId, messageId, cleanText).pipe(
+      map((res) => {
         if (res.success && res.data) {
-          const updated = res.data;
           this.messages.update(msgs =>
-            msgs.map(m => m.id === messageId ? updated : m)
+            msgs.map(m => m.id === messageId
+              ? this.toRealtimeEditedMessage(m, { ...res.data, messageText: cleanText, isEdited: true })
+              : m
+            )
           );
+          return true;
         } else {
-          // Revert and load to refresh
           this.messages.set(originalMessages);
           const errMsg = res.message || 'Failed to edit message';
           this.toastService.danger(errMsg);
           this.loadMessages(activeId);
+          return false;
         }
-      },
-      error: (err) => {
-        // Rollback on failure
+      }),
+      catchError((err: unknown) => {
         this.messages.set(originalMessages);
-        const errMsg = err.message || 'Failed to edit message';
+        const errMsg = this.getErrorMessage(err, 'Failed to edit message');
         this.toastService.danger(errMsg);
-      }
-    });
+        return of(false);
+      }),
+      finalize(() => this.setMessagePending(this.editingMessageIds, messageId, false))
+    );
   }
 
-  deleteMessage(messageId: string): void {
+  deleteMessage(messageId: string): Observable<boolean> {
     const activeId = this.activeConversationId();
-    if (!activeId) return;
+    if (!activeId || this.isDeletingMessage(messageId) || !this.canModifyMessage(messageId)) return of(false);
 
-    const originalMessages = this.messages();
+    this.setMessagePending(this.deletingMessageIds, messageId, true);
 
-    // Optimistically remove from UI immediately
-    this.messages.update(msgs => msgs.filter(m => m.id !== messageId));
+    return this.messageService.deleteMessage(activeId, messageId).pipe(
+      map((res) => {
+        if (!res || res.success) {
+          const deletedMessage = res?.data ?? null;
+          this.messages.update(msgs =>
+            msgs.map(m => m.id === messageId ? this.toDeletedMessage(deletedMessage ?? m) : m)
+          );
+          this.updateDeletedConversationPreview(activeId, messageId);
+          return true;
+        }
 
-    this.messageService.deleteMessage(activeId, messageId).subscribe({
-      next: () => {
-        // Success - UI is already updated
-      },
-      error: (err) => {
-        // Rollback on error
-        this.messages.set(originalMessages);
-        const errMsg = err.message || 'Failed to delete message';
+        const errMsg = res.message || 'Failed to delete message';
         this.toastService.danger(errMsg);
-      }
-    });
+        return false;
+      }),
+      catchError((err: unknown) => {
+        const errMsg = this.getErrorMessage(err, 'Failed to delete message');
+        this.toastService.danger(errMsg);
+        return of(false);
+      }),
+      finalize(() => this.setMessagePending(this.deletingMessageIds, messageId, false))
+    );
+  }
+
+  isEditingMessage(messageId: string): boolean {
+    return this.editingMessageIds().has(messageId);
+  }
+
+  isDeletingMessage(messageId: string): boolean {
+    return this.deletingMessageIds().has(messageId);
   }
 
   refreshConversation(): void {
     const activeId = this.activeConversationId();
     if (!activeId) return;
+
     this.conversationService.getConversationById(activeId).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.selectedConversation.set(res.data);
-          this.selectedConversationDetails.set(res.data);
         }
       }
     });
   }
 
-  // ── Additional UI Action Helpers ──────────────────────────────────────────
   markConversationRead(conversationId: string): void {
     this.conversations.update(convs =>
       convs.map(c => c.id === conversationId ? { ...c, unreadCount: 0 } : c)
@@ -406,48 +446,31 @@ export class ChatStore {
   }
 
   goBackToList(): void {
+    const activeId = this.activeConversationId();
+    if (activeId) {
+      this.leaveConversation(activeId);
+    }
+
+    this.messages.set([]);
+    this.messagesMetadata.set(null);
+    this.messagesError.set(null);
     this.activeMobilePanel.set('list');
     this.selectedConversation.set(null);
-    this.selectedConversationDetails.set(null);
   }
 
-  /** Called when a real-time message arrives from SignalR polling / fallbacks */
-  handleIncomingMessage(msg: Message): void {
-    const dto: MessageDto = {
-      id: msg.id,
-      conversationId: msg.conversationId,
-      senderId: msg.senderId,
-      senderName: msg.senderName,
-      messageText: msg.messageText,
-      isEdited: msg.isEdited ?? false,
-      createdAtUtc: msg.createdAtUtc,
-      lastModifiedUtc: msg.lastModifiedUtc ?? '',
-      status: msg.status,
-      payload: msg.payload
-    };
-    this.handleIncomingMessageDto(dto);
-  }
-
-  // ── Direct Dto Event Handlers from SignalR Service ───────────────────────
   handleIncomingMessageDto(dto: MessageDto): void {
     const activeId = this.activeConversationId();
-
-    if (this.messages().some(m => m.id === dto.id)) {
-      return;
-    }
+    const currentUserId = this.authService.currentUser()?.id;
 
     if (dto.conversationId === activeId) {
-      this.messages.update(msgs => [...msgs, dto]);
+      this.messages.update(msgs => this.upsertActiveConversationMessage(msgs, dto, currentUserId));
     }
 
-    // Resolve the message text
     const messageText = dto.messageText || '';
 
-    // Update conversation list preview and move it to top of list
     this.conversations.update(convs => {
       const targetIndex = convs.findIndex(c => c.id === dto.conversationId);
       if (targetIndex === -1) {
-        // Fetch new conversation if not in current list
         this.conversationService.getConversationById(dto.conversationId).subscribe({
           next: (res) => {
             if (res.success && res.data) {
@@ -484,45 +507,162 @@ export class ChatStore {
     const activeId = this.activeConversationId();
     if (dto.conversationId === activeId) {
       this.messages.update(msgs =>
-        msgs.map(m => m.id === dto.id ? { ...m, ...dto } : m)
+        msgs.map(m => m.id === dto.id ? this.toRealtimeEditedMessage(m, dto) : m)
       );
     }
 
-    // Update conversation preview text
-    this.conversations.update(convs =>
-      convs.map(c => c.id === dto.conversationId
-        ? { ...c, lastMessage: dto.messageText }
-        : c
+    this.updateEditedConversationPreview(dto);
+  }
+
+  handleIncomingMessageDeleted(
+    conversationId: string,
+    messageId: string
+  ): void {
+
+    const activeId = this.activeConversationId();
+
+    if (conversationId && activeId !== conversationId) {
+      return;
+    }
+
+    const targetConversationId =
+      conversationId || activeId;
+
+    if (!targetConversationId) {
+      return;
+    }
+
+    this.messages.update(messages =>
+      messages.map(m =>
+        m.id === messageId
+          ? this.toDeletedMessage(m)
+          : m
       )
+    );
+
+    this.updateDeletedConversationPreview(
+      targetConversationId,
+      messageId
     );
   }
 
-  handleIncomingMessageDeleted(messageId: string): void {
-    this.messages.update(msgs => msgs.filter(m => m.id !== messageId));
+  private applyConversationSelection(conversation: ConversationDto, conversationId: string): void {
+    this.selectedConversation.set(conversation);
+    this.messages.set([]);
+    this.messagesMetadata.set(null);
+    this.messagesError.set(null);
+    this.activeMobilePanel.set('chat');
+    this.joinConversation(conversationId);
+    this.loadMessages(conversationId);
+    this.markConversationRead(conversationId);
   }
 
-  // ── Private Mappers ────────────────────────────────────────────────────────
-  private mapToConversationPreview(dto: ConversationDto): any {
+  private upsertActiveConversationMessage(
+    msgs: MessageDto[],
+    dto: MessageDto,
+    currentUserId: string | undefined
+  ): MessageDto[] {
+    const existingIndex = msgs.findIndex(m => m.id === dto.id);
+    if (existingIndex >= 0) {
+      return msgs;
+    }
+
+    if (dto.senderId === currentUserId) {
+      const optimisticIndex = msgs.findIndex(m => m.id.startsWith('optimistic-'));
+      if (optimisticIndex >= 0) {
+        return this.sortMessageDtosAsc(msgs.map((m, index) => index === optimisticIndex ? dto : m));
+      }
+    }
+
+    return this.insertMessageCreatedAtAsc(msgs, dto);
+  }
+
+  private replaceOptimisticMessage(
+    msgs: MessageDto[],
+    optimisticId: string,
+    finalMsg: MessageDto
+  ): MessageDto[] {
+    const withoutOptimistic = msgs.filter(m => m.id !== optimisticId);
+    const existingIndex = withoutOptimistic.findIndex(m => m.id === finalMsg.id);
+
+    if (existingIndex >= 0) {
+      return withoutOptimistic.map(m => m.id === finalMsg.id ? finalMsg : m);
+    }
+
+    return this.insertMessageCreatedAtAsc(withoutOptimistic, finalMsg);
+  }
+
+  private insertMessageCreatedAtAsc(items: MessageDto[], message: MessageDto): MessageDto[] {
+    if (items.some(item => item.id === message.id)) {
+      return items;
+    }
+
+    const next = items.slice();
+    const messageCreatedAt = message.createdAtUtc || '';
+    const insertIndex = next.findIndex(item => {
+      if (!messageCreatedAt) return false;
+      if (!item.createdAtUtc) return true;
+      return messageCreatedAt.localeCompare(item.createdAtUtc) < 0;
+    });
+
+    if (insertIndex === -1) {
+      next.splice(next.length, 0, message);
+      return next;
+    }
+
+    next.splice(insertIndex, 0, message);
+    return next;
+  }
+
+  private sortMessageDtosAsc(items: MessageDto[]): MessageDto[] {
+    return items.slice().sort((a, b) => {
+      if (!a.createdAtUtc && b.createdAtUtc) return 1;
+      if (a.createdAtUtc && !b.createdAtUtc) return -1;
+      if (!a.createdAtUtc && !b.createdAtUtc) return 0;
+      return a.createdAtUtc.localeCompare(b.createdAtUtc);
+    });
+  }
+
+  private sortMessagesAsc(items: Message[]): Message[] {
+    return items.slice().sort((a, b) => {
+      if (!a.createdAtUtc && b.createdAtUtc) return 1;
+      if (a.createdAtUtc && !b.createdAtUtc) return -1;
+      if (!a.createdAtUtc && !b.createdAtUtc) return 0;
+      return a.createdAtUtc.localeCompare(b.createdAtUtc);
+    });
+  }
+
+  private mergeMessageDtos(incoming: MessageDto[], existing: MessageDto[]): MessageDto[] {
+    const merged = new Map<string, MessageDto>();
+
+    for (const message of incoming) {
+      merged.set(message.id, message);
+    }
+    for (const message of existing) {
+      if (!merged.has(message.id)) {
+        merged.set(message.id, message);
+      }
+    }
+
+    return this.sortMessageDtosAsc(Array.from(merged.values()));
+  }
+
+  private mapToConversationPreview(dto: ConversationDto): ConversationPreview {
     const currentUserId = this.authService.currentUser()?.id;
     const other = dto.participants.find(p => p.id !== currentUserId) || dto.participants[0];
 
-    // Support either lastMessage as string, or lastMessage as MessageDto object
     let lastMsgText = '';
     if (dto.lastMessage) {
       if (typeof dto.lastMessage === 'object') {
-        lastMsgText = (dto.lastMessage as any).messageText || '';
+        lastMsgText = (dto.lastMessage as MessageDto).messageText || '';
       } else {
         lastMsgText = String(dto.lastMessage);
       }
     }
 
-    // Support either lastMessageAt or createdAtUtc inside lastMessage
     let lastMsgAt = dto.lastMessageAt || '';
     if (!lastMsgAt && dto.lastMessage && typeof dto.lastMessage === 'object') {
-      lastMsgAt = (dto.lastMessage as any).createdAtUtc || '';
-    }
-    if (!lastMsgAt) {
-      lastMsgAt = new Date().toISOString();
+      lastMsgAt = (dto.lastMessage as MessageDto).createdAtUtc || '';
     }
 
     return {
@@ -531,7 +671,7 @@ export class ChatStore {
         id: other.id,
         name: other.fullName,
         avatarUrl: other.avatarUrl,
-        role: other.role,
+        role: this.toUserRole(other.role),
         isOnline: other.isOnline,
         lastSeenAt: other.lastSeenAt,
         bio: other.bio,
@@ -548,14 +688,15 @@ export class ChatStore {
       },
       lastMessage: lastMsgText,
       lastMessageAt: lastMsgAt,
-      unreadCount: dto.unreadCount
+      unreadCount: dto.unreadCount,
+      appointmentId: dto.appointmentId,
     };
   }
 
   private mapToUiMessage(dto: MessageDto): Message {
     const currentUserId = this.authService.currentUser()?.id;
+    const messageText = dto.isDeleted ? DELETED_MESSAGE_TEXT : dto.messageText;
 
-    // Resolve senderName
     let senderName = dto.senderName;
     if (!senderName) {
       if (dto.senderId === currentUserId) {
@@ -588,16 +729,94 @@ export class ChatStore {
       conversationId: dto.conversationId,
       senderId: dto.senderId,
       senderName,
-      messageText: dto.messageText,
-      payload: dto.payload || {
+      messageText,
+      payload: dto.isDeleted ? {
         type: 'text',
-        content: dto.messageText
+        content: DELETED_MESSAGE_TEXT
+      } : dto.payload || {
+        type: 'text',
+        content: messageText
       },
       status: dto.status || 'read',
       createdAtUtc: dto.createdAtUtc,
       lastModifiedUtc: dto.lastModifiedUtc,
       isEdited: dto.isEdited,
-      isOwn: dto.senderId === (currentUserId || 'current-user')
+      isDeleted: dto.isDeleted,
+      isOwn: dto.senderId === currentUserId
     };
+  }
+
+  private toDeletedMessage(message: MessageDto): MessageDto {
+    return {
+      ...message,
+      messageText: DELETED_MESSAGE_TEXT,
+      isDeleted: true,
+      payload: {
+        type: 'text',
+        content: DELETED_MESSAGE_TEXT
+      }
+    };
+  }
+
+  private toRealtimeEditedMessage(current: MessageDto, incoming: MessageDto): MessageDto {
+    const messageText = incoming.messageText ?? current.messageText;
+
+    return {
+      ...current,
+      messageText,
+      isEdited: incoming.isEdited ?? true,
+      lastModifiedUtc: incoming.lastModifiedUtc || current.lastModifiedUtc,
+      payload: current.payload && current.payload.type === 'text'
+        ? { ...current.payload, content: messageText }
+        : current.payload
+    };
+  }
+
+  private canModifyMessage(messageId: string): boolean {
+    const currentUserId = this.authService.currentUser()?.id;
+    const message = this.messages().find(m => m.id === messageId);
+    return !!message && !!currentUserId && message.senderId === currentUserId && !message.isDeleted;
+  }
+
+  private updateDeletedConversationPreview(conversationId: string, messageId: string): void {
+    const wasLatest = this.messages().at(-1)?.id === messageId;
+    if (!wasLatest) return;
+
+    this.conversations.update(convs =>
+      convs.map(c => c.id === conversationId ? { ...c, lastMessage: DELETED_MESSAGE_TEXT } : c)
+    );
+  }
+
+  private updateEditedConversationPreview(message: MessageDto): void {
+    const latestMessage = this.messages().at(-1);
+    if (latestMessage?.id !== message.id) return;
+
+    this.conversations.update(convs =>
+      convs.map(c => c.id === message.conversationId ? { ...c, lastMessage: message.messageText } : c)
+    );
+  }
+
+  private setMessagePending(
+    target: WritableSignal<ReadonlySet<string>>,
+    messageId: string,
+    pending: boolean
+  ): void {
+    target.update(ids => {
+      const next = new Set(ids);
+      if (pending) {
+        next.add(messageId);
+      } else {
+        next.delete(messageId);
+      }
+      return next;
+    });
+  }
+
+  private toUserRole(role: string): UserRole {
+    return role === 'specialist' || role === 'consultant' || role === 'business' ? role : 'user';
+  }
+
+  private getErrorMessage(error: unknown, fallback: string): string {
+    return error instanceof Error && error.message ? error.message : fallback;
   }
 }

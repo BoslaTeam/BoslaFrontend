@@ -11,7 +11,7 @@ import { MessageComposer } from '../message-composer/message-composer';
   templateUrl: './chat-area.html',
   styleUrl: '../../chat.css',
   host: {
-    class: 'block h-full min-h-0'
+    class: 'flex flex-col h-full min-h-0 overflow-hidden'
   }
 })
 export class ChatArea {

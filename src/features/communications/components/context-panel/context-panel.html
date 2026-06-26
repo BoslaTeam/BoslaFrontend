@@ -1,179 +1,278 @@
-<aside class="chat-context" role="complementary" aria-label="Contact information">
+<!-- Mobile Backdrop (drawer overlay) -->
+<div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300" (click)="store.toggleContextPanel()"></div>
 
-  <!-- Header -->
-  <div class="chat-context-header">
-    <span class="chat-context-title">Contact Info</span>
-    <button class="chat-icon-btn" (click)="store.toggleContextPanel()" aria-label="Close panel" title="Close">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<!-- Sidebar Container -->
+<aside
+  class="fixed inset-y-0 right-0 z-50 w-full max-w-[380px] bg-white border-l border-slate-100 shadow-2xl flex flex-col h-full overflow-hidden md:static md:w-full md:max-w-none md:shadow-none md:border-l md:border-slate-100"
+  role="complementary"
+  aria-label="Contact information"
+>
+
+  <!-- ── Header ── -->
+  <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white shrink-0">
+    <button (click)="store.toggleContextPanel()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-bosla-charcoal/80 hover:bg-slate-50 hover:text-bosla-charcoal rounded-lg transition-all duration-200 border border-slate-100 hover:border-slate-200" id="ctx-close" aria-label="Close panel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
+      Close
     </button>
+    
+    <div class="flex items-center gap-1">
+      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-bosla-grey hover:bg-slate-50 hover:text-bosla-charcoal transition-all" id="ctx-search-profile" aria-label="Search profile">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-bosla-grey hover:bg-slate-50 hover:text-bosla-charcoal transition-all" id="ctx-more-options" aria-label="More options">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <div class="chat-context-body">
+  <!-- ── Scrollable Body ── -->
+  <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 bg-white">
 
     @if (participant()) {
 
-      <!-- ── Profile Summary ── -->
-      <div class="chat-profile-section">
-        <!-- Avatar -->
-        <div class="chat-profile-avatar">
-          @if (participant()!.avatarUrl) {
-            <img [src]="participant()!.avatarUrl" [alt]="participant()!.name" />
+      <!-- ── Profile Hero ── -->
+      <div class="flex flex-col items-center text-center p-6 border-b border-slate-100/80 gap-3">
+        
+        <!-- Avatar Wrap -->
+        <div class="relative">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white flex items-center justify-center text-2xl font-bold border-2 border-white shadow-md ring-2 ring-slate-100 overflow-hidden">
+            @if (participant()!.avatarUrl) {
+              <img [src]="participant()!.avatarUrl" [alt]="participant()!.name" class="w-full h-full object-cover" />
+            } @else {
+              {{ initials() }}
+            }
+          </div>
+          @if (participant()!.isOnline) {
+            <span class="absolute bottom-0.5 right-0.5 flex h-4.5 w-4.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-bosla-success opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-4.5 w-4.5 bg-bosla-success border-2 border-white"></span>
+            </span>
           } @else {
-            {{ initials() }}
+            <span class="absolute bottom-0.5 right-0.5 h-4.5 w-4.5 rounded-full bg-bosla-grey border-2 border-white"></span>
           }
         </div>
 
-        <!-- Name -->
-        <div class="chat-profile-name">{{ participant()!.name }}</div>
+        <!-- Typography & Meta -->
+        <div class="flex flex-col items-center gap-1">
+          <h3 class="text-base font-bold text-bosla-primary tracking-tight">{{ participant()!.name }}</h3>
+          
+          @if (participant()!.specialization) {
+            <span class="text-xs font-semibold text-bosla-charcoal/70 leading-none">
+              {{ participant()!.specialization }}
+            </span>
+          }
+          
+          <div class="flex items-center gap-1.5 mt-1.5">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider" [class]="roleBadgeClass()">
+              {{ roleLabel() }}
+            </span>
 
-        <!-- Specialization -->
-        @if (participant()!.specialization) {
-          <div class="chat-profile-spec">{{ participant()!.specialization }}</div>
-        }
-
-        <!-- Role badge -->
-        <div style="display: flex; justify-content: center; margin-bottom: 0.75rem;">
-          <span class="chat-role-badge" [class]="roleBadgeClass()">{{ roleLabel() }}</span>
+            @if (participant()!.isOnline) {
+              <span class="inline-flex items-center gap-1 text-[10px] font-bold text-bosla-success bg-bosla-success/5 px-2 py-0.5 rounded-full border border-bosla-success/15">
+                Online now
+              </span>
+            }
+          </div>
         </div>
 
-        <!-- Rating -->
+        <!-- Rating Summary -->
         @if (participant()!.rating) {
-          <div class="chat-profile-rating">
-            <div class="chat-profile-stars" aria-label="Rating: {{ participant()!.rating }} out of 5">
+          <div class="flex items-center justify-center gap-1.5 mt-0.5 text-xs text-bosla-charcoal font-semibold">
+            <div class="flex gap-0.5 text-bosla-orange" [attr.aria-label]="'Rating: ' + participant()!.rating + ' out of 5'">
               @for (star of stars(); track $index) {
                 @if (star === 'full') {
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
                 } @else {
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.3;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-30">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
                 }
               }
             </div>
-            <span style="font-size: 0.875rem; font-weight: 700; color: var(--chat-charcoal);">{{ participant()!.rating }}</span>
+            <span>{{ participant()!.rating }}</span>
             @if (participant()!.reviewCount) {
-              <span style="font-size: 0.75rem; color: var(--chat-grey);">({{ participant()!.reviewCount }} reviews)</span>
+              <span class="text-bosla-grey font-medium text-[10px]">({{ participant()!.reviewCount }} reviews)</span>
             }
           </div>
         }
 
-        <!-- Bio -->
-        @if (participant()!.bio) {
-          <p class="chat-profile-bio">{{ participant()!.bio }}</p>
-        }
       </div>
 
-      <!-- ── Upcoming Appointment ── -->
-      @if (upcomingAppointment()) {
-        <div class="chat-context-section">
-          <div class="chat-context-section-title">Upcoming Session</div>
-          <div class="chat-upcoming-card">
-            <!-- Icon + title -->
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.625rem;">
-              <div style="width: 1.75rem; height: 1.75rem; border-radius: 0.5rem; background: rgba(27,79,114,0.1); display: flex; align-items: center; justify-content: center; color: var(--chat-primary); flex-shrink: 0;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-              </div>
-              <span class="chat-upcoming-title">{{ upcomingAppointment()!.title }}</span>
-            </div>
-            <div class="chat-upcoming-detail">
-              <svg class="chat-upcoming-detail-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-              {{ upcomingAppointment()!.date }}
-            </div>
-            <div class="chat-upcoming-detail">
-              <svg class="chat-upcoming-detail-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              {{ upcomingAppointment()!.time }} · {{ upcomingAppointment()!.duration }} min
-            </div>
-            <div class="chat-upcoming-detail">
-              <svg class="chat-upcoming-detail-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-              </svg>
-              <span class="chat-session-pill">{{ upcomingAppointment()!.sessionType }}</span>
-            </div>
-          </div>
+      <!-- ── Next Session Widget Card ── -->
+      @if (appointmentId()) {
+        <div class="p-5 border-b border-slate-100 bg-slate-50/20 flex flex-col gap-3">
+          <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Next Session</h4>
+          <chat-upcoming-session-card [appointmentId]="appointmentId()!" />
         </div>
       }
 
-      <!-- ── Quick Actions ── -->
-      <div class="chat-context-section">
-        <div class="chat-context-section-title">Quick Actions</div>
-        <div class="chat-quick-actions">
-          <button class="chat-btn-primary-sm" id="ctx-book-session" aria-label="Book a session">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            Book a Session
+      <!-- ── Quick Actions Grid ── -->
+      <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Quick Actions</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Book Another Session: Spans 2 columns to highlight primary CTA -->
+          <button class="col-span-2 group flex flex-col items-center justify-center p-4 rounded-xl border border-bosla-primary/5 bg-gradient-to-br from-bosla-primary to-bosla-blue text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-book-session">
+            <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition-transform">➕</span>
+            <span class="text-xs font-bold">Book Another Session</span>
           </button>
-          <button class="chat-btn-ghost-sm" id="ctx-schedule-followup" aria-label="Schedule follow-up">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            Schedule Follow-up
+          
+          <!-- View Profile -->
+          <button class="group flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200/70 bg-white hover:border-bosla-primary/20 shadow-sm hover:shadow hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-view-profile">
+            <span class="w-8 h-8 rounded-lg bg-slate-50 text-bosla-primary flex items-center justify-center text-lg mb-1.5 group-hover:scale-110 transition-transform">👤</span>
+            <span class="text-xs font-bold text-bosla-primary">View Profile</span>
           </button>
-          <button class="chat-btn-ghost-sm" id="ctx-view-profile" aria-label="View full profile">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
-            View Full Profile
+          
+          <!-- Schedule Follow-up -->
+          <button class="group flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200/70 bg-white hover:border-bosla-primary/20 shadow-sm hover:shadow hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-schedule-followup">
+            <span class="w-8 h-8 rounded-lg bg-slate-50 text-bosla-primary flex items-center justify-center text-lg mb-1.5 group-hover:scale-110 transition-transform">📅</span>
+            <span class="text-xs font-bold text-bosla-primary">Schedule Follow</span>
           </button>
         </div>
       </div>
 
-      <!-- ── Shared Items ── -->
-      <div class="chat-context-section" style="border-bottom: none;">
-        <div class="chat-context-section-title">Shared in Conversation</div>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <!-- Appointment shared item -->
-          <div style="display: flex; align-items: center; gap: 0.625rem; padding: 0.5rem; border-radius: 0.625rem; background: var(--chat-surface-2);">
-            <div style="width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(27,79,114,0.08); display: flex; align-items: center; justify-content: center; color: var(--chat-primary); flex-shrink: 0;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
+      <!-- ── Conversation Insights ── -->
+      <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Conversation Insights</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Messages</span>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">148 messages</span>
+          </div>
+          <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Started</span>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">2 weeks ago</span>
+          </div>
+          <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col col-span-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Last Activity</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-bosla-success"></span>
             </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="font-size: 0.75rem; font-weight: 600; color: var(--chat-charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Career Development Session</div>
-              <div style="font-size: 0.6875rem; color: var(--chat-grey);">Appointment Card</div>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">Active 10m ago</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Shared Resources Grid ── -->
+      <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Shared Resources</h4>
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Appointment Resource -->
+          <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
+            <span class="w-8 h-8 rounded-lg bg-bosla-primary/5 flex items-center justify-center text-base text-bosla-primary shrink-0">📄</span>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs font-bold text-bosla-charcoal truncate">Appointment</span>
+              <span class="text-[9px] text-bosla-grey truncate">Session Info</span>
             </div>
           </div>
-          <!-- Video session shared item -->
-          <div style="display: flex; align-items: center; gap: 0.625rem; padding: 0.5rem; border-radius: 0.625rem; background: var(--chat-surface-2);">
-            <div style="width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(46,134,171,0.08); display: flex; align-items: center; justify-content: center; color: var(--chat-blue); flex-shrink: 0;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-              </svg>
+          
+          <!-- Video Session Resource -->
+          <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
+            <span class="w-8 h-8 rounded-lg bg-bosla-blue/5 flex items-center justify-center text-base text-bosla-blue shrink-0">🎥</span>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs font-bold text-bosla-charcoal truncate">Video Session</span>
+              <span class="text-[9px] text-bosla-grey truncate">Link Invite</span>
             </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="font-size: 0.75rem; font-weight: 600; color: var(--chat-charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Career Development — Video</div>
-              <div style="font-size: 0.6875rem; color: var(--chat-grey);">Video Session Invite</div>
+          </div>
+          
+          <!-- Session Summary Resource -->
+          <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
+            <span class="w-8 h-8 rounded-lg bg-bosla-orange/5 flex items-center justify-center text-base text-bosla-orange shrink-0">📝</span>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs font-bold text-bosla-charcoal truncate">Summary</span>
+              <span class="text-[9px] text-bosla-grey truncate">Notes Doc</span>
+            </div>
+          </div>
+          
+          <!-- Files Resource -->
+          <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base text-slate-600 shrink-0">📎</span>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs font-bold text-bosla-charcoal truncate">Files</span>
+              <span class="text-[9px] text-bosla-grey truncate">Documents</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ── Specialist Information ── -->
+      <div class="p-5 flex flex-col gap-4">
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Specialist Information</h4>
+        
+        <!-- Bio -->
+        @if (participant()!.bio) {
+          <div class="flex flex-col gap-1">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Professional Bio</span>
+            <p class="text-xs text-bosla-charcoal leading-relaxed font-normal bg-slate-50/50 rounded-lg p-2.5 border border-slate-100/50">
+              {{ participant()!.bio }}
+            </p>
+          </div>
+        }
+        
+        <!-- Meta Attributes Grid -->
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Languages</span>
+            <span class="font-bold text-bosla-charcoal">English, Arabic</span>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Timezone</span>
+            <span class="font-bold text-bosla-charcoal">GMT +3</span>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Experience</span>
+            <span class="font-bold text-bosla-charcoal">5+ Years</span>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Availability</span>
+            <span class="font-bold text-bosla-charcoal">Mon - Fri, 9am-5pm</span>
+          </div>
+        </div>
+        
+        <!-- Skills Tags -->
+        <div class="flex flex-col gap-2">
+          <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Skills & Expertise</span>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Career Coaching</span>
+            <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Resume Building</span>
+            <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Public Speaking</span>
+            <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Interview Prep</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bottom CTA Sticky Footer ── -->
+      <div class="p-5 border-t border-slate-100 bg-white flex flex-col gap-2 shrink-0">
+        <button class="w-full bg-bosla-orange hover:bg-bosla-orange/95 text-white font-bold py-3 rounded-xl transition-all duration-200 text-xs shadow-sm hover:shadow cursor-pointer">
+          Book New Session
+        </button>
+        <button class="w-full bg-white border border-slate-200 hover:border-bosla-primary/20 text-bosla-primary hover:bg-slate-50 font-bold py-3 rounded-xl transition-all duration-200 text-xs cursor-pointer">
+          View Full Profile
+        </button>
       </div>
 
     } @else {
+
       <!-- No conversation selected -->
-      <div class="chat-empty-state" style="min-height: 20rem;">
-        <div class="chat-empty-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <div class="flex flex-col items-center justify-center p-8 text-center h-full gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
         </div>
-        <p class="chat-empty-title" style="font-size: 0.875rem;">No contact selected</p>
-        <p class="chat-empty-desc" style="font-size: 0.75rem;">Select a conversation to see contact details.</p>
+        <div class="flex flex-col gap-1 max-w-[240px]">
+          <h4 class="text-sm font-bold text-bosla-charcoal">No contact selected</h4>
+          <p class="text-xs text-bosla-grey leading-normal">Select a conversation from the sidebar to view detailed specialist information.</p>
+        </div>
       </div>
+
     }
 
   </div>

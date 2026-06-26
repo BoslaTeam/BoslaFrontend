@@ -1,9 +1,7 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '@environments/environment';
 import { MessageDto } from '../models/chat.model';
-import { Message } from '../models/message.model';
-import { AuthService } from '@core/services/auth.service';
 
 export interface TypingEvent {
   conversationId: string;
@@ -11,12 +9,21 @@ export interface TypingEvent {
   userName: string;
 }
 
+interface MessageDeletedPayload {
+  conversationId?: string;
+  ConversationId?: string;
+  messageId?: string;
+  MessageId?: string;
+  id?: string;
+  Id?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ChatSignalrService {
   private hubConnection: signalR.HubConnection | null = null;
-  private readonly authService = inject(AuthService);
+  private readonly joinedConversationIds = new Set<string>();
+  private readonly pendingJoinIds = new Set<string>();
 
-  // Expose readonly signals
   private readonly _messageReceived = signal<MessageDto | null>(null);
   readonly messageReceived = this._messageReceived.asReadonly();
 
@@ -27,12 +34,7 @@ export class ChatSignalrService {
   readonly messageDeleted = this._messageDeleted.asReadonly();
 
   readonly connectionState = signal<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
-
-  // Compatibility signals for the legacy UI references
-  readonly incomingMessage = signal<Message | null>(null);
   readonly typingUsers = signal<Map<string, Set<string>>>(new Map());
-  readonly onlineStatuses = signal<Map<string, boolean>>(new Map());
-  readonly messageStatusUpdate = signal<{ messageId: string; status: 'delivered' | 'read' } | null>(null);
 
   connect(): void {
     if (this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
@@ -59,32 +61,15 @@ export class ChatSignalrService {
 
     this.hubConnection.onreconnected(() => {
       this.connectionState.set('connected');
+      this.rejoinJoinedConversations();
     });
 
     this.hubConnection.onclose(() => {
       this.connectionState.set('disconnected');
     });
 
-    // Register event listeners
-    this.hubConnection.on('MessageReceived', (message: MessageDto) => {
-      this._messageReceived.set(message);
-      // Legacy structure mapping for fallback UI logic
-      this.incomingMessage.set(this.mapDtoToMessage(message));
-    });
+    this.registerChatListeners(this.hubConnection);
 
-    this.hubConnection.on('MessageEdited', (message: MessageDto) => {
-      this._messageEdited.set(message);
-    });
-
-    this.hubConnection.on('MessageDeleted', (data: { conversationId: string; messageId: string } | string) => {
-      if (typeof data === 'string') {
-        this._messageDeleted.set({ conversationId: '', messageId: data });
-      } else {
-        this._messageDeleted.set(data);
-      }
-    });
-
-    // Typing and status events
     this.hubConnection.on('UserTyping', (event: TypingEvent) => {
       this.typingUsers.update(map => {
         const updated = new Map(map);
@@ -104,33 +89,11 @@ export class ChatSignalrService {
       });
     });
 
-    this.hubConnection.on('UserOnline', (userId: string) => {
-      this.onlineStatuses.update(map => {
-        const updated = new Map(map);
-        updated.set(userId, true);
-        return updated;
-      });
-    });
-
-    this.hubConnection.on('UserOffline', (userId: string) => {
-      this.onlineStatuses.update(map => {
-        const updated = new Map(map);
-        updated.set(userId, false);
-        return updated;
-      });
-    });
-
-    this.hubConnection.on('MessageDelivered', (messageId: string) => {
-      this.messageStatusUpdate.set({ messageId, status: 'delivered' });
-    });
-
-    this.hubConnection.on('MessageRead', (messageId: string) => {
-      this.messageStatusUpdate.set({ messageId, status: 'read' });
-    });
-
     this.hubConnection.start()
       .then(() => {
         this.connectionState.set('connected');
+        this.flushPendingJoins();
+        this.rejoinJoinedConversations();
       })
       .catch((err) => {
         console.error('SignalR Hub Connection Error:', err);
@@ -140,20 +103,31 @@ export class ChatSignalrService {
 
   disconnect(): void {
     if (this.hubConnection) {
+      this.unregisterChatListeners(this.hubConnection);
       this.hubConnection.stop();
       this.hubConnection = null;
       this.connectionState.set('disconnected');
+      this.joinedConversationIds.clear();
+      this.pendingJoinIds.clear();
     }
   }
 
   joinConversation(conversationId: string): void {
+    if (this.joinedConversationIds.has(conversationId) || this.pendingJoinIds.has(conversationId)) {
+      return;
+    }
+
+    this.pendingJoinIds.add(conversationId);
+
     if (this.hubConnection && this.connectionState() === 'connected') {
-      this.hubConnection.invoke('JoinConversation', conversationId)
-        .catch(err => console.error('SignalR error invoking JoinConversation:', err));
+      this.invokeJoin(conversationId);
     }
   }
 
   leaveConversation(conversationId: string): void {
+    this.pendingJoinIds.delete(conversationId);
+    this.joinedConversationIds.delete(conversationId);
+
     if (this.hubConnection && this.connectionState() === 'connected') {
       this.hubConnection.invoke('LeaveConversation', conversationId)
         .catch(err => console.error('SignalR error invoking LeaveConversation:', err));
@@ -162,36 +136,96 @@ export class ChatSignalrService {
 
   sendTyping(conversationId: string): void {
     if (this.hubConnection && this.connectionState() === 'connected') {
-      this.hubConnection.invoke('Typing', conversationId).catch(() => {});
+      this.hubConnection.invoke('Typing', conversationId).catch(() => { });
     }
   }
 
   stopTyping(conversationId: string): void {
     if (this.hubConnection && this.connectionState() === 'connected') {
-      this.hubConnection.invoke('StopTyping', conversationId).catch(() => {});
+      this.hubConnection.invoke('StopTyping', conversationId).catch(() => { });
     }
   }
 
   markConversationRead(conversationId: string): void {
     if (this.hubConnection && this.connectionState() === 'connected') {
-      this.hubConnection.invoke('MarkRead', conversationId).catch(() => {});
+      this.hubConnection.invoke('MarkRead', conversationId).catch(() => { });
     }
   }
 
-  private mapDtoToMessage(dto: MessageDto): Message {
-    const currentUserId = this.authService.currentUser()?.id;
-    return {
-      id: dto.id,
-      conversationId: dto.conversationId,
-      senderId: dto.senderId,
-      senderName: dto.senderName || 'User',
-      messageText: dto.messageText,
-      payload: dto.payload || { type: 'text', content: dto.messageText },
-      status: dto.status || 'read',
-      createdAtUtc: dto.createdAtUtc,
-      lastModifiedUtc: dto.lastModifiedUtc,
-      isEdited: dto.isEdited,
-      isOwn: dto.senderId === currentUserId
-    };
+  private invokeJoin(conversationId: string): void {
+    if (!this.hubConnection) return;
+    if (this.joinedConversationIds.has(conversationId)) return;
+
+    this.hubConnection.invoke('JoinConversation', conversationId)
+      .then(() => {
+        this.joinedConversationIds.add(conversationId);
+        this.pendingJoinIds.delete(conversationId);
+      })
+      .catch(err => console.error('SignalR error invoking JoinConversation:', err));
   }
+
+  private flushPendingJoins(): void {
+    for (const conversationId of this.pendingJoinIds) {
+      this.invokeJoin(conversationId);
+    }
+  }
+
+  private rejoinJoinedConversations(): void {
+    for (const conversationId of this.joinedConversationIds) {
+      this.pendingJoinIds.add(conversationId);
+    }
+    this.joinedConversationIds.clear();
+
+    for (const conversationId of this.pendingJoinIds) {
+      this.invokeJoin(conversationId);
+    }
+  }
+
+  private registerChatListeners(connection: signalR.HubConnection): void {
+    this.unregisterChatListeners(connection);
+
+    connection.on('MessageReceived', this.handleMessageReceived);
+    connection.on('MessageEdited', this.handleMessageEdited);
+    connection.on('MessageDeleted', this.handleMessageDeleted);
+  }
+
+  private unregisterChatListeners(connection: signalR.HubConnection): void {
+    connection.off('MessageReceived', this.handleMessageReceived);
+    connection.off('MessageEdited', this.handleMessageEdited);
+    connection.off('MessageDeleted', this.handleMessageDeleted);
+  }
+
+  private readonly handleMessageReceived = (message: MessageDto): void => {
+    this._messageReceived.set(message);
+  };
+
+  private readonly handleMessageEdited = (message: MessageDto): void => {
+    this._messageEdited.set(message);
+  };
+
+  private readonly handleMessageDeleted = (data: unknown): void => {
+    try {
+      if (typeof data === 'string') {
+        this._messageDeleted.set({ conversationId: '', messageId: data });
+        return;
+      }
+
+      if (!data || typeof data !== 'object') {
+        return;
+      }
+
+      const obj = data as Record<string, unknown>;
+      const messageId = (obj['messageId'] ?? obj['MessageId'] ?? obj['id'] ?? obj['Id'] ?? '') as string;
+      if (!messageId) {
+        return;
+      }
+
+      this._messageDeleted.set({
+        conversationId: (obj['conversationId'] ?? obj['ConversationId'] ?? '') as string,
+        messageId
+      });
+    } catch {
+      // Silently ignored — SignalR loses the handler if it throws
+    }
+  };
 }

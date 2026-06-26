@@ -614,6 +614,12 @@
   border: 1px solid rgba(27, 79, 114, 0.15);
 }
 
+.chat-apt-status-rescheduled {
+  background: rgba(139, 92, 246, 0.08);
+  color: #7C3AED;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
 .chat-appointment-card-footer {
   padding: 0.625rem 1rem;
   border-top: 1px solid var(--chat-border);
@@ -993,13 +999,17 @@
   border: 1px solid var(--chat-border-strong);
   border-radius: 0.875rem;
   padding: 0.875rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .chat-upcoming-title {
   font-size: 0.8125rem;
   font-weight: 700;
   color: var(--chat-primary);
-  margin-bottom: 0.5rem;
+  min-width: 0;
+  overflow-wrap: break-word;
+  display: inline-block;
 }
 
 .chat-upcoming-detail {
@@ -1008,11 +1018,11 @@
   gap: 0.375rem;
   font-size: 0.75rem;
   color: var(--chat-charcoal);
-  margin-bottom: 0.25rem;
 }
 
 .chat-upcoming-detail-icon {
   color: var(--chat-blue);
+  flex-shrink: 0;
 }
 
 /* ── Quick Actions ───────────────────────────────────────────────────── */
@@ -1083,6 +1093,17 @@
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+.chat-skeleton-line {
+  background: linear-gradient(90deg,
+    rgba(27, 79, 114, 0.06) 25%,
+    rgba(27, 79, 114, 0.12) 50%,
+    rgba(27, 79, 114, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.375rem;
 }
 
 .chat-skeleton-conv-item {
@@ -1303,3 +1324,5 @@
   font-weight: 500;
   flex-shrink: 0;
 }
+
+

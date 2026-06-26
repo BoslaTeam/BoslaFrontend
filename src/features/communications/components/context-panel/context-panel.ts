@@ -1,10 +1,11 @@
 import { Component, inject, computed } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
+import { UpcomingSessionCard } from '../upcoming-session-card/upcoming-session-card';
 
 @Component({
   selector: 'chat-context-panel',
   standalone: true,
-  imports: [],
+  imports: [UpcomingSessionCard],
   templateUrl: './context-panel.html',
   styleUrl: '../../chat.css',
   host: {
@@ -15,6 +16,7 @@ export class ContextPanel {
   readonly store = inject(ChatStore);
 
   readonly participant = computed(() => this.store.activeConversation()?.participant ?? null);
+  readonly appointmentId = computed(() => this.store.activeConversation()?.appointmentId ?? null);
 
   readonly initials = computed(() => {
     const name = this.participant()?.name ?? '';
@@ -49,17 +51,5 @@ export class ContextPanel {
   readonly stars = computed(() => {
     const rating = this.participant()?.rating ?? 0;
     return Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? 'full' : 'empty');
-  });
-
-  readonly upcomingAppointment = computed(() => {
-    // In real app, comes from appointments API. Using mock data.
-    if (!this.participant()) return null;
-    return {
-      title: 'Career Development Session',
-      date: 'Thursday, July 10, 2026',
-      time: '3:00 PM',
-      duration: 60,
-      sessionType: 'Online',
-    };
   });
 }

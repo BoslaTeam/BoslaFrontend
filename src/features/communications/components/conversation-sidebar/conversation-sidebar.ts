@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { ConversationSearch } from '../conversation-search/conversation-search';
 import { ConversationFilters } from '../conversation-filters/conversation-filters';

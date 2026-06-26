@@ -39,11 +39,7 @@ export class MessageList implements AfterViewChecked, AfterViewInit {
     let currentDate = '';
 
     for (const msg of msgs) {
-      let d = msg.createdAtUtc ? new Date(msg.createdAtUtc) : new Date();
-      if (isNaN(d.getTime())) {
-        d = new Date();
-      }
-      const label = this.formatDateLabel(d);
+      const label = this.getDateLabel(msg.createdAtUtc);
       if (label !== currentDate) {
         currentDate = label;
         groups.push({ dateLabel: label, messages: [] });
@@ -126,6 +122,19 @@ export class MessageList implements AfterViewChecked, AfterViewInit {
     }
   }
 
+  private getDateLabel(createdAtUtc: string): string {
+    if (!createdAtUtc) {
+      return '';
+    }
+
+    const d = new Date(createdAtUtc);
+    if (isNaN(d.getTime())) {
+      return '';
+    }
+
+    return this.formatDateLabel(d);
+  }
+
   private formatDateLabel(d: Date): string {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -153,6 +162,6 @@ export class MessageList implements AfterViewChecked, AfterViewInit {
   }
 
   trackByLabel(_: number, group: DatedGroup) {
-    return group.dateLabel;
+    return group.dateLabel || group.messages[0]?.id || 'pending';
   }
 }
