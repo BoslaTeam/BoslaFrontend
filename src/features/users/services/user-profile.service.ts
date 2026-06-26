@@ -7,6 +7,7 @@ import {
   UserProfileDto, 
   UpdateProfileRequest, 
   ChangePasswordRequest,
+  SetPasswordRequest,
   EducationDto,
   AddEducationRequest,
   UpdateEducationRequest,
@@ -33,6 +34,11 @@ export class UserProfileService {
 
   changePassword(request: ChangePasswordRequest): Observable<boolean> {
     return this.http.put<ApiResponse<boolean>>(`${this.baseUrl}/me/password`, request)
+      .pipe(map(res => res.data));
+  }
+
+  setPassword(request: SetPasswordRequest): Observable<boolean> {
+    return this.http.post<ApiResponse<boolean>>(`${this.baseUrl}/me/set-password`, request)
       .pipe(map(res => res.data));
   }
 

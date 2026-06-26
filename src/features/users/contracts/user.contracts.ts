@@ -26,6 +26,10 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+export interface SetPasswordRequest {
+  newPassword: string;
+}
+
 export interface EducationDto {
   id: string;
   degree: string;

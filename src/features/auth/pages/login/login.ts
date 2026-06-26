@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AUTH_CONFIG } from '../../../../core/config/auth.config';
+import { UserRole } from '../../../../core/enums/user-role.enum';
 
 declare var google: any;
 
@@ -58,7 +60,7 @@ export class Login implements AfterViewInit {
       this.authService.googleLogin({ idToken: response.credential }).subscribe({
         next: (res) => {
           if (res.success) {
-            this.router.navigate(['/']);
+            this.router.navigate([this.getRedirectUrl()]);
           } else {
             this.errorMessage = res.message || 'Google Login failed.';
             this.isLoading = false;
@@ -90,7 +92,7 @@ export class Login implements AfterViewInit {
       next: (res) => {
         console.log('[Login] Response:', res);
         if (res.success) {
-          this.router.navigate(['/']).then(navigated => {
+          this.router.navigate([this.getRedirectUrl()]).then(navigated => {
             console.log('[Login] Navigated:', navigated);
             this.isLoading = false;
           });
@@ -120,5 +122,14 @@ export class Login implements AfterViewInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private getRedirectUrl(): string {
+    const role = this.authService.userRole();
+    if (role !== null && role !== undefined) {
+      const redirect = AUTH_CONFIG.defaultRedirectByRole[role as keyof typeof AUTH_CONFIG.defaultRedirectByRole];
+      if (redirect) return redirect;
+    }
+    return '/';
   }
 }
