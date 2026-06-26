@@ -1,26 +1,26 @@
-<div
-  class="w-full bg-white border border-bosla-charcoal/10 rounded-md p-8 sm:p-12 flex flex-col items-center justify-center text-center max-w-sm mx-auto animate-fadeIn"
-  dir="rtl">
+<div class="w-full max-w-lg mx-auto text-center flex flex-col items-center justify-center" dir="rtl">
 
   @if (icon()) {
   <div
-    class="w-20 h-20 bg-bosla-primary/10 rounded-xl flex items-center justify-center text-bosla-primary text-3xl mb-5 select-none"
-    aria-hidden="true">
-    <i [class]="icon()"></i>
+    class="w-24 h-24 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center mb-6">
+
+    <i [class]="icon()" class="text-4xl text-bosla-orange">
+    </i>
+
   </div>
   }
 
-  <h3 class="text-[18px] font-bold text-bosla-primary font-sans leading-snug">
+  <h3 class="text-2xl font-black text-white mb-3">
     {{ title() }}
   </h3>
 
   @if (description()) {
-  <p class="mt-2 text-[14px] text-bosla-charcoal/70 font-sans max-w-xs mx-auto leading-relaxed">
+  <p class="text-white/70 leading-relaxed max-w-md mx-auto">
     {{ description() }}
   </p>
   }
 
-  <div class="mt-6 w-full flex items-center justify-center">
+  <div class="mt-8 flex items-center justify-center">
     <ng-content />
   </div>
 

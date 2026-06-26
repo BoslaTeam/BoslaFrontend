@@ -111,6 +111,7 @@ export class AuthService {
                     email: decoded['email'] as string || '',
                     fullName: decoded['name'] as string || decoded['unique_name'] as string || '',
                     role: decoded.role !== undefined ? Number(decoded.role) : 0,
+                    avatarUrl: decoded['avatar'] || decoded['picture'] || null
                 } as CurrentUser;
             }
         }
@@ -121,6 +122,15 @@ export class AuthService {
         } else {
             // Minimum fallback to pass guards
             this._currentUser.set({ id: '', email: '', fullName: '', role: 0 } as CurrentUser);
+        }
+    }
+
+    updateAvatar(avatarUrl: string): void {
+        const user = this._currentUser();
+        if (user) {
+            const updatedUser = { ...user, avatarUrl };
+            this._currentUser.set(updatedUser);
+            this.storage.setJson(STORAGE_KEYS.currentUser, updatedUser);
         }
     }
 

@@ -1,9 +1,9 @@
 <div
-    [class]="'relative inline-flex items-center justify-center rounded-full bg-slate-100 border border-slate-200 overflow-hidden select-none shrink-0 ' + getSizeClasses()">
+    [class]="'relative inline-flex items-center justify-center rounded-full bg-bosla-offwhite border border-bosla-charcoal/10 overflow-hidden select-none shrink-0 ' + getSizeClasses()">
     @if (src()) {
     <img [src]="src()" [alt]="name()" class="h-full w-full object-cover" />
     } @else {
-    <span [class]="'font-medium text-slate-600 tracking-wider ' + getTextSizeClasses()">
+    <span [class]="'font-medium text-bosla-charcoal/60 tracking-wider ' + getTextSizeClasses()">
         {{ initials() }}
     </span>
     }

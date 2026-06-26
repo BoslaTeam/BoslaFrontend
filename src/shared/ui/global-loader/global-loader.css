@@ -1,0 +1,304 @@
+/* ============================================
+   Global Loader — Bosla Brand Loading System
+   Colors:
+     Deep Trust Blue:   #1B4F72
+     Compass Blue:      #2E86AB
+     True North Orange: #F39C12
+     Off-White:         #F7F9FA
+     Charcoal:          #2C3E50
+   ============================================ */
+
+/* ─── Top Progress Bar ─── */
+
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  overflow: hidden;
+  background: rgba(27, 79, 114, 0.1);
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(90deg, #1B4F72, #2E86AB, #F39C12);
+  animation: progress-slide 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.progress-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(90deg, transparent, rgba(243, 156, 18, 0.4), transparent);
+  animation: progress-slide 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.15s;
+  filter: blur(4px);
+}
+
+@keyframes progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+/* ─── Full-Screen Overlay ─── */
+
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(247, 249, 250, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: overlay-fade-in 0.25s ease-out;
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: content-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─── Compass Animation ─── */
+
+.compass-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer ring */
+.compass-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid #1B4F72;
+  animation: ring-pulse 2s ease-in-out infinite;
+}
+
+.compass-ring-inner {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 134, 171, 0.3);
+}
+
+@keyframes ring-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(27, 79, 114, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(27, 79, 114, 0);
+  }
+}
+
+/* Needle container (rotates) */
+.compass-needle-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: needle-search 2.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.compass-needle {
+  width: 4px;
+  height: 52px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.needle-north {
+  flex: 1;
+  background: #F39C12;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  filter: drop-shadow(0 0 3px rgba(243, 156, 18, 0.5));
+}
+
+.needle-south {
+  flex: 1;
+  background: #1B4F72;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+/* Center dot */
+.compass-center {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2E86AB;
+  box-shadow: 0 0 6px rgba(46, 134, 171, 0.6);
+  z-index: 2;
+}
+
+/* Needle animation — searching for direction */
+@keyframes needle-search {
+  0% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(45deg);
+  }
+  25% {
+    transform: rotate(20deg);
+  }
+  40% {
+    transform: rotate(120deg);
+  }
+  55% {
+    transform: rotate(80deg);
+  }
+  70% {
+    transform: rotate(200deg);
+  }
+  85% {
+    transform: rotate(340deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Cardinal points */
+.cardinal {
+  position: absolute;
+  font-family: 'Inter', 'Cairo', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: #95A5A6;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.cardinal-n {
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #F39C12;
+}
+
+.cardinal-e {
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cardinal-s {
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cardinal-w {
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ─── Loading Text ─── */
+
+.loader-text {
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C3E50;
+  letter-spacing: 0.02em;
+  direction: rtl;
+  margin: 0;
+}
+
+.dots-anim {
+  display: inline-block;
+  animation: dots-blink 1.2s step-end infinite;
+}
+
+@keyframes dots-blink {
+  0% {
+    content: '';
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  75% {
+    opacity: 1;
+  }
+}
+
+/* ─── Reduced Motion Preference ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar {
+    animation-duration: 3s;
+  }
+
+  .compass-needle-container {
+    animation: needle-slow 4s linear infinite;
+  }
+
+  @keyframes needle-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loader-overlay {
+    animation: none;
+  }
+
+  .loader-content {
+    animation: none;
+    opacity: 1;
+  }
+}

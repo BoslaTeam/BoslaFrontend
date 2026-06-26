@@ -8,10 +8,15 @@
 
     <!-- Navigation -->
     <nav class="hidden md:flex items-center gap-8 font-bold text-white/90">
-      <a href="#" class="hover:text-bosla-orange transition-colors">الرئيسية</a>
-      <a href="#" class="hover:text-bosla-orange transition-colors">المتخصصين</a>
-      <a href="#" class="hover:text-bosla-orange transition-colors">من نحن</a>
-      <a href="#" class="hover:text-bosla-orange transition-colors">اتصل بنا</a>
+      <a routerLink="/" routerLinkActive="text-bosla-orange" [routerLinkActiveOptions]="{ exact: true }"
+        class="hover:text-bosla-orange transition-colors">الرئيسية</a>
+
+      <a routerLink="/specialists" routerLinkActive="text-bosla-orange"
+        class="hover:text-bosla-orange transition-colors">المتخصصين</a>
+
+      <a routerLink="" class="hover:text-bosla-orange transition-colors">من نحن</a>
+
+      <a routerLink="" class="hover:text-bosla-orange transition-colors">اتصل بنا</a>
     </nav>
 
     <!-- Actions -->
@@ -28,6 +33,22 @@
       </ng-container>
 
       <ng-container *ngIf="authService.isAuthenticated()">
+        <!-- Profile Icon -->
+        <a [routerLink]="dashboardRoute" title="الملف الشخصي"
+          class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm border border-white/10 hover:border-white/30 overflow-hidden">
+
+          @if (authService.currentUser()?.avatarUrl && !avatarError) {
+          <img [src]="authService.currentUser()?.avatarUrl" alt="Profile" class="w-full h-full object-cover"
+            (error)="onAvatarError()">
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          }
+        </a>
+
         <button (click)="authService.logout()"
           class="px-6 py-2.5 rounded-full bg-bosla-charcoal hover:bg-slate-700 text-white font-semibold shadow-md hover:shadow-lg transition-all active:scale-95 border border-white/20">
           تسجيل الخروج

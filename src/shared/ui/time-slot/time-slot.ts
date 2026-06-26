@@ -14,7 +14,7 @@ export class UiTimeSlot {
   readonly slotClick = output<string>();
 
   readonly slotClasses = computed(() => {
-    const base = 'flex items-center justify-center h-11 border text-[14px] font-sans font-medium transition-all duration-200 select-none rounded-[2px] w-full';
+    const base = 'flex items-center justify-center h-11 border text-[14px] font-sans font-medium transition-all duration-200 select-none rounded-xl w-full';
     
     const states = {
       available: 'bg-white border-bosla-charcoal/20 text-bosla-charcoal hover:border-bosla-blue hover:text-bosla-blue cursor-pointer',

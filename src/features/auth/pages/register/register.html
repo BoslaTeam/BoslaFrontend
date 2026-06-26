@@ -33,44 +33,6 @@
       <!-- Single Form: role selection + all fields -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
 
-        <!-- Account Type -->
-        <div class="mb-2">
-          <label class="bosla-label mb-3">أنا...</label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="bosla-role-card" [class.bosla-role-card-active]="registerForm.get('role')?.value === 'user'">
-              <input type="radio" formControlName="role" value="user" class="sr-only">
-              <div class="bosla-role-icon" style="background: rgba(27,79,114,0.1);">
-                <svg class="w-6 h-6" style="color: #1B4F72;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
-                </svg>
-              </div>
-              <div class="bosla-role-title">عميل</div>
-              <div class="bosla-role-desc">أبحث عن استشارة</div>
-              @if (registerForm.get('role')?.value === 'user') {
-                <div class="bosla-role-check">
-                  <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                </div>
-              }
-            </label>
-
-            <label class="bosla-role-card" [class.bosla-role-card-active]="registerForm.get('role')?.value === 'specialist'">
-              <input type="radio" formControlName="role" value="specialist" class="sr-only">
-              <div class="bosla-role-icon" style="background: rgba(243,156,18,0.1);">
-                <svg class="w-6 h-6" style="color: #F39C12;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
-                </svg>
-              </div>
-              <div class="bosla-role-title">متخصص</div>
-              <div class="bosla-role-desc">أقدّم استشارات</div>
-              @if (registerForm.get('role')?.value === 'specialist') {
-                <div class="bosla-role-check" style="background: #F39C12;">
-                  <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                </div>
-              }
-            </label>
-          </div>
-        </div>
-
         <!-- Name Row -->
         <div class="grid grid-cols-2 gap-4">
           <div>
