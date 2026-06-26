@@ -1,7 +1,7 @@
 <div class="fixed top-4 right-4 z-9999 flex flex-col space-y-3 w-full max-w-md pointer-events-none" dir="rtl">
     @for (toast of toastService.toasts(); track toast.id) {
     <div role="alert"
-        class="pointer-events-auto flex items-center justify-between w-full min-h-14 p-4 rounded-xs border-y border-l transition-all duration-300 shadow-xs"
+        class="pointer-events-auto flex items-center justify-between w-full min-h-14 p-4 rounded-xl border-y border-l transition-all duration-300 shadow-sm"
         [class]="getVariantClasses(toast.variant)">
         <div class="flex items-center gap-3 flex-1 min-w-0 text-right">
             <span class="text-base shrink-0 flex items-center justify-center" aria-hidden="true">

@@ -1,1 +1,28 @@
-<p>admin-layout works!</p>
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <app-admin-sidebar
+    [isCollapsed]="sidebarCollapsed()"
+    [isMobileOpen]="sidebarMobileOpen()"
+    (toggleCollapse)="toggleSidebar()"
+    (closeMobile)="closeMobileSidebar()"
+  />
+
+  <!-- Mobile Overlay -->
+  <div
+    class="admin-overlay"
+    [class.active]="sidebarMobileOpen()"
+    (click)="closeMobileSidebar()"
+  ></div>
+
+  <!-- Main Content Area -->
+  <div class="admin-main"
+    [style.margin-inline-start]="sidebarCollapsed() ? '72px' : '260px'">
+    <!-- Header -->
+    <app-admin-header (toggleSidebar)="toggleSidebar()" />
+
+    <!-- Page Content -->
+    <main class="admin-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

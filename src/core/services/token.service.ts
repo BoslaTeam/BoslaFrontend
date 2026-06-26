@@ -66,8 +66,20 @@ export class TokenService {
     if (!token) return null;
     const decoded = this.decodeToken(token);
     
-    if (decoded && decoded['role'] !== undefined) {
-      return Number(decoded['role']) as UserRole;
+    if (decoded) {
+      let roleClaim = decoded['role'] || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      if (Array.isArray(roleClaim)) {
+        if (roleClaim.includes('Admin') || roleClaim.includes('2')) return UserRole.Admin;
+        if (roleClaim.includes('Specialist') || roleClaim.includes('1')) return UserRole.Specialist;
+        return UserRole.User;
+      } else if (typeof roleClaim === 'string') {
+        if (roleClaim.toLowerCase() === 'admin') return UserRole.Admin;
+        if (roleClaim.toLowerCase() === 'specialist') return UserRole.Specialist;
+        if (!isNaN(Number(roleClaim))) return Number(roleClaim) as UserRole;
+        return UserRole.User;
+      } else if (typeof roleClaim === 'number') {
+        return roleClaim as UserRole;
+      }
     }
     return null;
   }

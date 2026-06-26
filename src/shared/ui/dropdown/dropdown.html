@@ -7,8 +7,8 @@
     }
 
     <button type="button" (click)="toggleDropdown()" [disabled]="disabled()"
-        class="w-full h-11 px-4 bg-white border rounded-md flex items-center justify-between gap-3 text-right cursor-pointer select-none transition-all duration-200 outline-hidden font-sans text-[15px]"
-        [class.border-bosla-charcoal/20]="!isOpen() && !disabled()"
+        class="w-full h-11 px-4 bg-bosla-offwhite border rounded-xl flex items-center justify-between gap-3 text-right cursor-pointer select-none transition-all duration-200 outline-hidden font-sans text-[15px]"
+        [class.border-bosla-charcoal/10]="!isOpen() && !disabled()"
         [class.text-bosla-charcoal/40]="selectedValue() === null && !disabled()"
         [class.text-bosla-charcoal]="selectedValue() !== null && !disabled()"
         [class.hover:border-bosla-blue]="!disabled() && !isOpen()" [class.border-bosla-primary]="isOpen()"
@@ -24,7 +24,7 @@
 
     @if (isOpen() && !disabled()) {
     <div
-        class="absolute z-50 w-full mt-1 bg-white border border-bosla-charcoal/10 rounded-md shadow-lg max-h-60 overflow-y-auto divide-y divide-bosla-charcoal/5 py-1 animate-fadeIn">
+        class="absolute z-50 w-full mt-1 bg-white border border-bosla-charcoal/10 rounded-xl shadow-sm max-h-60 overflow-y-auto divide-y divide-bosla-charcoal/5 py-1 animate-fadeIn">
         @for (option of options(); track option.value) {
         <div (click)="selectOption(option)"
             class="px-4 py-3 flex items-center justify-between cursor-pointer select-none text-[14px] font-sans transition-colors duration-150"

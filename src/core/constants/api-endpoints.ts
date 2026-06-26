@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
   users: {
     me: `${V}/users/me`,
     changePassword: `${V}/users/me/password`,
+    setPassword: `${V}/users/me/set-password`,
     education: `${V}/users/me/education`,
     educationById: (id: string) => `${V}/users/me/education/${id}`,
     socialLinks: `${V}/users/me/social-links`,

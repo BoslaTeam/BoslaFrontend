@@ -106,11 +106,26 @@ export class AuthService {
         if (!user && data.accessToken) {
             const decoded = this.tokenService.decodeToken(data.accessToken);
             if (decoded) {
+                let roleClaim = decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                let parsedRole = 0; // Default User
+                
+                if (Array.isArray(roleClaim)) {
+                    if (roleClaim.includes('Admin') || roleClaim.includes('2')) parsedRole = 2;
+                    else if (roleClaim.includes('Specialist') || roleClaim.includes('1')) parsedRole = 1;
+                } else if (typeof roleClaim === 'string') {
+                    if (roleClaim.toLowerCase() === 'admin') parsedRole = 2;
+                    else if (roleClaim.toLowerCase() === 'specialist') parsedRole = 1;
+                    else if (!isNaN(Number(roleClaim))) parsedRole = Number(roleClaim);
+                } else if (typeof roleClaim === 'number') {
+                    parsedRole = roleClaim;
+                }
+
                 user = {
                     id: decoded.sub || decoded['nameid'] || '',
                     email: decoded['email'] as string || '',
                     fullName: decoded['name'] as string || decoded['unique_name'] as string || '',
-                    role: decoded.role !== undefined ? Number(decoded.role) : 0,
+                    role: parsedRole,
+                    avatarUrl: decoded['avatar'] || decoded['picture'] || null
                 } as CurrentUser;
             }
         }
@@ -121,6 +136,15 @@ export class AuthService {
         } else {
             // Minimum fallback to pass guards
             this._currentUser.set({ id: '', email: '', fullName: '', role: 0 } as CurrentUser);
+        }
+    }
+
+    updateAvatar(avatarUrl: string): void {
+        const user = this._currentUser();
+        if (user) {
+            const updatedUser = { ...user, avatarUrl };
+            this._currentUser.set(updatedUser);
+            this.storage.setJson(STORAGE_KEYS.currentUser, updatedUser);
         }
     }
 
