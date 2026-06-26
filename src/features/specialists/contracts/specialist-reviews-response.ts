@@ -1,3 +1,5 @@
+import { SpecialistReviewResponse } from './specialist-review.contract';
+
 export interface ReviewItem {
   reviewerName: string;
   rating: number;
@@ -18,7 +20,7 @@ export interface SpecialistReviewsResponse {
   averageRating: number;
   totalReviews: number;
   reviews: {
-    items: ReviewItem[];
-    metadata: ReviewsMetadata;
-  };
+  items: SpecialistReviewResponse[];
+  metadata: ReviewsMetadata;
+};
 }

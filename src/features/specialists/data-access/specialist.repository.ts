@@ -68,13 +68,13 @@ export class SpecialistsRepository {
     );
   }
 
-  getReviews(id: string) {
-    return this.api.getReviews(id).pipe(
-      map(response =>
-        response.data.map(SpecialistsMapper.mapReview)
-      ),
-    );
-  }
+ getReviews(id: string) {
+  return this.api.getReviews(id).pipe(
+    map(response =>
+      response.data.reviews.items.map(SpecialistsMapper.mapReview)
+    ),
+  );
+}
 
   getAvailability(id: string) {
     return this.api.getAvailability(id).pipe(

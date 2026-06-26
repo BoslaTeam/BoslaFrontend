@@ -18,43 +18,37 @@
 
       <nav class="px-4">
 
-        <a
-          class="mb-2 flex items-center rounded-2xl bg-indigo-600 px-5 py-4 font-medium text-white">
+        <a class="mb-2 flex items-center rounded-2xl bg-indigo-600 px-5 py-4 font-medium text-white">
 
           لوحة التحكم
 
         </a>
 
-        <a
-          class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
 
           المواعيد
 
         </a>
 
-        <a
-          class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
 
           التوافر
 
         </a>
 
-        <a
-          class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
 
           الرسائل
 
         </a>
 
-        <a
-          class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
 
           التحليلات
 
         </a>
 
-        <a
-          class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
 
           الإعدادات
 
@@ -68,22 +62,33 @@
 
           <div class="flex items-center gap-3">
 
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white">
+            <div class="h-12 w-12 overflow-hidden rounded-full bg-slate-200">
 
-              خ
+              @if (profile()?.profileImageUrl) {
+              <img [src]="profile()?.profileImageUrl" [alt]="profile()?.name"
+                class="h-12 w-12 rounded-full object-cover">
+              }
+              @else {
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white">
+
+                {{ profile()?.name?.charAt(0) }}
+
+              </div>
+              }
 
             </div>
 
             <div>
 
               <h3 class="font-semibold">
-                خالد
+                {{ profile()?.name }}
               </h3>
 
+              @if(profile()?.title){
               <p class="text-sm text-slate-500">
-                مستشار أعمال
+                {{ profile()?.title }}
               </p>
+              }
 
             </div>
 

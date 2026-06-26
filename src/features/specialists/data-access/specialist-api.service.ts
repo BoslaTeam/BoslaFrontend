@@ -110,13 +110,13 @@ export class SpecialistsApiService {
     );
   }
 
-  getReviews(id: string) {
-    return this.http.get<
-      ApiResponse<SpecialistReviewResponse[]>
-    >(
-      API_ENDPOINTS.specialists.reviewsFor(id)
-    );
-  }
+getReviews(id: string) {
+  return this.http.get<
+    ApiResponse<SpecialistReviewsResponse>
+  >(
+    API_ENDPOINTS.specialists.reviewsFor(id)
+  );
+}
 
   getAvailability(id: string) {
     return this.http.get<

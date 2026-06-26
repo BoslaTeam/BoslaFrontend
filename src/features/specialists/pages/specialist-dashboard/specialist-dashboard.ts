@@ -4,10 +4,11 @@ import { SpecialistProfileResponse } from '../../contracts/specialist-profile-re
 import { SpecialistReviewsResponse } from '../../contracts/specialist-reviews-response';
 import { DatePipe } from '@angular/common';
 import { computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-specialist-dashboard',
-  imports: [DatePipe],
+  imports: [DatePipe,RouterLink],
   templateUrl: './specialist-dashboard.html',
 })
 export class SpecialistDashboard implements OnInit {
@@ -23,6 +24,7 @@ export class SpecialistDashboard implements OnInit {
     this.loadDashboard();
     this.loadReviews();
   }
+
 
   private loadProfile(): void {
     this.specialistApi.getMyProfile().subscribe({

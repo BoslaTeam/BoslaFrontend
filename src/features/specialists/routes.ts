@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { SpecialistDashboard } from './pages/specialist-dashboard/specialist-dashboard';
 
 export const SPECIALISTS_ROUTES: Routes = [
   {
@@ -9,10 +8,6 @@ export const SPECIALISTS_ROUTES: Routes = [
         .then(m => m.SpecialistListPage)
   },
 
-  {
-    path: 'dashboard',
-    component: SpecialistDashboard
-  },
 
   {
     path: ':id',
