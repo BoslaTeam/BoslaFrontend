@@ -8,6 +8,7 @@ export const SPECIALISTS_ROUTES: Routes = [
         .then(m => m.SpecialistListPage)
   },
 
+
   {
     path: ':id',
     loadComponent: () =>

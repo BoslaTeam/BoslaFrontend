@@ -101,7 +101,7 @@ export class AuthService {
 
     setSession(data: AuthTokensResponse): void {
         this.tokenService.setTokens(data.accessToken, data.refreshToken);
-        
+
         let user = data.user;
         if (!user && data.accessToken) {
             const decoded = this.tokenService.decodeToken(data.accessToken);
@@ -124,8 +124,11 @@ export class AuthService {
                     id: decoded.sub || decoded['nameid'] || '',
                     email: decoded['email'] as string || '',
                     fullName: decoded['name'] as string || decoded['unique_name'] as string || '',
-                    role: parsedRole,
-                    avatarUrl: decoded['avatar'] || decoded['picture'] || null
+
+                    // role: decoded.role !== undefined ? Number(decoded.role) : 0,
+                    role:decoded.role === 'Specialist'? UserRole.Specialist: decoded.role === 'Admin'
+                                ? UserRole.Admin
+                                : UserRole.User, avatarUrl: decoded['avatar'] || decoded['picture'] || null
                 } as CurrentUser;
             }
         }
@@ -165,7 +168,7 @@ export class AuthService {
         if (!hasRefreshToken) return null;
 
         const user = this.storage.getJson<CurrentUser>(STORAGE_KEYS.currentUser);
-        
+
         if (user && user.role !== undefined) {
             user.role = Number(user.role) as UserRole;
         }

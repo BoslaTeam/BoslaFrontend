@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { StorageService } from './storage.service';
 import { STORAGE_KEYS } from '@core/constants/storage-keys';
-import { UserRole } from '@core/enums/user-role.enum'; 
+import { UserRole } from '@core/enums/user-role.enum';
 import { BehaviorSubject } from 'rxjs';
 
 interface JwtPayload {
   exp: number;
   sub: string;
-  role?: string | number; 
+  role?: string | number;
   [claim: string]: unknown;
 }
 
@@ -34,7 +34,7 @@ export class TokenService {
   clearTokens(): void {
     this.storage.remove(STORAGE_KEYS.accessToken);
     this.storage.remove(STORAGE_KEYS.refreshToken);
-    
+
     this.isRefreshing = false;
     this.refreshedToken$.next(null);
   }
@@ -80,6 +80,7 @@ export class TokenService {
       } else if (typeof roleClaim === 'number') {
         return roleClaim as UserRole;
       }
+
     }
     return null;
   }
