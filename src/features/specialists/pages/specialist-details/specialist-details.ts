@@ -17,6 +17,7 @@ import { UiEmptyState } from '@shared/ui/empty-state/empty-state';
     UiRatingSummary,
     UiReviewCard,
     UiEmptyState,
+    UiTabs,
   ],
   templateUrl: './specialist-details.html',
   styleUrl: './specialist-details.css',
