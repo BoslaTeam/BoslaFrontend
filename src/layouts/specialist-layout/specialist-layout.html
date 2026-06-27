@@ -1,1 +1,111 @@
-<p>specialist-layout works!</p>
+<div dir="rtl" class="min-h-screen bg-slate-100">
+
+  <div class="flex min-h-screen">
+
+    <aside class="w-[280px] shrink-0 border-l border-slate-200 bg-white">
+
+      <div class="p-8">
+
+        <h2 class="text-3xl font-bold text-indigo-600">
+          بوصلة
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          بوابتك المهنية
+        </p>
+
+      </div>
+
+      <nav class="px-4">
+
+        <a class="mb-2 flex items-center rounded-2xl bg-indigo-600 px-5 py-4 font-medium text-white">
+
+          لوحة التحكم
+
+        </a>
+
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+
+          المواعيد
+
+        </a>
+
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+
+          التوافر
+
+        </a>
+
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+
+          الرسائل
+
+        </a>
+
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+
+          التحليلات
+
+        </a>
+
+        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
+
+          الإعدادات
+
+        </a>
+
+      </nav>
+
+      <div class="mt-auto px-6 pb-8">
+
+        <div class="border-t pt-6">
+
+          <div class="flex items-center gap-3">
+
+            <div class="h-12 w-12 overflow-hidden rounded-full bg-slate-200">
+
+              @if (profile()?.profileImageUrl) {
+              <img [src]="profile()?.profileImageUrl" [alt]="profile()?.name"
+                class="h-12 w-12 rounded-full object-cover">
+              }
+              @else {
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white">
+
+                {{ profile()?.name?.charAt(0) }}
+
+              </div>
+              }
+
+            </div>
+
+            <div>
+
+              <h3 class="font-semibold">
+                {{ profile()?.name }}
+              </h3>
+
+              @if(profile()?.title){
+              <p class="text-sm text-slate-500">
+                {{ profile()?.title }}
+              </p>
+              }
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+    <main class="flex-1">
+
+      <router-outlet />
+
+    </main>
+
+  </div>
+
+</div>

@@ -14,5 +14,4 @@ export interface GetSpecialistsRequest {
   pageNumber?: number;
   pageSize?: number;
   searchTerm?: string;
-  // Other filters can be added later as needed
 }

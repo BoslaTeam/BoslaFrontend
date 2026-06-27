@@ -1,385 +1,380 @@
-<div class="bg-bosla-offwhite min-h-screen relative z-10 font-sans" dir="rtl">
+<section class="relative z-10 py-16 md:py-20" dir="rtl">
 
-  <div class="container mx-auto px-6">
+  <div class="container mx-auto px-6 space-y-8">
 
     <!-- Back -->
-    <div class="pt-6 pb-4">
-      <button type="button" (click)="goBack()"
-        class="inline-flex items-center gap-2 text-bosla-charcoal/60 hover:text-bosla-primary transition-colors cursor-pointer group text-sm">
-        <i class="fa-solid fa-arrow-right text-xs group-hover:-translate-x-1 transition-transform"></i>
-        العودة إلى قائمة المتخصصين
-      </button>
-    </div>
+    <button type="button" (click)="goBack()"
+      class="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors cursor-pointer group">
+
+      <i class="fa-solid fa-arrow-right text-sm group-hover:-translate-x-1 transition-transform">
+      </i>
+
+      العودة إلى قائمة المتخصصين
+
+    </button>
 
     <!-- Loading -->
     @if (store.detailsLoading()) {
+
     <div class="flex justify-center py-24">
-      <div class="animate-spin w-12 h-12 border-4 border-slate-200 border-t-bosla-orange rounded-full"></div>
+
+      <div class="animate-spin w-12 h-12 border-4 border-white/20 border-t-bosla-orange rounded-full">
+      </div>
+
     </div>
+
     }
 
     <!-- Error -->
     @else if (store.error()) {
-    <div class="py-16">
-      <ui-empty-state icon="fa-solid fa-circle-exclamation" title="حدث خطأ"
-        [description]="store.error() || 'فشل تحميل بيانات المتخصص'">
-        <ui-button variant="primary" size="sm" (btnClick)="goBack()">
-          العودة للقائمة
-        </ui-button>
-      </ui-empty-state>
-    </div>
+
+    <ui-empty-state icon="fa-solid fa-circle-exclamation" title="حدث خطأ"
+      [description]="store.error() || 'فشل تحميل بيانات المتخصص'">
+
+      <ui-button variant="primary" size="sm" (btnClick)="goBack()">
+
+        العودة للقائمة
+
+      </ui-button>
+
+    </ui-empty-state>
+
     }
 
     <!-- Details -->
     @else if (store.specialist(); as specialist) {
 
-    <!-- ===== Profile Header (Centered, like Mostaql) ===== -->
-    <div class="bg-white border-b border-slate-200">
-      <div class="py-10 flex flex-col items-center text-center">
+    <!-- Header -->
+    <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-xl">
+
+      <div class="flex flex-col lg:flex-row gap-8">
 
         <!-- Avatar -->
-        <div class="relative mb-5">
-          <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
-            <img [src]="specialist.imageUrl.trim() || 'https://ui-avatars.com/api/?name=' + specialist.name + '&background=1B4F72&color=fff&size=200'"
-              [alt]="specialist.name" class="w-full h-full object-cover">
+        <div class="relative shrink-0">
+
+          <div class="w-32 h-32 rounded-2xl overflow-hidden border-2 border-white/10">
+
+            <img [src]="specialist.imageUrl.trim() || 'assets/icons/favicon.ico'" [alt]="specialist.name"
+              class="w-full h-full object-cover">
+
           </div>
 
-          @if (specialist.isVerified) {
-          <span
-            class="absolute bottom-1 left-1 w-7 h-7 bg-bosla-orange rounded-full border-3 border-white flex items-center justify-center shadow-sm">
-            <i class="fa-solid fa-check text-white text-xs"></i>
+          @if (specialist.isOnline) {
+
+          <span class="absolute bottom-1 left-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white">
           </span>
+
           }
 
-          @if (specialist.isOnline) {
-          <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-sm">
-          </span>
-          }
         </div>
 
-        <!-- Name -->
-        <h1 class="text-3xl font-black text-bosla-primary mb-1 flex items-center gap-2">
-          @if (specialist.isOnline) {
-          <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
-          }
-          {{ specialist.name }}
-        </h1>
+        <!-- Info -->
+        <div class="flex-1 space-y-6">
 
-        <!-- Meta info row -->
-        <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-bosla-charcoal/70 mt-2">
+          <div class="flex items-center gap-3 flex-wrap">
 
-          @if (specialist.title) {
-          <span class="flex items-center gap-1.5">
-            <i class="fa-solid fa-user-tie text-bosla-charcoal/40"></i>
+            <h1 class="text-4xl md:text-5xl font-black text-white">
+              {{ specialist.name }}
+            </h1>
+
+            @if (specialist.isVerified) {
+
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold">
+              <i class="fa-solid fa-circle-check"></i>
+              موثق
+            </span>
+            }
+
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold"
+              [class.bg-green-500/20]="specialist.isOnline" [class.text-green-400]="specialist.isOnline"
+              [class.bg-white/10]="!specialist.isOnline" [class.text-white/70]="!specialist.isOnline">
+
+              <span class="w-2 h-2 rounded-full" [class.bg-green-400]="specialist.isOnline"
+                [class.bg-white/40]="!specialist.isOnline">
+              </span>
+              {{ specialist.isOnline ? 'متصل الآن' : 'غير متصل' }}
+            </span>
+
+          </div>
+
+          <p class="text-xl text-white/70">
             {{ specialist.title }}
-          </span>
-          }
+          </p>
 
-          @if (experienceLevelLabel()) {
-          <span class="flex items-center gap-1.5">
-            <i class="fa-solid fa-briefcase text-bosla-charcoal/40"></i>
-            {{ experienceLevelLabel() }}
-          </span>
-          }
+          <div class="flex flex-wrap items-center gap-6 text-white/70">
 
-          @if (specialist.country) {
-          <span class="flex items-center gap-1.5">
-            <i class="fa-solid fa-location-dot text-bosla-charcoal/40"></i>
-            {{ specialist.country }}
-          </span>
-          }
+            <span class="flex items-center gap-2">
 
-          @if (specialist.preferredLanguage) {
-          <span class="flex items-center gap-1.5">
-            <i class="fa-solid fa-language text-bosla-charcoal/40"></i>
-            {{ specialist.preferredLanguage === 'ar' ? 'العربية' : 'English' }}
-          </span>
-          }
+              <i class="fa-solid fa-briefcase text-bosla-orange"></i>
+              {{ experienceLevelLabel() }}
+              @if (specialist.experienceYears) {
+              ({{ specialist.experienceYears }} سنوات)
+              }
+            </span>
+
+            <span class="flex items-center gap-2">
+
+              <i class="fa-solid fa-star text-bosla-orange"></i>
+
+              {{ specialist.rating | number:'1.1-1' }}
+
+              ({{ specialist.reviewsCount }} تقييم)
+
+            </span>
+
+            @if (specialist.country) {
+
+            <span class="flex items-center gap-2">
+
+              <i class="fa-solid fa-earth-americas text-bosla-orange"></i>
+
+              {{ specialist.country }}
+
+            </span>
+
+            }
+
+          </div>
+
+          <!-- Quick Info -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+            @if (specialist.preferredLanguage) {
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+
+              <p class="text-white/50 text-xs mb-1">
+                اللغة
+              </p>
+
+              <p class="text-white font-semibold">
+                {{ specialist.preferredLanguage }}
+              </p>
+
+            </div>
+
+            }
+
+            @if (specialist.gender) {
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+
+              <p class="text-white/50 text-xs mb-1">
+                الجنس
+              </p>
+
+              <p class="text-white font-semibold">
+                {{ specialist.gender }}
+              </p>
+
+            </div>
+
+            }
+
+          </div>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 pt-2">
+
+            @for (skill of specialist.skills; track skill.id) {
+
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
+              {{ skill.name }}
+            </span>
+
+            }
+
+            @for (tool of specialist.tools; track tool.id) {
+
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
+              {{ tool.name }}
+            </span>
+
+            }
+
+            @for (industry of specialist.industries; track industry.id) {
+
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-white/80">
+              {{ industry.name }}
+            </span>
+
+            }
+
+          </div>
+
+        </div>
+
+        <!-- Price -->
+        <div class="flex flex-col justify-between items-end gap-6 lg:min-w-55">
+
+          <div>
+
+            <p class="text-5xl font-black text-bosla-orange">
+
+              {{ specialist.hourlyRate }}
+
+            </p>
+
+            <p class="text-white/50 text-sm">
+
+              ريال / ساعة
+
+            </p>
+
+          </div>
+
+          <ui-button variant="primary" size="md" (btnClick)="bookNow()">
+
+            احجز الآن
+
+          </ui-button>
 
         </div>
 
       </div>
 
-      <!-- Tabs Navigation (attached to the header bottom) -->
-      <div class="flex items-center justify-center gap-1 overflow-x-auto">
-        <button type="button" (click)="onTabChange('profile')"
-          [class.border-bosla-primary]="activeTab() === 'profile'"
-          [class.text-bosla-primary]="activeTab() === 'profile'"
-          [class.font-bold]="activeTab() === 'profile'"
-          class="pb-3 px-5 border-b-2 text-bosla-charcoal/60 hover:text-bosla-primary transition-colors whitespace-nowrap border-transparent text-sm">
-          <i class="fa-regular fa-user ml-1.5"></i>
-          الملف الشخصي
-        </button>
-        <button type="button" (click)="onTabChange('reviews')"
-          [class.border-bosla-primary]="activeTab() === 'reviews'"
-          [class.text-bosla-primary]="activeTab() === 'reviews'"
-          [class.font-bold]="activeTab() === 'reviews'"
-          class="pb-3 px-5 border-b-2 text-bosla-charcoal/60 hover:text-bosla-primary transition-colors whitespace-nowrap border-transparent text-sm">
-          <i class="fa-regular fa-star ml-1.5"></i>
-          التقييمات
-        </button>
-        <button type="button" (click)="onTabChange('availability')"
-          [class.border-bosla-primary]="activeTab() === 'availability'"
-          [class.text-bosla-primary]="activeTab() === 'availability'"
-          [class.font-bold]="activeTab() === 'availability'"
-          class="pb-3 px-5 border-b-2 text-bosla-charcoal/60 hover:text-bosla-primary transition-colors whitespace-nowrap border-transparent text-sm">
-          <i class="fa-regular fa-calendar ml-1.5"></i>
-          الأوقات المتاحة
-        </button>
-      </div>
     </div>
 
-    <!-- ===== Main Content Area ===== -->
-    <div class="py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Bio -->
+    @if (specialist.bio) {
 
-        <!-- Right Column (Main Content) -->
-        <div class="lg:col-span-8 space-y-6">
+    <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-xl">
 
-          <!-- ===== Tab: Profile ===== -->
-          @if (activeTab() === 'profile') {
+      <h2 class="text-2xl font-bold text-white mb-5">
 
-          <!-- Bio -->
-          @if (specialist.bio) {
-          <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-            <h2 class="text-xl font-bold text-bosla-primary mb-4">نبذة عني</h2>
-            <p class="text-bosla-charcoal/80 leading-8 whitespace-pre-line text-[15px]">
-              {{ specialist.bio }}
-            </p>
-          </div>
-          }
+        نبذة عن المتخصص
 
-          <!-- Skills -->
-          @if (specialist.skills.length > 0) {
-          <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-            <h2 class="text-xl font-bold text-bosla-primary mb-4">المهارات</h2>
-            <div class="flex flex-wrap gap-2">
-              @for (skill of specialist.skills; track skill.id) {
-              <span class="px-4 py-2 rounded-xl text-sm font-semibold bg-bosla-primary/5 border border-bosla-primary/10 text-bosla-primary">
-                {{ skill.name }}
-              </span>
-              }
-            </div>
-          </div>
-          }
+      </h2>
 
-          <!-- Tools -->
-          @if (specialist.tools.length > 0) {
-          <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-            <h2 class="text-xl font-bold text-bosla-primary mb-4">الأدوات</h2>
-            <div class="flex flex-wrap gap-2">
-              @for (tool of specialist.tools; track tool.id) {
-              <span class="px-4 py-2 rounded-xl text-sm font-semibold bg-bosla-orange/5 border border-bosla-orange/10 text-bosla-orange">
-                {{ tool.name }}
-              </span>
-              }
-            </div>
-          </div>
-          }
+      <p class="text-white/80 leading-8 whitespace-pre-line">
 
-          <!-- Industries -->
-          @if (specialist.industries.length > 0) {
-          <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-            <h2 class="text-xl font-bold text-bosla-primary mb-4">المجالات</h2>
-            <div class="flex flex-wrap gap-2">
-              @for (industry of specialist.industries; track industry.id) {
-              <span class="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-50 border border-slate-200 text-bosla-charcoal/80">
-                {{ industry.name }}
-              </span>
-              }
-            </div>
-          </div>
-          }
+        {{ specialist.bio }}
 
-          <!-- Intro Video -->
-          @if (specialist.introVideoUrl) {
-          <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-            <h2 class="text-xl font-bold text-bosla-primary mb-4">فيديو تعريفي</h2>
-            <div class="rounded-xl overflow-hidden bg-slate-900 aspect-video">
-              <video [src]="specialist.introVideoUrl" controls class="w-full h-full object-cover">
-              </video>
-            </div>
-          </div>
-          }
+      </p>
 
-          }
+    </div>
+    }
 
-          <!-- ===== Tab: Reviews ===== -->
-          @if (activeTab() === 'reviews') {
+    @if (specialist.introVideoUrl) {
+    <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-xl">
 
-          @if (store.reviews().length > 0) {
-          <div class="space-y-6">
+      <div class="flex items-center justify-between flex-wrap gap-4">
 
-            <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
-              <ui-rating-summary [averageRating]="store.specialist()?.rating ?? 0"
-                [totalReviews]="store.reviews().length" [distribution]="ratingDistribution()">
-              </ui-rating-summary>
-            </div>
+        <div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              @for (item of reviewItems(); track item.id) {
-              <ui-review-card [review]="item">
-              </ui-review-card>
-              }
-            </div>
+          <h2 class="text-2xl font-bold text-white">
+            الفيديو التعريفي
+          </h2>
 
-          </div>
-          } @else {
-          <div class="bg-white rounded-2xl p-10 border border-slate-100 shadow-sm">
-            <ui-empty-state icon="fa-regular fa-comments" title="لا توجد تقييمات"
-              description="لم يقم أي عميل بإضافة تقييم بعد">
-            </ui-empty-state>
-          </div>
-          }
-
-          }
-
-          <!-- ===== Tab: Availability ===== -->
-          @if (activeTab() === 'availability') {
-
-          @if (availabilitySlots().length > 0) {
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @for (day of availabilitySlots(); track day.id) {
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-xl bg-bosla-primary/10 flex items-center justify-center">
-                  <i class="fa-regular fa-calendar-check text-bosla-primary"></i>
-                </div>
-                <h3 class="font-bold text-bosla-primary text-sm">
-                  {{ day.dateStr }}
-                </h3>
-              </div>
-              <div class="flex items-center gap-2 text-bosla-charcoal/70 text-sm mr-13">
-                <i class="fa-regular fa-clock text-xs"></i>
-                {{ day.timeStr }}
-              </div>
-            </div>
-            }
-          </div>
-          } @else {
-          <div class="bg-white rounded-2xl p-10 border border-slate-100 shadow-sm">
-            <ui-empty-state icon="fa-regular fa-calendar" title="لا توجد أوقات متاحة"
-              description="لم يقم المتخصص بإضافة مواعيد متاحة بعد">
-            </ui-empty-state>
-          </div>
-          }
-
-          }
+          <p class="text-white/60 mt-2">
+            تعرف على المتخصص بشكل أفضل من خلال الفيديو التعريفي.
+          </p>
 
         </div>
 
-        <!-- Left Column (Sidebar) -->
-        <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
-
-          <!-- Book Now CTA -->
-          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-            <div class="text-center mb-5">
-              <p class="text-xs text-bosla-charcoal/50 font-semibold mb-1">سعر الجلسة</p>
-              <p class="text-4xl font-black text-bosla-orange">{{ specialist.hourlyRate }}</p>
-              <p class="text-sm text-bosla-charcoal/50 mt-1">ريال / ساعة</p>
-            </div>
-
-            <button type="button" (click)="bookNow()"
-              class="w-full py-3.5 bg-bosla-primary hover:bg-bosla-primary/90 text-white font-bold rounded-xl transition-all text-sm cursor-pointer shadow-md hover:-translate-y-0.5">
-              <i class="fa-solid fa-calendar-check ml-2"></i>
-              احجز جلسة الآن
-            </button>
-          </div>
-
-          <!-- Statistics -->
-          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100">
-              <h3 class="font-bold text-bosla-primary">إحصائيات</h3>
-            </div>
-
-            <div class="divide-y divide-slate-100">
-
-              <!-- Rating -->
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">التقييمات</span>
-                <div class="flex items-center gap-1.5">
-                  <div class="flex gap-0.5">
-                    @for (star of [1,2,3,4,5]; track star) {
-                    <i class="fa-solid fa-star text-xs"
-                      [class.text-bosla-orange]="star <= Math.round(specialist.rating)"
-                      [class.text-slate-200]="star > Math.round(specialist.rating)"></i>
-                    }
-                  </div>
-                  <span class="text-sm font-bold text-bosla-charcoal">({{ specialist.reviewsCount }})</span>
-                </div>
-              </div>
-
-              <!-- Experience -->
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">مستوى الخبرة</span>
-                <span class="text-sm font-bold text-bosla-charcoal">{{ experienceLevelLabel() }}</span>
-              </div>
-
-              <!-- Years -->
-              @if (specialist.experienceYears) {
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">سنوات الخبرة</span>
-                <span class="text-sm font-bold text-bosla-charcoal">{{ specialist.experienceYears }} سنوات</span>
-              </div>
-              }
-
-              <!-- Country -->
-              @if (specialist.country) {
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">الدولة</span>
-                <span class="text-sm font-bold text-bosla-charcoal">{{ specialist.country }}</span>
-              </div>
-              }
-
-              <!-- Language -->
-              @if (specialist.preferredLanguage) {
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">اللغة</span>
-                <span class="text-sm font-bold text-bosla-charcoal">{{ specialist.preferredLanguage === 'ar' ? 'العربية' : 'English' }}</span>
-              </div>
-              }
-
-              <!-- Gender -->
-              @if (specialist.gender) {
-              <div class="flex items-center justify-between px-6 py-4">
-                <span class="text-sm text-bosla-charcoal/70">الجنس</span>
-                <span class="text-sm font-bold text-bosla-charcoal">{{ specialist.gender === 'male' ? 'ذكر' : 'أنثى' }}</span>
-              </div>
-              }
-
-            </div>
-          </div>
-
-          <!-- Skills Summary -->
-          @if (specialist.skills.length > 0 || specialist.tools.length > 0) {
-          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100">
-              <h3 class="font-bold text-bosla-primary">المهارات والأدوات</h3>
-            </div>
-            <div class="p-5">
-              <div class="flex flex-wrap gap-2">
-                @for (skill of specialist.skills; track skill.id) {
-                <span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-bosla-primary/5 text-bosla-primary">
-                  {{ skill.name }}
-                </span>
-                }
-                @for (tool of specialist.tools; track tool.id) {
-                <span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-bosla-orange/5 text-bosla-orange">
-                  {{ tool.name }}
-                </span>
-                }
-              </div>
-            </div>
-          </div>
-          }
-
-        </div>
+        <a [href]="specialist.introVideoUrl" target="_blank" rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-bosla-orange text-white font-semibold hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-play"></i>
+          مشاهدة الفيديو
+        </a>
 
       </div>
+
+    </div>
+    }
+
+    <!-- Tabs -->
+    <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-xl">
+
+      <div class="border-b border-white/10 px-6 pt-5">
+
+        <ui-tabs [items]="tabs" [activeId]="activeTab()" (tabChange)="onTabChange($event)">
+        </ui-tabs>
+
+      </div>
+
+      <div class="p-6 md:p-8">
+
+        <!-- Reviews -->
+        @if (activeTab() === 'reviews') {
+
+        @if (store.reviews().length > 0) {
+
+        <div class="space-y-8">
+
+          <ui-rating-summary [averageRating]="store.specialist()?.rating ?? 0" [totalReviews]="store.reviews().length"
+            [distribution]="ratingDistribution()">
+          </ui-rating-summary>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            @for (item of reviewItems(); track item.id) {
+
+            <ui-review-card [review]="item">
+            </ui-review-card>
+
+            }
+
+          </div>
+
+        </div>
+
+        } @else {
+
+        <ui-empty-state icon="fa-regular fa-comments" title="لا توجد تقييمات"
+          description="لم يقم أي عميل بإضافة تقييم بعد">
+        </ui-empty-state>
+
+        }
+
+        }
+
+        <!-- Availability -->
+        @if (activeTab() === 'availability') {
+
+        @if (availabilitySlots().length > 0) {
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          @for (day of availabilitySlots(); track day.id) {
+
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all">
+
+            <h3 class="font-bold text-white mb-3">
+
+              {{ day.dateStr }}
+
+            </h3>
+
+            <p class="text-white/70">
+
+              {{ day.timeStr }}
+
+            </p>
+
+          </div>
+
+          }
+
+        </div>
+
+        } @else {
+
+        <ui-empty-state icon="fa-regular fa-calendar" title="لا توجد أوقات متاحة"
+          description="لم يقم المتخصص بإضافة مواعيد متاحة بعد">
+        </ui-empty-state>
+
+        }
+
+        }
+
+      </div>
+
     </div>
 
     }
 
   </div>
 
-</div>
+</section>

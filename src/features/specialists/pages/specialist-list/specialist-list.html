@@ -27,8 +27,8 @@
 
         <!-- Filters -->
         <div class="mb-10">
-            <specialist-filters [expertise]="store.expertise()" [skills]="store.skills()" [tools]="store.tools()"
-                (filtersChanged)="onFiltersChanged($event)">
+            <specialist-filters [filters]="store.filters()" [expertise]="store.expertise()" [skills]="store.skills()"
+                [tools]="store.tools()" (filtersChanged)="onFiltersChanged($event)">
             </specialist-filters>
         </div>
 

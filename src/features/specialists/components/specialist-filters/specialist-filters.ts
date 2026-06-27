@@ -1,8 +1,17 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+
 import { SpecialistsFilters } from '@features/specialists/contracts/specialist-filters.contract';
 import { LookupItem } from '@features/specialists/models/lookup.model';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'specialist-filters',
@@ -10,12 +19,14 @@ import { CommonModule } from '@angular/common';
   templateUrl: './specialist-filters.html',
   styleUrl: './specialist-filters.css',
 })
-export class SpecialistsFiltersComponent {
+export class SpecialistsFiltersComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);
 
   @Input() expertise: LookupItem[] = [];
   @Input() skills: LookupItem[] = [];
   @Input() tools: LookupItem[] = [];
+
+  @Input() filters: Partial<SpecialistsFilters> | null = null;
 
   @Output() filtersChanged = new EventEmitter<Partial<SpecialistsFilters>>();
 
@@ -28,6 +39,25 @@ export class SpecialistsFiltersComponent {
     minHourlyRate: [null as number | null],
     maxHourlyRate: [null as number | null],
   });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filters']?.currentValue) {
+      this.form.patchValue(
+        {
+          searchTerm: this.filters?.searchTerm ?? '',
+          experienceLevel: this.filters?.experienceLevel ?? null,
+          expertiseId: this.filters?.expertiseId ?? '',
+          skillId: this.filters?.skillId ?? '',
+          toolId: this.filters?.toolId ?? '',
+          minHourlyRate: this.filters?.minHourlyRate ?? null,
+          maxHourlyRate: this.filters?.maxHourlyRate ?? null,
+        },
+        {
+          emitEvent: false,
+        }
+      );
+    }
+  }
 
   applyFilters() {
     const rawValues = this.form.getRawValue();
@@ -46,6 +76,16 @@ export class SpecialistsFiltersComponent {
 
   resetFilters() {
     this.form.reset();
-    this.applyFilters();
+
+    this.filtersChanged.emit({
+      pageNumber: 1,
+      searchTerm: undefined,
+      experienceLevel: undefined,
+      expertiseId: undefined,
+      skillId: undefined,
+      toolId: undefined,
+      minHourlyRate: undefined,
+      maxHourlyRate: undefined,
+    });
   }
 }

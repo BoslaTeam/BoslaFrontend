@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SpecialistsFilters } from '@features/specialists/contracts/specialist-filters.contract';
 import { SpecialistsStore } from '@features/specialists/store/specialists.store';
 import { UiPagination } from "@shared/ui/pagination/pagination";
@@ -17,12 +17,23 @@ import { SpecialistsFiltersComponent } from '@features/specialists/components/sp
 export class SpecialistListPage implements OnInit {
   readonly store = inject(SpecialistsStore);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   ngOnInit() {
     this.store.loadLookups();
 
-    // نعتمد هنا على الفلاتر الافتراضية المخزنة داخل الـ Store
-    this.store.loadSpecialists(this.store.filters());
+    this.route.queryParamMap.subscribe(params => {
+      const query = params.get('query');
+
+      if (query) {
+        this.store.updateFilters({
+          searchTerm: query,
+          pageNumber: 1,
+        });
+      } else {
+        this.store.loadSpecialists(this.store.filters());
+      }
+    });
   }
 
   onFiltersChanged(filters: Partial<SpecialistsFilters>) {
