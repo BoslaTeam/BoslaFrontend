@@ -12,7 +12,7 @@ import { SpecialistProfileResponse } from '@features/specialists/contracts/speci
 @Component({
   selector: 'app-specialist-layout',
   // دمج مصفوفة الـ imports لتشمل كل المكونات المطلوبة
-  imports: [RouterOutlet, SpecialistHeader, SpecialistSidebar],
+  imports: [RouterOutlet, SpecialistHeader],
   templateUrl: './specialist-layout.html',
 })
 export class SpecialistLayout implements OnInit {
