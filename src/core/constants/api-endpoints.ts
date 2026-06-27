@@ -1,3 +1,4 @@
+import { generate } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const V = environment.apiBaseUrl;
@@ -52,11 +53,11 @@ export const API_ENDPOINTS = {
     messageById: (id: string, mid: string) => `${V}/conversations/${id}/messages/${mid}`,
   },
   video: {
-    sessions: `${V}/video/sessions`,
-    sessionById: (id: string) => `${V}/video/sessions/${id}`,
-    join: (id: string) => `${V}/video/sessions/${id}/join`,
-    leave: (id: string) => `${V}/video/sessions/${id}/leave`,
-    participants: (id: string) => `${V}/video/sessions/${id}/participants`,
+    generateToken: `${V}/video-sessions/generate-token`,
+    sessionById: (id: string) => `${V}/video-sessions/${id}`,
+    start: (id: string) => `${V}/video-sessions/${id}/start`,
+    end: (id: string) => `${V}/video-sessions/${id}/end`,
+    webhook: `${V}/webhooks/agora`
   },
   specialists: {
     onboard: `${V}/specialists/onboard`,
@@ -105,10 +106,6 @@ export const API_ENDPOINTS = {
     deactivateUser: (id: string) => `${V}/admin/users/${id}/deactivate`,
     reactivateUser: (id: string) => `${V}/admin/users/${id}/reactivate`,
     appointments: `${V}/admin/appointments`,
-    cancelAppointment: (id: string) => `${V}/admin/appointments/${id}/cancel`,
-    rescheduleAppointment: (id: string) => `${V}/admin/appointments/${id}/reschedule`,
-    payments: `${V}/admin/payments`,
-    refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
     auditLogs: `${V}/admin/audit-logs`,
     auditLogById: (id: string) => `${V}/admin/audit-logs/${id}`,
     dashboard: `${V}/admin/dashboard`,

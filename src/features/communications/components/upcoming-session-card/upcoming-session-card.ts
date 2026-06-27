@@ -56,8 +56,8 @@ export class UpcomingSessionCard implements OnDestroy {
     const end = new Date(apt.end);
 
     return {
-      topic: apt.sessionTopic,
-      notes: apt.notes,
+      topic: apt.sessionTopic ?? '',
+      notes: apt.notes ?? '',
       dateLabel: start.toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'long',

@@ -113,20 +113,6 @@ export interface AdminAppointmentDto {
   createdAt: string;
 }
 
-// ── Payments ──
-
-export interface AdminPaymentDto {
-  id: string;
-  appointmentId: string;
-  userId: string;
-  userName: string;
-  amount: number;
-  currency: string;
-  status: number;
-  createdAt: string;
-  method?: string;
-}
-
 // ── Audit Logs ──
 
 export interface AuditLogDto {

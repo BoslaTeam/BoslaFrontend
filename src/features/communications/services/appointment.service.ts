@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
-import { AppointmentDto, ApiResponse } from '../models/chat.model';
+import { AppointmentDto } from '../models/chat.model';
+import { ApiResponse } from '@core/models/api-response.model';
 
 @Injectable({
   providedIn: 'root'

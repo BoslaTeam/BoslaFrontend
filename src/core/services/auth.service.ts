@@ -18,16 +18,18 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-    fullName: string;
+    name: string;
     email: string;
     password: string;
-    role: UserRole;
+    phoneNumber: string;
+    country: string;
+    role: string;
 }
 
 export interface AuthTokensResponse {
     accessToken: string;
     refreshToken: string;
-    user: CurrentUser;
+    expiresOnUtc: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -46,7 +48,7 @@ export class AuthService {
     login(payload: LoginPayload): Observable<ApiResponse<AuthTokensResponse>> {
         return this.http
             .post<ApiResponse<AuthTokensResponse>>(API_ENDPOINTS.auth.login, payload)
-            .pipe(tap((res) => this.setSession(res.data)));
+            .pipe(tap((res) => { if (res.data) this.setSession(res.data); }));
     }
 
     register(payload: any): Observable<ApiResponse<AuthTokensResponse>> {
@@ -87,9 +89,14 @@ export class AuthService {
 
     refreshToken(): Observable<ApiResponse<AuthTokensResponse>> {
         const refreshToken = this.tokenService.getRefreshToken();
+        const accessToken = this.tokenService.getAccessToken();
         return this.http
-            .post<ApiResponse<AuthTokensResponse>>(API_ENDPOINTS.auth.refresh, { refreshToken })
-            .pipe(tap((res) => this.setSession(res.data)));
+            .post<ApiResponse<AuthTokensResponse>>(API_ENDPOINTS.auth.refresh, { accessToken, refreshToken })
+            .pipe(tap((res) => {
+                if (res.data) {
+                    this.setSession(res.data);
+                }
+            }));
     }
 
     logout(): void {
@@ -102,12 +109,12 @@ export class AuthService {
     setSession(data: AuthTokensResponse): void {
         this.tokenService.setTokens(data.accessToken, data.refreshToken);
         
-        let user = data.user;
-        if (!user && data.accessToken) {
+        let user: CurrentUser | null = null;
+        if (data.accessToken) {
             const decoded = this.tokenService.decodeToken(data.accessToken);
             if (decoded) {
                 let roleClaim = decoded.role || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-                let parsedRole = 0; // Default User
+                let parsedRole = 0;
                 
                 if (Array.isArray(roleClaim)) {
                     if (roleClaim.includes('Admin') || roleClaim.includes('2')) parsedRole = 2;
@@ -134,7 +141,6 @@ export class AuthService {
             this.storage.setJson(STORAGE_KEYS.currentUser, user);
             this._currentUser.set(user);
         } else {
-            // Minimum fallback to pass guards
             this._currentUser.set({ id: '', email: '', fullName: '', role: 0 } as CurrentUser);
         }
     }

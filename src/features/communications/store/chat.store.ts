@@ -9,8 +9,8 @@ import { ToastService } from '@core/services/toast.service';
 import {
   ConversationDto,
   MessageDto,
-  PaginationMetadata
 } from '../models/chat.model';
+import { PaginationMetadata } from '@core/models/paginated-response.model';
 import { ChatFilter, ConversationPreview, UserRole } from '../models/conversation.model';
 import { Message } from '../models/message.model';
 
@@ -55,7 +55,7 @@ export class ChatStore {
   readonly activeConversationId = computed(() => this.selectedConversation()?.id ?? null);
 
   readonly totalUnread = computed(() =>
-    this.conversations().reduce((sum, c) => sum + c.unreadCount, 0)
+    this.conversations().reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
   );
 
   readonly isTyping = computed(() => {
@@ -288,7 +288,7 @@ export class ChatStore {
 
     this.conversations.update(convs =>
       convs.map(c => c.id === activeId
-        ? { ...c, lastMessage: cleanText, lastMessageAt: c.lastMessageAt ?? '' }
+        ? { ...c, lastMessage: optimisticMsg }
         : c
       )
     );
@@ -296,16 +296,14 @@ export class ChatStore {
     this.messageService.sendMessage(activeId, cleanText).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          const finalMsg: MessageDto = {
-            ...res.data,
-            status: 'read'
-          };
-
-          this.messages.update(msgs => this.replaceOptimisticMessage(msgs, optimisticId, finalMsg));
+          const messageId = res.data;
+          this.messages.update(msgs =>
+            msgs.map(m => m.id === optimisticId ? { ...m, id: messageId, status: 'read' as const } : m)
+          );
 
           this.conversations.update(convs =>
             convs.map(c => c.id === activeId
-              ? { ...c, lastMessage: finalMsg.messageText, lastMessageAt: finalMsg.createdAtUtc }
+              ? { ...c, lastMessage: { ...c.lastMessage, id: messageId } as MessageDto }
               : c
             )
           );
@@ -349,10 +347,10 @@ export class ChatStore {
 
     return this.messageService.editMessage(activeId, messageId, cleanText).pipe(
       map((res) => {
-        if (res.success && res.data) {
+        if (res.success) {
           this.messages.update(msgs =>
             msgs.map(m => m.id === messageId
-              ? this.toRealtimeEditedMessage(m, { ...res.data, messageText: cleanText, isEdited: true })
+              ? this.toRealtimeEditedMessage(m, { ...m, messageText: cleanText, isEdited: true })
               : m
             )
           );
@@ -474,11 +472,10 @@ export class ChatStore {
         this.conversationService.getConversationById(dto.conversationId).subscribe({
           next: (res) => {
             if (res.success && res.data) {
-              const newConv = {
+              const newConv: ConversationDto = {
                 ...res.data,
-                lastMessage: messageText,
-                lastMessageAt: dto.createdAtUtc,
-                unreadCount: dto.conversationId === activeId ? 0 : res.data.unreadCount
+                lastMessage: dto,
+                unreadCount: dto.conversationId === activeId ? 0 : 1,
               };
               this.conversations.update(cList => {
                 if (cList.some(c => c.id === newConv.id)) return cList;
@@ -491,11 +488,10 @@ export class ChatStore {
       }
 
       const targetConv = convs[targetIndex];
-      const updatedConv = {
+      const updatedConv: ConversationDto = {
         ...targetConv,
-        lastMessage: messageText,
-        lastMessageAt: dto.createdAtUtc,
-        unreadCount: dto.conversationId === activeId ? 0 : targetConv.unreadCount + 1,
+        lastMessage: dto,
+        unreadCount: dto.conversationId === activeId ? 0 : (targetConv.unreadCount ?? 0) + 1,
       };
 
       const remaining = convs.filter(c => c.id !== dto.conversationId);
@@ -649,46 +645,33 @@ export class ChatStore {
 
   private mapToConversationPreview(dto: ConversationDto): ConversationPreview {
     const currentUserId = this.authService.currentUser()?.id;
-    const other = dto.participants.find(p => p.id !== currentUserId) || dto.participants[0];
+    const other = dto.participants.find(p => p.userId !== currentUserId) || dto.participants[0];
 
-    let lastMsgText = '';
-    if (dto.lastMessage) {
-      if (typeof dto.lastMessage === 'object') {
-        lastMsgText = (dto.lastMessage as MessageDto).messageText || '';
-      } else {
-        lastMsgText = String(dto.lastMessage);
-      }
-    }
+    const lastMsgText = dto.lastMessage?.messageText ?? '';
+    const lastMsgAt = dto.lastMessage?.createdAtUtc ?? '';
 
-    let lastMsgAt = dto.lastMessageAt || '';
-    if (!lastMsgAt && dto.lastMessage && typeof dto.lastMessage === 'object') {
-      lastMsgAt = (dto.lastMessage as MessageDto).createdAtUtc || '';
-    }
+    const defaultParticipant = {
+      id: '',
+      name: 'Unknown',
+      avatarUrl: null,
+      role: 'user' as const,
+      isOnline: false,
+      lastSeenAt: null,
+    };
 
     return {
       id: dto.id,
       participant: other ? {
-        id: other.id,
+        id: other.userId,
         name: other.fullName,
-        avatarUrl: other.avatarUrl,
+        avatarUrl: other.profilePictureUrl,
         role: this.toUserRole(other.role),
-        isOnline: other.isOnline,
-        lastSeenAt: other.lastSeenAt,
-        bio: other.bio,
-        rating: other.rating,
-        reviewCount: other.reviewCount,
-        specialization: other.specialization
-      } : {
-        id: '',
-        name: 'Unknown',
-        avatarUrl: null,
-        role: 'user',
         isOnline: false,
-        lastSeenAt: null
-      },
+        lastSeenAt: null,
+      } : defaultParticipant,
       lastMessage: lastMsgText,
       lastMessageAt: lastMsgAt,
-      unreadCount: dto.unreadCount,
+      unreadCount: dto.unreadCount ?? 0,
       appointmentId: dto.appointmentId,
     };
   }
@@ -704,14 +687,14 @@ export class ChatStore {
       } else {
         const active = this.selectedConversation();
         if (active) {
-          const participant = active.participants.find(p => p.id === dto.senderId);
+          const participant = active.participants.find(p => p.userId === dto.senderId);
           if (participant) {
             senderName = participant.fullName;
           }
         }
         if (!senderName) {
           for (const conv of this.conversations()) {
-            const participant = conv.participants.find(p => p.id === dto.senderId);
+            const participant = conv.participants.find(p => p.userId === dto.senderId);
             if (participant) {
               senderName = participant.fullName;
               break;
@@ -783,7 +766,9 @@ export class ChatStore {
     if (!wasLatest) return;
 
     this.conversations.update(convs =>
-      convs.map(c => c.id === conversationId ? { ...c, lastMessage: DELETED_MESSAGE_TEXT } : c)
+      convs.map(c => c.id === conversationId
+        ? { ...c, lastMessage: c.lastMessage ? { ...c.lastMessage, isDeleted: true } : null }
+        : c)
     );
   }
 
@@ -792,7 +777,7 @@ export class ChatStore {
     if (latestMessage?.id !== message.id) return;
 
     this.conversations.update(convs =>
-      convs.map(c => c.id === message.conversationId ? { ...c, lastMessage: message.messageText } : c)
+      convs.map(c => c.id === message.conversationId ? { ...c, lastMessage: message } : c)
     );
   }
 
@@ -812,8 +797,8 @@ export class ChatStore {
     });
   }
 
-  private toUserRole(role: string): UserRole {
-    return role === 'specialist' || role === 'consultant' || role === 'business' ? role : 'user';
+  private toUserRole(role: number): UserRole {
+    return role === 1 ? 'specialist' : 'user';
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {

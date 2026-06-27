@@ -21,6 +21,6 @@ export class SpecialistService {
     if (request.searchTerm) params = params.set('searchTerm', request.searchTerm);
 
     return this.http.get<ApiResponse<PaginatedResponse<SpecialistListItemDto>>>(this.baseUrl, { params })
-      .pipe(map(res => res.data));
+      .pipe(map(res => res.data!));
   }
 }

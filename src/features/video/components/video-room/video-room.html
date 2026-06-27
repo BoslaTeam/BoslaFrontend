@@ -1,0 +1,30 @@
+<div class="video-room">
+  <div class="video-room-controls">
+    <button (click)="joinSession()" [disabled]="agoraService.joined() || agoraService.joining()">
+      {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
+    </button>
+
+    <button (click)="leaveSession()" [disabled]="!agoraService.joined()">
+      Leave Session
+    </button>
+  </div>
+
+  <div class="video-room-status">
+    @if (agoraService.joining()) {
+    <span>Connecting to session...</span>
+    } @else if (agoraService.joined()) {
+    <span>Connected</span>
+    } @else {
+    <span>Disconnected</span>
+    }
+  </div>
+
+  @if (agoraService.error()) {
+  <div class="video-room-error">
+    {{ agoraService.error() }}
+  </div>
+  }
+
+  <div #localPlayer class="video-room-local" [class.video-room-local--active]="agoraService.joined()">
+  </div>
+</div>
