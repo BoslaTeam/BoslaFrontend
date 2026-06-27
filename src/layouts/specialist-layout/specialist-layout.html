@@ -1,1 +1,14 @@
-<p>specialist-layout works!</p>
+<div class="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
+  <div class="fixed top-0 left-0 w-full h-20 bg-bosla-primary z-40 shadow-md"></div>
+
+  <div class="z-50">
+    <app-specialist-header></app-specialist-header>
+  </div>
+
+  <div class="flex grow pt-20 relative z-10">
+    <app-specialist-sidebar class="hidden lg:block w-64 shrink-0"></app-specialist-sidebar>
+    <main class="grow flex flex-col min-w-0">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

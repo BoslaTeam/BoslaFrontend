@@ -50,7 +50,14 @@ export class UiInput implements ControlValueAccessor {
   }
 
   onInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+    let value = (event.target as HTMLInputElement).value;
+    if (this.type() === 'number' && value !== '') {
+      const numValue = Number(value);
+      if (numValue < 1) {
+        value = '1';
+        (event.target as HTMLInputElement).value = '1';
+      }
+    }
     this.value.set(value);
     this.onChange(value);
   }

@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import { SpecialistsFilters } from '../contracts/specialist-filters.contract';
 import { OnboardSpecialistRequest } from '../contracts/specialist-onboard.contract';
+import { ExperienceRequest } from '../contracts/specialist-experience.contract';
+import { AvailabilityRequest } from '../contracts/specialist-availability.contract';
 import { SpecialistsApiService } from './specialist-api.service';
 import { SpecialistsMapper } from './specialists-mapper';
 
@@ -85,7 +87,7 @@ export class SpecialistsRepository {
   }
 
   // ==========================================
-  // Actions & Mutations Section
+  // Onboarding Actions
   // ==========================================
 
   onboard(request: OnboardSpecialistRequest) {
@@ -98,15 +100,57 @@ export class SpecialistsRepository {
     return this.api.addExpertise(expertiseId);
   }
 
-  addSkill(skillId: string) {
-    return this.api.addSkill(skillId);
+  addSkills(skillIds: string[]) {
+    return this.api.addSkills({ skillIds });
   }
 
-  addTool(toolId: string) {
-    return this.api.addTool(toolId);
+  addTools(toolIds: string[]) {
+    return this.api.addTools({ toolIds });
   }
 
-  addAvailability(start: string, end: string) {
-    return this.api.addAvailability(start, end);
+  addExperiences(experiences: ExperienceRequest[]) {
+    return this.api.addExperiences({
+      experiences,
+    });
+  }
+
+  addAvailabilities(availabilities: AvailabilityRequest[]) {
+    return this.api.addAvailabilities({
+      availabilities,
+    });
+  }
+
+  // ==========================================
+  // My Profile Queries
+  // ==========================================
+
+  getMyProfile() {
+    return this.api.getMyProfile().pipe(
+      map(response => response.data)
+    );
+  }
+
+  getMyExperience() {
+    return this.api.getMyExperience().pipe(
+      map(response => response.data)
+    );
+  }
+
+  getMyAvailability() {
+    return this.api.getMyAvailability().pipe(
+      map(response => response.data.map(SpecialistsMapper.mapAvailability))
+    );
+  }
+
+  getMySkills() {
+    return this.api.getMySkills().pipe(
+      map(response => response.data.map(SpecialistsMapper.mapLookup))
+    );
+  }
+
+  getMyTools() {
+    return this.api.getMyTools().pipe(
+      map(response => response.data.map(SpecialistsMapper.mapLookup))
+    );
   }
 }
