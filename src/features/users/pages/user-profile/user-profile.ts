@@ -37,6 +37,13 @@ export class UserProfile implements OnInit {
   avatarPreviewUrl: string | null = null;
   profileImageError = false;
 
+  activeTab: 'basic' | 'security' | 'education' | 'social' = 'basic';
+
+  setTab(tab: 'basic' | 'security' | 'education' | 'social') {
+    this.activeTab = tab;
+    this.cdr.markForCheck();
+  }
+
   constructor() {
     this.basicInfoForm = this.fb.group({
       name: ['', Validators.required],
@@ -121,10 +128,30 @@ export class UserProfile implements OnInit {
   changePassword() {
     if (this.passwordForm.valid) {
       const { currentPassword, newPassword } = this.passwordForm.value;
-      this.userProfileService.changePassword({ currentPassword, newPassword }).subscribe(() => {
-        alert('تم تغيير كلمة المرور بنجاح');
-        this.passwordForm.reset();
-        this.cdr.markForCheck();
+      
+      const request$ = currentPassword 
+        ? this.userProfileService.changePassword({ currentPassword, newPassword })
+        : this.userProfileService.setPassword({ newPassword });
+      
+      request$.subscribe({
+        next: () => {
+          alert(currentPassword ? 'تم تغيير كلمة المرور بنجاح' : 'تم تعيين كلمة المرور بنجاح');
+          this.passwordForm.reset();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Password update error:', err);
+          let errorMessage = 'حدث خطأ أثناء تحديث كلمة المرور.';
+          if (err.status === 400 && err.errors) {
+             const errors = Object.values(err.errors).flat().join('\n');
+             errorMessage = `أخطاء التحقق:\n${errors}`;
+          } else if (err.error?.message) {
+             errorMessage = err.error.message;
+          } else if (err.title) {
+             errorMessage = err.title;
+          }
+          alert(errorMessage);
+        }
       });
     }
   }

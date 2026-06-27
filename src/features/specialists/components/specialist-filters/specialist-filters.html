@@ -1,4 +1,4 @@
-<div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
+<div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
   <form [formGroup]="form" class="flex flex-col gap-4">
 
     <div class="flex items-center gap-3">
@@ -6,12 +6,11 @@
         <i
           class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-bosla-charcoal/30 text-sm"></i>
         <input type="text" formControlName="searchTerm" placeholder="ابحث عن متخصص..."
-          class="w-full h-12 pr-11 pl-4 bg-white/10 border border-white/10 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:border-bosla-orange focus:ring-2 focus:ring-bosla-orange/20 " />
+          class="w-full h-12 pr-11 pl-4 bg-bosla-offwhite border border-slate-200 rounded-xl text-bosla-charcoal placeholder:text-bosla-charcoal/50 focus:outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 " />
       </div>
 
       <button type="button" (click)="applyFilters()"
-        class="h-11 px-7 rounded-xl text-[14px] font-sans font-bold text-white transition-all active:scale-[0.98] cursor-pointer shrink-0 hover:-translate-y-0.5"
-        style="background: linear-gradient(135deg, #1B4F72, #2E86AB); box-shadow: 0 4px 15px rgba(27,79,114,0.25);">
+        class="h-11 px-7 rounded-xl text-[14px] font-sans font-bold text-white transition-all active:scale-[0.98] cursor-pointer shrink-0 hover:-translate-y-0.5 bg-bosla-primary hover:bg-bosla-primary/90 shadow-md">
         بحث
       </button>
 

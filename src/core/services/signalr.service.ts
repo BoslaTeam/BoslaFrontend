@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { API_CONFIG } from '../config/api.config';
 import { TokenService } from './token.service';
+import { environment } from '@environments/environment';
 
 export type SignalRConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
@@ -17,11 +18,11 @@ export class SignalrService {
 
   readonly connectionState = signal<SignalRConnectionState>('disconnected');
 
-  connect(hubPath = '/hubs/app'): void {
+  connect(hubPath = '/hubs/chat'): void {
     if (this.hubConnection) return;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${API_CONFIG.baseUrl}${hubPath}`, {
+      .withUrl('https://localhost:7275' + hubPath, {
         accessTokenFactory: () => this.tokenService.getAccessToken() ?? '',
       })
       .withAutomaticReconnect()

@@ -5,7 +5,7 @@ export const AUTH_CONFIG = {
   refreshTokenExpiryDays: 7,
   
   defaultRedirectByRole: {
-    [UserRole.User]: '/user/profile',
+    [UserRole.User]: '/',
     [UserRole.Specialist]: '/specialist/profile',
     [UserRole.Admin]: '/admin/dashboard',
   } as const,

@@ -1,0 +1,74 @@
+<div
+  [class]="message().isOwn
+    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-sans py-1'
+    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-sans py-1'"
+>
+  @if (!message().isOwn) {
+    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-sm select-none" aria-hidden="true">
+      {{ initials() }}
+    </div>
+  }
+
+  <div class="flex flex-col gap-1 w-full">
+    @if (session()) {
+      <div 
+        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-sans"
+        role="article" 
+        aria-label="Video session invitation"
+      >
+        <!-- Card Header -->
+        <div class="bg-bosla-blue px-4 py-2.5 text-white flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white tracking-tight">{{ session()!.title }}</div>
+            <div class="text-[9px] text-white/80 font-medium">دعوة جلسة فيديو</div>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-4 flex flex-col gap-3">
+          <div class="flex flex-col gap-2 text-xs text-bosla-charcoal bg-bosla-offwhite/85 p-3 rounded-xl border border-bosla-primary/5">
+            <!-- Date -->
+            <div class="flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-bosla-blue shrink-0">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span class="text-[11px] font-medium text-bosla-charcoal">{{ formattedDate() }}</span>
+            </div>
+
+            <!-- Start Time -->
+            <div class="flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-bosla-blue shrink-0">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="text-[11px] font-medium text-bosla-charcoal">تبدأ الساعة {{ session()!.startTime }}</span>
+            </div>
+          </div>
+
+          <!-- ORANGE CONVERSION CTA -->
+          <button
+            class="w-full bg-bosla-orange hover:bg-bosla-orange/95 text-white font-bold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer border-none shadow-sm"
+            (click)="onJoin()"
+            id="join-video-session-{{ session()!.id }}"
+            aria-label="Join video session: {{ session()!.title }}"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+            <span>انضم للجلسة</span>
+          </button>
+        </div>
+
+        <!-- Footer time -->
+        <div class="px-4 py-2 border-t border-slate-50 flex justify-end bg-slate-50/50">
+          <span class="text-[9px] text-bosla-grey/80 font-medium">{{ formattedTime() }}</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

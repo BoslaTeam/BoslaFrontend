@@ -9,4 +9,4 @@ import { PublicFooter } from '../public-layout/public-footer/public-footer';
   templateUrl: './user-layout.html',
   styles: ``,
 })
-export class UserLayout {}
+export class UserLayout { }

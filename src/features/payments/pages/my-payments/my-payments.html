@@ -1,0 +1,41 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">المعاملات المالية</h1>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-6 border-b border-slate-100 bg-blue-50/50">
+      <div class="flex items-center gap-4 text-bosla-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <p class="font-medium">هذه الصفحة تعرض الفواتير والمدفوعات السابقة. (قريباً سيتم ربطها ببيانات حقيقية من السيرفر).</p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-right whitespace-nowrap">
+        <thead class="bg-slate-50 border-b border-slate-100 text-slate-600 text-sm">
+          <tr>
+            <th class="px-6 py-4 font-semibold text-right">رقم الفاتورة</th>
+            <th class="px-6 py-4 font-semibold text-right">التفاصيل</th>
+            <th class="px-6 py-4 font-semibold text-right">التاريخ</th>
+            <th class="px-6 py-4 font-semibold text-right">المبلغ</th>
+            <th class="px-6 py-4 font-semibold text-right">الحالة</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let pay of payments" class="hover:bg-slate-50/50 transition-colors">
+            <td class="px-6 py-4 text-sm text-slate-500 font-medium">{{ pay.id }}</td>
+            <td class="px-6 py-4 text-sm text-slate-800">{{ pay.description }}</td>
+            <td class="px-6 py-4 text-sm text-slate-800">{{ pay.date | date:'dd MMM yyyy' }}</td>
+            <td class="px-6 py-4 text-sm font-bold text-slate-800">${{ pay.amount }}</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                مكتمل
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

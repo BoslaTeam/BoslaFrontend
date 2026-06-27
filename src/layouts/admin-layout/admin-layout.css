@@ -1,0 +1,51 @@
+/* ── Admin Layout Shell ── */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  direction: rtl;
+  background: #F7F9FA;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: margin-inline-start 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* ── Mobile Overlay ── */
+.admin-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.admin-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-inline-start: 0 !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .admin-overlay {
+    display: none !important;
+  }
+}
