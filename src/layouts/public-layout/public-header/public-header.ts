@@ -1,5 +1,5 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { UiLogo } from "@shared/ui/logo/logo";
@@ -39,5 +39,11 @@ export class PublicHeader {
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.scrollY > 20;
+  }
+
+  router = inject(Router);
+
+  get isSolidBackground(): boolean {
+    return this.isScrolled || this.router.url !== '/';
   }
 }

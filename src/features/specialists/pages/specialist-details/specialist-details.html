@@ -130,7 +130,7 @@
           </div>
         </div>
 
-        @if (specialist.skills?.length || specialist.tools?.length || specialist.industries?.length) {
+        @if (specialist.skills.length || specialist.tools.length || specialist.industries.length) {
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h3 class="text-lg font-bold text-bosla-primary mb-5 border-b border-slate-100 pb-3">المهارات والأدوات</h3>
           <div class="flex flex-wrap gap-2">
@@ -161,7 +161,7 @@
         <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm min-h-[400px]">
           
           <!-- Bio Tab -->
-          @if (activeTab() === 'about' || !activeTab()) {
+          @if (activeTab() === 'profile' || !activeTab()) {
             
             <h3 class="text-xl font-bold text-bosla-primary mb-6">نبذة عني</h3>
             
