@@ -1,3 +1,5 @@
+import { ApiResponse } from "@core/models/api-response.model";
+
 export interface OnboardSpecialistRequest {
     experienceYears: number;
     experienceLevel: number;
@@ -8,4 +10,8 @@ export interface OnboardSpecialistRequest {
 export interface OnboardSpecialistResponse {
     specialistId: string;
     verificationStatus: number;
+    token: {
+        accessToken: string;
+        refreshToken: string;
+    };
 }

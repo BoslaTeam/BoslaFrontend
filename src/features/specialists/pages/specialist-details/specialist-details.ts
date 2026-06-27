@@ -87,10 +87,10 @@ export class SpecialistDetailsPage implements OnInit {
   readonly experienceLevelLabel = computed(() => {
     const level = this.store.specialist()?.experienceLevel;
     const labels: Record<number, string> = {
-      1: 'مبتدئ',
-      2: 'متوسط',
-      3: 'متقدم',
-      4: 'خبير',
+      0: 'مبتدئ',
+      1: 'متوسط',
+      2: 'متقدم',
+      3: 'خبير',
     };
     return labels[level ?? 0] || '';
   });

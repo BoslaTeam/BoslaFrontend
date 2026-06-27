@@ -4,10 +4,21 @@ import { SpecialistDashboard } from './pages/specialist-dashboard/specialist-das
 export const SPECIALIST_PANEL_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'profile',
     pathMatch: 'full',
   },
-
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/specialist-profile/specialist-profile')
+        .then(m => m.SpecialistProfilePage),
+  },
+  {
+    path: 'onboarding',
+    loadComponent: () =>
+      import('./pages/onboarding/specialist-onboarding')
+        .then(m => m.SpecialistOnboardingPage),
+  },
   {
     path: 'dashboard',
     component: SpecialistDashboard,

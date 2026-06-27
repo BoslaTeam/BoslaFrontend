@@ -1,73 +1,47 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { SpecialistsApiService } from '../../data-access/specialist-api.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { Component, OnInit, inject } from '@angular/core';
+import { SpecialistsStore } from '../../store/specialists.store';
+import { SpecialistOnboardingStore } from '../../store/specialist-onboarding.store';
+import { AuthService } from '@core/services/auth.service';
+import { OnboardingStepper } from '../../components/onboarding/onboarding-stepper/onboarding-stepper';
+import { BasicInfoStep } from '../../components/onboarding/basic-info-step/basic-info-step';
+import { SkillsStep } from '../../components/onboarding/skills-step/skills-step';
+import { ToolsStep } from '../../components/onboarding/tools-step/tools-step';
+import { ExperienceStep } from '../../components/onboarding/experience-step/experience-step';
+import { AvailabilityStep } from '../../components/onboarding/availability-step/availability-step';
 
 @Component({
   selector: 'app-specialist-onboarding',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    OnboardingStepper,
+    BasicInfoStep,
+    SkillsStep,
+    ToolsStep,
+    ExperienceStep,
+    AvailabilityStep,
+  ],
   templateUrl: './specialist-onboarding.html',
-  styleUrl: './specialist-onboarding.css'
 })
-export class SpecialistOnboarding {
-  private fb = inject(FormBuilder);
-  private specialistApi = inject(SpecialistsApiService);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+export class SpecialistOnboardingPage implements OnInit {
+  private readonly specialistsStore = inject(SpecialistsStore);
+  readonly onboardingStore = inject(SpecialistOnboardingStore);
+  private readonly authService = inject(AuthService);
 
-  onboardingForm: FormGroup;
-  isLoading = false;
-  errorMessage = '';
+  readonly stepTitles = [
+    'المعلومات الأساسية',
+    'المهارات',
+    'الأدوات',
+    'الخبرات',
+    'المواعيد',
+  ];
 
-  constructor() {
-    this.onboardingForm = this.fb.group({
-      yearsOfExperience: ['', [Validators.required, Validators.min(0)]],
-      hourlyRate: ['', [Validators.required, Validators.min(1)]],
-      bookingPolicy: ['', Validators.required]
-    });
+  ngOnInit() {
+    this.specialistsStore.loadLookups();
+    this.onboardingStore.reset();
   }
 
-  onSubmit() {
-    if (this.onboardingForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-
-      this.specialistApi.onboard(this.onboardingForm.value).subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            // Trigger token refresh to get Specialist role
-            const isAuthenticated = this.authService.isAuthenticated();
-            if (isAuthenticated) {
-              this.authService.refreshToken().subscribe({
-                next: () => {
-                  this.isLoading = false;
-                  this.router.navigate(['/specialist']);
-                },
-                error: (err) => {
-                  console.error('Failed to refresh token after onboarding', err);
-                  this.isLoading = false;
-                  // Even if refresh fails, they might just need to re-login
-                  alert('تم إنشاء حساب الاختصاصي. يرجى تسجيل الدخول مجدداً لتفعيل الصلاحيات.');
-                  this.authService.logout();
-                }
-              });
-            } else {
-              this.isLoading = false;
-              this.router.navigate(['/specialist']);
-            }
-          }
-        },
-        error: (err) => {
-          console.error(err);
-          this.errorMessage = err.error?.title || 'حدث خطأ أثناء الانضمام. يرجى المحاولة مرة أخرى.';
-          this.isLoading = false;
-        }
-      });
-    } else {
-      this.onboardingForm.markAllAsTouched();
-    }
+  onAvailabilityCompleted() {
+    this.onboardingStore.clearDraft();
+    this.authService.redirectByRole();
   }
 }

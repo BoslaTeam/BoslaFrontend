@@ -1,0 +1,56 @@
+<div class="max-w-lg mx-auto">
+  <div class="text-center mb-8">
+    <h3 class="text-2xl font-bold text-slate-800 mb-2">المعلومات الأساسية</h3>
+    <p class="text-slate-500">أكمل بيانات اختصاصك للبدء في استقبال الاستشارات</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
+      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <ui-input
+          formControlName="experienceYears"
+          label="سنوات الخبرة"
+          type="number"
+          placeholder="مثال: 5"
+          [required]="true"
+        />
+      </div>
+      <div class="flex flex-col justify-end pb-2">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">مستوى الخبرة</label>
+        <div class="h-11 px-4 rounded-xl bg-bosla-primary/10 border border-bosla-primary/20 flex items-center">
+          <span class="text-sm font-bold text-bosla-primary">{{ levelLabel() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <ui-input
+      formControlName="hourlyRate"
+      label="التسعيرة لكل جلسة (USD)"
+      type="number"
+      placeholder="مثال: 50"
+      [required]="true"
+    />
+
+    <ui-textarea
+      formControlName="bookingPolicy"
+      label="سياسة الحجز"
+      placeholder="ما هي شروطك أو سياستك للمستفيدين قبل الجلسة؟"
+      [required]="true"
+      [rows]="3"
+    />
+
+    <div class="flex justify-between pt-4">
+      <ui-button type="submit" [loading]="isLoading()" variant="primary">
+        <i class="fa-solid fa-arrow-left"></i>
+        حفظ ومتابعة
+      </ui-button>
+    </div>
+  </form>
+</div>

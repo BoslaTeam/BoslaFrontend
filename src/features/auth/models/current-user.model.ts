@@ -4,6 +4,6 @@ export interface CurrentUser {
     id: string;
     fullName: string;
     email: string;
-    role: UserRole;
+    roles: UserRole[];
     avatarUrl?: string | null;
 }

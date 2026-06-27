@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
@@ -11,7 +12,7 @@ import { buildHttpParams } from '@core/utils/http-params.util';
 import { LookupResponse } from '../contracts/lookup.contract';
 import { SpecialistsFilters } from '../contracts/specialist-filters.contract';
 import { SpecialistResponse } from '../contracts/specialist.contract';
-import { SpecialistAvailabilityResponse } from '../contracts/specialist-availability.contract';
+import { AddAvailabilitiesRequest, SpecialistAvailabilityResponse } from '../contracts/specialist-availability.contract';
 import { SpecialistDetailsResponse } from '../contracts/specialist-details.contract';
 import {
   OnboardSpecialistRequest,
@@ -23,6 +24,9 @@ import { SpecialistProfileResponse } from '../contracts/specialist-profile-respo
 import { SpecialistEarningsResponse } from '../contracts/specialist-earnings-response';
 import { SpecialistDashboardResponse } from '../contracts/specialist-dashboard-response';
 import { SpecialistReviewsResponse } from '../contracts/specialist-reviews-response';
+import { AddSkillsRequest } from '../contracts/specialist-skill.contract';
+import { AddExperiencesRequest, ExperienceResponse } from '../contracts/specialist-experience.contract';
+import { AddToolsRequest } from '../contracts/specialist-tool.contract';
 
 @Injectable({
   providedIn: 'root',
@@ -110,13 +114,13 @@ export class SpecialistsApiService {
     );
   }
 
-getReviews(id: string) {
-  return this.http.get<
-    ApiResponse<SpecialistReviewsResponse>
-  >(
-    API_ENDPOINTS.specialists.reviewsFor(id)
-  );
-}
+  getReviews(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistReviewsResponse>
+    >(
+      API_ENDPOINTS.specialists.reviewsFor(id)
+    );
+  }
 
   getAvailability(id: string) {
     return this.http.get<
@@ -142,30 +146,65 @@ getReviews(id: string) {
     );
   }
 
-  addSkill(skillId: string) {
+  addSkills(request: AddSkillsRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.skills,
-      { skillId }
+      request
     );
   }
 
-  addTool(toolId: string) {
+  addTools(request: AddToolsRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.tools,
-      { toolId }
+      request
     );
   }
 
-  addAvailability(
-    start: string,
-    end: string,
-  ) {
+  addAvailabilities(request: AddAvailabilitiesRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.availability,
-      {
-        start,
-        end,
-      }
+      request
+    );
+  }
+
+  addExperiences(request: AddExperiencesRequest) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.experience,
+      request
+    );
+  }
+
+  // ==========================================
+  // My Profile Queries
+  // ==========================================
+
+  getMyProfile() {
+    return this.http.get<ApiResponse<SpecialistDetailsResponse>>(
+      API_ENDPOINTS.specialists.me
+    );
+  }
+
+  getMyExperience() {
+    return this.http.get<ApiResponse<ExperienceResponse[]>>(
+      API_ENDPOINTS.specialists.experience
+    );
+  }
+
+  getMyAvailability() {
+    return this.http.get<ApiResponse<SpecialistAvailabilityResponse[]>>(
+      API_ENDPOINTS.specialists.availability
+    );
+  }
+
+  getMySkills() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.skills
+    );
+  }
+
+  getMyTools() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.tools
     );
   }
 }
