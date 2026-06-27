@@ -27,15 +27,15 @@
         </svg>
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-xs font-semibold text-bosla-charcoal">Failed to load session</span>
-        <span class="text-[11px] text-bosla-grey leading-tight">Check your connection or try again.</span>
+        <span class="text-xs font-semibold text-bosla-charcoal">تعذر تحميل الجلسة</span>
+        <span class="text-[11px] text-bosla-grey leading-tight">تحقق من اتصالك أو حاول مرة أخرى.</span>
       </div>
       <button type="button" (click)="retry()" class="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-bosla-primary border border-bosla-primary/10 hover:bg-bosla-primary/5 rounded-lg transition-all duration-200">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="23 4 23 10 17 10"/>
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
         </svg>
-        Retry
+        إعادة المحاولة
       </button>
     </div>
   }
@@ -52,8 +52,8 @@
         </svg>
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-xs font-bold text-bosla-charcoal">No upcoming session</span>
-        <span class="text-[11px] text-bosla-grey leading-normal max-w-[200px]">No sessions scheduled yet. Book one to get started.</span>
+        <span class="text-xs font-bold text-bosla-charcoal">لا توجد جلسة قادمة</span>
+        <span class="text-[11px] text-bosla-grey leading-normal max-w-[200px]">لم يتم جدولة جلسات بعد. احجز واحدة للبدء.</span>
       </div>
     </div>
   }
@@ -69,9 +69,9 @@
             @if (sessionData()!.dateLabel.toLowerCase().includes('today')) {
               Today
             } @else if (sessionData()!.dateLabel.toLowerCase().includes('tomorrow')) {
-              Tomorrow
+              غداً
             } @else {
-              Upcoming Session
+              الجلسة القادمة
             }
           </span>
           <h4 class="text-sm font-bold text-bosla-primary tracking-tight leading-snug line-clamp-2">
@@ -127,7 +127,7 @@
       <!-- Notes if present -->
       @if (sessionData()!.notes) {
         <div class="bg-slate-50 border-l-2 border-slate-300 rounded-r-xl p-3 flex flex-col gap-1">
-          <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Session Notes</span>
+          <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">ملاحظات الجلسة</span>
           <p class="text-xs text-bosla-charcoal leading-relaxed font-normal">
             {{ sessionData()!.notes }}
           </p>
@@ -154,7 +154,7 @@
             <polygon points="23 7 16 12 23 17 23 7"/>
             <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
           </svg>
-          Join Session
+          انضم للجلسة
         </button>
       }
 

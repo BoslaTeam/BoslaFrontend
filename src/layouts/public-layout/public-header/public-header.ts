@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,16 +10,26 @@ import { UiLogo } from "@shared/ui/logo/logo";
   templateUrl: './public-header.html'
 })
 export class PublicHeader {
-  [x: string]: any;
   authService = inject(AuthService);
   isScrolled = false;
   avatarError = false;
+  
+  isDropdownOpen = signal(false);
 
-  get dashboardRoute(): string {
-    const role = this.authService.userRole();
-    if (role === 1) return '/specialist';
-    if (role === 2) return '/admin';
-    return '/user';
+  toggleDropdown() {
+    this.isDropdownOpen.update(v => !v);
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-dropdown-container')) {
+      this.closeDropdown();
+    }
   }
 
   onAvatarError() {

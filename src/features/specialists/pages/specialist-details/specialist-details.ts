@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DecimalPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { SpecialistsStore } from '@features/specialists/store/specialists.store';
 import { UiButton } from '@shared/ui/button/button';
 import { UiRatingSummary, RatingDistribution } from '@shared/ui/rating-summary/rating-summary';
@@ -13,11 +13,9 @@ import { UiEmptyState } from '@shared/ui/empty-state/empty-state';
   standalone: true,
   imports: [
     CommonModule,
-    DecimalPipe,
     UiButton,
     UiRatingSummary,
     UiReviewCard,
-    UiTabs,
     UiEmptyState,
   ],
   templateUrl: './specialist-details.html',
@@ -28,9 +26,12 @@ export class SpecialistDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  readonly activeTab = signal<string>('reviews');
+  readonly activeTab = signal<string>('profile');
+
+  readonly Math = Math;
 
   readonly tabs: TabItem[] = [
+    { id: 'profile', label: 'الملف الشخصي' },
     { id: 'reviews', label: 'التقييمات' },
     { id: 'availability', label: 'الأوقات المتاحة' },
   ];

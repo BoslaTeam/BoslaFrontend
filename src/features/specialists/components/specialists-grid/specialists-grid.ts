@@ -24,13 +24,14 @@ export class SpecialistsGridComponent {
   @Output() detailsClick = new EventEmitter<string>();
 
   mapToExpertCard(specialist: Specialist): ExpertData {
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(specialist.name)}&background=1B4F72&color=fff&size=150`;
     return {
       id: specialist.id,
       name: specialist.name,
       title: specialist.title ?? '',
       rating: specialist.rating,
       price: specialist.hourlyRate,
-      avatarUrl: specialist.imageUrl?.trim() ? specialist.imageUrl : 'assets/icons/favicon.ico',
+      avatarUrl: specialist.imageUrl?.trim() ? specialist.imageUrl : defaultAvatar,
       isOnline: specialist.isOnline,
       isVerified: specialist.isVerified,
     };

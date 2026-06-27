@@ -1,4 +1,4 @@
-<section class="relative z-10 pt-32 pb-16" dir="rtl">
+<div class="bg-bosla-offwhite min-h-screen relative z-10 pt-28 pb-16 font-sans" dir="rtl">
 
     <div class="container mx-auto px-6">
 
@@ -6,12 +6,12 @@
         <div class="text-center max-w-4xl mx-auto mb-12">
 
             <span
-                class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-bosla-orange font-bold mb-6">
-                <i class="fa-solid fa-compass"></i>
+                class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-bosla-primary/10 text-bosla-primary font-bold mb-6">
+                <i class="fa-solid fa-compass text-bosla-orange"></i>
                 نخبة الخبراء والمتخصصين
             </span>
 
-            <h1 class="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+            <h1 class="text-5xl md:text-6xl font-black text-bosla-primary leading-tight mb-6">
                 ابحث عن
                 <span class="text-bosla-orange">
                     المتخصص المناسب
@@ -19,7 +19,7 @@
                 لك
             </h1>
 
-            <p class="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-lg text-bosla-charcoal max-w-2xl mx-auto leading-relaxed">
                 تواصل مع مستشارين وخبراء موثوقين في مختلف المجالات واحجز جلسات استشارية بسهولة.
             </p>
 
@@ -45,7 +45,7 @@
         <!-- Empty -->
         @else if (store.isEmpty()) {
 
-        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10">
+        <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-200">
 
             <ui-empty-state title="لا يوجد متخصصون" description="لم يتم العثور على نتائج مطابقة للفلاتر المحددة">
             </ui-empty-state>
@@ -60,12 +60,12 @@
         <!-- Results Header -->
         <div class="flex items-center justify-between mb-8">
 
-            <h2 class="text-white font-black text-2xl">
+            <h2 class="text-bosla-primary font-black text-2xl">
                 المتخصصون
             </h2>
 
             <div
-                class="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-white/80 text-sm backdrop-blur-md">
+                class="px-4 py-2 rounded-full bg-white border border-slate-200 text-bosla-charcoal text-sm font-semibold shadow-sm">
 
                 الصفحة {{ store.currentPage() }}
                 من
@@ -80,7 +80,7 @@
         </specialists-grid>
 
         <!-- Pagination -->
-        <div class="mt-12 flex justify-center p-6 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10">
+        <div class="mt-12 flex justify-center p-6 rounded-3xl bg-white shadow-sm border border-slate-200">
 
             <ui-pagination [currentPage]="store.currentPage()" [totalPages]="store.totalPages()"
                 (pageChange)="onPageChanged($event)">
@@ -92,4 +92,4 @@
 
     </div>
 
-</section>
+</div>

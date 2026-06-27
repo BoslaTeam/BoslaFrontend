@@ -1,47 +1,59 @@
-<div class="w-full bg-white/10 backdrop-blur-xl border border-white/10 p-5 rounded-3xl shadow-xl hover:bg-white/15 hover:-translate-y-2 transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer group"
+<div class="w-full bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group flex flex-col font-sans"
     dir="rtl" (click)="onCardClick()">
 
-    <div class="flex items-center gap-4 min-w-0">
-        <div class="relative shrink-0">
-            <div class="w-18 h-18 rounded-xl overflow-hidden border-2 border-white/10">
-                <img [src]="expert().avatarUrl" [alt]="expert().name" class="w-full h-full object-cover" />
-
+    <!-- Header / Image area -->
+    <div class="relative h-28 bg-gradient-to-r from-bosla-primary to-bosla-blue">
+        <!-- Top right badges (rating) -->
+        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center gap-1 text-xs font-bold text-bosla-charcoal shadow-sm">
+            <span>{{ expert().rating | number:'1.1-1' }}</span>
+            <i class="fa-solid fa-star text-bosla-orange text-[10px]"></i>
+        </div>
+        
+        <!-- Avatar overlapping bottom -->
+        <div class="absolute -bottom-10 right-5">
+            <div class="relative">
+                <div class="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-white">
+                    <img [src]="expert().avatarUrl" [alt]="expert().name" class="w-full h-full object-cover" />
+                </div>
                 @if (expert().isOnline) {
-                <span class="absolute bottom-0.5 left-0.5 w-3.5 h-3.5 bg-[#10b981] border-2 border-white rounded-full">
+                <span class="absolute bottom-1 -right-1 w-4 h-4 bg-bosla-success border-2 border-white rounded-full shadow-sm">
                 </span>
                 }
             </div>
         </div>
+    </div>
 
-        <div class="flex flex-col gap-1 min-w-0">
-            <div class="flex items-center gap-1.5">
-                @if (expert().isVerified) {
-                <i class="fa-solid fa-circle-check text-bosla-orange text-base" title="موثق">
-                </i>
-                }
+    <!-- Content -->
+    <div class="pt-14 pb-5 px-5 flex flex-col flex-1">
+        <div class="flex items-center gap-1.5 mb-1">
+            <h3 class="text-lg font-bold text-bosla-primary truncate">
+                {{ expert().name }}
+            </h3>
+            @if (expert().isVerified) {
+            <i class="fa-solid fa-circle-check text-bosla-orange text-sm" title="موثق"></i>
+            }
+        </div>
+        
+        <p class="text-sm text-bosla-charcoal/70 mb-4 line-clamp-1">
+            {{ expert().title }}
+        </p>
 
-                <h3 class="text-[18px] font-bold text-white truncate">
-                    {{ expert().name }}
-                </h3>
+        <!-- Divider -->
+        <div class="w-full h-px bg-slate-100 mt-auto mb-4"></div>
+
+        <!-- Price & Action -->
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs text-bosla-charcoal/50 mb-0.5 font-semibold">سعر الجلسة</p>
+                <p class="text-sm font-bold text-bosla-charcoal">
+                    <span class="text-bosla-primary text-lg font-black">{{ expert().price }}</span> ر.س
+                </p>
             </div>
-
-            <p class="text-[14px] text-white/60 truncate">
-                {{ expert().title }}
-            </p>
-
-            <p class="text-[15px] font-bold text-white/80 mt-1">
-                <span class="text-white font-black">
-                    {{ expert().price }}
-                </span>
-                ر.س / ساعة
-            </p>
+            
+            <button class="bg-bosla-primary/10 text-bosla-primary group-hover:bg-bosla-primary group-hover:text-white transition-colors px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                احجز الآن
+                <i class="fa-solid fa-arrow-left text-xs transition-transform group-hover:-translate-x-1"></i>
+            </button>
         </div>
     </div>
-
-    <div
-        class="bg-white/10 border border-white/10 text-white px-2.5 py-1 rounded-lg flex items-center gap-1 text-[13px] font-bold shrink-0">
-        <span>{{ expert().rating | number:'1.1-1' }}</span>
-        <i class="fa-solid fa-star text-bosla-orange text-[11px]"></i>
-    </div>
-
 </div>

@@ -36,6 +36,13 @@ export class UserProfile implements OnInit {
   avatarPreviewUrl: string | null = null;
   profileImageError = false;
 
+  activeTab: 'basic' | 'security' | 'education' | 'social' = 'basic';
+
+  setTab(tab: 'basic' | 'security' | 'education' | 'social') {
+    this.activeTab = tab;
+    this.cdr.markForCheck();
+  }
+
   constructor() {
     this.basicInfoForm = this.fb.group({
       name: ['', Validators.required],

@@ -28,13 +28,13 @@
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <h4 class="text-sm font-bold text-bosla-charcoal font-inter">Messages failed to load</h4>
-      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">Could not retrieve messages. Check your connection.</p>
-      <button class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-inter" (click)="store.loadMessages(store.activeConversationId()!)">
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">تعذر تحميل الرسائل</h4>
+      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">لم نتمكن من جلب الرسائل. تحقق من اتصالك.</p>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-sans" (click)="store.loadMessages(store.activeConversationId()!)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
         </svg>
-        Retry
+        إعادة المحاولة
       </button>
     </div>
   }
@@ -46,7 +46,7 @@
         <!-- Date Divider -->
         <div class="flex items-center gap-3 my-4" role="separator" [attr.aria-label]="group.dateLabel">
           <div class="flex-1 border-t border-bosla-primary/10"></div>
-          <span class="text-[10px] font-bold text-bosla-grey uppercase tracking-wider bg-transparent px-1 font-inter">{{ group.dateLabel }}</span>
+          <span class="text-[10px] font-bold text-bosla-grey uppercase tracking-wider bg-transparent px-1 font-sans">{{ group.dateLabel }}</span>
           <div class="flex-1 border-t border-bosla-primary/10"></div>
         </div>
       }
