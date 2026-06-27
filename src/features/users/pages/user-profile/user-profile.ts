@@ -5,8 +5,9 @@ import { RouterLink, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
 import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileDto, EducationDto, SocialLinkDto, SetPasswordRequest } from '../../contracts/user.contracts';
-import { AuthService } from '../../../../core/services/auth.service';
+import { UserProfileDto, EducationDto, SocialLinkDto } from '../../contracts/user.contracts';
+import { AuthService } from '@core/services/auth.service';
+import { UserRole } from '@core/enums/user-role.enum';
 
 @Component({
   selector: 'app-user-profile',
@@ -93,11 +94,7 @@ export class UserProfile implements OnInit {
     this.loadEducations();
     this.loadSocialLinks();
 
-    // Check if user is already a specialist based on role claims
-    const user = this.authService.currentUser();
-    if (user && user.role === 1) {
-      this.isSpecialist = true;
-    }
+    this.isSpecialist = this.authService.hasRole(UserRole.Specialist);
   }
 
   loadProfile() {

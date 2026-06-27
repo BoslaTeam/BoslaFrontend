@@ -2,6 +2,7 @@ import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserRole } from '../../../core/enums/user-role.enum';
 import { UiLogo } from "@shared/ui/logo/logo";
 
 @Component({
@@ -11,10 +12,20 @@ import { UiLogo } from "@shared/ui/logo/logo";
 })
 export class PublicHeader {
   authService = inject(AuthService);
+  router = inject(Router);
+
   isScrolled = false;
   avatarError = false;
-  
+
+
   isDropdownOpen = signal(false);
+
+  get dashboardRoute(): string {
+    const role = this.authService.userRole();
+    if (role === UserRole.Specialist) return '/specialist';
+    if (role === UserRole.Admin) return '/admin';
+    return '/user';
+  }
 
   toggleDropdown() {
     this.isDropdownOpen.update(v => !v);
@@ -41,7 +52,6 @@ export class PublicHeader {
     this.isScrolled = window.scrollY > 20;
   }
 
-  router = inject(Router);
 
   get isSolidBackground(): boolean {
     return this.isScrolled || this.router.url !== '/';
