@@ -7,10 +7,13 @@ import { LookupItemDto } from '@core/contracts/lookup.contracts';
 import { SpecialistListItemDto } from '@features/specialists/contracts/specialist.contracts';
 import { CommonModule } from '@angular/common';
 
+import { UiDomainIcon } from '@shared/ui/domain-icon/domain-icon';
+
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, CommonModule],
-  templateUrl: './home.html'
+  imports: [RouterLink, FormsModule, CommonModule, UiDomainIcon],
+  templateUrl: './home.html',
+  styleUrl: './home.css'
 })
 export class Home implements OnInit {
   private lookupService = inject(LookupService);
@@ -46,16 +49,4 @@ export class Home implements OnInit {
     }
   }
 
-  getDomainEmoji(name: string): string {
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes('قانون') || lowerName.includes('law')) return '⚖️';
-    if (lowerName.includes('مال') || lowerName.includes('financ')) return '💰';
-    if (lowerName.includes('تقني') || lowerName.includes('tech') || lowerName.includes('برمج')) return '💻';
-    if (lowerName.includes('صحة') || lowerName.includes('طب') || lowerName.includes('health')) return '🏥';
-    if (lowerName.includes('تعليم') || lowerName.includes('تدريب') || lowerName.includes('education')) return '🎓';
-    if (lowerName.includes('تسويق') || lowerName.includes('marketing')) return '📊';
-    if (lowerName.includes('تصميم') || lowerName.includes('design')) return '🎨';
-    if (lowerName.includes('إدارة') || lowerName.includes('management') || lowerName.includes('اعمال') || lowerName.includes('أعمال')) return '📈';
-    return '✨';
-  }
 }

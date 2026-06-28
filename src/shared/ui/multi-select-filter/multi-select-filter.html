@@ -7,8 +7,8 @@
     }
 
     <div (click)="toggleDropdown()"
-        class="w-full min-h-11 px-3 py-1.5 bg-white border rounded-md flex items-center justify-between gap-2 cursor-pointer select-none transition-all duration-200 outline-hidden"
-        [class.border-bosla-charcoal/20]="!isOpen()" [class.border-bosla-primary]="isOpen()" [class.ring-2]="isOpen()"
+        class="w-full min-h-11 px-3 py-1.5 bg-bosla-offwhite border rounded-xl flex items-center justify-between gap-2 cursor-pointer select-none transition-all duration-200 outline-hidden"
+        [class.border-bosla-charcoal/10]="!isOpen()" [class.border-bosla-primary]="isOpen()" [class.ring-2]="isOpen()"
         [class.ring-bosla-primary/10]="isOpen()">
 
         <div class="flex flex-wrap gap-2 items-center flex-1 min-w-0">
@@ -20,7 +20,7 @@
             } @else {
             @for (tag of selectedTags(); track tag.value) {
             <div
-                class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-bosla-primary/10 border border-bosla-primary/20 text-bosla-primary rounded-sm text-[13px] font-sans font-medium transition-colors">
+                class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-bosla-primary/10 border border-bosla-primary/20 text-bosla-primary rounded-xl text-[13px] font-sans font-medium transition-colors">
                 <button type="button" (click)="removeTag(tag.value, $event)"
                     class="hover:text-bosla-error transition-colors cursor-pointer px-0.5 text-[10px]">
                     <i class="fa-solid fa-xmark"></i>
@@ -37,12 +37,12 @@
 
     @if (isOpen()) {
     <div
-        class="absolute z-50 w-full mt-1 bg-white border border-bosla-charcoal/10 rounded-md shadow-lg overflow-hidden animate-fadeIn">
+        class="absolute z-50 w-full mt-1 bg-white border border-bosla-charcoal/10 rounded-xl shadow-sm overflow-hidden animate-fadeIn">
 
         <div class="relative border-b border-bosla-charcoal/10 p-2 bg-bosla-offwhite/50 flex items-center">
             <input type="text" [placeholder]="searchPlaceholder()" [ngModel]="searchQuery()"
                 (ngModelChange)="searchQuery.set($event)" (click)="$event.stopPropagation()"
-                class="w-full h-9 pl-3 pr-9 bg-white border border-bosla-charcoal/10 rounded-sm font-sans text-[13px] text-bosla-charcoal placeholder-bosla-charcoal/40 outline-hidden focus:border-bosla-blue transition-colors" />
+                class="w-full h-9 pl-3 pr-9 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl font-sans text-[13px] text-bosla-charcoal placeholder-bosla-charcoal/40 outline-hidden focus:border-bosla-blue transition-colors" />
 
             <span class="absolute right-5 text-bosla-charcoal/40 text-xs flex items-center pointer-events-none">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -55,7 +55,7 @@
                 class="px-4 py-3 flex items-center justify-between cursor-pointer select-none text-[14px] font-sans text-bosla-charcoal hover:bg-bosla-offwhite transition-colors duration-150">
                 <span>{{ option.label }}</span>
 
-                <div class="relative flex items-center justify-center w-4 h-4 rounded-sm border transition-all text-[10px]"
+                <div class="relative flex items-center justify-center w-4 h-4 rounded-xl border transition-all text-[10px]"
                     [class.bg-bosla-blue]="selectedValues().includes(option.value)"
                     [class.border-bosla-blue]="selectedValues().includes(option.value)"
                     [class.border-bosla-charcoal/30]="!selectedValues().includes(option.value)">

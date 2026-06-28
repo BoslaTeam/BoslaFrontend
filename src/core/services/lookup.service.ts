@@ -14,21 +14,21 @@ export class LookupService {
 
   getExpertise(): Observable<LookupItemDto[]> {
     return this.http.get<ApiResponse<LookupItemDto[]>>(`${this.baseUrl}/expertise`)
-      .pipe(map(res => res.data));
+      .pipe(map(res => res.data ?? []));
   }
 
   getIndustries(): Observable<LookupItemDto[]> {
     return this.http.get<ApiResponse<LookupItemDto[]>>(`${this.baseUrl}/industries`)
-      .pipe(map(res => res.data));
+      .pipe(map(res => res.data ?? []));
   }
 
   getSkills(): Observable<LookupItemDto[]> {
     return this.http.get<ApiResponse<LookupItemDto[]>>(`${this.baseUrl}/skills`)
-      .pipe(map(res => res.data));
+      .pipe(map(res => res.data ?? []));
   }
 
   getTools(): Observable<LookupItemDto[]> {
     return this.http.get<ApiResponse<LookupItemDto[]>>(`${this.baseUrl}/tools`)
-      .pipe(map(res => res.data));
+      .pipe(map(res => res.data ?? []));
   }
 }

@@ -1,0 +1,39 @@
+<div class="w-full" dir="rtl">
+  <div class="flex items-center justify-between mb-3">
+    @for (step of steps(); track step.index; let last = $last) {
+      <div class="flex items-center flex-1">
+        <div class="flex flex-col items-center">
+          <div
+            class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold font-sans transition-all duration-300"
+            [class]="step.isCompleted
+              ? 'bg-bosla-success text-white'
+              : step.isActive
+                ? 'bg-bosla-primary text-white ring-4 ring-bosla-primary/20'
+                : 'bg-bosla-charcoal/10 text-bosla-charcoal/40'"
+          >
+            @if (step.isCompleted) {
+              <i class="fa-solid fa-check text-xs"></i>
+            } @else {
+              {{ step.index + 1 }}
+            }
+          </div>
+          <span
+            class="text-xs font-sans mt-1.5 whitespace-nowrap transition-colors duration-300"
+            [class]="step.isActive
+              ? 'text-bosla-primary font-bold'
+              : step.isCompleted
+                ? 'text-bosla-success'
+                : 'text-bosla-charcoal/40'"
+          >
+            {{ step.title }}
+          </span>
+        </div>
+        @if (!last) {
+          <div class="flex-1 h-0.5 mx-3 rounded-full transition-colors duration-300"
+            [class]="step.isCompleted ? 'bg-bosla-success' : 'bg-bosla-charcoal/10'">
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

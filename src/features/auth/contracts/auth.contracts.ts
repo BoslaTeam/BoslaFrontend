@@ -42,13 +42,4 @@ export interface ResetPasswordRequest {
   newPassword: string;
 }
 
-export interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
-  expiresOnUtc: string;
-}
 
-export interface RegisterResponse {
-  message: string;
-  email: string;
-}

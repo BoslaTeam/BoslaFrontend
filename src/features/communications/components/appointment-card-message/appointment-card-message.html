@@ -1,0 +1,79 @@
+<div
+  [class]="message().isOwn
+    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-sans py-1'
+    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-sans py-1'"
+>
+  @if (!message().isOwn) {
+    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-sm select-none" aria-hidden="true">
+      {{ initials() }}
+    </div>
+  }
+
+  <div class="flex flex-col gap-1 w-full">
+    @if (appointment()) {
+      <div 
+        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-sans" 
+        role="article" 
+        aria-label="Appointment card"
+      >
+        <!-- Card Header -->
+        <div class="bg-bosla-primary px-4 py-2.5 text-white flex items-center justify-between">
+          <span class="text-[10px] font-bold tracking-wider uppercase opacity-90">دعوة جلسة</span>
+          <span 
+            class="text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase"
+            [class]="appointment()!.status === 'confirmed'
+              ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+              : appointment()!.status === 'pending'
+                ? 'bg-amber-500/20 border-amber-500/30 text-amber-300'
+                : 'bg-rose-500/20 border-rose-500/30 text-rose-300'"
+          >
+            {{ statusLabel() }}
+          </span>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-4 flex flex-col gap-3">
+          <h3 class="font-bold text-bosla-primary text-xs tracking-tight">{{ appointment()!.title }}</h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-bosla-charcoal bg-bosla-offwhite/85 p-3 rounded-xl border border-bosla-primary/5">
+            <!-- Date -->
+            <div class="flex items-center gap-2">
+              <svg class="text-bosla-blue shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span class="text-[11px] font-medium text-bosla-charcoal">{{ formattedDate() }}</span>
+            </div>
+
+            <!-- Time -->
+            <div class="flex items-center gap-2">
+              <svg class="text-bosla-blue shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="text-[11px] font-medium text-bosla-charcoal">{{ appointment()!.time }} ({{ appointment()!.duration }} min)</span>
+            </div>
+
+            <!-- Session Type -->
+            <div class="flex items-center gap-2 sm:col-span-2">
+              <svg class="text-bosla-blue shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              </svg>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-bosla-primary/5 text-bosla-primary border border-bosla-primary/10 tracking-wide">{{ sessionTypeLabel() }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <button class="text-[10px] font-bold text-bosla-blue hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">عرض التفاصيل</button>
+            @if (appointment()!.status !== 'cancelled' && appointment()!.status !== 'completed') {
+              <span class="w-px h-2.5 bg-slate-200"></span>
+              <button class="text-[10px] font-bold text-bosla-grey hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">إعادة جدولة</button>
+            }
+          </div>
+          <span class="text-[9px] text-bosla-grey/80 font-medium">{{ formattedTime() }}</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

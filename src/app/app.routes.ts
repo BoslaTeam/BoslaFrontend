@@ -62,7 +62,7 @@ export const routes: Routes = [
       },
       {
         path: 'chat',
-        loadChildren: () => import('@features/chat/routes').then((m) => m.CHAT_ROUTES),
+        loadChildren: () => import('@features/communications/routes').then((m) => m.COMMUNICATIONS_ROUTES),
       },
       {
         path: 'video',
@@ -97,7 +97,7 @@ export const routes: Routes = [
       },
       {
         path: 'chat',
-        loadChildren: () => import('@features/chat/routes').then((m) => m.CHAT_ROUTES),
+        loadChildren: () => import('@features/communications/routes').then((m) => m.COMMUNICATIONS_ROUTES),
       },
       {
         path: 'video',

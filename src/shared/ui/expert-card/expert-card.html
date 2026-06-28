@@ -1,47 +1,52 @@
-<div class="w-full max-w-170 bg-white border border-bosla-charcoal/5 p-5 rounded-xs shadow-sm hover:shadow-md hover:border-bosla-charcoal/10 transition-all duration-300 flex items-center justify-between gap-4 cursor-default"
-    dir="rtl">
+<div class="w-full bg-white border border-slate-100 p-5 rounded-3xl shadow-sm hover:shadow-md hover:-translate-y-2 transition-all duration-300 flex items-center justify-between gap-4 cursor-pointer group"
+    dir="rtl" (click)="onCardClick()">
 
-    <div class="flex items-center gap-4">
-        <div
-            class="relative shrink-0 p-0.5 bg-bosla-charcoal/4 border border-bosla-charcoal/2 rounded-[14px]">
-            <img [src]="expert().avatarUrl" [alt]="expert().name" class="w-18 h-18 object-cover rounded-xl block" />
+    <div class="flex items-center gap-4 min-w-0">
+        <div class="relative shrink-0">
+            <div class="w-18 h-18 rounded-xl overflow-hidden border-2 border-slate-50">
+                <img [src]="expert().avatarUrl" [alt]="expert().name" class="w-full h-full object-cover" />
 
-            @if (expert().isOnline) {
-            <span class="absolute bottom-0.5 left-0.5 w-3.5 h-3.5 bg-[#10b981] border-2 border-white rounded-full"
-                title="متصل الآن"></span>
-            }
+                @if (expert().isOnline) {
+                <span class="absolute bottom-0.5 left-0.5 w-3.5 h-3.5 bg-[#10b981] border-2 border-white rounded-full">
+                </span>
+                }
+            </div>
         </div>
 
-        <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-1.5">
-                @if (expert().isVerified) {
-                <i class="fa-solid fa-circle-check text-[#f59e0b] text-base"></i>
-                }
-                <h3 class="text-[18px] font-bold text-bosla-charcoal font-sans leading-tight">
+        <div class="flex flex-col gap-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+
+                <h3 class="text-[18px] font-bold text-bosla-primary truncate">
                     {{ expert().name }}
                 </h3>
+
+                @if (expert().isVerified) {
+                <span
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-[11px] font-bold">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i>
+                    موثق
+                </span>
+                }
+
             </div>
 
-            <p class="text-[14px] font-sans text-bosla-charcoal/50">
+            <p class="text-[14px] text-slate-500 truncate">
                 {{ expert().title }}
             </p>
 
-            <p class="text-[15px] font-sans font-bold text-bosla-charcoal/80 mt-1">
-                <span class="text-bosla-blue font-black">{{ expert().price }}</span> ر.س / ساعة
+            <p class="text-[15px] font-bold text-slate-500 mt-1">
+                <span class="text-bosla-primary font-black">
+                    {{ expert().price }}
+                </span>
+                ر.س / ساعة
             </p>
         </div>
     </div>
 
-    <div class="flex flex-col items-end justify-between h-19 shrink-0">
-        <div
-            class="bg-[#eaf4fa] text-bosla-blue px-2.5 py-1 rounded-sm border border-bosla-blue/10 flex items-center gap-1 text-[13px] font-sans font-bold select-none shadow-2xs">
-            <span>{{ expert().rating | number:'1.1-1' }}</span>
-            <i class="fa-solid fa-star text-[#f59e0b] text-[11px]"></i>
-        </div>
-
-        <ui-button variant="primary" size="sm" (btnClick)="onBook()">
-            احجز الآن
-        </ui-button>
+    <div
+        class="bg-slate-50 border border-slate-100 text-slate-700 px-2.5 py-1 rounded-lg flex items-center gap-1 text-[13px] font-bold shrink-0">
+        <span>{{ expert().rating | number:'1.1-1' }}</span>
+        <i class="fa-solid fa-star text-bosla-orange text-[11px]"></i>
     </div>
 
 </div>

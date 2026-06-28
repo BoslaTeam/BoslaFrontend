@@ -1,0 +1,99 @@
+<div class="max-w-xl mx-auto">
+  <div class="text-center mb-8">
+    <h3 class="text-2xl font-bold text-slate-800 mb-2">المواعيد المتاحة</h3>
+    <p class="text-slate-500">حدد اليوم والأوقات التي تكون فيها متاحاً للجلسات</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
+      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  <div class="space-y-6">
+    <!-- Date Picker -->
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-bosla-charcoal/80">اختر التاريخ</label>
+      <input type="date" [ngModel]="selectedDate()" (ngModelChange)="selectedDate.set($event); errorMessage.set('')"
+        class="w-full h-11 px-3 text-[14px] font-sans bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-bosla-charcoal focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 outline-none transition-all duration-200" />
+      @if (dateInvalid()) {
+        <p class="text-xs text-red-500">لا يمكن اختيار تاريخ في الماضي</p>
+      }
+    </div>
+
+    <!-- Time Period Selectors -->
+    <div class="border border-bosla-charcoal/10 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+      <h4 class="text-sm font-bold text-slate-700">إضافة فترة زمنية</h4>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="block text-xs font-medium text-bosla-charcoal/70">وقت البداية</label>
+          <select [ngModel]="startTime()" (ngModelChange)="onStartTimeChange($event)"
+            class="w-full h-10 px-3 text-[14px] font-sans bg-white border border-bosla-charcoal/10 rounded-xl text-bosla-charcoal focus:border-bosla-blue outline-none transition-all cursor-pointer">
+            @for (opt of timeOptions(); track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="space-y-2">
+          <label class="block text-xs font-medium text-bosla-charcoal/70">وقت النهاية</label>
+          <select [ngModel]="endTime()" (ngModelChange)="endTime.set($event)"
+            class="w-full h-10 px-3 text-[14px] font-sans bg-white border border-bosla-charcoal/10 rounded-xl text-bosla-charcoal focus:border-bosla-blue outline-none transition-all cursor-pointer">
+            @for (opt of endTimeOptions(); track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <button type="button" (click)="addPeriod()"
+        class="w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
+        <i class="fa-solid fa-plus ml-1"></i>
+        إضافة فترة
+      </button>
+    </div>
+
+    <!-- Selected Periods List -->
+    @let groups = groupedByDate();
+    @if (groups.length > 0) {
+      <div class="space-y-4">
+        <h4 class="text-sm font-bold text-slate-700">الفترات المحددة</h4>
+        @for (group of groups; track group.date) {
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-regular fa-calendar text-bosla-blue text-sm"></i>
+              <span class="text-sm font-semibold text-slate-600">{{ formatDate(group.slots[0].start) }}</span>
+            </div>
+            @for (slot of group.slots; track slot.start) {
+              <div class="flex items-center justify-between bg-white border border-bosla-charcoal/10 rounded-xl px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <i class="fa-regular fa-clock text-bosla-blue"></i>
+                  <span class="text-sm font-sans text-bosla-charcoal">
+                    من {{ formatTime(slot.start) }} إلى {{ formatTime(slot.end) }}
+                  </span>
+                </div>
+                <button type="button" (click)="removePeriod(slot)"
+                  class="text-red-400 hover:text-red-600 transition-colors cursor-pointer p-1">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Navigation -->
+    <div class="flex justify-between pt-4">
+      <ui-button variant="ghost" (btnClick)="back.emit()">
+        <i class="fa-solid fa-chevron-right"></i>
+        السابق
+      </ui-button>
+      <ui-button [loading]="isSaving()" [inputDisabled]="submitDisabled()" (btnClick)="onSubmit()">
+        حفظ ومتابعة
+        <i class="fa-solid fa-arrow-left"></i>
+      </ui-button>
+    </div>
+  </div>
+</div>

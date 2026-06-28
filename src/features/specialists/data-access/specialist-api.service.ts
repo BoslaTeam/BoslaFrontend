@@ -1,96 +1,228 @@
-import { Injectable, inject } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+
+import { environment } from '../../../../src/environments/environment';
+
+import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { ApiResponse } from '@core/models/api-response.model';
+import { PaginatedResponse } from '@core/models/paginated-response.model';
+import { buildHttpParams } from '@core/utils/http-params.util';
+
+import { LookupResponse } from '../contracts/lookup.contract';
+import { SpecialistsFilters } from '../contracts/specialist-filters.contract';
+import { SpecialistResponse } from '../contracts/specialist.contract';
+import { AddAvailabilitiesRequest, SpecialistAvailabilityResponse } from '../contracts/specialist-availability.contract';
+import { SpecialistDetailsResponse } from '../contracts/specialist-details.contract';
 import {
-  SpecialistOnboardRequest,
-  SpecialistOnboardResponse,
-  SpecialistProfileResponse,
-  AvailabilityResponse,
-  AddAvailabilityRequest,
-  ExperienceDto,
-  AddExperienceRequestDTO,
-  UpdateExperienceRequest,
-  AddExpertiseRequest,
-  AddSkillRequest,
-  UpdateCancellationPolicyRequest,
-  UpdateBookingPolicyRequest
-} from '../models/specialist.contracts';
+  OnboardSpecialistRequest,
+  OnboardSpecialistResponse
+} from '../contracts/specialist-onboard.contract';
+import { SpecialistReviewResponse } from '../contracts/specialist-review.contract';
+
+import { SpecialistProfileResponse } from '../contracts/specialist-profile-response';
+import { SpecialistEarningsResponse } from '../contracts/specialist-earnings-response';
+import { SpecialistDashboardResponse } from '../contracts/specialist-dashboard-response';
+import { SpecialistReviewsResponse } from '../contracts/specialist-reviews-response';
+import { AddSkillsRequest } from '../contracts/specialist-skill.contract';
+import { AddExperiencesRequest, ExperienceResponse } from '../contracts/specialist-experience.contract';
+import { AddToolsRequest } from '../contracts/specialist-tool.contract';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpecialistApiService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiBaseUrl}/api/v1/specialists`;
 
-  // Onboarding
-  onboard(request: SpecialistOnboardRequest): Observable<SpecialistOnboardResponse> {
-    return this.http.post<SpecialistOnboardResponse>(`${this.baseUrl}/onboard`, request);
+  private readonly apiUrl = environment.apiBaseUrl;
+
+  getMyProfile() {
+    return this.http.get<{
+      data: SpecialistProfileResponse;
+    }>(`${this.apiUrl}/specialists/me`);
   }
 
-  // Profile
-  getProfile(): Observable<SpecialistProfileResponse> {
-    return this.http.get<SpecialistProfileResponse>(`${this.baseUrl}/me`);
+  getDashboard() {
+    return this.http.get<{
+      data: SpecialistDashboardResponse;
+    }>(
+      `${this.apiUrl}/specialists/me/dashboard`
+    );
   }
 
-  updateProfile(request: any): Observable<SpecialistProfileResponse> {
-    return this.http.put<SpecialistProfileResponse>(`${this.baseUrl}/me`, request);
+  getMyEarnings() {
+    return this.http.get<SpecialistEarningsResponse>(
+      `${this.apiUrl}/specialists/me/earnings`
+    );
   }
 
-  // Availability
-  getAvailability(): Observable<AvailabilityResponse[]> {
-    return this.http.get<AvailabilityResponse[]>(`${this.baseUrl}/me/availability`);
+  getMyReviews(pageNumber = 1, pageSize = 10) {
+    return this.http.get<{
+      data: SpecialistReviewsResponse;
+    }>(
+      `${this.apiUrl}/specialists/me/reviews?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class SpecialistsApiService {
+  private readonly http = inject(HttpClient);
+
+  getExpertise() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.expertise
+    );
   }
 
-  addAvailability(request: AddAvailabilityRequest): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/me/availability`, request);
+  getSkills() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.skills
+    );
   }
 
-  deleteAvailability(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/availability/${id}`);
+  getTools() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.tools
+    );
   }
 
-  // Experience
-  getExperience(): Observable<ExperienceDto[]> {
-    return this.http.get<ExperienceDto[]>(`${this.baseUrl}/me/experience`);
+  getIndustries() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.lookup.industries
+    );
   }
 
-  addExperience(request: AddExperienceRequestDTO): Observable<string> {
-    return this.http.post<string>(`${this.baseUrl}/me/experience`, request);
+  getSpecialists(filters: SpecialistsFilters) {
+    const params = buildHttpParams(filters);
+
+    return this.http.get<
+      ApiResponse<PaginatedResponse<SpecialistResponse>>
+    >(
+      API_ENDPOINTS.specialists.all,
+      { params }
+    );
   }
 
-  updateExperience(id: string, request: UpdateExperienceRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/experience/${id}`, request);
+  getSpecialistById(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistDetailsResponse>
+    >(
+      API_ENDPOINTS.specialists.byId(id)
+    );
   }
 
-  deleteExperience(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/experience/${id}`);
+  getReviews(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistReviewsResponse>
+    >(
+      API_ENDPOINTS.specialists.reviewsFor(id)
+    );
   }
 
-  // Skills & Expertise
-  addExpertise(request: AddExpertiseRequest): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/me/expertise`, request);
+  getAvailability(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistAvailabilityResponse[]>
+    >(
+      API_ENDPOINTS.specialists.availabilityFor(id)
+    );
   }
 
-  deleteExpertise(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/expertise/${id}`);
+  onboard(request: OnboardSpecialistRequest) {
+    return this.http.post<
+      ApiResponse<OnboardSpecialistResponse>
+    >(
+      API_ENDPOINTS.specialists.onboard,
+      request
+    );
   }
 
-  addSkill(request: AddSkillRequest): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/me/skills`, request);
+  addExpertise(expertiseId: string) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.expertise,
+      { expertiseId }
+    );
   }
 
-  deleteSkill(id: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}/me/skills/${id}`);
+  addSkills(request: AddSkillsRequest) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.skills,
+      request
+    );
   }
 
-  // Policies
-  updateCancellationPolicy(request: UpdateCancellationPolicyRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/cancellation-policy`, request);
+  removeSkill(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.skillById(id)
+    );
   }
 
-  updateBookingPolicy(request: UpdateBookingPolicyRequest): Observable<boolean> {
-    return this.http.put<boolean>(`${this.baseUrl}/me/booking-policy`, request);
+  addTools(request: AddToolsRequest) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.tools,
+      request
+    );
+  }
+
+  removeTool(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.toolById(id)
+    );
+  }
+
+  addAvailabilities(request: AddAvailabilitiesRequest) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.availability,
+      request
+    );
+  }
+
+  addExperiences(request: AddExperiencesRequest) {
+    return this.http.post(
+      API_ENDPOINTS.specialists.experience,
+      request
+    );
+  }
+
+  removeExperience(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.experienceById(id)
+    );
+  }
+
+  // ==========================================
+  // My Profile Queries
+  // ==========================================
+
+  getMyProfile() {
+    return this.http.get<ApiResponse<SpecialistDetailsResponse>>(
+      API_ENDPOINTS.specialists.me
+    );
+  }
+
+  getMyExperience() {
+    return this.http.get<ApiResponse<ExperienceResponse[]>>(
+      API_ENDPOINTS.specialists.experience
+    );
+  }
+
+  getMyAvailability() {
+    return this.http.get<ApiResponse<SpecialistAvailabilityResponse[]>>(
+      API_ENDPOINTS.specialists.availability
+    );
+  }
+
+  getMySkills() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.skills
+    );
+  }
+
+  getMyTools() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.tools
+    );
   }
 }

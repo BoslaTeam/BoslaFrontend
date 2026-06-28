@@ -14,10 +14,10 @@ export class UiToast {
 
   getVariantClasses(variant: string): string {
     const variants: Record<string, string> = {
-      success: 'bg-[#e6f7ed] border-[#ccefdc] text-[#006633] border-r-4 border-r-[#008a47]',
-      danger: 'bg-[#fdeaea] border-[#fbc9c9] text-[#ba1a1a] border-r-4 border-r-[#ba1a1a]', // اللون الأحمر الرسمي
-      warning: 'bg-[#fff9e6] border-[#ffe8cc] text-[#b36b00] border-r-4 border-r-[#ff9900]',
-      info: 'bg-[#eaf4fa] border-[#cbe3f5] text-[#0066b3] border-r-4 border-r-[#0084e6]'
+      success: 'bg-bosla-success/5 border-bosla-success/20 text-bosla-success border-r-4 border-r-bosla-success',
+      danger: 'bg-bosla-error/5 border-bosla-error/20 text-bosla-error border-r-4 border-r-bosla-error',
+      warning: 'bg-bosla-orange/5 border-bosla-orange/20 text-bosla-orange border-r-4 border-r-bosla-orange',
+      info: 'bg-bosla-blue/5 border-bosla-blue/20 text-bosla-blue border-r-4 border-r-bosla-blue'
     };
     return variants[variant] || variants['info'];
   }

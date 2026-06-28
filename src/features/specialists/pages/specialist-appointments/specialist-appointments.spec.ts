@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PublicFooter } from './public-footer';
+import { SpecialistAppointments } from './specialist-appointments';
 
-describe('PublicFooter', () => {
-  let component: PublicFooter;
-  let fixture: ComponentFixture<PublicFooter>;
+describe('SpecialistAppointments', () => {
+  let component: SpecialistAppointments;
+  let fixture: ComponentFixture<SpecialistAppointments>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PublicFooter],
+      imports: [SpecialistAppointments],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PublicFooter);
+    fixture = TestBed.createComponent(SpecialistAppointments);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

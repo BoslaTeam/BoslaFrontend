@@ -29,6 +29,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
         return authService.refreshToken().pipe(
           switchMap((res) => {
+            if (!res.data) return throwError(() => new Error('Refresh returned no data'));
             tokenService.isRefreshing = false;
             tokenService.refreshedToken$.next(res.data.accessToken);
             

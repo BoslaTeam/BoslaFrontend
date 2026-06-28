@@ -115,7 +115,7 @@ export class TestComponents {
     { time: '05:30 م' }
   ];
 
-  activeTimeSlot = '11:30 ص';
+  activeTimeSlots: string[] = ['11:30 ص'];
 
   // **************************************************
   isCancelModalOpen = false;

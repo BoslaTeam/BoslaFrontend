@@ -1,0 +1,71 @@
+<div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+  <form [formGroup]="form" class="flex flex-col gap-4">
+
+    <div class="flex items-center gap-3">
+      <div class="flex-1 relative">
+        <i
+          class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-bosla-charcoal/30 text-sm"></i>
+        <input type="text" formControlName="searchTerm" placeholder="ابحث عن متخصص..."
+          class="w-full h-12 pr-11 pl-4 bg-bosla-offwhite border border-slate-200 rounded-xl text-bosla-charcoal placeholder:text-bosla-charcoal/50 focus:outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 " />
+      </div>
+
+      <button type="button" (click)="applyFilters()"
+        class="h-11 px-7 rounded-xl text-[14px] font-sans font-bold text-white transition-all active:scale-[0.98] cursor-pointer shrink-0 hover:-translate-y-0.5 bg-bosla-primary hover:bg-bosla-primary/90 shadow-md">
+        بحث
+      </button>
+
+      <button type="button" (click)="resetFilters()"
+        class="h-11 px-5 rounded-xl border border-bosla-charcoal/15 text-[14px] font-sans font-semibold text-bosla-charcoal/70 bg-transparent hover:bg-bosla-charcoal/5 hover:border-bosla-charcoal/30 transition-all cursor-pointer shrink-0">
+        إعادة ضبط
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <select formControlName="expertiseId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 cursor-pointer transition-all">
+        <option value="">التخصص</option>
+        @for (item of expertise; track item.id) {
+        <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="skillId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 cursor-pointer transition-all">
+        <option value="">المهارة</option>
+        @for (item of skills; track item.id) {
+        <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="toolId"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 cursor-pointer transition-all">
+        <option value="">الأداة</option>
+        @for (item of tools; track item.id) {
+        <option [value]="item.id">{{ item.name }}</option>
+        }
+      </select>
+
+      <select formControlName="experienceLevel"
+        class="h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 cursor-pointer transition-all">
+        <option [ngValue]="null">مستوى الخبرة</option>
+        <option [ngValue]="1">مبتدئ</option>
+        <option [ngValue]="2">متوسط</option>
+        <option [ngValue]="3">متقدم</option>
+        <option [ngValue]="4">خبير</option>
+      </select>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex items-center gap-3">
+        <input type="number" formControlName="minHourlyRate" placeholder="الحد الأدنى"
+          class="flex-1 h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal placeholder:text-bosla-charcoal/40 focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 transition-all" />
+        <span class="text-bosla-charcoal/40 text-sm font-sans shrink-0">ر.س</span>
+        <span class="text-bosla-charcoal/20">-</span>
+        <input type="number" formControlName="maxHourlyRate" placeholder="الحد الأقصى"
+          class="flex-1 h-10 px-3 bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl text-[13px] font-sans text-bosla-charcoal placeholder:text-bosla-charcoal/40 focus:outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/10 transition-all" />
+        <span class="text-bosla-charcoal/40 text-sm font-sans shrink-0">ر.س</span>
+      </div>
+    </div>
+
+  </form>
+</div>

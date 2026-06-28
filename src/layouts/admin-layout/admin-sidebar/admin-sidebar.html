@@ -1,1 +1,115 @@
-<p>admin-sidebar works!</p>
+<aside class="admin-sidebar"
+  [class.collapsed]="isCollapsed()"
+  [class.mobile-open]="isMobileOpen()">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 19 21 12 17 5 21 12 2"/>
+      </svg>
+    </div>
+    <span class="sidebar-logo-text">بوصلة</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    @for (section of navSections; track section.title) {
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-section-title">{{ section.title }}</div>
+        @for (item of section.items; track item.route) {
+          <a class="sidebar-nav-item"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.route === '/admin/dashboard' }"
+            (click)="onNavClick()">
+            <span class="sidebar-nav-icon">
+              @switch (item.icon) {
+                @case ('dashboard') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="9" rx="1"/>
+                    <rect x="14" y="3" width="7" height="5" rx="1"/>
+                    <rect x="14" y="12" width="7" height="9" rx="1"/>
+                    <rect x="3" y="16" width="7" height="5" rx="1"/>
+                  </svg>
+                }
+                @case ('users') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                }
+                @case ('specialists') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 15l-2 5l9-11h-5l2-5L7 15z"/>
+                  </svg>
+                }
+                @case ('appointments') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                    <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+                  </svg>
+                }
+                @case ('payments') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                }
+                @case ('audit') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                }
+                @case ('ai') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93"/>
+                    <path d="M8.24 9.93A4 4 0 0 1 8 6a4 4 0 0 1 4-4"/>
+                    <path d="M12 18a6 6 0 0 0 6-6h-6"/>
+                    <path d="M12 18a6 6 0 0 1-6-6h6"/>
+                    <circle cx="12" cy="18" r="4"/>
+                    <path d="M12 22v-4"/>
+                  </svg>
+                }
+              }
+            </span>
+            <span class="sidebar-nav-label">{{ item.label }}</span>
+            @if (item.badge) {
+              <span class="sidebar-badge">{{ item.badge }}</span>
+            }
+          </a>
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- User Section -->
+  <div class="sidebar-user">
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-avatar">
+        {{ userInitials() }}
+      </div>
+      <div class="sidebar-user-details">
+        <div class="sidebar-user-name">{{ currentUser()?.fullName ?? 'مدير النظام' }}</div>
+        <div class="sidebar-user-role">مدير</div>
+      </div>
+    </div>
+    <button class="sidebar-logout" (click)="onLogout()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>تسجيل الخروج</span>
+    </button>
+  </div>
+</aside>
