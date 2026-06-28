@@ -22,7 +22,7 @@ export class SignalrService {
     if (this.hubConnection) return;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7275' + hubPath, {
+      .withUrl(environment.hubBaseUrl + hubPath, {
         accessTokenFactory: () => this.tokenService.getAccessToken() ?? '',
       })
       .withAutomaticReconnect()

@@ -28,6 +28,7 @@ export class VideoRoom {
   private readonly videoSessionService = inject(VideoSessionService);
 
   private sessionId: string;
+  private isDestroyed = false;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -37,11 +38,13 @@ export class VideoRoom {
     this.sessionId = id!;
 
     this.destroyRef.onDestroy(() => {
+      this.isDestroyed = true;
       this.agoraService.disconnect();
     });
   }
 
   async joinSession(): Promise<void> {
+    if (this.isDestroyed) return;
     if (this.agoraService.joining() || this.agoraService.joined()) {
       return;
     }
@@ -54,6 +57,8 @@ export class VideoRoom {
       const sessionRes = await firstValueFrom(
         this.videoSessionService.getSession(this.sessionId)
       );
+      if (this.isDestroyed) return;
+
       const session = sessionRes.data;
       if (!session) {
         this.agoraService.setError('Video session not found.');
@@ -63,6 +68,8 @@ export class VideoRoom {
       const tokenRes = await firstValueFrom(
         this.videoSessionService.generateToken(session.appointmentId)
       );
+      if (this.isDestroyed) return;
+
       const token = tokenRes.data;
       if (!token) {
         this.agoraService.setError('Failed to generate Agora token.');
@@ -72,17 +79,27 @@ export class VideoRoom {
       await firstValueFrom(
         this.videoSessionService.startSession(this.sessionId)
       );
+      if (this.isDestroyed) return;
 
       this.agoraService.initialize();
       await this.agoraService.join(token.appId, token.channelName, token.token, token.uid);
-      await this.agoraService.createTracks();
-      await this.agoraService.publish();
+      if (this.isDestroyed) {
+        await this.agoraService.disconnect();
+        return;
+      }
 
-      console.log('[DEBUG] About to render local video');
-      console.log('[DEBUG] ViewChild localPlayer:', this.localPlayer);
-      console.log('[DEBUG] ViewChild nativeElement:', this.localPlayer?.nativeElement);
-      console.log('[DEBUG] nativeElement isConnected:', this.localPlayer?.nativeElement?.isConnected);
-      console.log('[DEBUG] nativeElement parentNode:', this.localPlayer?.nativeElement?.parentNode?.nodeName);
+      await this.agoraService.createTracks();
+      if (this.isDestroyed) {
+        await this.agoraService.disconnect();
+        return;
+      }
+
+      await this.agoraService.publish();
+      if (this.isDestroyed) {
+        await this.agoraService.disconnect();
+        return;
+      }
+
       this.agoraService.renderLocalVideo(this.localPlayer.nativeElement);
     } catch (err) {
       console.error('[VideoRoom] Join failed, rolling back', err);
