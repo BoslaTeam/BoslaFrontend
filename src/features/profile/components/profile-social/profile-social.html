@@ -9,13 +9,13 @@
   </div>
 
   <div class="mb-8">
-    @if (socialLinks.length === 0) {
+    @if (socialLinks().length === 0) {
       <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
         <p class="text-slate-500">لم تقم بإضافة روابط اجتماعية.</p>
       </div>
     }
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      @for (link of socialLinks; track link.id) {
+      @for (link of socialLinks(); track link.id) {
         <div class="flex items-center justify-between p-3.5 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors bg-white">
           <div class="overflow-hidden">
             <h4 class="font-bold text-slate-800 text-sm">{{link.platform}}</h4>

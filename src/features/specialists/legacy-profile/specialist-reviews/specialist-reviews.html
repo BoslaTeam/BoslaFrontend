@@ -3,12 +3,12 @@
     <h2 class="text-xl font-bold text-slate-800">المراجعات والتقييمات</h2>
     <div class="bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-yellow-100">
       <i class="fa-solid fa-star"></i>
-      <span>التقييم العام: {{ reviewsData()?.averageRating || '0.0' }}</span>
+      <span>التقييم العام: {{ reviews()?.averageRating || '0.0' }}</span>
     </div>
   </div>
 
   <div class="space-y-4">
-    @for (review of reviewsData()?.reviews?.items; track review.createdOnUtc) {
+    @for (review of reviews()?.reviews?.items; track review.createdOnUtc) {
       <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50">
         <div class="flex justify-between items-start mb-4">
           <div class="flex gap-3 items-center">

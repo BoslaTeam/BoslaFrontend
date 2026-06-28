@@ -1,8 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserProfileService } from '../../../users/services/user-profile.service';
-import { SocialLinkDto } from '../../../users/contracts/user.contracts';
+import { ProfileStore } from '../../stores/profile.store';
 
 @Component({
   selector: 'app-profile-social',
@@ -10,12 +9,12 @@ import { SocialLinkDto } from '../../../users/contracts/user.contracts';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile-social.html',
 })
-export class ProfileSocial implements OnInit {
-  private userProfileService = inject(UserProfileService);
+export class ProfileSocial {
+  readonly profileStore = inject(ProfileStore);
   private fb = inject(FormBuilder);
-  private cdr = inject(ChangeDetectorRef);
 
-  socialLinks: SocialLinkDto[] = [];
+  readonly socialLinks = this.profileStore.socialLinks;
+
   socialLinkForm: FormGroup;
 
   constructor() {
@@ -25,29 +24,14 @@ export class ProfileSocial implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.loadSocialLinks();
-  }
-
-  loadSocialLinks() {
-    this.userProfileService.getSocialLinks().subscribe(res => {
-      this.socialLinks = res;
-      this.cdr.markForCheck();
-    });
-  }
-
   addSocialLink() {
     if (this.socialLinkForm.valid) {
-      this.userProfileService.addSocialLink(this.socialLinkForm.value).subscribe(() => {
-        this.loadSocialLinks();
-        this.socialLinkForm.reset();
-      });
+      this.profileStore.addSocialLink(this.socialLinkForm.value);
+      this.socialLinkForm.reset();
     }
   }
 
   deleteSocialLink(id: string) {
-    this.userProfileService.deleteSocialLink(id).subscribe(() => {
-      this.loadSocialLinks();
-    });
+    this.profileStore.deleteSocialLink(id);
   }
 }

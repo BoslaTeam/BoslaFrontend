@@ -11,13 +11,13 @@
   </div>
 
   <div class="mb-8">
-    @if (educations.length === 0) {
+    @if (educations().length === 0) {
       <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
         <p class="text-slate-500">لم تقم بإضافة أي بيانات تعليمية بعد.</p>
       </div>
     }
     <div class="space-y-3">
-      @for (edu of educations; track edu.id) {
+      @for (edu of educations(); track edu.id) {
         <div class="flex items-center justify-between p-4 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors bg-white">
           <div>
             <h4 class="font-bold text-slate-800">{{edu.degree}}</h4>

@@ -2,7 +2,7 @@
   <h2 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">الخبرات المهنية</h2>
 
   <div class="space-y-4 mb-8">
-    @for (exp of profileStore.myExperiences(); track exp.id) {
+    @for (exp of experiences(); track exp.id) {
       <div class="flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-slate-50 group">
         <div class="h-12 w-12 rounded-xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary text-xl shrink-0">
           <i class="fa-solid fa-briefcase"></i>
@@ -81,7 +81,7 @@
       </div>
     </div>
     <div class="flex flex-wrap gap-2">
-      @for (skill of profileStore.mySkills(); track skill.id) {
+      @for (skill of skills(); track skill.id) {
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl font-medium text-sm group">
           {{ skill.name }}
           <button (click)="removeSkill(skill.id)" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="إزالة المهارة">
@@ -111,7 +111,7 @@
       </div>
     </div>
     <div class="flex flex-wrap gap-2">
-      @for (tool of profileStore.myTools(); track tool.id) {
+      @for (tool of tools(); track tool.id) {
         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-bosla-primary/5 border border-bosla-primary/10 text-bosla-primary rounded-xl font-medium text-sm group">
           {{ tool.name }}
           <button (click)="removeTool(tool.id)" class="text-bosla-primary/50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="إزالة الأداة">

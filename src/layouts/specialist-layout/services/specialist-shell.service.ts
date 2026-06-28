@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { SpecialistProfileStore } from '@features/specialists/store/specialist-profile.store';
+import { ProfileStore } from '@features/profile/stores/profile.store';
 
 @Injectable({ providedIn: 'root' })
 export class SpecialistShellService {
-  private readonly profileStore = inject(SpecialistProfileStore);
+  private readonly profileStore = inject(ProfileStore);
 
   bootstrap(): void {
-    this.profileStore.loadMyData();
+    this.profileStore.loadProfileData();
   }
 }

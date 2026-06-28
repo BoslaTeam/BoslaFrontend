@@ -15,8 +15,8 @@
     <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" (change)="onAvatarSelected($event)">
   </div>
 
-  <h1 class="text-2xl font-black text-bosla-primary">{{ profile?.name || 'مستخدم جديد' }}</h1>
-  <p class="text-bosla-charcoal/70 mt-1 max-w-md line-clamp-1">{{ profile?.title || 'قم بإضافة المسمى الوظيفي' }}</p>
+  <h1 class="text-2xl font-black text-bosla-primary">{{ profileStore.profile()?.name || 'مستخدم جديد' }}</h1>
+  <p class="text-bosla-charcoal/70 mt-1 max-w-md line-clamp-1">{{ profileStore.profile()?.title || 'قم بإضافة المسمى الوظيفي' }}</p>
 </div>
 
 <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm mt-8">

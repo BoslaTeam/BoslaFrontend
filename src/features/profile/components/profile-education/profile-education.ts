@@ -1,8 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserProfileService } from '../../../users/services/user-profile.service';
-import { EducationDto } from '../../../users/contracts/user.contracts';
+import { ProfileStore } from '../../stores/profile.store';
 
 @Component({
   selector: 'app-profile-education',
@@ -10,12 +9,12 @@ import { EducationDto } from '../../../users/contracts/user.contracts';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile-education.html',
 })
-export class ProfileEducation implements OnInit {
-  private userProfileService = inject(UserProfileService);
+export class ProfileEducation {
+  readonly profileStore = inject(ProfileStore);
   private fb = inject(FormBuilder);
-  private cdr = inject(ChangeDetectorRef);
 
-  educations: EducationDto[] = [];
+  readonly educations = this.profileStore.educations;
+
   educationForm: FormGroup;
 
   constructor() {
@@ -24,17 +23,6 @@ export class ProfileEducation implements OnInit {
       institution: ['', Validators.required],
       startYear: [new Date().getFullYear(), [Validators.required, Validators.min(1900)]],
       endYear: ['']
-    });
-  }
-
-  ngOnInit() {
-    this.loadEducations();
-  }
-
-  loadEducations() {
-    this.userProfileService.getEducation().subscribe(res => {
-      this.educations = res;
-      this.cdr.markForCheck();
     });
   }
 
@@ -47,19 +35,12 @@ export class ProfileEducation implements OnInit {
         endYear: val.endYear ? parseInt(val.endYear, 10) : null
       };
 
-      this.userProfileService.addEducation(payload).subscribe({
-        next: () => {
-          this.loadEducations();
-          this.educationForm.reset({ startYear: new Date().getFullYear() });
-        },
-        error: (err) => console.error('Add education error', err)
-      });
+      this.profileStore.addEducation(payload);
+      this.educationForm.reset({ startYear: new Date().getFullYear() });
     }
   }
 
   deleteEducation(id: string) {
-    this.userProfileService.deleteEducation(id).subscribe(() => {
-      this.loadEducations();
-    });
+    this.profileStore.deleteEducation(id);
   }
 }
