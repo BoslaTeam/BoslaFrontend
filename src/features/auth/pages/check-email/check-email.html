@@ -28,9 +28,24 @@
         </p>
       </div>
 
+      @if (resendSuccess()) {
+        <div class="mb-4 bg-green-50 border-r-4 border-green-500 p-3 rounded-l-lg text-sm text-green-700 font-medium text-center">
+          تم إعادة إرسال رابط التفعيل بنجاح. يرجى التحقق من بريدك الإلكتروني.
+        </div>
+      }
+      @if (resendError()) {
+        <div class="mb-4 bg-red-50 border-r-4 border-red-500 p-3 rounded-l-lg text-sm text-red-700 font-medium text-center">
+          {{ resendError() }}
+        </div>
+      }
+
       <div class="space-y-4">
-        <button class="bosla-btn-primary">
-          إعادة إرسال الرابط
+        <button class="bosla-btn-primary" (click)="resendLink()" [disabled]="resending()">
+          @if (resending()) {
+            جاري الإرسال...
+          } @else {
+            إعادة إرسال الرابط
+          }
         </button>
         <a routerLink="/auth/login" class="bosla-btn-secondary">
           العودة لتسجيل الدخول

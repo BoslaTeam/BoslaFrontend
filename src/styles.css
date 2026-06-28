@@ -34,15 +34,6 @@
   h6 {
     @apply font-sans font-bold text-bosla-primary;
   }
-
-  app-root,
-  app-user-layout,
-  app-specialist-layout,
-  app-admin-layout,
-  app-public-layout {
-    display: block;
-    height: 100%;
-  }
 }
 
 /* ─── View Transition Animations ─── */

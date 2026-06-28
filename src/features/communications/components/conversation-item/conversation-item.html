@@ -1,7 +1,7 @@
 <button
   [class]="isActive()
-    ? 'w-full text-left relative flex items-center gap-3 p-3.5 border-b border-bosla-primary/5 bg-bosla-primary/[0.04] transition-all cursor-pointer font-inter group'
-    : 'w-full text-left relative flex items-center gap-3 p-3.5 border-b border-bosla-primary/5 hover:bg-bosla-primary/[0.02] transition-all cursor-pointer font-inter group'"
+    ? 'w-full text-left relative flex items-center gap-3 p-3.5 border-b border-bosla-primary/5 bg-bosla-primary/[0.04] transition-all cursor-pointer font-sans group'
+    : 'w-full text-left relative flex items-center gap-3 p-3.5 border-b border-bosla-primary/5 hover:bg-bosla-primary/[0.02] transition-all cursor-pointer font-sans group'"
   (click)="onClick()"
   [attr.aria-current]="isActive() ? 'true' : null"
   [attr.aria-label]="'Conversation with ' + conversation().participant.name"
@@ -28,18 +28,18 @@
     <!-- Name row -->
     <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-1.5 min-w-0">
-        <span class="text-xs font-bold text-bosla-charcoal truncate font-inter">{{ conversation().participant.name }}</span>
-        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold border shrink-0 tracking-wide font-inter" [class]="roleBadgeClass()">{{ roleLabel() }}</span>
+        <span class="text-xs font-bold text-bosla-charcoal truncate font-sans">{{ conversation().participant.name }}</span>
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold border shrink-0 tracking-wide font-sans" [class]="roleBadgeClass()">{{ roleLabel() }}</span>
       </div>
-      <span class="text-[10px] text-bosla-grey/80 shrink-0 font-medium font-inter">{{ formattedTime() }}</span>
+      <span class="text-[10px] text-bosla-grey/80 shrink-0 font-medium font-sans">{{ formattedTime() }}</span>
     </div>
 
     <!-- Preview row -->
     <div class="flex items-center justify-between gap-2">
       <span
         [class]="conversation().unreadCount > 0
-          ? 'text-xs text-bosla-charcoal font-semibold truncate flex-1 font-inter'
-          : 'text-xs text-bosla-grey/90 truncate flex-1 font-inter'"
+          ? 'text-xs text-bosla-charcoal font-semibold truncate flex-1 font-sans'
+          : 'text-xs text-bosla-grey/90 truncate flex-1 font-sans'"
       >{{ conversation().lastMessage }}</span>
 
       @if (conversation().unreadCount > 0) {

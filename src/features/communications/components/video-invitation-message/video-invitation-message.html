@@ -1,7 +1,7 @@
 <div
   [class]="message().isOwn
-    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-inter py-1'
-    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-inter py-1'"
+    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-sans py-1'
+    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-sans py-1'"
 >
   @if (!message().isOwn) {
     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-sm select-none" aria-hidden="true">
@@ -12,7 +12,7 @@
   <div class="flex flex-col gap-1 w-full">
     @if (session()) {
       <div 
-        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-inter"
+        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-sans"
         role="article" 
         aria-label="Video session invitation"
       >
@@ -25,7 +25,7 @@
           </div>
           <div>
             <div class="text-xs font-bold text-white tracking-tight">{{ session()!.title }}</div>
-            <div class="text-[9px] text-white/80 font-medium">Video Session Invitation</div>
+            <div class="text-[9px] text-white/80 font-medium">دعوة جلسة فيديو</div>
           </div>
         </div>
 
@@ -46,7 +46,7 @@
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-bosla-blue shrink-0">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
-              <span class="text-[11px] font-medium text-bosla-charcoal">Starts at {{ session()!.startTime }}</span>
+              <span class="text-[11px] font-medium text-bosla-charcoal">تبدأ الساعة {{ session()!.startTime }}</span>
             </div>
           </div>
 
@@ -60,7 +60,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
             </svg>
-            <span>Join Session</span>
+            <span>انضم للجلسة</span>
           </button>
         </div>
 
