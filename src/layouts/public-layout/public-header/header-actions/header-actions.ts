@@ -1,17 +1,19 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
-import { UiLogo } from '@shared/ui/logo/logo';
+import { UserDropdown } from '../user-dropdown/user-dropdown';
 
 @Component({
-  selector: 'app-specialist-header',
-  imports: [RouterLink, UiLogo],
-  templateUrl: './specialist-header.html',
+  selector: 'app-header-actions',
+  imports: [RouterLink, CommonModule, UserDropdown],
+  templateUrl: './header-actions.html'
 })
-export class SpecialistHeader {
-  protected readonly authService = inject(AuthService);
-  protected readonly navigationService = inject(NavigationService);
+export class HeaderActions {
+  readonly authService = inject(AuthService);
+  readonly navigationService = inject(NavigationService);
+
   avatarError = false;
   isDropdownOpen = signal(false);
 
@@ -26,16 +28,12 @@ export class SpecialistHeader {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.specialist-dropdown-container')) {
+    if (!target.closest('.user-dropdown-container')) {
       this.closeDropdown();
     }
   }
 
   onAvatarError() {
     this.avatarError = true;
-  }
-
-  logout() {
-    this.authService.logout();
   }
 }
