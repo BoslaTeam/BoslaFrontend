@@ -5,7 +5,7 @@ export const USERS_ROUTES: Routes = [
   {
     path: 'profile',
     canActivate: [nonSpecialistGuard],
-    loadComponent: () => import('./pages/user-profile/user-profile').then(m => m.UserProfile),
+    loadComponent: () => import('@features/profile/pages/profile-page/profile-page').then(m => m.ProfilePage),
   },  
   {
     path: 'specialist-onboarding',

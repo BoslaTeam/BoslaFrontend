@@ -10,8 +10,8 @@ export const SPECIALIST_PANEL_ROUTES: Routes = [
   {
     path: 'profile',
     loadComponent: () =>
-      import('./pages/specialist-profile/specialist-profile')
-        .then(m => m.SpecialistProfilePage),
+      import('@features/profile/pages/profile-page/profile-page')
+        .then(m => m.ProfilePage),
   },
   {
     path: 'onboarding',

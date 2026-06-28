@@ -24,7 +24,7 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'profile',
         canActivate: [authGuard],
-        loadComponent: () => import('@features/users/pages/user-profile/user-profile').then(m => m.UserProfile),
+        loadComponent: () => import('@features/profile/pages/profile-page/profile-page').then(m => m.ProfilePage),
       },
       {
         path: 'appointments',
