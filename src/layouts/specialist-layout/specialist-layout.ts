@@ -1,25 +1,19 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
-import { SpecialistApiService } from '@features/specialists/data-access/specialist-api.service';
-import { SpecialistProfileResponse } from '@features/specialists/contracts/specialist-profile-response';
+import { SpecialistHeader } from './specialist-header/specialist-header';
+import { UiLogo } from '@shared/ui/logo/logo';
+import { SpecialistProfileStore } from '@features/specialists/store/specialist-profile.store';
 
 @Component({
   selector: 'app-specialist-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpecialistHeader, UiLogo],
   templateUrl: './specialist-layout.html',
 })
 export class SpecialistLayout implements OnInit {
+  readonly profileStore = inject(SpecialistProfileStore);
 
-  private specialistApi = inject(SpecialistApiService);
-
-  profile = signal<SpecialistProfileResponse | null>(null);
-
-  ngOnInit(): void {
-    this.specialistApi.getMyProfile().subscribe({
-      next: (response) => {
-        this.profile.set(response.data);
-      }
-    });
+  ngOnInit() {
+    this.profileStore.loadMyData();
   }
 }

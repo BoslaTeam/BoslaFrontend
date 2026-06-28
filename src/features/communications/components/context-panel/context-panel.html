@@ -14,7 +14,7 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
-      Close
+      إغلاق
     </button>
     
     <div class="flex items-center gap-1">
@@ -75,7 +75,7 @@
 
             @if (participant()!.isOnline) {
               <span class="inline-flex items-center gap-1 text-[10px] font-bold text-bosla-success bg-bosla-success/5 px-2 py-0.5 rounded-full border border-bosla-success/15">
-                Online now
+                متصل الآن
               </span>
             }
           </div>
@@ -99,7 +99,7 @@
             </div>
             <span>{{ participant()!.rating }}</span>
             @if (participant()!.reviewCount) {
-              <span class="text-bosla-grey font-medium text-[10px]">({{ participant()!.reviewCount }} reviews)</span>
+              <span class="text-bosla-grey font-medium text-[10px]">({{ participant()!.reviewCount }} تقييم)</span>
             }
           </div>
         }
@@ -109,67 +109,67 @@
       <!-- ── Next Session Widget Card ── -->
       @if (appointmentId()) {
         <div class="p-5 border-b border-slate-100 bg-slate-50/20 flex flex-col gap-3">
-          <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Next Session</h4>
+          <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">الجلسة القادمة</h4>
           <chat-upcoming-session-card [appointmentId]="appointmentId()!" />
         </div>
       }
 
       <!-- ── Quick Actions Grid ── -->
       <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
-        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Quick Actions</h4>
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">إجراءات سريعة</h4>
         <div class="grid grid-cols-2 gap-3">
           <!-- Book Another Session: Spans 2 columns to highlight primary CTA -->
           <button class="col-span-2 group flex flex-col items-center justify-center p-4 rounded-xl border border-bosla-primary/5 bg-gradient-to-br from-bosla-primary to-bosla-blue text-white shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-book-session">
             <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition-transform">➕</span>
-            <span class="text-xs font-bold">Book Another Session</span>
+            <span class="text-xs font-bold">حجز جلسة أخرى</span>
           </button>
           
           <!-- View Profile -->
           <button class="group flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200/70 bg-white hover:border-bosla-primary/20 shadow-sm hover:shadow hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-view-profile">
             <span class="w-8 h-8 rounded-lg bg-slate-50 text-bosla-primary flex items-center justify-center text-lg mb-1.5 group-hover:scale-110 transition-transform">👤</span>
-            <span class="text-xs font-bold text-bosla-primary">View Profile</span>
+            <span class="text-xs font-bold text-bosla-primary">عرض الملف الشخصي</span>
           </button>
           
           <!-- Schedule Follow-up -->
           <button class="group flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200/70 bg-white hover:border-bosla-primary/20 shadow-sm hover:shadow hover:scale-[1.02] transition-all duration-200 text-center cursor-pointer" id="ctx-schedule-followup">
             <span class="w-8 h-8 rounded-lg bg-slate-50 text-bosla-primary flex items-center justify-center text-lg mb-1.5 group-hover:scale-110 transition-transform">📅</span>
-            <span class="text-xs font-bold text-bosla-primary">Schedule Follow</span>
+            <span class="text-xs font-bold text-bosla-primary">جدولة متابعة</span>
           </button>
         </div>
       </div>
 
       <!-- ── Conversation Insights ── -->
       <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
-        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Conversation Insights</h4>
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">إحصائيات المحادثة</h4>
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Messages</span>
-            <span class="text-xs font-bold text-bosla-charcoal mt-1">148 messages</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">الرسائل</span>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">148 رسالة</span>
           </div>
           <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Started</span>
-            <span class="text-xs font-bold text-bosla-charcoal mt-1">2 weeks ago</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">بدأت منذ</span>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">أسبوعين</span>
           </div>
           <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-3 flex flex-col col-span-2">
             <div class="flex items-center justify-between">
-              <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Last Activity</span>
+              <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">آخر نشاط</span>
               <span class="w-1.5 h-1.5 rounded-full bg-bosla-success"></span>
             </div>
-            <span class="text-xs font-bold text-bosla-charcoal mt-1">Active 10m ago</span>
+            <span class="text-xs font-bold text-bosla-charcoal mt-1">نشط منذ 10 دقائق</span>
           </div>
         </div>
       </div>
 
       <!-- ── Shared Resources Grid ── -->
       <div class="p-5 border-b border-slate-100 flex flex-col gap-3">
-        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Shared Resources</h4>
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">الموارد المشتركة</h4>
         <div class="grid grid-cols-2 gap-2.5">
           <!-- Appointment Resource -->
           <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
             <span class="w-8 h-8 rounded-lg bg-bosla-primary/5 flex items-center justify-center text-base text-bosla-primary shrink-0">📄</span>
             <div class="flex flex-col min-w-0">
-              <span class="text-xs font-bold text-bosla-charcoal truncate">Appointment</span>
-              <span class="text-[9px] text-bosla-grey truncate">Session Info</span>
+              <span class="text-xs font-bold text-bosla-charcoal truncate">الموعد</span>
+              <span class="text-[9px] text-bosla-grey truncate">تفاصيل الجلسة</span>
             </div>
           </div>
           
@@ -177,8 +177,8 @@
           <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
             <span class="w-8 h-8 rounded-lg bg-bosla-blue/5 flex items-center justify-center text-base text-bosla-blue shrink-0">🎥</span>
             <div class="flex flex-col min-w-0">
-              <span class="text-xs font-bold text-bosla-charcoal truncate">Video Session</span>
-              <span class="text-[9px] text-bosla-grey truncate">Link Invite</span>
+              <span class="text-xs font-bold text-bosla-charcoal truncate">جلسة فيديو</span>
+              <span class="text-[9px] text-bosla-grey truncate">رابط الدعوة</span>
             </div>
           </div>
           
@@ -186,8 +186,8 @@
           <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
             <span class="w-8 h-8 rounded-lg bg-bosla-orange/5 flex items-center justify-center text-base text-bosla-orange shrink-0">📝</span>
             <div class="flex flex-col min-w-0">
-              <span class="text-xs font-bold text-bosla-charcoal truncate">Summary</span>
-              <span class="text-[9px] text-bosla-grey truncate">Notes Doc</span>
+              <span class="text-xs font-bold text-bosla-charcoal truncate">الملخص</span>
+              <span class="text-[9px] text-bosla-grey truncate">ملاحظات</span>
             </div>
           </div>
           
@@ -195,8 +195,8 @@
           <div class="bg-white border border-slate-200/60 rounded-xl p-2.5 flex items-center gap-2 hover:border-bosla-primary/20 hover:shadow hover:-translate-y-0.5 transition-all duration-200 cursor-pointer" role="button" tabindex="0">
             <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base text-slate-600 shrink-0">📎</span>
             <div class="flex flex-col min-w-0">
-              <span class="text-xs font-bold text-bosla-charcoal truncate">Files</span>
-              <span class="text-[9px] text-bosla-grey truncate">Documents</span>
+              <span class="text-xs font-bold text-bosla-charcoal truncate">الملفات</span>
+              <span class="text-[9px] text-bosla-grey truncate">مستندات</span>
             </div>
           </div>
         </div>
@@ -204,12 +204,12 @@
 
       <!-- ── Specialist Information ── -->
       <div class="p-5 flex flex-col gap-4">
-        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">Specialist Information</h4>
+        <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest">معلومات المتخصص</h4>
         
         <!-- Bio -->
         @if (participant()!.bio) {
           <div class="flex flex-col gap-1">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Professional Bio</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">النبذة المهنية</span>
             <p class="text-xs text-bosla-charcoal leading-relaxed font-normal bg-slate-50/50 rounded-lg p-2.5 border border-slate-100/50">
               {{ participant()!.bio }}
             </p>
@@ -219,26 +219,26 @@
         <!-- Meta Attributes Grid -->
         <div class="grid grid-cols-2 gap-3 text-xs">
           <div class="flex flex-col gap-0.5">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Languages</span>
-            <span class="font-bold text-bosla-charcoal">English, Arabic</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">اللغات</span>
+            <span class="font-bold text-bosla-charcoal">العربية، الإنجليزية</span>
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Timezone</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">المنطقة الزمنية</span>
             <span class="font-bold text-bosla-charcoal">GMT +3</span>
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Experience</span>
-            <span class="font-bold text-bosla-charcoal">5+ Years</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">الخبرة</span>
+            <span class="font-bold text-bosla-charcoal">+5 سنوات</span>
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Availability</span>
-            <span class="font-bold text-bosla-charcoal">Mon - Fri, 9am-5pm</span>
+            <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">أوقات التواجد</span>
+            <span class="font-bold text-bosla-charcoal">الأحد - الخميس، 9ص-5م</span>
           </div>
         </div>
         
         <!-- Skills Tags -->
         <div class="flex flex-col gap-2">
-          <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">Skills & Expertise</span>
+          <span class="text-[9px] uppercase font-bold text-bosla-grey tracking-wider">المهارات والخبرات</span>
           <div class="flex flex-wrap gap-1.5">
             <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Career Coaching</span>
             <span class="px-2.5 py-1 bg-slate-50 border border-slate-200/60 rounded-lg text-[11px] font-semibold text-bosla-primary hover:bg-slate-100 transition-colors">Resume Building</span>
@@ -251,10 +251,10 @@
       <!-- ── Bottom CTA Sticky Footer ── -->
       <div class="p-5 border-t border-slate-100 bg-white flex flex-col gap-2 shrink-0">
         <button class="w-full bg-bosla-orange hover:bg-bosla-orange/95 text-white font-bold py-3 rounded-xl transition-all duration-200 text-xs shadow-sm hover:shadow cursor-pointer">
-          Book New Session
+           حجز جلسة جديدة
         </button>
         <button class="w-full bg-white border border-slate-200 hover:border-bosla-primary/20 text-bosla-primary hover:bg-slate-50 font-bold py-3 rounded-xl transition-all duration-200 text-xs cursor-pointer">
-          View Full Profile
+           عرض الملف الكامل
         </button>
       </div>
 
@@ -268,8 +268,8 @@
           </svg>
         </div>
         <div class="flex flex-col gap-1 max-w-[240px]">
-          <h4 class="text-sm font-bold text-bosla-charcoal">No contact selected</h4>
-          <p class="text-xs text-bosla-grey leading-normal">Select a conversation from the sidebar to view detailed specialist information.</p>
+          <h4 class="text-sm font-bold text-bosla-charcoal">لم يتم تحديد جهة اتصال</h4>
+          <p class="text-xs text-bosla-grey leading-normal">حدد محادثة من القائمة الجانبية لعرض معلومات المتخصص.</p>
         </div>
       </div>
 

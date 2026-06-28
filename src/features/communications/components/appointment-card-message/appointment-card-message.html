@@ -1,7 +1,7 @@
 <div
   [class]="message().isOwn
-    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-inter py-1'
-    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-inter py-1'"
+    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-sans py-1'
+    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-sans py-1'"
 >
   @if (!message().isOwn) {
     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-sm select-none" aria-hidden="true">
@@ -12,13 +12,13 @@
   <div class="flex flex-col gap-1 w-full">
     @if (appointment()) {
       <div 
-        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-inter" 
+        class="bg-white border border-bosla-primary/10 rounded-2xl rounded-bl-sm overflow-hidden shadow-sm w-full font-sans" 
         role="article" 
         aria-label="Appointment card"
       >
         <!-- Card Header -->
         <div class="bg-bosla-primary px-4 py-2.5 text-white flex items-center justify-between">
-          <span class="text-[10px] font-bold tracking-wider uppercase opacity-90">Session Invite</span>
+          <span class="text-[10px] font-bold tracking-wider uppercase opacity-90">دعوة جلسة</span>
           <span 
             class="text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase"
             [class]="appointment()!.status === 'confirmed'
@@ -65,10 +65,10 @@
         <!-- Card Footer -->
         <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <button class="text-[10px] font-bold text-bosla-blue hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">View Details</button>
+            <button class="text-[10px] font-bold text-bosla-blue hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">عرض التفاصيل</button>
             @if (appointment()!.status !== 'cancelled' && appointment()!.status !== 'completed') {
               <span class="w-px h-2.5 bg-slate-200"></span>
-              <button class="text-[10px] font-bold text-bosla-grey hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">Reschedule</button>
+              <button class="text-[10px] font-bold text-bosla-grey hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">إعادة جدولة</button>
             }
           </div>
           <span class="text-[9px] text-bosla-grey/80 font-medium">{{ formattedTime() }}</span>

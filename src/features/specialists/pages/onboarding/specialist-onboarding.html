@@ -1,156 +1,25 @@
-<div class="min-h-[calc(100vh-80px)] bg-slate-50 flex items-center justify-center p-4 md:p-8" dir="rtl">
-  <div class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-    
-    <!-- Hero Section (Right Side on RTL) -->
-    <div class="lg:w-5/12 bg-linear-to-br from-bosla-primary via-[#235d88] to-[#154360] p-10 lg:p-14 text-white flex flex-col justify-center relative overflow-hidden">
-      <!-- Decorative Elements -->
-      <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-bosla-orange opacity-20 rounded-full blur-3xl"></div>
-      
-      <div class="relative z-10">
-        <div class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 border border-white/20 shadow-lg">
-          <svg class="w-8 h-8 text-bosla-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <h2 class="text-4xl lg:text-5xl font-black mb-4 leading-tight">انطلق نحو<br><span class="text-bosla-orange">الاحترافية</span></h2>
-        <p class="text-lg text-white/80 mb-10 leading-relaxed">
-          انضم إلى نخبة المتخصصين في منصة بوصلة، وشارك خبراتك مع الآلاف من المستفيدين بمرونة تامة وعائد مجزٍ.
-        </p>
-        
-        <ul class="space-y-6">
-          <li class="flex items-start gap-4">
-            <div class="mt-1 bg-bosla-success/20 p-1.5 rounded-full">
-              <svg class="w-5 h-5 text-bosla-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-white text-lg">مرونة في الوقت</h4>
-              <p class="text-sm text-white/70 mt-1">حدد ساعات العمل التي تناسب جدولك الخاص.</p>
-            </div>
-          </li>
-          <li class="flex items-start gap-4">
-            <div class="mt-1 bg-bosla-success/20 p-1.5 rounded-full">
-              <svg class="w-5 h-5 text-bosla-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-white text-lg">عائد مادي ممتاز</h4>
-              <p class="text-sm text-white/70 mt-1">حدد تسعيرتك الخاصة واحتفظ بنسبة أرباح مجزية.</p>
-            </div>
-          </li>
-          <li class="flex items-start gap-4">
-            <div class="mt-1 bg-bosla-success/20 p-1.5 rounded-full">
-              <svg class="w-5 h-5 text-bosla-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-white text-lg">أدوات متطورة</h4>
-              <p class="text-sm text-white/70 mt-1">منصة تقنية متكاملة لإدارة مواعيدك وجلساتك بسهولة.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+<div class="min-h-[calc(100vh-80px)] bg-slate-50 flex items-start justify-center p-4 md:p-8" dir="rtl">
+  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-10">
+    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()" [titles]="stepTitles" />
 
-    <!-- Form Section (Left Side on RTL) -->
-    <div class="lg:w-7/12 p-10 lg:p-14 bg-white flex flex-col justify-center">
-      <div class="max-w-md mx-auto w-full">
-        <div class="mb-10 text-center">
-          <h3 class="text-2xl font-bold text-slate-800 mb-2">أكمل بيانات اختصاصك</h3>
-          <p class="text-slate-500">للبدء في استقبال الاستشارات، يرجى تعبئة البيانات التالية بدقة.</p>
-        </div>
-
-        @if (errorMessage) {
-          <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-            <p class="text-sm text-red-700 font-medium">{{ errorMessage }}</p>
-          </div>
-        }
-
-        <form [formGroup]="onboardingForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          
-          <!-- Years of Experience -->
-          <div class="space-y-2">
-            <label class="block text-sm font-semibold text-slate-700">سنوات الخبرة العملية</label>
-            <div class="relative group">
-              <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-slate-400 group-focus-within:text-bosla-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-              </div>
-              <input type="number" formControlName="yearsOfExperience" min="0" placeholder="كم سنة خبرة تمتلك؟" 
-                class="w-full pl-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary focus:bg-white transition-all shadow-xs">
-              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span class="text-slate-400 font-medium text-sm">سنوات</span>
-              </div>
-            </div>
-            @if(onboardingForm.get('yearsOfExperience')?.touched && onboardingForm.get('yearsOfExperience')?.invalid) {
-              <p class="text-xs text-red-500 font-medium">يرجى إدخال سنوات خبرة صحيحة.</p>
-            }
-          </div>
-
-          <!-- Hourly Rate -->
-          <div class="space-y-2">
-            <label class="block text-sm font-semibold text-slate-700">التسعيرة لكل جلسة (ساعة)</label>
-            <div class="relative group">
-              <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-slate-400 group-focus-within:text-bosla-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <input type="number" formControlName="hourlyRate" min="1" placeholder="مثال: 50" 
-                class="w-full pl-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary focus:bg-white transition-all shadow-xs">
-              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span class="text-slate-400 font-bold">USD</span>
-              </div>
-            </div>
-            @if(onboardingForm.get('hourlyRate')?.touched && onboardingForm.get('hourlyRate')?.invalid) {
-              <p class="text-xs text-red-500 font-medium">يرجى إدخال تسعيرة صحيحة أكبر من صفر.</p>
-            }
-          </div>
-
-          <!-- Booking Policy -->
-          <div class="space-y-2">
-            <label class="block text-sm font-semibold text-slate-700">سياسة الحجز المبدئية</label>
-            <div class="relative group">
-              <textarea formControlName="bookingPolicy" rows="4" placeholder="ما هي شروطك أو سياستك للمستفيدين قبل الجلسة؟" 
-                class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary focus:bg-white transition-all shadow-xs resize-y"></textarea>
-            </div>
-            @if(onboardingForm.get('bookingPolicy')?.touched && onboardingForm.get('bookingPolicy')?.invalid) {
-              <p class="text-xs text-red-500 font-medium">يرجى كتابة سياسة الحجز الخاصة بك.</p>
-            }
-          </div>
-
-          <!-- Submit Button -->
-          <div class="pt-4">
-            <button type="submit" [disabled]="isLoading || onboardingForm.invalid" 
-              class="w-full flex justify-center items-center gap-2 py-4 px-6 bg-linear-to-r from-bosla-orange to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/30 transform transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none">
-              @if (isLoading) {
-                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>جاري تفعيل الحساب...</span>
-              } @else {
-                <span>إكمال إنشاء حساب الاختصاصي</span>
-                <svg class="w-5 h-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              }
-            </button>
-            <p class="text-center text-xs text-slate-500 mt-4">
-              بالضغط على إكمال الإنشاء، أنت توافق على <a href="#" class="text-bosla-primary hover:underline">شروط وأحكام الاختصاصيين</a>.
-            </p>
-          </div>
-
-        </form>
-      </div>
+    <div class="mt-8">
+      @switch (onboardingStore.currentStep()) {
+      @case (0) {
+      <basic-info-step (completed)="onboardingStore.nextStep()" />
+      }
+      @case (1) {
+      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (2) {
+      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (3) {
+      <experience-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (4) {
+      <availability-step (completed)="onAvailabilityCompleted()" (back)="onboardingStore.previousStep()" />
+      }
+      }
     </div>
   </div>
 </div>

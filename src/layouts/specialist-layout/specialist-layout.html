@@ -1,111 +1,40 @@
-<div dir="rtl" class="min-h-screen bg-slate-100">
+<div dir="rtl" class="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
+  
+  <app-specialist-header></app-specialist-header>
 
-  <div class="flex min-h-screen">
-
-    <aside class="w-[280px] shrink-0 border-l border-slate-200 bg-white">
-
-      <div class="p-8">
-
-        <h2 class="text-3xl font-bold text-indigo-600">
-          بوصلة
-        </h2>
-
-        <p class="mt-2 text-sm text-slate-500">
-          بوابتك المهنية
-        </p>
-
+  <div class="flex grow pt-20 relative z-10 min-h-screen">
+    
+    <aside class="hidden lg:flex w-70 shrink-0 flex-col border-l border-slate-200 bg-white">
+      
+      <div class="p-8 flex flex-col items-center">
+        <ui-logo size="xl"></ui-logo>
+        <p class="mt-3 text-sm text-slate-500">بوابتك المهنية</p>
       </div>
 
-      <nav class="px-4">
-
-        <a class="mb-2 flex items-center rounded-2xl bg-indigo-600 px-5 py-4 font-medium text-white">
-
-          لوحة التحكم
-
+      <nav class="px-4 flex-1 space-y-2 mt-4">
+        <a routerLink="/specialist/dashboard" routerLinkActive="bg-bosla-primary text-white" [routerLinkActiveOptions]="{exact: true}" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
+          <i class="fa-solid fa-chart-line ml-3"></i> لوحة التحكم
         </a>
-
-        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
-
-          المواعيد
-
+        <a routerLink="/specialist/appointments" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
+          <i class="fa-regular fa-calendar-check ml-3"></i> المواعيد
         </a>
-
-        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
-
-          التوافر
-
+        <a routerLink="/specialist/availability" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
+          <i class="fa-regular fa-clock ml-3"></i> التوافر
         </a>
-
-        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
-
-          الرسائل
-
+        <a routerLink="/specialist/chat" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
+          <i class="fa-regular fa-comments ml-3"></i> الرسائل
         </a>
-
-        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
-
-          التحليلات
-
+        <a routerLink="/specialist/profile" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
+          <i class="fa-solid fa-gear ml-3"></i> الإعدادات والملف الشخصي
         </a>
-
-        <a class="mb-2 flex items-center rounded-2xl px-5 py-4 text-slate-600 hover:bg-slate-100">
-
-          الإعدادات
-
-        </a>
-
       </nav>
 
-      <div class="mt-auto px-6 pb-8">
-
-        <div class="border-t pt-6">
-
-          <div class="flex items-center gap-3">
-
-            <div class="h-12 w-12 overflow-hidden rounded-full bg-slate-200">
-
-              @if (profile()?.profileImageUrl) {
-              <img [src]="profile()?.profileImageUrl" [alt]="profile()?.name"
-                class="h-12 w-12 rounded-full object-cover">
-              }
-              @else {
-              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white">
-
-                {{ profile()?.name?.charAt(0) }}
-
-              </div>
-              }
-
-            </div>
-
-            <div>
-
-              <h3 class="font-semibold">
-                {{ profile()?.name }}
-              </h3>
-
-              @if(profile()?.title){
-              <p class="text-sm text-slate-500">
-                {{ profile()?.title }}
-              </p>
-              }
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
 
     </aside>
 
-    <main class="flex-1">
-
-      <router-outlet />
-
+    <main class="grow flex flex-col min-w-0">
+      <router-outlet></router-outlet>
     </main>
 
   </div>
-
 </div>

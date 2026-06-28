@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, AfterViewInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -18,14 +18,13 @@ export class Login implements AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
 
-  isLoading = false;
+  readonly isLoading = signal(false);
   errorMessage = '';
 
   // TODO: Replace with actual Google Client ID
@@ -54,23 +53,21 @@ export class Login implements AfterViewInit {
 
   private handleGoogleCredentialResponse(response: any) {
     if (response.credential) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.errorMessage = '';
 
       this.authService.googleLogin({ idToken: response.credential }).subscribe({
         next: (res) => {
           if (res.success) {
-            this.router.navigate([this.getRedirectUrl()]);
+            this.authService.redirectByRole();
           } else {
             this.errorMessage = res.message || 'Google Login failed.';
-            this.isLoading = false;
-            this.cdr.markForCheck();
           }
+          this.isLoading.set(false);
         },
         error: (err: any) => {
           this.errorMessage = err.title || 'Failed to authenticate with Google.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
+          this.isLoading.set(false);
         }
       });
     }
@@ -82,7 +79,7 @@ export class Login implements AfterViewInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.errorMessage = '';
 
     const { email, password } = this.loginForm.value;
@@ -92,15 +89,11 @@ export class Login implements AfterViewInit {
       next: (res) => {
         console.log('[Login] Response:', res);
         if (res.success) {
-          this.router.navigate([this.getRedirectUrl()]).then(navigated => {
-            console.log('[Login] Navigated:', navigated);
-            this.isLoading = false;
-          });
-        } else {
-          this.errorMessage = res.message || 'Login failed.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
+          this.authService.redirectByRole();
+        } else if (res.message) {
+          this.errorMessage = res.message;
         }
+        this.isLoading.set(false);
       },
       error: (err: any) => {
         console.error('[Login] Error:', err);
@@ -118,8 +111,7 @@ export class Login implements AfterViewInit {
         } else {
           this.errorMessage = err.title || `Server error (${err.status})`;
         }
-        this.isLoading = false;
-        this.cdr.markForCheck();
+        this.isLoading.set(false);
       }
     });
   }

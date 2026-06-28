@@ -1,12 +1,12 @@
-<div class="p-3 bg-white border-t border-bosla-primary/10 shrink-0 font-inter" role="region" aria-label="Message input">
+<div class="p-3 bg-white border-t border-bosla-primary/10 shrink-0 font-sans" role="region" aria-label="Message input">
   <div class="border border-bosla-primary/15 rounded-2xl bg-white shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2 p-1.5 focus-within:border-bosla-blue focus-within:ring-4 focus-within:ring-bosla-blue/5 transition-all">
 
     <!-- Textarea -->
     <textarea
       #textarea
       id="chat-message-input"
-      class="flex-1 resize-none bg-transparent py-2.5 px-3 text-xs text-bosla-charcoal placeholder-bosla-grey/70 focus:outline-none min-h-[38px] max-h-[128px] overflow-y-auto leading-relaxed font-inter"
-      placeholder="Type a message… (Enter to send)"
+      class="flex-1 resize-none bg-transparent py-2.5 px-3 text-xs text-bosla-charcoal placeholder-bosla-grey/70 focus:outline-none min-h-[38px] max-h-[128px] overflow-y-auto leading-relaxed font-sans"
+      placeholder="اكتب رسالة... (اضغط Enter للإرسال)"
       rows="1"
       [value]="message()"
       (input)="onInput($event)"
@@ -19,7 +19,7 @@
     <div class="flex items-center justify-between md:justify-end gap-1 px-1 shrink-0 border-t border-bosla-primary/5 md:border-none pt-1.5 md:pt-0">
       <div class="flex items-center gap-0.5">
         <!-- Emoji button (future) -->
-        <button class="w-8 h-8 rounded-xl flex items-center justify-center text-bosla-grey/50 cursor-default opacity-40 focus:outline-none" aria-label="Add emoji" title="Add emoji" type="button" [disabled]="true">
+        <button class="w-8 h-8 rounded-xl flex items-center justify-center text-bosla-grey/50 cursor-default opacity-40 focus:outline-none" aria-label="إضافة رموز تعبيرية" title="إضافة رموز تعبيرية" type="button" [disabled]="true">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <circle cx="12" cy="12" r="10"/>
             <path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/>
@@ -28,7 +28,7 @@
         </button>
 
         <!-- Attachment button (future) -->
-        <button class="w-8 h-8 rounded-xl flex items-center justify-center text-bosla-grey/50 cursor-default opacity-40 focus:outline-none" aria-label="Attach file" title="Attach file" type="button" [disabled]="true">
+        <button class="w-8 h-8 rounded-xl flex items-center justify-center text-bosla-grey/50 cursor-default opacity-40 focus:outline-none" aria-label="إرفاق ملف" title="إرفاق ملف" type="button" [disabled]="true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
           </svg>
@@ -42,8 +42,8 @@
         type="button"
         (click)="send()"
         [disabled]="!message().trim() || store.isSendingMessage()"
-        aria-label="Send message"
-        title="Send message (Enter)"
+        aria-label="إرسال الرسالة"
+        title="إرسال الرسالة (Enter)"
       >
         @if (store.isSendingMessage()) {
           <svg class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <p class="text-[10px] text-bosla-grey/75 mt-1.5 px-1 font-inter flex items-center gap-1 select-none">
-    Press <kbd class="px-1.5 py-0.5 rounded bg-bosla-primary/5 border border-bosla-primary/10 text-[9px] font-semibold text-bosla-charcoal/80 font-mono">Enter</kbd> to send · <kbd class="px-1.5 py-0.5 rounded bg-bosla-primary/5 border border-bosla-primary/10 text-[9px] font-semibold text-bosla-charcoal/80 font-mono">Shift+Enter</kbd> for new line
+  <p class="text-[10px] text-bosla-grey/75 mt-1.5 px-1 font-sans flex items-center gap-1 select-none">
+    اضغط <kbd class="px-1.5 py-0.5 rounded bg-bosla-primary/5 border border-bosla-primary/10 text-[9px] font-semibold text-bosla-charcoal/80 font-mono">Enter</kbd> للإرسال · <kbd class="px-1.5 py-0.5 rounded bg-bosla-primary/5 border border-bosla-primary/10 text-[9px] font-semibold text-bosla-charcoal/80 font-mono">Shift+Enter</kbd> لسطر جديد
   </p>
 </div>
