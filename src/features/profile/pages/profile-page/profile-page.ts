@@ -4,7 +4,6 @@ import { ProfileBasic } from '../../components/profile-basic/profile-basic';
 import { ProfileSecurity } from '../../components/profile-security/profile-security';
 import { ProfileEducation } from '../../components/profile-education/profile-education';
 import { ProfileSocial } from '../../components/profile-social/profile-social';
-import { ProfileSidebar } from '@features/profile/components/profile-sidebar/profile-sidebar';
 
 @Component({
   selector: 'app-profile-page',
@@ -14,7 +13,6 @@ import { ProfileSidebar } from '@features/profile/components/profile-sidebar/pro
     ProfileSecurity,
     ProfileEducation,
     ProfileSocial,
-    ProfileSidebar
 ],
   templateUrl: './profile-page.html',
 })

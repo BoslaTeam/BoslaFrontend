@@ -1,11 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-
-interface NavItem {
-  label: string;
-  route: string;
-  icon: string;
-}
+import { NavigationService } from '@core/navigation/navigation.service';
 
 @Component({
   selector: 'app-specialist-sidebar',
@@ -14,18 +9,14 @@ interface NavItem {
   styleUrl: './specialist-sidebar.css',
 })
 export class SpecialistSidebar {
+  private readonly navigationService = inject(NavigationService);
+
   readonly isCollapsed = input<boolean>(false);
   readonly isMobileOpen = input<boolean>(false);
   readonly toggleCollapse = output<void>();
   readonly closeMobile = output<void>();
 
-  readonly navItems: NavItem[] = [
-    { label: 'لوحة التحكم', route: '/specialist/dashboard', icon: 'dashboard' },
-    { label: 'المواعيد', route: '/specialist/appointments', icon: 'appointments' },
-    { label: 'التوافر', route: '/specialist/availability', icon: 'availability' },
-    { label: 'الرسائل', route: '/specialist/chat', icon: 'chat' },
-    { label: 'الملف الشخصي', route: '/specialist/profile', icon: 'profile' },
-  ];
+  readonly navItems = this.navigationService.specialistSidebarNavigation;
 
   onNavClick(): void {
     if (window.innerWidth <= 1024) {

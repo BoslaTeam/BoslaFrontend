@@ -9,4 +9,5 @@ import { NavigationService } from '@core/navigation/navigation.service';
 })
 export class MainNavigation {
   readonly navigationService = inject(NavigationService);
+  readonly links = this.navigationService.mainNavigation;
 }

@@ -1,21 +1,21 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
-import { UserDropdown } from '../user-dropdown/user-dropdown';
 
 @Component({
-  selector: 'app-header-actions',
-  imports: [RouterLink, CommonModule, UserDropdown],
-  templateUrl: './header-actions.html'
+  selector: 'app-user-dropdown',
+  imports: [RouterLink],
+  templateUrl: './user-dropdown.html'
 })
-export class HeaderActions {
+export class UserDropdown {
   readonly authService = inject(AuthService);
   readonly navigationService = inject(NavigationService);
 
-  avatarError = false;
+  readonly dropdownModel = this.navigationService.dropdownNavigation;
+
   isDropdownOpen = signal(false);
+  avatarError = false;
 
   toggleDropdown() {
     this.isDropdownOpen.update(v => !v);
@@ -35,5 +35,9 @@ export class HeaderActions {
 
   onAvatarError() {
     this.avatarError = true;
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }

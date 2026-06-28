@@ -49,6 +49,7 @@ export class ProfileStore {
   }
 
   loadProfileData() {
+    if (this.profile() !== null && this.educations().length > 0) return;
     this.loadProfile();
     this.loadEducations();
     this.loadSocialLinks();

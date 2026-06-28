@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { SpecialistHeader } from './specialist-header/specialist-header';
+import { AppHeader } from '@layouts/shared/app-header/app-header';
 import { SpecialistSidebar } from './specialist-sidebar/specialist-sidebar';
 import { SpecialistShellService } from './services/specialist-shell.service';
 
 @Component({
   selector: 'app-specialist-layout',
-  imports: [RouterOutlet, SpecialistHeader, SpecialistSidebar],
+  imports: [RouterOutlet, AppHeader, SpecialistSidebar],
   templateUrl: './specialist-layout.html',
 })
 export class SpecialistLayout {
