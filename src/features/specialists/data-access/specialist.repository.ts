@@ -104,14 +104,26 @@ export class SpecialistsRepository {
     return this.api.addSkills({ skillIds });
   }
 
+  removeSkill(id: string) {
+    return this.api.removeSkill(id);
+  }
+
   addTools(toolIds: string[]) {
     return this.api.addTools({ toolIds });
+  }
+
+  removeTool(id: string) {
+    return this.api.removeTool(id);
   }
 
   addExperiences(experiences: ExperienceRequest[]) {
     return this.api.addExperiences({
       experiences,
     });
+  }
+
+  removeExperience(id: string) {
+    return this.api.removeExperience(id);
   }
 
   addAvailabilities(availabilities: AvailabilityRequest[]) {

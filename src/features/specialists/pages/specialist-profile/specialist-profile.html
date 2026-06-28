@@ -1,219 +1,519 @@
-<div class="min-h-screen bg-slate-50 py-8" dir="rtl">
-  <div class="container mx-auto px-4 lg:max-w-6xl">
+<div class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans" dir="rtl">
 
-    <!-- Header -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-black text-slate-800">الملف الشخصي للاختصاصي</h1>
-        <p class="text-slate-500 mt-1">عرض وإدارة بياناتك المهنية.</p>
+    <!-- Header Section with Back Navigation -->
+    <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="text-sm font-medium text-slate-500 flex items-center gap-2">
+        <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">
+          الرئيسية
+        </a>
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        <span class="text-bosla-primary font-bold">
+          إعدادات الاختصاصي
+        </span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a routerLink="/specialist/dashboard" class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 hover:text-bosla-primary transition-colors shadow-sm">
+          <i class="fa-solid fa-chart-line"></i>
+          لوحة التحكم
+        </a>
+      </div>
+    </header>
+  
+    <!-- Profile Banner & Basic Header -->
+    <div class="bg-white rounded-3xl p-6 md:p-8 mb-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden">
+      <!-- Background Graphic -->
+      <div class="absolute top-0 right-0 w-full h-32 bg-gradient-to-r from-bosla-primary/5 to-bosla-orange/5"></div>
+      
+      <div class="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-6 pt-10">
+        <!-- Avatar Upload -->
+        <div class="relative group">
+          <div class="h-28 w-28 rounded-full overflow-hidden border-4 border-white shadow-lg bg-slate-100">
+            @if (avatarPreviewUrl && !profileImageError) {
+              <img [src]="avatarPreviewUrl" (error)="onProfileImageError()" class="h-full w-full object-cover" />
+            } @else {
+              <div class="flex h-full w-full items-center justify-center bg-bosla-primary text-white text-3xl font-black">
+                {{ profileStore.myProfile()?.name?.charAt(0) || 'ب' }}
+              </div>
+            }
+          </div>
+          <!-- Upload Button Overlay -->
+          <label class="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm">
+            <i class="fa-solid fa-camera text-xl"></i>
+            <input type="file" class="hidden" accept="image/jpeg,image/png,image/webp" (change)="onAvatarSelected($event)">
+          </label>
+        </div>
+        
+        <div class="flex-1 text-center md:text-right">
+          <h1 class="text-3xl font-black text-slate-800">{{ profileStore.myProfile()?.name || 'اسم الاختصاصي' }}</h1>
+          <p class="text-bosla-primary font-bold text-lg mt-1">{{ profileStore.myProfile()?.title || 'أضف المسمى الوظيفي' }}</p>
+        </div>
       </div>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-      <!-- Sidebar -->
-      <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
-
-        <!-- Profile Card -->
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <div class="bg-linear-to-br from-bosla-primary to-[#235d88] p-6 text-center">
-            <div
-              class="w-24 h-24 rounded-full mx-auto border-4 border-white/40 overflow-hidden bg-white/20 flex items-center justify-center">
-              @if (profileStore.myProfile()?.profileImageUrl; as imgUrl) {
-              <img [src]="imgUrl" alt="profile" class="w-full h-full object-cover">
-              } @else {
-              <svg class="w-12 h-12 text-white/60" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              }
-            </div>
-            <h2 class="text-white text-xl font-bold mt-4">{{ profileStore.myProfile()?.name ||
-              authService.currentUser()?.fullName }}</h2>
-            <p class="text-white/70 text-sm mt-1">{{ profileStore.myProfile()?.title || 'اختصاصي' }}</p>
-          </div>
-          <div class="p-5 space-y-4">
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">التقييم</span>
-              <span class="font-bold text-slate-800">{{ profileStore.myProfile()?.rating ?? '—' }} / 5</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">المراجعات</span>
-              <span class="font-bold text-slate-800">{{ profileStore.myProfile()?.reviewsCount ?? 0 }}</span>
-            </div>
-            @if (profileStore.myProfile(); as p) {
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">سعر الساعة</span>
-              <span class="font-bold text-bosla-primary">{{ p.hourlyRate }} ريال</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">سنوات الخبرة</span>
-              <span class="font-bold text-slate-800">{{ p.experienceYears }}</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-slate-500">الحالة</span>
-              <span class="font-bold" [class.text-green-600]="p.verificationStatus === 1"
-                [class.text-amber-600]="p.verificationStatus !== 1">
-                {{ p.verificationStatus === 1 ? 'موثق' : 'قيد المراجعة' }}
-              </span>
-            </div>
-            }
-          </div>
+  
+    <!-- Main Content: Tabs + Forms -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- Navigation Sidebar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm sticky top-24">
+          <nav class="flex flex-col space-y-2">
+            <!-- Basic Info Tab -->
+            <button (click)="setTab('basic')"
+              [class]="activeTab === 'basic' ? 'bg-bosla-primary/10 text-bosla-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="w-full text-right px-5 py-4 rounded-2xl font-bold transition-colors flex items-center gap-3">
+              <i class="fa-regular fa-user text-lg"></i>
+              المعلومات الأساسية
+            </button>
+  
+            <!-- Professional Data Tab -->
+            <button (click)="setTab('professional')"
+              [class]="activeTab === 'professional' ? 'bg-bosla-primary/10 text-bosla-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="w-full text-right px-5 py-4 rounded-2xl font-bold transition-colors flex items-center gap-3">
+              <i class="fa-solid fa-briefcase text-lg"></i>
+              الخبرات والمهارات
+            </button>
+            
+            <!-- Availability Tab -->
+            <button (click)="setTab('availability')"
+              [class]="activeTab === 'availability' ? 'bg-bosla-primary/10 text-bosla-primary' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="w-full text-right px-5 py-4 rounded-2xl font-bold transition-colors flex items-center gap-3">
+              <i class="fa-regular fa-clock text-lg"></i>
+              إعدادات التوافر
+            </button>
+  
+            <!-- Reviews Tab -->
+            <button (click)="setTab('reviews')"
+              [class]="activeTab === 'reviews' ? 'bg-bosla-orange/10 text-bosla-orange' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="w-full text-right px-5 py-4 rounded-2xl font-bold transition-colors flex items-center gap-3">
+              <i class="fa-regular fa-star text-lg"></i>
+              المراجعات والتقييمات
+            </button>
+  
+            <!-- Security Tab -->
+            <button (click)="setTab('security')"
+              [class]="activeTab === 'security' ? 'bg-red-50 text-red-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+              class="w-full text-right px-5 py-4 rounded-2xl font-bold transition-colors flex items-center gap-3">
+              <i class="fa-solid fa-shield-halved text-lg"></i>
+              الأمان وكلمة المرور
+            </button>
+          </nav>
         </div>
-
       </div>
-
-      <!-- Main Content -->
-      <div class="lg:col-span-8 space-y-6">
-
-        <!-- Bio Card -->
-        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-xs">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="bg-bosla-primary/10 p-2.5 rounded-lg">
-              <svg class="w-6 h-6 text-bosla-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800">نبذة عني</h3>
-          </div>
-          <p class="text-slate-700 leading-relaxed">
-            {{ profileStore.myProfile()?.bio || 'لم يتم إضافة نبذة تعريفية بعد.' }}
-          </p>
-        </div>
-
-        <!-- Skills Card -->
-        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-xs">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="bg-bosla-orange/10 p-2.5 rounded-lg">
-              <svg class="w-6 h-6 text-bosla-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800">المهارات</h3>
-          </div>
-          @if (profileStore.mySkills().length === 0) {
-          <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-            <p class="text-slate-500">لم يتم إضافة مهارات بعد.</p>
-          </div>
-          } @else {
-          <div class="flex flex-wrap gap-2">
-            @for (skill of profileStore.mySkills(); track skill.id) {
-            <span
-              class="px-4 py-2 bg-bosla-primary/5 text-bosla-primary font-medium rounded-xl text-sm border border-bosla-primary/10">
-              {{ skill.name }}
-            </span>
-            }
-          </div>
-          }
-        </div>
-
-        <!-- Tools Card -->
-        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-xs">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="bg-blue-50 p-2.5 rounded-lg">
-              <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800">الأدوات</h3>
-          </div>
-          @if (profileStore.myTools().length === 0) {
-          <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-            <p class="text-slate-500">لم يتم إضافة أدوات بعد.</p>
-          </div>
-          } @else {
-          <div class="flex flex-wrap gap-2">
-            @for (tool of profileStore.myTools(); track tool.id) {
-            <span class="px-4 py-2 bg-blue-50 text-blue-600 font-medium rounded-xl text-sm border border-blue-100">
-              {{ tool.name }}
-            </span>
-            }
-          </div>
-          }
-        </div>
-
-        <!-- Experiences Card -->
-        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-xs">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="bg-green-50 p-2.5 rounded-lg">
-              <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800">الخبرات السابقة</h3>
-          </div>
-          @if (profileStore.myExperiences().length === 0) {
-          <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-            <p class="text-slate-500">لم يتم إضافة خبرات بعد.</p>
-          </div>
-          } @else {
-          <div class="space-y-4">
-            @for (exp of profileStore.myExperiences(); track exp.id) {
-            <div class="p-4 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors">
-              <div class="flex items-start justify-between">
-                <div>
-                  <h4 class="font-bold text-slate-800">{{ exp.jobTitle }}</h4>
-                  <p class="text-sm text-slate-500 mt-0.5">{{ exp.companyName }}</p>
+  
+      <!-- Content Area -->
+      <div class="lg:col-span-3">
+        
+        <!-- Tab 1: Basic Info -->
+        @if (activeTab === 'basic') {
+          <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm animate-fade-in">
+            <h2 class="text-2xl font-black text-slate-800 mb-8 border-b border-slate-100 pb-4">المعلومات الشخصية</h2>
+            
+            <form [formGroup]="basicInfoForm" (ngSubmit)="updateBasicInfo()">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Name -->
+                <div class="space-y-2 md:col-span-2">
+                  <label class="block text-sm font-bold text-slate-700">الاسم بالكامل</label>
+                  <input type="text" formControlName="name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
                 </div>
-                <span class="text-xs text-slate-400 bg-slate-50 px-3 py-1 rounded-lg">
-                  {{ exp.fromDate | date:'yyyy' }} - {{ exp.toDate ? (exp.toDate | date:'yyyy') : 'الآن' }}
-                </span>
+                <!-- Title -->
+                <div class="space-y-2 md:col-span-2">
+                  <label class="block text-sm font-bold text-slate-700">المسمى الوظيفي (Title)</label>
+                  <input type="text" formControlName="title" placeholder="مثال: استشاري أسري" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
+                </div>
+                <!-- Bio -->
+                <div class="space-y-2 md:col-span-2">
+                  <label class="block text-sm font-bold text-slate-700">النبذة التعريفية (Bio)</label>
+                  <textarea formControlName="bio" rows="4" placeholder="اكتب نبذة عن نفسك..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all resize-none"></textarea>
+                </div>
+                <!-- Phone -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700">رقم الهاتف</label>
+                  <input type="text" formControlName="phoneNumber" dir="ltr" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-right focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
+                </div>
+                <!-- Country -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700">الدولة</label>
+                  <input type="text" formControlName="country" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
+                </div>
+                <!-- Language -->
+                <div class="space-y-2 md:col-span-2">
+                  <label class="block text-sm font-bold text-slate-700">اللغة المفضلة</label>
+                  <select formControlName="preferredLanguage" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all appearance-none">
+                    <option value="" disabled>اختر اللغة</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="en">الإنجليزية (English)</option>
+                  </select>
+                </div>
               </div>
-              @if (exp.description) {
-              <p class="text-sm text-slate-600 mt-3 leading-relaxed">{{ exp.description }}</p>
+              <div class="mt-8 flex justify-end">
+                <button type="submit" [disabled]="basicInfoForm.invalid" class="px-8 py-3 bg-bosla-primary hover:bg-[#154360] text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+                  حفظ التعديلات
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+  
+        <!-- Tab 2: Professional Info (Experiences, Skills, Tools) -->
+        @if (activeTab === 'professional') {
+          <div class="space-y-8 animate-fade-in">
+            
+            <!-- Experiences Section -->
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+              <h2 class="text-2xl font-black text-slate-800 mb-6 border-b border-slate-100 pb-4">الخبرات المهنية</h2>
+              
+              <!-- Existing Experiences List -->
+              <div class="space-y-4 mb-8">
+              @for (exp of profileStore.myExperiences(); track exp.id) {
+                   <div class="flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-slate-50 group">
+                     <div class="h-12 w-12 rounded-xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary text-xl shrink-0">
+                       <i class="fa-solid fa-briefcase"></i>
+                     </div>
+                     <div class="flex-1 min-w-0">
+                       <h4 class="font-bold text-slate-800 text-lg">{{ exp.jobTitle }}</h4>
+                       <p class="text-slate-500 font-medium">{{ exp.companyName }}</p>
+                       <p class="text-sm text-slate-400 mt-1" dir="ltr">
+                         {{ exp.fromDate | date:'yyyy' }} - {{ exp.toDate ? (exp.toDate | date:'yyyy') : 'الآن' }}
+                       </p>
+                       <p class="text-slate-600 mt-2 text-sm">{{ exp.description }}</p>
+                     </div>
+                     <button (click)="removeExperience(exp.id)" class="shrink-0 h-10 w-10 flex items-center justify-center rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100">
+                       <i class="fa-solid fa-trash-can text-sm"></i>
+                     </button>
+                   </div>
+                 } @empty {
+                  <p class="text-slate-500 text-center py-6">لم تقم بإضافة خبرات مهنية بعد.</p>
+                }
+              </div>
+              
+              <!-- Add New Experience Form -->
+              <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-plus text-bosla-primary"></i>
+                  إضافة خبرة جديدة
+                </h3>
+                <form [formGroup]="experienceForm" (ngSubmit)="addExperience()">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">المسمى الوظيفي</label>
+                      <input type="text" formControlName="jobTitle" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">جهة العمل</label>
+                      <input type="text" formControlName="companyName" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                      <label class="block text-xs font-bold text-slate-600">الوصف</label>
+                      <textarea formControlName="description" rows="2" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">من تاريخ</label>
+                      <input type="date" formControlName="fromDate" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">إلى تاريخ</label>
+                      <input type="date" formControlName="toDate" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                  </div>
+                  <div class="mt-4 flex justify-end">
+                    <button type="submit" [disabled]="experienceForm.invalid" class="px-6 py-2 bg-bosla-primary text-white font-bold rounded-lg text-sm disabled:opacity-50 hover:bg-[#154360] transition-colors">
+                      إضافة الخبرة
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            
+            <!-- Skills Section -->
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+              <h2 class="text-2xl font-black text-slate-800 mb-6 border-b border-slate-100 pb-4">المهارات والأدوات</h2>
+              
+              <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-bold text-slate-700">المهارات المعتمدة:</h3>
+                  <!-- Add Skill Form -->
+                  <div class="flex items-center gap-2">
+                    <select form="skillForm" (change)="skillForm.get('skillId')?.setValue($any($event.target).value)" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary transition-all">
+                      <option value="" disabled selected>اختر مهارة</option>
+                      @for (s of availableSkills(); track s.id) {
+                        <option [value]="s.id">{{ s.name }}</option>
+                      }
+                    </select>
+                    <button (click)="addSkill()" [disabled]="skillForm.invalid" class="px-4 py-1.5 bg-bosla-primary hover:bg-[#154360] text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50 flex items-center gap-1">
+                      <i class="fa-solid fa-plus text-xs"></i>
+                      إضافة
+                    </button>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  @for (skill of profileStore.mySkills(); track skill.id) {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl font-medium text-sm group">
+                      {{ skill.name }}
+                      <button (click)="removeSkill(skill.id)" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="إزالة المهارة">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                      </button>
+                    </span>
+                  } @empty {
+                    <span class="text-slate-400 text-sm">لا يوجد مهارات مضافة.</span>
+                  }
+                </div>
+              </div>
+  
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-bold text-slate-700">الأدوات المستخدمة:</h3>
+                  <!-- Add Tool Form -->
+                  <div class="flex items-center gap-2">
+                    <select (change)="toolForm.get('toolId')?.setValue($any($event.target).value)" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary transition-all">
+                      <option value="" disabled selected>اختر أداة</option>
+                      @for (t of availableTools(); track t.id) {
+                        <option [value]="t.id">{{ t.name }}</option>
+                      }
+                    </select>
+                    <button (click)="addTool()" [disabled]="toolForm.invalid" class="px-4 py-1.5 bg-bosla-primary hover:bg-[#154360] text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50 flex items-center gap-1">
+                      <i class="fa-solid fa-plus text-xs"></i>
+                      إضافة
+                    </button>
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  @for (tool of profileStore.myTools(); track tool.id) {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-bosla-primary/5 border border-bosla-primary/10 text-bosla-primary rounded-xl font-medium text-sm group">
+                      {{ tool.name }}
+                      <button (click)="removeTool(tool.id)" class="text-bosla-primary/50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100" title="إزالة الأداة">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                      </button>
+                    </span>
+                  } @empty {
+                    <span class="text-slate-400 text-sm">لا يوجد أدوات مضافة.</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Education Section -->
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+              <h2 class="text-2xl font-black text-slate-800 mb-6 border-b border-slate-100 pb-4">المؤهلات العلمية</h2>
+              
+              <div class="space-y-4 mb-8">
+                @for (edu of educationList(); track edu.id) {
+                  <div class="flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-slate-50 group">
+                    <div class="h-12 w-12 rounded-xl bg-bosla-compass/10 flex items-center justify-center text-bosla-compass text-xl shrink-0">
+                      <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-bold text-slate-800 text-lg">{{ edu.degree }}</h4>
+                      <p class="text-slate-500 font-medium">{{ edu.institution }}</p>
+                      <p class="text-sm text-slate-400 mt-1">
+                        {{ edu.startYear }} - {{ edu.endYear || 'حتى الآن' }}
+                      </p>
+                    </div>
+                    <button (click)="removeEducation(edu.id)" class="shrink-0 h-10 w-10 flex items-center justify-center rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100">
+                      <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                  </div>
+                } @empty {
+                  <p class="text-slate-500 text-center py-6">لم تقم بإضافة مؤهلات علمية بعد.</p>
+                }
+              </div>
+
+              <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-plus text-bosla-primary"></i>
+                  إضافة مؤهل علمي
+                </h3>
+                <form [formGroup]="educationForm" (ngSubmit)="addEducation()">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">الشهادة / الدرجة</label>
+                      <input type="text" formControlName="degree" placeholder="مثال: بكالوريوس هندسة برمجيات" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">الجامعة / المؤسسة</label>
+                      <input type="text" formControlName="institution" placeholder="اسم الجامعة" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">سنة البداية</label>
+                      <input type="number" formControlName="startYear" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">سنة النهاية (اختياري)</label>
+                      <input type="number" formControlName="endYear" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                  </div>
+                  <div class="mt-4 flex justify-end">
+                    <button type="submit" [disabled]="educationForm.invalid" class="px-6 py-2 bg-bosla-primary text-white font-bold rounded-lg text-sm disabled:opacity-50 hover:bg-[#154360] transition-colors">
+                      إضافة المؤهل
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Social Links Section -->
+            <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+              <h2 class="text-2xl font-black text-slate-800 mb-6 border-b border-slate-100 pb-4">روابط التواصل</h2>
+              
+              <div class="space-y-4 mb-8">
+                @for (link of socialLinksList(); track link.id) {
+                  <div class="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50 group">
+                    <div class="h-10 w-10 rounded-xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary shrink-0">
+                      <i class="fa-solid fa-link"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-bold text-slate-800 text-sm">{{ link.platform }}</h4>
+                      <a [href]="link.url" target="_blank" class="text-xs text-bosla-compass hover:underline truncate block">{{ link.url }}</a>
+                    </div>
+                    <button (click)="removeSocialLink(link.id)" class="shrink-0 h-10 w-10 flex items-center justify-center rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100">
+                      <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                  </div>
+                } @empty {
+                  <p class="text-slate-500 text-center py-6">لم تقم بإضافة روابط تواصل بعد.</p>
+                }
+              </div>
+
+              <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                  <i class="fa-solid fa-plus text-bosla-primary"></i>
+                  إضافة رابط تواصل
+                </h3>
+                <form [formGroup]="socialLinkForm" (ngSubmit)="addSocialLink()">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">المنصة</label>
+                      <select formControlName="platform" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                        <option value="" disabled>اختر المنصة</option>
+                        @for (p of availablePlatforms; track p) {
+                          <option [value]="p">{{ p }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-bold text-slate-600">الرابط</label>
+                      <input type="url" formControlName="url" placeholder="https://" dir="ltr" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-bosla-primary">
+                    </div>
+                  </div>
+                  <div class="mt-4 flex justify-end">
+                    <button type="submit" [disabled]="socialLinkForm.invalid" class="px-6 py-2 bg-bosla-primary text-white font-bold rounded-lg text-sm disabled:opacity-50 hover:bg-[#154360] transition-colors">
+                      إضافة الرابط
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        }
+  
+        <!-- Tab 3: Availability -->
+        @if (activeTab === 'availability') {
+          <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm animate-fade-in text-center py-16">
+            <div class="h-24 w-24 mx-auto bg-bosla-primary/10 text-bosla-primary rounded-full flex items-center justify-center mb-6">
+              <i class="fa-regular fa-calendar-check text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800 mb-2">إدارة التوافر والمواعيد</h2>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">
+              يمكنك إعداد أوقات الدوام الرسمية الخاصة بك وإدارة الحجوزات من خلال لوحة التوافر المخصصة.
+            </p>
+            <a routerLink="/specialist/availability" class="inline-flex items-center gap-2 px-8 py-3 bg-bosla-primary text-white font-bold rounded-xl hover:bg-[#154360] transition-colors">
+              الذهاب لإعدادات التوافر
+              <i class="fa-solid fa-arrow-left"></i>
+            </a>
+          </div>
+        }
+  
+        <!-- Tab 4: Reviews -->
+        @if (activeTab === 'reviews') {
+          <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm animate-fade-in">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-6 mb-6">
+              <h2 class="text-2xl font-black text-slate-800">المراجعات والتقييمات التفصيلية</h2>
+              <div class="bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-yellow-100">
+                <i class="fa-solid fa-star"></i>
+                <span>التقييم العام: {{ reviewsData()?.averageRating || '0.0' }}</span>
+              </div>
+            </div>
+  
+            <div class="space-y-4">
+              @for (review of reviewsData()?.reviews?.items; track review.createdOnUtc) {
+                <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50">
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="flex gap-3 items-center">
+                      <div class="h-10 w-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">
+                        {{ review.userName.charAt(0) }}
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-slate-800">{{ review.userName }}</h4>
+                        <p class="text-xs text-slate-400" dir="ltr">{{ review.createdOnUtc | date:'dd MMM yyyy' }}</p>
+                      </div>
+                    </div>
+                    <div class="flex gap-1 text-yellow-400 text-sm">
+                      @for (s of [1,2,3,4,5]; track s) {
+                        <i class="fa-solid fa-star" [class.text-slate-300]="s > review.rating"></i>
+                      }
+                    </div>
+                  </div>
+                  <p class="text-slate-600 leading-relaxed text-sm">{{ review.comment }}</p>
+                </div>
+              } @empty {
+                <div class="text-center py-10">
+                  <i class="fa-regular fa-comment-dots text-4xl text-slate-300 mb-4 block"></i>
+                  <p class="text-slate-500">لا توجد مراجعات حتى الآن.</p>
+                </div>
               }
             </div>
-            }
           </div>
-          }
-        </div>
-
-        <!-- Availability Card -->
-        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-xs">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="bg-purple-50 p-2.5 rounded-lg">
-              <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800">المواعيد المتاحة</h3>
+        }
+  
+        <!-- Tab 5: Security -->
+        @if (activeTab === 'security') {
+          <div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm animate-fade-in border-t-4 border-t-red-500">
+            <h2 class="text-2xl font-black text-slate-800 mb-8 border-b border-slate-100 pb-4">تغيير كلمة المرور</h2>
+            
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="max-w-xl">
+              <div class="space-y-6">
+                <!-- Current Password -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700">كلمة المرور الحالية</label>
+                  <input type="password" formControlName="currentPassword" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all" dir="ltr">
+                </div>
+                <!-- New Password -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700">كلمة المرور الجديدة</label>
+                  <input type="password" formControlName="newPassword" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all" dir="ltr">
+                  @if (passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.hasError('pattern')) {
+                    <p class="text-xs text-red-500">يجب أن تحتوي على 8 أحرف على الأقل، حرف كبير، حرف صغير، ورقم.</p>
+                  }
+                </div>
+                <!-- Confirm New Password -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700">تأكيد كلمة المرور الجديدة</label>
+                  <input type="password" formControlName="confirmNewPassword" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all" dir="ltr">
+                  @if (passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmNewPassword')?.touched) {
+                    <p class="text-xs text-red-500">كلمات المرور غير متطابقة.</p>
+                  }
+                </div>
+              </div>
+              
+              <div class="mt-8">
+                <button type="submit" [disabled]="passwordForm.invalid" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">
+                  تحديث الأمان
+                </button>
+              </div>
+            </form>
           </div>
-          @if (profileStore.myAvailability().length === 0) {
-          <div class="text-center py-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-            <p class="text-slate-500">لم يتم إضافة مواعيد بعد.</p>
-          </div>
-          } @else {
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            @for (slot of profileStore.myAvailability(); track slot.id) {
-            <div class="p-3 border border-slate-100 rounded-xl text-sm text-slate-700">
-              <span class="font-bold">{{ slot.start | date:'EEE yyyy/MM/dd' }}</span>
-              <span class="mx-2 text-slate-300">|</span>
-              <span>{{ slot.start | date:'HH:mm' }} - {{ slot.end | date:'HH:mm' }}</span>
-            </div>
-            }
-          </div>
-          }
-        </div>
-
-        <!-- Back to Dashboard -->
-        <div class="text-center">
-          <a routerLink="/specialist"
-            class="inline-flex items-center gap-2 text-slate-500 hover:text-bosla-primary transition-colors text-sm font-medium">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-            العودة للوحة التحكم
-          </a>
-        </div>
-
+        }
+  
       </div>
     </div>
   </div>
-</div>
+  
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+  </style>

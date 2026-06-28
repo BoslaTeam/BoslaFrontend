@@ -153,10 +153,22 @@ export class SpecialistsApiService {
     );
   }
 
+  removeSkill(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.skillById(id)
+    );
+  }
+
   addTools(request: AddToolsRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.tools,
       request
+    );
+  }
+
+  removeTool(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.toolById(id)
     );
   }
 
@@ -171,6 +183,12 @@ export class SpecialistsApiService {
     return this.http.post(
       API_ENDPOINTS.specialists.experience,
       request
+    );
+  }
+
+  removeExperience(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.experienceById(id)
     );
   }
 
