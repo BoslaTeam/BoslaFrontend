@@ -107,6 +107,14 @@ export class VideoRoom {
     }
   }
 
+  toggleCamera(): void {
+    this.agoraService.toggleCamera();
+  }
+
+  toggleMicrophone(): void {
+    this.agoraService.toggleMicrophone();
+  }
+
   async leaveSession(): Promise<void> {
     this.agoraService.clearError();
     await this.agoraService.disconnect();
