@@ -9,7 +9,7 @@ export function mapReview(
 
         userId: dto.userId,
 
-        userName: dto.userName,
+        userName: dto.reviewerName,
 
         rating: dto.rating,
 
