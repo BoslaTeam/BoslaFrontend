@@ -6,15 +6,10 @@ export function mapReview(
 ): Review {
     return {
         id: dto.id,
-
         userId: dto.userId,
-
         userName: dto.userName,
-
         rating: dto.rating,
-
         comment: dto.comment ?? '',
-
         createdAt: new Date(dto.createdOnUtc),
     };
 }

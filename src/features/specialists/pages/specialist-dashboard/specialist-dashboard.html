@@ -150,7 +150,7 @@
             </div>
 
             <!-- SVG Line Chart Area -->
-            <div class="relative h-[250px] w-full mt-10">
+            <div class="relative h-62.5 w-full mt-10">
                 <!-- Chart Background Lines -->
                 <div class="absolute inset-0 flex flex-col justify-between opacity-10 pointer-events-none">
                     <div class="border-t border-slate-400 w-full"></div>
@@ -192,12 +192,25 @@
                             <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ر.س</span>
                         </div>
                     }
-                </div>
-            </div>
-            <div class="h-8"></div> <!-- Spacer for x-axis labels -->
-        </div>
-    </div>
 
+       
+
+        </div>
+
+
+        <div class="pt-8 space-y-4 mt-8">
+
+            @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
+
+            <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500">
+
+                لا توجد تقييمات حتى الآن
+
+            </div>
+
+            }
+
+           
     <!-- Upcoming Appointments Table & Reviews -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -324,7 +337,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <style>
     @keyframes drawLine {

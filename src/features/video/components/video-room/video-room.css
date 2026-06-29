@@ -1,85 +1,170 @@
 .video-room {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #fff;
+  position: relative;
 }
 
-.video-room-controls {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.video-room-controls button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-}
-
-.video-room-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.video-room-status {
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.video-room-error {
-  color: #d32f2f;
-  font-size: 0.875rem;
-}
-
-.video-room-local {
-  width: 100%;
-  height: 400px;
-  background: #1a1a1a;
-  border-radius: 8px;
-  overflow: hidden;
+.video-room-welcome {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
+}
+
+.video-room-join-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background: #4f6ef7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.video-room-join-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.video-room-error {
+  color: #ff5252;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.video-room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 0.5rem;
+  padding: 0.5rem;
+  flex: 1;
+  align-content: start;
+}
+
+.video-room-local-container,
+.video-room-remote-container {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #16213e;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+}
+
+.video-room-local,
+.video-room-remote {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-room-remote--no-video {
+  background: #16213e;
 }
 
 .video-room-local--active {
   border: 2px solid #4caf50;
 }
 
-.video-room-placeholder {
-  color: #888;
+.video-room-local--placeholder,
+.video-room-remote-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #16213e;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.video-room-placeholder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-room-placeholder-text {
   font-size: 0.875rem;
+  color: #888;
 }
 
-.video-room-remote-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
-  width: 100%;
-}
-
-.video-room-remote {
-  width: 100%;
-  height: 240px;
-  background: #222;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-.video-room-remote-label {
+.video-room-label {
   position: absolute;
   bottom: 8px;
   left: 8px;
-  color: #fff;
   font-size: 0.75rem;
+  color: #fff;
   background: rgba(0, 0, 0, 0.5);
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+/* ── Session Timer ── */
+
+.video-room-timer {
+  font-size: 0.875rem;
+  color: #ccc;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+/* ── Call Controls Bar ── */
+
+.video-room-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #0f3460;
+  border-top: 1px solid #1a3a6b;
+  flex-shrink: 0;
+}
+
+.video-room-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #1a3a6b;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.video-room-control-btn:hover {
+  background: #2a4a8b;
+}
+
+.video-room-control-btn--off {
+  background: #d32f2f;
+}
+
+.video-room-control-btn--off:hover {
+  background: #e53935;
+}
+
+.video-room-control-btn--leave {
+  background: #d32f2f;
+  border-radius: 12px;
+  width: 56px;
+  height: 48px;
+}
+
+.video-room-control-btn--leave:hover {
+  background: #e53935;
 }

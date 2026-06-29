@@ -8,7 +8,7 @@
   </div>
 
   <div class="space-y-4">
-    @for (review of reviews()?.reviews?.items; track review.createdOnUtc) {
+    @for (review of reviews()?.reviews!.items; track review.createdOnUtc) {
       <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50">
         <div class="flex justify-between items-start mb-4">
           <div class="flex gap-3 items-center">
