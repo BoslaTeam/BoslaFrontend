@@ -9,6 +9,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AgoraService } from '@core/services/agora.service';
+import { SessionTimerService } from '@core/services/session-timer.service';
 import { VideoSessionService } from '../../services/video-session.service';
 
 @Component({
@@ -25,10 +26,13 @@ export class VideoRoom {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly agoraService = inject(AgoraService);
+  readonly sessionTimerService = inject(SessionTimerService);
   private readonly videoSessionService = inject(VideoSessionService);
 
   private sessionId: string;
   private isDestroyed = false;
+  private _sessionStartedAt: number | null = null;
+  private _sessionEndedAt: number | null = null;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -39,6 +43,7 @@ export class VideoRoom {
 
     this.destroyRef.onDestroy(() => {
       this.isDestroyed = true;
+      this.sessionTimerService.stop();
       this.agoraService.disconnect();
     });
   }
@@ -52,6 +57,8 @@ export class VideoRoom {
     if (!this.checkBrowserSupport()) return;
 
     this.agoraService.clearError();
+    this._sessionStartedAt = null;
+    this._sessionEndedAt = null;
 
     try {
       const sessionRes = await firstValueFrom(
@@ -64,6 +71,8 @@ export class VideoRoom {
         this.agoraService.setError('Video session not found.');
         return;
       }
+      this._sessionStartedAt = this.toTimestamp(session.startedAt);
+      this._sessionEndedAt = this.toTimestamp(session.endedAt);
 
       const tokenRes = await firstValueFrom(
         this.videoSessionService.generateToken(session.appointmentId)
@@ -76,9 +85,12 @@ export class VideoRoom {
         return;
       }
 
-      await firstValueFrom(
+      const startRes = await firstValueFrom(
         this.videoSessionService.startSession(this.sessionId)
       );
+      if (this._sessionStartedAt === null) {
+        this._sessionStartedAt = this.toTimestamp(startRes.data?.startedAt);
+      }
       if (this.isDestroyed) return;
 
       this.agoraService.initialize();
@@ -107,8 +119,27 @@ export class VideoRoom {
     }
   }
 
+  async handleJoinClick(): Promise<void> {
+    await this.joinSession();
+    if (this._sessionStartedAt !== null) {
+      this.sessionTimerService.start(
+        this._sessionStartedAt,
+        this._sessionEndedAt ?? undefined
+      );
+    }
+  }
+
+  toggleCamera(): void {
+    this.agoraService.toggleCamera();
+  }
+
+  toggleMicrophone(): void {
+    this.agoraService.toggleMicrophone();
+  }
+
   async leaveSession(): Promise<void> {
     this.agoraService.clearError();
+    this.sessionTimerService.stop();
     await this.agoraService.disconnect();
 
     try {
@@ -128,5 +159,11 @@ export class VideoRoom {
       );
     }
     return supported;
+  }
+
+  private toTimestamp(value?: string | null): number | null {
+    if (!value) return null;
+    const timestamp = new Date(value).getTime();
+    return Number.isFinite(timestamp) ? timestamp : null;
   }
 }
