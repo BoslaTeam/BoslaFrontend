@@ -6,7 +6,7 @@ export const AUTH_CONFIG = {
   
   defaultRedirectByRole: {
     [UserRole.User]: '/',
-    [UserRole.Specialist]: '/specialist/profile',
+    [UserRole.Specialist]: '/specialist/dashboard',
     [UserRole.Admin]: '/admin/dashboard',
   } as const,
   

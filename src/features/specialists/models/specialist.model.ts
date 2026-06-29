@@ -1,19 +1,4 @@
-export interface Specialist {
-    id: string;
+import { SpecialistBase } from './specialist-base.model';
 
-    name: string;
-
-    title: string;
-
-    imageUrl: string;
-
-    hourlyRate: number;
-
-    experienceLevel: number;
-
-    rating: number;
-
-    isOnline: boolean;
-
-    isVerified: boolean;
+export interface Specialist extends SpecialistBase {
 }

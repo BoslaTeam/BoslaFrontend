@@ -10,7 +10,7 @@ import { SpecialistListRepository } from '../data-access/specialist-list.reposit
 @Injectable({
   providedIn: 'root',
 })
-export class SpecialistsStore {
+export class SpecialistListStore {
   private readonly repository = inject(SpecialistListRepository);
 
   readonly specialists = signal<Specialist[]>([]);

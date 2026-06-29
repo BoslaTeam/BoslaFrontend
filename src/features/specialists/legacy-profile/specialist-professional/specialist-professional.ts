@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SpecialistsRepository } from '../../data-access/specialist.repository';
+import { SpecialistListRepository } from '../../data-access/specialist-list.repository';
+import { SpecialistOnboardingRepository } from '../../data-access/specialist-onboarding.repository';
 import { LookupItem } from '../../models/lookup.model';
 import { Experience } from '../../models/experience.model';
 
@@ -12,7 +13,8 @@ import { Experience } from '../../models/experience.model';
   templateUrl: './specialist-professional.html',
 })
 export class SpecialistProfessional implements OnInit {
-  private readonly repository = inject(SpecialistsRepository);
+  private readonly listRepo = inject(SpecialistListRepository);
+  private readonly onboardingRepo = inject(SpecialistOnboardingRepository);
   private fb = inject(FormBuilder);
 
   readonly skills = signal<LookupItem[]>([]);
@@ -53,31 +55,31 @@ export class SpecialistProfessional implements OnInit {
   }
 
   private loadSkills() {
-    this.repository.getMySkills().subscribe({
+    this.onboardingRepo.getMySkills().subscribe({
       next: (data) => this.skills.set(data),
     });
   }
 
   private loadTools() {
-    this.repository.getMyTools().subscribe({
+    this.onboardingRepo.getMyTools().subscribe({
       next: (data) => this.tools.set(data),
     });
   }
 
   private loadExperiences() {
-    this.repository.getMyExperience().subscribe({
+    this.onboardingRepo.getMyExperience().subscribe({
       next: (data) => this.experiences.set(data),
     });
   }
 
   private loadAvailableSkills() {
-    this.repository.getSkills().subscribe({
+    this.listRepo.getSkills().subscribe({
       next: (data) => this.availableSkills.set(data),
     });
   }
 
   private loadAvailableTools() {
-    this.repository.getTools().subscribe({
+    this.listRepo.getTools().subscribe({
       next: (data) => this.availableTools.set(data),
     });
   }
@@ -85,7 +87,7 @@ export class SpecialistProfessional implements OnInit {
   addSkill() {
     if (this.skillForm.valid) {
       const skillId = this.skillForm.value.skillId;
-      this.repository.addSkills([skillId]).subscribe(() => {
+      this.onboardingRepo.addSkills([skillId]).subscribe(() => {
         this.loadSkills();
         this.skillForm.reset();
       });
@@ -93,7 +95,7 @@ export class SpecialistProfessional implements OnInit {
   }
 
   removeSkill(skillId: string) {
-    this.repository.removeSkill(skillId).subscribe(() => {
+    this.onboardingRepo.removeSkill(skillId).subscribe(() => {
       this.loadSkills();
     });
   }
@@ -101,7 +103,7 @@ export class SpecialistProfessional implements OnInit {
   addTool() {
     if (this.toolForm.valid) {
       const toolId = this.toolForm.value.toolId;
-      this.repository.addTools([toolId]).subscribe(() => {
+      this.onboardingRepo.addTools([toolId]).subscribe(() => {
         this.loadTools();
         this.toolForm.reset();
       });
@@ -109,14 +111,14 @@ export class SpecialistProfessional implements OnInit {
   }
 
   removeTool(toolId: string) {
-    this.repository.removeTool(toolId).subscribe(() => {
+    this.onboardingRepo.removeTool(toolId).subscribe(() => {
       this.loadTools();
     });
   }
 
   addExperience() {
     if (this.experienceForm.valid) {
-      this.repository.addExperiences([this.experienceForm.value]).subscribe(() => {
+      this.onboardingRepo.addExperiences([this.experienceForm.value]).subscribe(() => {
         this.loadExperiences();
         this.experienceForm.reset();
       });
@@ -124,7 +126,7 @@ export class SpecialistProfessional implements OnInit {
   }
 
   removeExperience(id: string) {
-    this.repository.removeExperience(id).subscribe(() => {
+    this.onboardingRepo.removeExperience(id).subscribe(() => {
       this.loadExperiences();
     });
   }

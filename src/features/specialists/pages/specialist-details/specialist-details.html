@@ -122,7 +122,7 @@
 
             <div class="flex justify-between items-center">
               <span class="text-slate-500 text-sm font-medium">الخبرة</span>
-              <span class="font-bold text-bosla-primary">{{ experienceLevelLabel() }}
+              <span class="font-bold text-bosla-primary">{{ store.experienceLevelLabel() }}
                 @if(specialist.experienceYears){({{specialist.experienceYears}} سنوات)}</span>
             </div>
 
@@ -196,10 +196,10 @@
           @if (store.reviews().length > 0) {
           <div class="space-y-8">
             <ui-rating-summary [averageRating]="store.specialist()?.rating ?? 0" [totalReviews]="store.reviews().length"
-              [distribution]="ratingDistribution()">
+              [distribution]="store.ratingDistribution()">
             </ui-rating-summary>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              @for (item of reviewItems(); track item.id) {
+              @for (item of store.reviewItems(); track item.id) {
               <ui-review-card [review]="item"></ui-review-card>
               }
             </div>
@@ -214,9 +214,9 @@
           <!-- Availability Tab -->
           @if (activeTab() === 'availability') {
           <h3 class="text-xl font-bold text-bosla-primary mb-6">الأوقات المتاحة</h3>
-          @if (availabilitySlots().length > 0) {
+          @if (store.availabilitySlots().length > 0) {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @for (day of availabilitySlots(); track day.id) {
+            @for (day of store.availabilitySlots(); track day.id) {
             <div
               class="bg-slate-50 border border-slate-200 rounded-xl p-4 hover:bg-slate-100 transition-colors text-center">
               <h4 class="font-bold text-bosla-primary mb-2">{{ day.dateStr }}</h4>

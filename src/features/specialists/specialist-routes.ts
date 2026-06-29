@@ -4,7 +4,7 @@ import { SpecialistDashboard } from './pages/specialist-dashboard/specialist-das
 export const SPECIALIST_PANEL_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'profile',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {
