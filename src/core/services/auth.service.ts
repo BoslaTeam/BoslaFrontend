@@ -16,6 +16,11 @@ export interface LoginPayload {
     email: string;
     password: string;
 }
+export interface AuthTokensResponse {
+    accessToken: string;
+    refreshToken: string;
+    expiresOnUtc: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

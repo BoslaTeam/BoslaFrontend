@@ -7,53 +7,25 @@ export interface AppointmentDto {
   start: string;
   end: string;
   status: number;
-  sessionTopic: string;
-  notes: string;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-  errors?: string[];
-}
-
-export interface PaginationMetadata {
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  metadata: PaginationMetadata;
+  sessionTopic?: string;
+  notes?: string;
 }
 
 export interface ConversationParticipantDto {
-  id: string;
+  userId: string;
   fullName: string;
-  avatarUrl: string | null;
-  role: string;
-  isOnline: boolean;
-  lastSeenAt: string | null;
-  bio?: string;
-  rating?: number;
-  reviewCount?: number;
-  specialization?: string;
+  profilePictureUrl: string | null;
+  role: number;
 }
 
 export interface ConversationDto {
   id: string;
+  appointmentId: string;
+  createdAtUtc: string;
   participants: ConversationParticipantDto[];
-  lastMessage?: string | null;
-  lastMessageAt?: string | null;
-  unreadCount: number;
-  appointmentId?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  lastMessage: MessageDto | null;
+  // Client-side fields
+  unreadCount?: number;
 }
 
 export interface MessageDto {
@@ -64,9 +36,9 @@ export interface MessageDto {
   messageText: string;
   isEdited: boolean;
   createdAtUtc: string;
-  lastModifiedUtc: string;
+  lastModifiedUtc: string | null;
+  // Client-side state fields
   isDeleted?: boolean;
-  // Optional client-side state / event fields
   status?: 'sending' | 'delivered' | 'read';
   payload?: MessagePayload;
   isOwn?: boolean;
