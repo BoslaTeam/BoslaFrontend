@@ -83,6 +83,9 @@ export const API_ENDPOINTS = {
     availabilityFor: (id: string) => `${V}/specialists/${id}/availability`,
     reviewsFor: (id: string) => `${V}/specialists/${id}/reviews`,
     embeddingRefresh: `${V}/specialists/me/embedding/refresh`,
+    dashboard: `${V}/specialists/me/dashboard`,
+    myReviews: `${V}/specialists/me/reviews`,
+   
   },
   lookup: {
     expertise: `${V}/lookup/expertise`,

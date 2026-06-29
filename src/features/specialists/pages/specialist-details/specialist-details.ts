@@ -66,9 +66,9 @@ export class SpecialistDetailsPage implements OnInit {
   });
 
   readonly reviewItems = computed<ReviewItem[]>(() => {
-    return this.store.reviews().map(r => ({
-      id: r.id,
-      authorName: r.userName,
+    return this.store.reviews().map((r, idx) => ({
+      id: `review-${idx}`,
+      authorName: r.reviewerName,
       timeAgo: this.getTimeAgo(r.createdAt),
       rating: r.rating,
       comment: r.comment,

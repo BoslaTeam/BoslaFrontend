@@ -435,16 +435,16 @@
             </div>
   
             <div class="space-y-4">
-              @for (review of reviewsData()?.reviews?.items; track review.createdOnUtc) {
+              @for (review of reviewsData()?.reviews?.items; track review.createdAtUtc) {
                 <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50">
                   <div class="flex justify-between items-start mb-4">
                     <div class="flex gap-3 items-center">
                       <div class="h-10 w-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">
-                        {{ review.userName.charAt(0) }}
+                        {{ review.reviewerName?.charAt(0) }}
                       </div>
                       <div>
-                        <h4 class="font-bold text-slate-800">{{ review.userName }}</h4>
-                        <p class="text-xs text-slate-400" dir="ltr">{{ review.createdOnUtc | date:'dd MMM yyyy' }}</p>
+                        <h4 class="font-bold text-slate-800">{{ review.reviewerName }}</h4>
+                        <p class="text-xs text-slate-400" dir="ltr">{{ review.createdAtUtc | date:'dd MMM yyyy' }}</p>
                       </div>
                     </div>
                     <div class="flex gap-1 text-yellow-400 text-sm">

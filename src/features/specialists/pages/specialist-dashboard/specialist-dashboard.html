@@ -192,12 +192,25 @@
                             <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ر.س</span>
                         </div>
                     }
-                </div>
-            </div>
-            <div class="h-8"></div> <!-- Spacer for x-axis labels -->
-        </div>
-    </div>
 
+       
+
+        </div>
+
+
+        <div class="pt-8 space-y-4 mt-8">
+
+            @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
+
+            <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500">
+
+                لا توجد تقييمات حتى الآن
+
+            </div>
+
+            }
+
+           
     <!-- Upcoming Appointments Table & Reviews -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -291,19 +304,19 @@
                 </div>
                 }
 
-                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdOnUtc) {
+                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdAtUtc) {
                 <div class="group rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:border-bosla-compass/30 hover:bg-white hover:shadow-md">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-bosla-primary/10 font-black text-bosla-primary">
-                                {{ review.userName.charAt(0) }}
+                                {{ review.reviewerName.charAt(0) }}
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-800 text-sm">
-                                    {{ review.userName }}
+                                    {{ review.reviewerName }}
                                 </h3>
                                 <span class="text-[11px] font-medium text-slate-400 block mt-0.5" dir="ltr">
-                                    {{ review.createdOnUtc| date:'dd MMM yyyy' }}
+                                    {{ review.createdAtUtc| date:'dd MMM yyyy' }}
                                 </span>
                             </div>
                         </div>
@@ -324,7 +337,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <style>
     @keyframes drawLine {

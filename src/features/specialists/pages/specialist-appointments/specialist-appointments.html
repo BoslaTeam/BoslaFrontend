@@ -1,17 +1,341 @@
-<div class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans" dir="rtl">
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans">
 
+  <!-- Breadcrumb -->
   <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
     <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
     <i class="fa-solid fa-chevron-left text-[10px]"></i>
     <span class="text-bosla-primary font-bold">المواعيد</span>
   </header>
 
-  <div class="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-sm">
-    <div class="h-20 w-20 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6">
-      <i class="fa-regular fa-calendar-check text-3xl text-slate-400"></i>
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="w-10 h-10 border-4 border-bosla-orange border-t-transparent rounded-full animate-spin"></div>
     </div>
-    <h3 class="text-xl font-black text-slate-800 mb-2">المواعيد</h3>
-    <p class="text-slate-500">سيتم إضافة قائمة المواعيد قريباً.</p>
-  </div>
+  }
 
+  <!-- Error -->
+  @if (!isLoading() && error()) {
+    <div class="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-sm">
+      <div class="h-20 w-20 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-6">
+        <i class="fa-solid fa-circle-exclamation text-3xl text-red-400"></i>
+      </div>
+      <h3 class="text-xl font-black text-slate-800 mb-2">عذراً</h3>
+      <p class="text-slate-500 mb-6">{{ error() }}</p>
+      <button (click)="loadAppointments()"
+        class="px-6 py-3 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-colors">
+        إعادة المحاولة
+      </button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!isLoading() && !error()) {
+    <!-- Stats Summary -->
+    <div class="mb-8 grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-bosla-primary">{{ stats().total }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">الكل</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-amber-600">{{ stats().pending }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">قيد الانتظار</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-blue-600">{{ stats().confirmed }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">مؤكد</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-green-600">{{ stats().completed }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">مكتمل</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-red-600">{{ stats().cancelled }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">ملغي</p>
+      </div>
+    </div>
+
+    <!-- Search + Filters -->
+    <div class="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      <div class="flex h-12 w-full md:w-[320px] items-center rounded-2xl border border-slate-200 bg-white px-4 shadow-sm focus-within:border-bosla-primary focus-within:ring-2 focus-within:ring-bosla-primary/20 transition-all">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 ml-2"></i>
+        <input #search type="text" (input)="searchTerm.set(search.value)"
+          placeholder="بحث عن عميل أو خدمة..." class="w-full border-none bg-transparent outline-none text-slate-700 text-sm" />
+      </div>
+      <div class="flex gap-2">
+        <button (click)="toggleCancelledVisibility()"
+          class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all border shadow-sm"
+          [class.bg-red-50]="showCancelled()"
+          [class.text-red-600]="showCancelled()"
+          [class.border-red-200]="showCancelled()"
+          [class.bg-white]="!showCancelled()"
+          [class.text-slate-500]="!showCancelled()"
+          [class.border-slate-200]="!showCancelled()">
+          <i class="fa-solid" [class.fa-eye]="showCancelled()" [class.fa-eye-slash]="!showCancelled()"></i>
+          {{ showCancelled() ? 'إخفاء الملغية' : 'إظهار الملغية' }}
+        </button>
+        <button (click)="loadAppointments()"
+          class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm">
+          <i class="fa-solid fa-rotate ml-1"></i> تحديث
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6 flex flex-wrap gap-2">
+      <button (click)="setTab('all')"
+        class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border"
+        [class.bg-bosla-primary]="activeTab() === 'all'"
+        [class.text-white]="activeTab() === 'all'"
+        [class.border-bosla-primary]="activeTab() === 'all'"
+        [class.shadow-sm]="activeTab() === 'all'"
+        [class.bg-white]="activeTab() !== 'all'"
+        [class.text-slate-600]="activeTab() !== 'all'"
+        [class.border-slate-200]="activeTab() !== 'all'"
+        [class.hover:bg-slate-50]="activeTab() !== 'all'">
+        الكل
+      </button>
+      @for (st of [ApptStatus.Pending, ApptStatus.Confirmed, ApptStatus.Completed, ApptStatus.Cancelled]; track st) {
+        <button (click)="setStatusTab(st)"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border"
+          [class.bg-bosla-primary]="activeTab() === st"
+          [class.text-white]="activeTab() === st"
+          [class.border-bosla-primary]="activeTab() === st"
+          [class.shadow-sm]="activeTab() === st"
+          [class.bg-white]="activeTab() !== st"
+          [class.text-slate-600]="activeTab() !== st"
+          [class.border-slate-200]="activeTab() !== st"
+          [class.hover:bg-slate-50]="activeTab() !== st">
+          {{ statusLabel(st) }}
+        </button>
+      }
+    </div>
+
+    <!-- Search result count -->
+    @if (searchTerm()) {
+      <p class="mb-4 text-sm font-bold text-bosla-primary">
+        تم العثور على {{ filteredAppointments().length }} نتيجة لـ "{{ searchTerm() }}"
+      </p>
+    }
+
+    <!-- Cards or Empty -->
+    @if (filteredAppointments().length === 0) {
+      <div class="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-sm">
+        <div class="h-20 w-20 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-6">
+          <i class="fa-regular fa-calendar-check text-3xl text-slate-400"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800 mb-2">لا توجد مواعيد</h3>
+        <p class="text-slate-500">لا توجد مواعيد في هذا التصنيف حالياً.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+        @for (apt of filteredAppointments(); track apt.id) {
+          <div class="bg-white rounded-3xl border border-slate-100 shadow-sm transition-all duration-300 overflow-hidden"
+            [class.ring-2]="isInProgress(apt.id)"
+            [class.ring-green-500]="isInProgress(apt.id)"
+            [class.shadow-md]="isSessionActive(apt.id)">
+
+            <div class="p-6">
+              <!-- Card Header -->
+              <div class="flex items-start justify-between mb-1">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary font-black text-sm">
+                    {{ apt.clientInitials }}
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-slate-800 text-base">{{ apt.clientDisplay }}</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ appointmentNumber(apt.id) }}</p>
+                  </div>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border"
+                  [class]="statusClass(apt.status)">
+                  <span class="w-1.5 h-1.5 rounded-full" [class]="statusDot(apt.status)"></span>
+                  {{ isInProgress(apt.id) ? 'قيد التنفيذ' : statusLabel(apt.status) }}
+                </span>
+              </div>
+
+              <!-- Service name -->
+              <p class="text-sm text-slate-500 mt-2">{{ apt.serviceName }}</p>
+
+              <div class="border-t border-slate-100 my-4"></div>
+
+              <!-- Date/Time -->
+              <div class="flex flex-wrap gap-4 text-sm">
+                <div class="flex items-center gap-2 text-slate-500">
+                  <i class="fa-regular fa-clock text-slate-400"></i>
+                  <span dir="ltr">{{ apt.startTimeUtc | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-500">
+                  <i class="fa-regular fa-hourglass text-slate-400"></i>
+                  <span dir="ltr">{{ apt.startTimeUtc | date:'HH:mm' }} - {{ apt.endTimeUtc | date:'HH:mm' }}</span>
+                </div>
+              </div>
+
+              <!-- Pending: Countdown mock -->
+              @if (apt.status === ApptStatus.Pending) {
+                <div class="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl px-4 py-2 border border-amber-200">
+                  <i class="fa-regular fa-clock ml-1"></i> في انتظار ردك
+                </div>
+              }
+
+              <!-- Confirmed / InProgress: Countdown or Meeting Timer -->
+              @if (apt.status === ApptStatus.Confirmed) {
+                @if (isInProgress(apt.id)) {
+                  <div class="mt-3 flex items-center gap-2 text-green-600 bg-green-50 rounded-xl px-4 py-3 border border-green-200">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="font-bold text-sm">الجلسة قيد التنفيذ</span>
+                    <span dir="ltr" class="font-black text-sm me-auto">{{ getMeetingTimer(apt.id) }}</span>
+                  </div>
+                } @else {
+                  @if (countdowns()[apt.id] && countdowns()[apt.id] !== 'session_active') {
+                    <div class="mt-3 flex items-center gap-2 bg-blue-50 rounded-xl px-4 py-3 border border-blue-200">
+                      <i class="fa-regular fa-hourglass-half text-blue-400"></i>
+                      <span class="text-sm">
+                        <span class="font-bold text-blue-700">يبدأ بعد:</span>
+                        <span dir="ltr" class="font-black text-blue-700 me-1">{{ countdowns()[apt.id] }}</span>
+                      </span>
+                    </div>
+                  }
+                  @if (isSessionActive(apt.id) && !isInProgress(apt.id)) {
+                    <div class="mt-3 flex items-center gap-2 text-blue-600 bg-blue-50 rounded-xl px-4 py-3 border border-blue-200">
+                      <i class="fa-regular fa-bell text-blue-400"></i>
+                      <span class="font-bold text-sm">موعد الجلسة الآن</span>
+                    </div>
+                  }
+                }
+              }
+
+              <!-- Actions -->
+              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
+                @if (apt.status === ApptStatus.Pending) {
+                  <button (click)="confirmAppointment(apt.id)"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-colors">
+                    <i class="fa-solid fa-check ml-1"></i> قبول
+                  </button>
+                  <button (click)="rejectAppointment(apt.id)"
+                    class="px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold text-xs border border-red-200 hover:bg-red-100 transition-colors">
+                    <i class="fa-solid fa-xmark ml-1"></i> رفض
+                  </button>
+                }
+
+                @if (apt.status === ApptStatus.Confirmed && !isInProgress(apt.id)) {
+                  @if (canJoin(apt.id)) {
+                    <button (click)="joinSession(apt.id)"
+                      class="flex-1 px-4 py-2.5 rounded-xl bg-green-500 text-white font-bold text-xs hover:bg-green-600 transition-colors shadow-sm">
+                      <i class="fa-solid fa-video ml-1"></i> بدء الجلسة
+                    </button>
+                  }
+                  <button (click)="toggleDetails(apt.id)"
+                    class="px-4 py-2.5 rounded-xl bg-slate-50 text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-100 transition-colors">
+                    <i class="fa-solid ml-1" [class.fa-chevron-up]="expandedId() === apt.id" [class.fa-chevron-down]="expandedId() !== apt.id"></i> التفاصيل
+                  </button>
+                  <button (click)="cancelAppointment(apt.id)"
+                    class="px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold text-xs border border-red-200 hover:bg-red-100 transition-colors">
+                    <i class="fa-solid fa-ban ml-1"></i> إلغاء
+                  </button>
+                }
+
+                @if (apt.status === ApptStatus.Confirmed && isInProgress(apt.id)) {
+                  <button (click)="endSession(apt.id)"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white font-bold text-xs hover:bg-red-600 transition-colors shadow-sm">
+                    <i class="fa-solid fa-stop ml-1"></i> إنهاء الجلسة
+                  </button>
+                  <button (click)="toggleDetails(apt.id)"
+                    class="px-4 py-2.5 rounded-xl bg-slate-50 text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-100 transition-colors">
+                    <i class="fa-solid ml-1" [class.fa-chevron-up]="expandedId() === apt.id" [class.fa-chevron-down]="expandedId() !== apt.id"></i> التفاصيل
+                  </button>
+                }
+
+                @if (apt.status === ApptStatus.Completed) {
+                  <span class="text-xs text-green-600 py-2.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-green-500"></i> تمت الجلسة بنجاح
+                  </span>
+                  <button (click)="toggleDetails(apt.id)"
+                    class="px-4 py-2.5 rounded-xl bg-slate-50 text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-100 transition-colors me-auto">
+                    <i class="fa-solid ml-1" [class.fa-chevron-up]="expandedId() === apt.id" [class.fa-chevron-down]="expandedId() !== apt.id"></i> التفاصيل
+                  </button>
+                }
+
+                @if (apt.status === ApptStatus.Cancelled || apt.status === ApptStatus.Rejected) {
+                  <span class="text-xs text-red-400 py-2.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-xmark text-red-300"></i>
+                    {{ apt.status === ApptStatus.Cancelled ? 'ملغي' : 'مرفوض' }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Expanded Details -->
+            @if (expandedId() === apt.id) {
+              <div class="border-t border-slate-100 bg-slate-50/50 px-6 py-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p class="text-slate-400 text-xs font-medium mb-1">رقم الموعد</p>
+                    <p class="text-slate-700 font-bold text-xs">{{ appointmentNumber(apt.id) }}</p>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-xs font-medium mb-1">رقم العميل</p>
+                    <p class="text-slate-700 font-bold text-xs">{{ clientNumber(apt.clientId) }}</p>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-xs font-medium mb-1">موعد البدء</p>
+                    <p class="text-slate-700" dir="ltr">{{ apt.startTimeUtc | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 text-xs font-medium mb-1">موعد الانتهاء</p>
+                    <p class="text-slate-700" dir="ltr">{{ apt.endTimeUtc | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <p class="text-slate-400 text-xs font-medium mb-1">الخدمة</p>
+                    <p class="text-slate-700">{{ apt.serviceName }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Revenue Stats -->
+    @if (appointments().length > 0) {
+      <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+            <i class="fa-solid fa-chart-bar text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-bosla-primary">ملخص الإيرادات</h2>
+            <p class="text-sm text-slate-500">إجمالي الأرباح من المواعيد المكتملة</p>
+          </div>
+        </div>
+        @if (stats().completed === 0) {
+          <div class="rounded-2xl bg-slate-50 p-8 text-center border border-slate-100">
+            <p class="text-slate-500 font-medium">لا توجد جلسات مكتملة بعد لعرض الإيرادات.</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="rounded-2xl bg-slate-50 p-5 border border-slate-100">
+              <p class="text-sm font-medium text-slate-500 mb-1">إجمالي الإيرادات</p>
+              <p class="text-3xl font-black text-bosla-primary">{{ stats().totalRevenue.toFixed(2) }} <span class="text-base font-bold text-slate-400">ر.س</span></p>
+              @if (stats().totalRevenue === 0) {
+                <p class="text-xs text-amber-500 mt-1">لم يتم تسجيل أي مدفوعات بعد</p>
+              }
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-5 border border-slate-100">
+              <p class="text-sm font-medium text-slate-500 mb-1">عدد الجلسات المكتملة</p>
+              <p class="text-3xl font-black text-bosla-primary">{{ stats().completed }}</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-5 border border-slate-100">
+              <p class="text-sm font-medium text-slate-500 mb-1">متوسط سعر الجلسة</p>
+              <p class="text-3xl font-black text-bosla-primary">{{ stats().avgRevenue.toFixed(2) }} <span class="text-base font-bold text-slate-400">ر.س</span></p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
 </div>

@@ -1,13 +1,6 @@
 export interface Review {
-    id: string;
-
-    userId: string;
-
-    userName: string;
-
+    reviewerName: string;
     rating: number;
-
     comment: string;
-
     createdAt: Date;
 }

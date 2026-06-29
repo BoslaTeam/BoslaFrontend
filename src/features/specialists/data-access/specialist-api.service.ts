@@ -42,13 +42,13 @@ export class SpecialistApiService {
     }>(`${this.apiUrl}/specialists/me`);
   }
 
-  getDashboard() {
-    return this.http.get<{
-      data: SpecialistDashboardResponse;
-    }>(
-      `${this.apiUrl}/specialists/me/dashboard`
-    );
-  }
+ getDashboard() {
+  return this.http.get<{
+    data: SpecialistDashboardResponse;
+  }>(
+    API_ENDPOINTS.specialists.dashboard
+  );
+}
 
   getMyEarnings() {
     return this.http.get<SpecialistEarningsResponse>(
@@ -56,13 +56,13 @@ export class SpecialistApiService {
     );
   }
 
-  getMyReviews(pageNumber = 1, pageSize = 10) {
-    return this.http.get<{
-      data: SpecialistReviewsResponse;
-    }>(
-      `${this.apiUrl}/specialists/me/reviews?pageNumber=${pageNumber}&pageSize=${pageSize}`
-    );
-  }
+ getMyReviews(pageNumber = 1, pageSize = 10) {
+  return this.http.get<{
+    data: SpecialistReviewsResponse;
+  }>(
+    `${API_ENDPOINTS.specialists.myReviews}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+  );
+}
 }
 
 @Injectable({
