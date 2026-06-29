@@ -31,18 +31,22 @@ export const API_ENDPOINTS = {
     markRead: (id: string) => `${V}/notifications/${id}/read`,
   },
   appointments: {
-    base: `${V}/appointments`,
-    byId: (id: string) => `${V}/appointments/${id}`,
+    base: `${V}/Appointments`,
+    byId: (id: string) => `${V}/Appointments/${id}`,
+    myappointments: `${V}/Appointments/my-appointments`,
+    bySpecialist: (specialistId: string) => `${V}/appointments/specialist/${specialistId}`,
+    upcoming: `${V}/appointments/upcoming`,
+    history: (id: string) => `${V}/appointments/${id}/history`,
     confirm: (id: string) => `${V}/appointments/${id}/confirm`,
     cancel: (id: string) => `${V}/appointments/${id}/cancel`,
     reschedule: (id: string) => `${V}/appointments/${id}/reschedule`,
     complete: (id: string) => `${V}/appointments/${id}/complete`,
-    statusHistory: (id: string) => `${V}/appointments/${id}/status-history`,
+    reject: (id: string) => `${V}/appointments/${id}/reject`,
+    notes: (id: string) => `${V}/appointments/${id}/notes`,
     reviews: (id: string) => `${V}/appointments/${id}/reviews`,
     reminders: (id: string) => `${V}/appointments/${id}/reminders`,
-    reminderById: (id: string, rid: string) => `${V}/appointments/${id}/reminders/${rid}`,
-    payment: (id: string) => `${V}/appointments/${id}/payment`,
-    summary: (id: string) => `${V}/appointments/${id}/summary`,
+    reminderById: (id: string, reminderId: string) =>
+      `${V}/appointments/${id}/reminders/${reminderId}`,
   },
   conversations: {
     base: `${V}/conversations`,
@@ -57,7 +61,7 @@ export const API_ENDPOINTS = {
     sessionById: (id: string) => `${V}/video-sessions/${id}`,
     start: (id: string) => `${V}/video-sessions/${id}/start`,
     end: (id: string) => `${V}/video-sessions/${id}/end`,
-    webhook: `${V}/webhooks/agora`
+    webhook: `${V}/webhooks/agora`,
   },
   specialists: {
     onboard: `${V}/specialists/onboard`,
