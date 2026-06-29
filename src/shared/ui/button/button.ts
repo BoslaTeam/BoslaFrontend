@@ -1,6 +1,6 @@
 import { Component, forwardRef, input, output, computed, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { UiSpinner } from "../spinner/spinner";
+import { UiSpinner } from '../spinner/spinner';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -25,7 +25,7 @@ export class UiButton implements ControlValueAccessor {
   readonly outline = input<boolean>(false);
   readonly loading = input<boolean>(false);
   readonly type = input<'button' | 'submit' | 'reset'>('button');
-
+  disabled = input<boolean>(false);
   readonly buttonValue = input<any>(null);
 
   readonly btnClick = output<MouseEvent>();
@@ -34,8 +34,8 @@ export class UiButton implements ControlValueAccessor {
   readonly disabledSignal = signal<boolean>(false);
   readonly inputDisabled = input<boolean>(false);
 
-  readonly isButtonDisabled = computed(() =>
-    this.disabledSignal() || this.inputDisabled() || this.loading()
+  readonly isButtonDisabled = computed(
+    () => this.disabledSignal() || this.inputDisabled() || this.loading(),
   );
 
   readonly buttonClasses = computed(() => {
@@ -48,9 +48,7 @@ export class UiButton implements ControlValueAccessor {
       lg: 'h-11 px-6 text-[16px]',
     };
 
-    const isSelected =
-      this.buttonValue() !== null &&
-      this.formValue() === this.buttonValue();
+    const isSelected = this.buttonValue() !== null && this.formValue() === this.buttonValue();
 
     const variants = {
       primary: isSelected
@@ -71,8 +69,8 @@ export class UiButton implements ControlValueAccessor {
     return `${baseClasses} ${sizes[this.size()]} ${variants[this.variant()]}`;
   });
 
-  private onChange: (value: any) => void = () => { };
-  private onTouched: () => void = () => { };
+  private onChange: (value: any) => void = () => {};
+  private onTouched: () => void = () => {};
 
   writeValue(value: any): void {
     this.formValue.set(value);
