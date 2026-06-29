@@ -8,7 +8,7 @@ import { ToastService } from '@core/services/toast.service';
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './contact.html',
 })
 export class ContactPage {
