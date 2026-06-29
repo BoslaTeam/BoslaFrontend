@@ -198,7 +198,7 @@
         </div>
 
 
-        <div class="space-y-4 mt-8">
+        <div class="pt-8 space-y-4 mt-8">
 
             @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
 
@@ -210,61 +210,7 @@
 
             }
 
-            @for (review of reviews()?.reviews?.items; track review.createdOnUtc) {
-
-            <div
-                class="group rounded-2xl border border-slate-200 bg-slate-50/50 p-5 transition-all duration-300 hover:border-blue-200 hover:bg-white hover:shadow-md">
-
-                <div class="flex items-start justify-between">
-
-                    <div class="flex items-center gap-3">
-
-                        <div
-                            class="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-900">
-
-                            {{ review.reviewerName?.charAt(0) }}
-
-                        </div>
-
-                        <div>
-
-                            <h3 class="font-semibold text-slate-900">
-                                {{ review.reviewerName }}
-                            </h3>
-
-                            <span class="text-xs text-slate-400">
-                                {{ review.createdOnUtc| date:'dd MMM yyyy' }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <div class="flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1">
-
-                        <span class="text-amber-500">
-                            ★
-                        </span>
-
-                        <span class="font-semibold text-slate-900">
-                            {{ review.rating }}
-                        </span>
-
-                    </div>
-
-                </div>
-               
-            
-                @if (review.comment) {
-
-                <p class="mt-4 leading-7 text-slate-600">
-                    {{ review.comment }}
-                </p>
-                }
-            </div>
-
-            <div class="h-8"></div> <!-- Spacer for x-axis labels -->
-        }
+           
     <!-- Upcoming Appointments Table & Reviews -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -358,7 +304,7 @@
                 </div>
                 }
 
-                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdOnUtc) {
+                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdAtUtc) {
                 <div class="group rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:border-bosla-compass/30 hover:bg-white hover:shadow-md">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
@@ -370,7 +316,7 @@
                                     {{ review.reviewerName }}
                                 </h3>
                                 <span class="text-[11px] font-medium text-slate-400 block mt-0.5" dir="ltr">
-                                    {{ review.createdOnUtc| date:'dd MMM yyyy' }}
+                                    {{ review.createdAtUtc| date:'dd MMM yyyy' }}
                                 </span>
                             </div>
                         </div>

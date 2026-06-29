@@ -5,16 +5,12 @@ export function mapReview(
     dto: SpecialistReviewResponse,
 ): Review {
     return {
-        id: dto.id,
-
-        userId: dto.userId,
-
-        userName: dto.reviewerName,
+        reviewerName: dto.reviewerName,
 
         rating: dto.rating,
 
         comment: dto.comment ?? '',
 
-        createdAt: new Date(dto.createdOnUtc),
+        createdAt: new Date(dto.createdAtUtc),
     };
 }
