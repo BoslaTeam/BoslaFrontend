@@ -1,22 +1,24 @@
-<div class="fixed top-4 right-4 z-9999 flex flex-col space-y-3 w-full max-w-md pointer-events-none" dir="rtl">
-    @for (toast of toastService.toasts(); track toast.id) {
-    <div role="alert"
-        class="pointer-events-auto flex items-center justify-between w-full min-h-14 p-4 rounded-xl border-y border-l transition-all duration-300 shadow-sm"
-        [class]="getVariantClasses(toast.variant)">
-        <div class="flex items-center gap-3 flex-1 min-w-0 text-right">
-            <span class="text-base shrink-0 flex items-center justify-center" aria-hidden="true">
-                <i [class]="getVariantIcon(toast.variant)"></i>
-            </span>
+<div class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col space-y-3 w-full max-w-md pointer-events-none" dir="rtl">
+  @for (toast of toastService.toasts(); track toast.id) {
+  <div role="alert"
+    class="pointer-events-auto flex items-center gap-3 w-full px-5 py-4 rounded-2xl shadow-xl border backdrop-blur-md transition-all duration-500 animate-slide-down"
+    [class]="getVariantClasses(toast.variant)">
+    <!-- Icon -->
+    <span class="text-lg shrink-0 flex items-center justify-center w-8 h-8 rounded-full"
+      [class]="getIconWrapperClass(toast.variant)">
+      <i [class]="getVariantIcon(toast.variant)"></i>
+    </span>
 
-            <p class="text-[14px] font-sans font-medium wrap-break-word leading-relaxed">
-                {{ toast.message }}
-            </p>
-        </div>
+    <!-- Message -->
+    <p class="flex-1 text-sm font-bold leading-relaxed">
+      {{ toast.message }}
+    </p>
 
-        <button type="button" (click)="toastService.dismiss(toast.id)" aria-label="إغلاق التنبيه"
-            class="opacity-60 hover:opacity-100 p-1 mr-2 transition-opacity duration-150 outline-none shrink-0 cursor-pointer">
-            <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-    </div>
-    }
+    <!-- Close -->
+    <button type="button" (click)="toastService.dismiss(toast.id)" aria-label="إغلاق"
+      class="opacity-50 hover:opacity-100 p-1 transition-opacity shrink-0 cursor-pointer outline-none">
+      <i class="fa-solid fa-xmark text-sm"></i>
+    </button>
+  </div>
+  }
 </div>
