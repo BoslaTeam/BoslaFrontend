@@ -1,3 +1,4 @@
+import { generate } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const V = environment.apiBaseUrl;
@@ -30,18 +31,22 @@ export const API_ENDPOINTS = {
     markRead: (id: string) => `${V}/notifications/${id}/read`,
   },
   appointments: {
-    base: `${V}/appointments`,
-    byId: (id: string) => `${V}/appointments/${id}`,
+    base: `${V}/Appointments`,
+    byId: (id: string) => `${V}/Appointments/${id}`,
+    myappointments: `${V}/Appointments/my-appointments`,
+    bySpecialist: (specialistId: string) => `${V}/appointments/specialist/${specialistId}`,
+    upcoming: `${V}/appointments/upcoming`,
+    history: (id: string) => `${V}/appointments/${id}/history`,
     confirm: (id: string) => `${V}/appointments/${id}/confirm`,
     cancel: (id: string) => `${V}/appointments/${id}/cancel`,
     reschedule: (id: string) => `${V}/appointments/${id}/reschedule`,
     complete: (id: string) => `${V}/appointments/${id}/complete`,
-    statusHistory: (id: string) => `${V}/appointments/${id}/status-history`,
+    reject: (id: string) => `${V}/appointments/${id}/reject`,
+    notes: (id: string) => `${V}/appointments/${id}/notes`,
     reviews: (id: string) => `${V}/appointments/${id}/reviews`,
     reminders: (id: string) => `${V}/appointments/${id}/reminders`,
-    reminderById: (id: string, rid: string) => `${V}/appointments/${id}/reminders/${rid}`,
-    payment: (id: string) => `${V}/appointments/${id}/payment`,
-    summary: (id: string) => `${V}/appointments/${id}/summary`,
+    reminderById: (id: string, reminderId: string) =>
+      `${V}/appointments/${id}/reminders/${reminderId}`,
   },
   conversations: {
     base: `${V}/conversations`,
@@ -52,11 +57,11 @@ export const API_ENDPOINTS = {
     messageById: (id: string, mid: string) => `${V}/conversations/${id}/messages/${mid}`,
   },
   video: {
-    sessions: `${V}/video/sessions`,
-    sessionById: (id: string) => `${V}/video/sessions/${id}`,
-    join: (id: string) => `${V}/video/sessions/${id}/join`,
-    leave: (id: string) => `${V}/video/sessions/${id}/leave`,
-    participants: (id: string) => `${V}/video/sessions/${id}/participants`,
+    generateToken: `${V}/video-sessions/generate-token`,
+    sessionById: (id: string) => `${V}/video-sessions/${id}`,
+    start: (id: string) => `${V}/video-sessions/${id}/start`,
+    end: (id: string) => `${V}/video-sessions/${id}/end`,
+    webhook: `${V}/webhooks/agora`,
   },
   specialists: {
     onboard: `${V}/specialists/onboard`,
@@ -108,10 +113,6 @@ export const API_ENDPOINTS = {
     deactivateUser: (id: string) => `${V}/admin/users/${id}/deactivate`,
     reactivateUser: (id: string) => `${V}/admin/users/${id}/reactivate`,
     appointments: `${V}/admin/appointments`,
-    cancelAppointment: (id: string) => `${V}/admin/appointments/${id}/cancel`,
-    rescheduleAppointment: (id: string) => `${V}/admin/appointments/${id}/reschedule`,
-    payments: `${V}/admin/payments`,
-    refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
     auditLogs: `${V}/admin/audit-logs`,
     auditLogById: (id: string) => `${V}/admin/audit-logs/${id}`,
     dashboard: `${V}/admin/dashboard`,

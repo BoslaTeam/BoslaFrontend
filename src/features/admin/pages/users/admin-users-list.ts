@@ -48,8 +48,10 @@ export class AdminUsersList implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.users.set(res.data.items);
-          this.metadata.set(res.data.metadata);
+          if (res.data) {
+            this.users.set(res.data.items);
+            this.metadata.set(res.data.metadata);
+          }
           this.isLoading.set(false);
         },
         error: () => {

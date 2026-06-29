@@ -6,7 +6,6 @@ import { TokenService } from '@core/services/token.service';
 const PUBLIC_PATHS = [
   API_ENDPOINTS.auth.login,
   API_ENDPOINTS.auth.register,
-  API_ENDPOINTS.auth.refresh,
   API_ENDPOINTS.auth.forgotPassword,
   API_ENDPOINTS.auth.resetPassword
 ];
@@ -20,9 +19,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const accessToken = tokenService.getAccessToken();
   if (!accessToken) return next(req);
 
-  return next(
-    req.clone({
-      setHeaders: { Authorization: `Bearer ${accessToken}` },
-    }),
-  );
+  const cloned = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return next(cloned);
 };

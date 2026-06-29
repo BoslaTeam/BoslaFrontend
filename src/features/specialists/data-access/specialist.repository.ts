@@ -20,7 +20,7 @@ export class SpecialistsRepository {
   getExpertise() {
     return this.api.getExpertise().pipe(
       map(response =>
-        response.data.map(SpecialistsMapper.mapLookup)
+        (response.data ?? []).map(SpecialistsMapper.mapLookup)
       )
     );
   }
@@ -28,7 +28,7 @@ export class SpecialistsRepository {
   getSkills() {
     return this.api.getSkills().pipe(
       map(response =>
-        response.data.map(SpecialistsMapper.mapLookup)
+        (response.data ?? []).map(SpecialistsMapper.mapLookup)
       )
     );
   }
@@ -36,7 +36,7 @@ export class SpecialistsRepository {
   getTools() {
     return this.api.getTools().pipe(
       map(response =>
-        response.data.map(SpecialistsMapper.mapLookup)
+        (response.data ?? []).map(SpecialistsMapper.mapLookup)
       )
     );
   }
@@ -44,7 +44,7 @@ export class SpecialistsRepository {
   getIndustries() {
     return this.api.getIndustries().pipe(
       map(response =>
-        response.data.map(SpecialistsMapper.mapLookup)
+        (response.data ?? []).map(SpecialistsMapper.mapLookup)
       )
     );
   }
@@ -55,33 +55,37 @@ export class SpecialistsRepository {
 
   getSpecialists(filters: SpecialistsFilters) {
     return this.api.getSpecialists(filters).pipe(
-      map(response => ({
-        items: response.data.items.map(SpecialistsMapper.mapSpecialist),
-        metadata: response.data.metadata,
-      })),
+      map(response => {
+        if (!response.data) throw new Error('No data returned');
+        return {
+          items: response.data.items.map(SpecialistsMapper.mapSpecialist),
+          metadata: response.data.metadata,
+        };
+      }),
     );
   }
 
   getSpecialistById(id: string) {
     return this.api.getSpecialistById(id).pipe(
+      map(response => {
+        if (!response.data) throw new Error('No data returned');
+        return SpecialistsMapper.mapSpecialistDetails(response.data);
+      }),
+    );
+  }
+
+  getReviews(id: string) {
+    return this.api.getReviews(id).pipe(
       map(response =>
-        SpecialistsMapper.mapSpecialistDetails(response.data)
+        response.data.reviews.items.map(SpecialistsMapper.mapReview)
       ),
     );
   }
 
- getReviews(id: string) {
-  return this.api.getReviews(id).pipe(
-    map(response =>
-      response.data.reviews.items.map(SpecialistsMapper.mapReview)
-    ),
-  );
-}
-
   getAvailability(id: string) {
     return this.api.getAvailability(id).pipe(
       map(response =>
-        response.data.map(SpecialistsMapper.mapAvailability)
+        (response.data ?? []).map(SpecialistsMapper.mapAvailability)
       ),
     );
   }

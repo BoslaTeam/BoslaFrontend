@@ -22,6 +22,16 @@ export const routes: Routes = [
         loadChildren: () =>
           import('@features/specialists/routes').then((m) => m.SPECIALISTS_ROUTES),
       },
+      {
+        path: 'about',
+        loadChildren: () =>
+          import('@features/about/routes').then((m) => m.ABOUT_ROUTES),
+      },
+      {
+        path: 'contact',
+        loadChildren: () =>
+          import('@features/contact/routes').then((m) => m.CONTACT_ROUTES),
+      },
     ],
   },
   {

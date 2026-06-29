@@ -1,0 +1,103 @@
+<div class="max-w-5xl mx-auto px-4 py-8 bg-gray-300" dir="rtl">
+  
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-bosla-charcoal dark:text-white font-sans">إدارة المواعيد</h1>
+      <p class="text-sm text-bosla-charcoal/60 dark:text-charcoal/40 mt-1">تابع وجدول جلساتك الاستشارية بكل سهولة.</p>
+    </div>
+    
+    <ui-button [routerLink]="['/appointments/book']" size="md" variant="primary">
+      <span class="text-base font-semibold">+</span> حجز موعد جديد
+    </ui-button>
+  </div>
+
+  <div class="flex border-b border-bosla-charcoal/10 dark:border-white/10 mb-6">
+    <button 
+      (click)="setTab('upcoming')"
+      [class]="activeTab() === 'upcoming' 
+        ? 'border-bosla-blue text-bosla-blue font-semibold' 
+        : 'border-transparent text-bosla-charcoal/60 hover:text-bosla-charcoal dark:text-white/60 dark:hover:text-white'"
+      class="py-3 px-6 text-[15px] font-sans border-b-2 transition-all duration-200 outline-none">
+      المواعيد القادمة
+    </button>
+    <button 
+      (click)="setTab('past')"
+      [class]="activeTab() === 'past' 
+        ? 'border-bosla-blue text-bosla-blue font-semibold' 
+        : 'border-transparent text-bosla-charcoal/60 hover:text-bosla-charcoal dark:text-white/60 dark:hover:text-white'"
+      class="py-3 px-6 text-[15px] font-sans border-b-2 transition-all duration-200 outline-none">
+      المواعيد السابقة والتاريخ
+    </button>
+  </div>
+
+  @if (store.isLoading()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <ui-spinner size="lg"></ui-spinner>
+      <p class="text-sm text-bosla-charcoal/40 mt-4 font-sans">جاري تحميل قائمة المواعيد...</p>
+    </div>
+  } @else {
+    
+    @if (filteredAppointments().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        @for (appointment of filteredAppointments(); track appointment.id) {
+          <div 
+            [routerLink]="['/user/appointments', appointment.id]"
+            class="group block bg-white/60 dark:bg-bosla-charcoal/10 backdrop-blur-md border border-bosla-charcoal/5 dark:border-white/5 rounded-2xl p-5 hover:border-bosla-blue/30 dark:hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+            
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-[16px] font-semibold text-bosla-charcoal dark:text-white group-hover:text-bosla-blue transition-colors duration-200 font-sans">
+                  {{ appointment.sessionTopic || 'جلسة استشارية عامة' }}
+                </h3>
+                <p class="text-[12px] text-bosla-charcoal/40 dark:text-white/40 mt-0.5">معرف الموعد: {{ appointment.id.slice(0, 8) }}...</p>
+              </div>
+
+              @let statusInfo = getStatusDetails(appointment.status);
+              <span [class]="statusInfo.classes" class="text-[12px] font-medium px-3 py-1 rounded-full border">
+                {{ statusInfo.text }}
+              </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-bosla-charcoal/70 dark:text-white/70 border-t border-bosla-charcoal/5 dark:border-white/5 pt-4">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <span class="font-sans text-[13px]">{{ appointment.start | date: 'dd MMMM yyyy' : '' : 'ar' }}</span>
+              </div>
+              
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="font-sans text-[13px]" dir="ltr">
+                  {{ appointment.start | date: 'hh:mm a' }} - {{ appointment.end | date: 'hh:mm a' }}
+                </span>
+              </div>
+            </div>
+
+          </div>
+        }
+
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center text-center py-20 bg-white/30 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-bosla-charcoal/5 dark:border-white/5 px-6">
+        <div class="w-16 h-16 bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+        </div>
+        <h3 class="text-lg font-semibold text-bosla-charcoal dark:text-white font-sans">لا توجد مواعيد متاحة</h3>
+        <p class="text-sm text-bosla-charcoal/50 dark:text-white/40 max-w-sm mt-1 font-sans">
+          @if (activeTab() === 'upcoming') {
+            ليس لديك أي مواعيد قادمة مجدولة في الوقت الحالي. يمكنك بدء طلب حجز جلسة جديدة الآن.
+          } @else {
+            لا يوجد سجل مواعيد سابقة لعرضه هنا.
+          }
+        </p>
+        @if (activeTab() === 'upcoming') {
+          <ui-button [routerLink]="['/appointments/book']" size="sm" variant="secondary" class="mt-5">
+            احجز جلستك الأولى الآن
+          </ui-button>
+        }
+      </div>
+    }
+
+  }
+
+</div>

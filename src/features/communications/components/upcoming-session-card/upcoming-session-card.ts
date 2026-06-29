@@ -1,7 +1,16 @@
-import { Component, computed, effect, inject, input, OnDestroy, signal, untracked } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  signal,
+  untracked,
+} from '@angular/core';
 import { catchError, of } from 'rxjs';
-import { AppointmentService } from '../../services/appointment.service';
-import { AppointmentDto } from '../../models/chat.model';
+import { AppointmentService } from '../../../appointments/services/appointments.service';
+import { AppointmentDto } from '../../../appointments/contracts/appointments.contracts';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 
 interface UpcomingSessionData {
@@ -33,13 +42,16 @@ export class UpcomingSessionCard implements OnDestroy {
 
   private fetchAppointment(id: string): void {
     this.error.set(null);
-    this.appointmentService.getById(id)
-      .pipe(catchError(err => {
-        this.error.set(err?.message ?? 'Failed to load appointment');
-        this.appointment.set(null);
-        return of(null);
-      }))
-      .subscribe(res => {
+    this.appointmentService
+      .getById(id)
+      .pipe(
+        catchError((err) => {
+          this.error.set(err?.message ?? 'Failed to load appointment');
+          this.appointment.set(null);
+          return of(null);
+        }),
+      )
+      .subscribe((res) => {
         if (res?.success && res.data) {
           this.appointment.set(res.data);
         } else {
@@ -56,8 +68,8 @@ export class UpcomingSessionCard implements OnDestroy {
     const end = new Date(apt.end);
 
     return {
-      topic: apt.sessionTopic,
-      notes: apt.notes,
+      topic: apt.sessionTopic ?? '',
+      notes: apt.notes ?? '',
       dateLabel: start.toLocaleDateString('en-US', {
         weekday: 'long',
         month: 'long',
@@ -87,7 +99,7 @@ export class UpcomingSessionCard implements OnDestroy {
       [AppointmentStatus.Cancelled]: 'Cancelled',
       [AppointmentStatus.Rescheduled]: 'Rescheduled',
     };
-    return s !== undefined ? map[s] ?? 'Unknown' : '';
+    return s !== undefined ? (map[s] ?? 'Unknown') : '';
   });
 
   readonly statusClass = computed(() => {
@@ -99,7 +111,7 @@ export class UpcomingSessionCard implements OnDestroy {
       [AppointmentStatus.Cancelled]: 'chat-apt-status-cancelled',
       [AppointmentStatus.Rescheduled]: 'chat-apt-status-rescheduled',
     };
-    return s !== undefined ? map[s] ?? '' : '';
+    return s !== undefined ? (map[s] ?? '') : '';
   });
 
   readonly countdown = computed(() => {
