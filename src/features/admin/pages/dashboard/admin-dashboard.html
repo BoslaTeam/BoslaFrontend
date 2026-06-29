@@ -1,0 +1,235 @@
+<div class="dashboard-page">
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="welcome-banner" style="opacity: 0.7;">
+      <div class="welcome-text">
+        <h1>جاري التحميل...</h1>
+        <p>يتم تحميل بيانات لوحة التحكم</p>
+      </div>
+    </div>
+    <div class="stats-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card"></div>
+      }
+    </div>
+    <div class="dashboard-grid-2">
+      <div class="skeleton-table"></div>
+      <div class="skeleton-table"></div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (hasError()) {
+    <div class="error-state">
+      <div class="error-state-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3>خطأ في تحميل البيانات</h3>
+      <p>تعذر الاتصال بالخادم. تأكد من تشغيل الخادم وحاول مرة أخرى.</p>
+      <button class="retry-btn" (click)="loadDashboard()">إعادة المحاولة</button>
+    </div>
+  }
+
+  <!-- Dashboard Content -->
+  @else if (stats(); as data) {
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h1>مرحباً، {{ currentUser()?.fullName ?? 'مدير النظام' }} 👋</h1>
+        <p>إليك ملخص أداء المنصة اليوم</p>
+      </div>
+      <div class="welcome-date">
+        {{ today | date:'EEEE، d MMMM yyyy' }}
+      </div>
+    </div>
+
+    <!-- KPI Stats Cards -->
+    <div class="stats-grid">
+      <ui-dashboard-stat-card
+        title="إجمالي المستخدمين"
+        [value]="data.totalUsers"
+        subtitle="مقارنة بالشهر الماضي"
+        icon="fa-solid fa-users"
+        [trendValue]="formatTrend(data.userGrowthPercentage)"
+        [trendDirection]="getTrendDirection(data.userGrowthPercentage)"
+      />
+      <ui-dashboard-stat-card
+        title="إجمالي المتخصصين"
+        [value]="data.totalSpecialists"
+        subtitle="مقارنة بالشهر الماضي"
+        icon="fa-solid fa-user-tie"
+        [trendValue]="formatTrend(data.specialistGrowthPercentage)"
+        [trendDirection]="getTrendDirection(data.specialistGrowthPercentage)"
+      />
+      <ui-dashboard-stat-card
+        title="إجمالي الحجوزات"
+        [value]="data.totalAppointments"
+        subtitle="مقارنة بالشهر الماضي"
+        icon="fa-solid fa-calendar-check"
+        [trendValue]="formatTrend(data.appointmentGrowthPercentage)"
+        [trendDirection]="getTrendDirection(data.appointmentGrowthPercentage)"
+      />
+      <ui-dashboard-stat-card
+        title="إجمالي الإيرادات"
+        [value]="'$' + data.totalRevenue.toLocaleString()"
+        subtitle="مقارنة بالشهر الماضي"
+        icon="fa-solid fa-dollar-sign"
+        [trendValue]="formatTrend(data.revenueGrowthPercentage)"
+        [trendDirection]="getTrendDirection(data.revenueGrowthPercentage)"
+        [hasOrangeBorder]="true"
+      />
+      <ui-dashboard-stat-card
+        title="تحقق معلق"
+        [value]="data.pendingVerifications"
+        subtitle="متخصصون بانتظار المراجعة"
+        icon="fa-solid fa-clock"
+        trendDirection="none"
+      />
+      <ui-dashboard-stat-card
+        title="حجوزات نشطة"
+        [value]="data.activeAppointments"
+        subtitle="حجوزات قيد التنفيذ"
+        icon="fa-solid fa-video"
+        trendDirection="none"
+      />
+    </div>
+
+    <!-- Tables: Recent Users & Appointments -->
+    <div class="dashboard-grid-2">
+
+      <!-- Recent Users -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h3 class="section-title">آخر المستخدمين المسجلين</h3>
+          <a class="section-link" routerLink="/admin/users">عرض الكل ←</a>
+        </div>
+        <div class="dashboard-table-wrapper">
+          @if (data.recentUsers && data.recentUsers.length > 0) {
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>المستخدم</th>
+                  <th>الدور</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of data.recentUsers; track user.id) {
+                  <tr>
+                    <td>
+                      <div class="user-cell">
+                        <div class="user-cell-avatar">
+                          {{ user.fullName.substring(0, 2) }}
+                        </div>
+                        <div>
+                          <div class="user-cell-name">{{ user.fullName }}</div>
+                          <div class="user-cell-email">{{ user.email }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="role-badge">{{ getRoleName(user.role) }}</span>
+                    </td>
+                    <td style="font-size: 0.75rem; color: #95A5A6;">
+                      {{ user.createdAt | date:'yyyy/MM/dd' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div style="padding: 2rem; text-align: center; color: #95A5A6; font-size: 0.8125rem;">
+              لا يوجد مستخدمون حديثون
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Appointments -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h3 class="section-title">آخر الحجوزات</h3>
+          <a class="section-link" routerLink="/admin/appointments">عرض الكل ←</a>
+        </div>
+        <div class="dashboard-table-wrapper">
+          @if (data.recentAppointments && data.recentAppointments.length > 0) {
+            <table class="dashboard-table">
+              <thead>
+                <tr>
+                  <th>العميل</th>
+                  <th>المتخصص</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (apt of data.recentAppointments; track apt.id) {
+                  <tr>
+                    <td>
+                      <span class="user-cell-name">{{ apt.userName }}</span>
+                    </td>
+                    <td>
+                      <span style="font-size: 0.8125rem; color: #2E86AB;">{{ apt.specialistName }}</span>
+                    </td>
+                    <td>
+                      <span class="status-badge" [class]="getStatusClass(apt.status)">
+                        {{ getStatusLabel(apt.status) }}
+                      </span>
+                    </td>
+                    <td style="font-size: 0.75rem; color: #95A5A6;">
+                      {{ apt.scheduledAt | date:'yyyy/MM/dd' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div style="padding: 2rem; text-align: center; color: #95A5A6; font-size: 0.8125rem;">
+              لا يوجد حجوزات حديثة
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h3 class="section-title">إجراءات سريعة</h3>
+      </div>
+      <div class="quick-actions">
+        <a class="quick-action-btn primary" routerLink="/admin/specialists" fragment="pending">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <polyline points="17 11 19 13 23 9"/>
+          </svg>
+          مراجعة المتخصصين المعلقين
+        </a>
+        <a class="quick-action-btn" routerLink="/admin/users">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          عرض كل المستخدمين
+        </a>
+        <a class="quick-action-btn" routerLink="/admin/payments">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          إدارة المدفوعات
+        </a>
+      </div>
+    </div>
+  }
+
+</div>

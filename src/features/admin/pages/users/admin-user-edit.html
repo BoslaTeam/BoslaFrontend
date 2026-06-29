@@ -1,0 +1,80 @@
+<div class="user-form-page">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    العودة للقائمة
+  </button>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h2>تعديل بيانات المستخدم</h2>
+      <p>قم بتحديث بيانات الملف الشخصي للمستخدم أدناه.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>الاسم الكامل *</label>
+          <input type="text" formControlName="fullName" placeholder="الاسم الكامل" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input type="text" formControlName="phoneNumber" placeholder="رقم الهاتف" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>البلد</label>
+          <input type="text" formControlName="country" placeholder="البلد" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>المسمى الوظيفي</label>
+          <input type="text" formControlName="title" placeholder="المسمى الوظيفي" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label>الجنس</label>
+          <select formControlName="gender" class="form-input">
+            <option value="">غير محدد</option>
+            <option value="Male">ذكر</option>
+            <option value="Female">أنثى</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>اللغة المفضلة</label>
+          <input type="text" formControlName="preferredLanguage" placeholder="عربي، إنجليزي..." class="form-input">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>نبذة تعريفية (Bio)</label>
+          <textarea formControlName="bio" placeholder="نبذة عن المستخدم" class="form-input" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>الدور *</label>
+          <select formControlName="role" class="form-input">
+            <option [ngValue]="0">مستخدم</option>
+            <option [ngValue]="1">متخصص</option>
+            <option [ngValue]="2">مدير</option>
+          </select>
+        </div>
+
+        <div class="form-group toggle-wrapper" style="align-items: flex-end; padding-bottom: 0.5rem;">
+          <input type="checkbox" formControlName="isActive" id="isActiveCheck">
+          <label for="isActiveCheck" style="margin-bottom: 0; cursor: pointer;">الحساب نشط</label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">إلغاء</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting">
+          حفظ التغييرات
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

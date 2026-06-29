@@ -1,0 +1,45 @@
+<div class="bg-white border rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden h-40 transition-all duration-200 shadow-sm hover:shadow-md"
+    [class.border-bosla-charcoal/10]="!hasOrangeBorder()" [class.border-l-4]="hasOrangeBorder()"
+    [class.border-l-bosla-orange]="hasOrangeBorder()" [class.border-y-bosla-charcoal/10]="hasOrangeBorder()"
+    [class.border-r-bosla-charcoal/10]="hasOrangeBorder()" dir="rtl">
+
+    <div class="flex items-start justify-between w-full">
+        <div
+            class="w-10 h-10 bg-bosla-primary/10 rounded-lg flex items-center justify-center text-bosla-primary text-base shrink-0">
+            <i [class]="icon()"></i>
+        </div>
+
+        <span class="text-xs font-sans text-bosla-charcoal/60 font-medium">
+            {{ title() }}
+        </span>
+    </div>
+
+    <div class="flex items-end justify-between w-full mt-4">
+
+        <span class="text-[13px] font-sans text-bosla-charcoal/40">
+            {{ subtitle() }}
+        </span>
+
+        <div class="flex items-center gap-2.5">
+
+            @if (trendDirection() === 'up') {
+            <div class="inline-flex items-center gap-1 px-2 py-0.5 bg-bosla-success/10 text-bosla-success rounded-full text-xs font-sans font-bold"
+                dir="ltr">
+                <span>{{ trendValue() }}</span>
+                <i class="fa-solid fa-arrow-trend-up text-[10px]"></i>
+            </div>
+            } @else if (trendDirection() === 'down') {
+            <div class="inline-flex items-center gap-1 px-2 py-0.5 bg-bosla-error/10 text-bosla-error rounded-full text-xs font-sans font-bold"
+                dir="ltr">
+                <span>{{ trendValue() }}</span>
+                <i class="fa-solid fa-arrow-trend-down text-[10px]"></i>
+            </div>
+            }
+
+            <h3 class="text-2xl font-bold text-bosla-primary font-sans tracking-tight">
+                {{ value() }}
+            </h3>
+        </div>
+
+    </div>
+</div>

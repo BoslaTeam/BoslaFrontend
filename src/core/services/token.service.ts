@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { StorageService } from './storage.service';
 import { STORAGE_KEYS } from '@core/constants/storage-keys';
-import { UserRole } from '@core/enums/user-role.enum'; 
+import { UserRole } from '@core/enums/user-role.enum';
 import { BehaviorSubject } from 'rxjs';
 
 interface JwtPayload {
   exp: number;
   sub: string;
-  role?: string | number; 
+  role?: string | number;
   [claim: string]: unknown;
 }
 
@@ -34,7 +34,7 @@ export class TokenService {
   clearTokens(): void {
     this.storage.remove(STORAGE_KEYS.accessToken);
     this.storage.remove(STORAGE_KEYS.refreshToken);
-    
+
     this.isRefreshing = false;
     this.refreshedToken$.next(null);
   }
@@ -64,11 +64,26 @@ export class TokenService {
   getUserRole(): UserRole | null {
     const token = this.getAccessToken();
     if (!token) return null;
+    return this.extractHighestRole(token);
+  }
+
+  private extractHighestRole(token: string): UserRole | null {
     const decoded = this.decodeToken(token);
-    
-    if (decoded && decoded['role'] !== undefined) {
-      return Number(decoded['role']) as UserRole;
-    }
+    if (!decoded || decoded['role'] === undefined) return null;
+
+    const raw = decoded['role'];
+    const roles = Array.isArray(raw)
+      ? raw.map(r => String(r))
+      : [String(raw)];
+
+    if (roles.includes('Admin')) return UserRole.Admin;
+    if (roles.includes('Specialist')) return UserRole.Specialist;
+    if (roles.includes('User')) return UserRole.User;
+
+    if (roles.includes('2')) return UserRole.Admin;
+    if (roles.includes('1')) return UserRole.Specialist;
+    if (roles.includes('0')) return UserRole.User;
+
     return null;
   }
 

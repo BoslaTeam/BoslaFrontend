@@ -1,0 +1,18 @@
+/* ── Messaging Page Host ─────────────────────────────────────────────── */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Ensure chat layout fills available height inside the layout shell */
+.chat-layout {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Override body background for the messaging page */
+:host {
+  background: var(--chat-surface-2, #F7F9FA);
+}

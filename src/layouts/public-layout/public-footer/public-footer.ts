@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { UiLogo } from "@shared/ui/logo/logo";
+import { NavigationService } from '@core/navigation/navigation.service';
 
 @Component({
   selector: 'app-public-footer',
-  imports: [],
-  templateUrl: './public-footer.html',
-  styles: ``,
+  imports: [RouterLink, UiLogo],
+  templateUrl: './public-footer.html'
 })
-export class PublicFooter {}
+export class PublicFooter {
+  readonly navigationService = inject(NavigationService);
+}

@@ -1,0 +1,49 @@
+<div class="relative w-full text-right" dir="rtl">
+
+    @if (label()) {
+    <label class="block text-sm font-medium text-bosla-charcoal mb-1.5 selection:bg-transparent">
+        {{ label() }}
+    </label>
+    }
+
+    <button type="button" (click)="toggleDropdown()" [disabled]="disabled()"
+        class="w-full h-11 px-4 bg-bosla-offwhite border rounded-xl flex items-center justify-between gap-3 text-right cursor-pointer select-none transition-all duration-200 outline-hidden font-sans text-[15px]"
+        [class.border-bosla-charcoal/10]="!isOpen() && !disabled()"
+        [class.text-bosla-charcoal/40]="selectedValue() === null && !disabled()"
+        [class.text-bosla-charcoal]="selectedValue() !== null && !disabled()"
+        [class.hover:border-bosla-blue]="!disabled() && !isOpen()" [class.border-bosla-primary]="isOpen()"
+        [class.ring-2]="isOpen()" [class.ring-bosla-primary/10]="isOpen()" [class.bg-bosla-offwhite]="disabled()"
+        [class.border-bosla-charcoal/10]="disabled()" [class.text-bosla-charcoal/30]="disabled()"
+        [class.cursor-not-allowed]="disabled()">
+
+        <span>{{ selectedLabel }}</span>
+
+        <i class="fa-solid fa-chevron-down text-xs text-bosla-charcoal/60 transition-transform duration-200 shrink-0"
+            [class.rotate-180]="isOpen()"></i>
+    </button>
+
+    @if (isOpen() && !disabled()) {
+    <div
+        class="absolute z-50 w-full mt-1 bg-white border border-bosla-charcoal/10 rounded-xl shadow-sm max-h-60 overflow-y-auto divide-y divide-bosla-charcoal/5 py-1 animate-fadeIn">
+        @for (option of options(); track option.value) {
+        <div (click)="selectOption(option)"
+            class="px-4 py-3 flex items-center justify-between cursor-pointer select-none text-[14px] font-sans transition-colors duration-150"
+            [class.bg-bosla-primary/5]="selectedValue() === option.value"
+            [class.text-bosla-primary]="selectedValue() === option.value"
+            [class.font-bold]="selectedValue() === option.value"
+            [class.text-bosla-charcoal]="selectedValue() !== option.value"
+            [class.hover:bg-bosla-offwhite]="selectedValue() !== option.value">
+            <span>{{ option.label }}</span>
+
+            @if (selectedValue() === option.value) {
+            <i class="fa-solid fa-check text-bosla-orange text-sm font-bold"></i>
+            }
+        </div>
+        } @empty {
+        <div class="px-4 py-3 text-xs text-bosla-charcoal/40 text-center font-sans">
+            لا توجد خيارات متاحة
+        </div>
+        }
+    </div>
+    }
+</div>

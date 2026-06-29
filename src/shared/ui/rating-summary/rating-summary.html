@@ -1,56 +1,48 @@
-<div class="w-full max-w-[480px] bg-[#F7F9FF] border border-bosla-charcoal/10 p-5 rounded-[6px] shadow-xs flex items-center justify-between gap-6"
+<div class="w-full max-w-120 bg-bosla-offwhite border border-bosla-charcoal/10 p-5 rounded-2xl shadow-sm flex items-center justify-between gap-6"
     dir="rtl">
 
-    <!-- الجانب الأيمن: أشرطة التقدم والنسب المئوية بالتطابق مع السكتش -->
-    <div class="flex flex-col gap-2.5 flex-1">
-        @for (item of distribution(); track item.stars) {
-        <div class="flex items-center gap-3 w-full">
-            <!-- 1. النسبة المئوية -->
-            <span class="text-[12px] font-sans font-semibold text-bosla-charcoal/40 w-8 text-right">
-                {{ item.percentage }}%
-            </span>
-
-            <!-- 2. شريط التقدم ذو الخلفية الفاتحة والملء البرتقالي الحاد من اليسار لليمين -->
-            <div class="h-2 flex-1 bg-[#eaf4fa] rounded-full overflow-hidden relative" dir="ltr">
-                <div class="h-full bg-[#F39C12] rounded-full transition-all duration-500"
-                    [style.width.%]="item.percentage"></div>
-            </div>
-
-            <!-- 3. رقم النجمة والأيقونة المصغرة لها -->
-            <div class="flex items-center gap-1 shrink-0 w-6 justify-end">
-                <i class="fa-solid fa-star text-[#F39C12] text-[11px]"></i>
-                <span class="text-[13px] font-sans font-bold text-bosla-primary">
-                    {{ item.stars }}
-                </span>
-            </div>
-        </div>
-        }
-    </div>
-
-    <!-- خط فاصل عمودي ناصع وناعم بالمنتصف -->
-    <div class="w-[1px] h-28 bg-bosla-charcoal/10 shrink-0"></div>
-
-    <!-- الجانب الأيسر: الكتلة الرقمية الكبيرة والنجوم الثابتة -->
-    <div class="flex flex-col items-center justify-center shrink-0 px-2 text-center">
-        <!-- الرقم الإجمالي الكبير -->
-        <h1 class="text-[42px] font-sans font-black text-bosla-primary tracking-tight leading-none mb-1.5">
+    <div class="flex flex-col items-center justify-center shrink-0 pl-2 text-center select-none">
+        <h1 class="text-[44px] font-sans font-black text-bosla-primary tracking-tight leading-none mb-1">
             {{ averageRating() | number:'1.1-1' }}
         </h1>
 
-        <!-- النجوم الثابتة المصاحبة للرقم الكلي -->
-        <div class="flex gap-0.5 text-[#F39C12] text-[14px] mb-2">
+        <div class="flex flex-row-reverse gap-0.5 text-bosla-orange text-[13px] mb-2">
             @for (star of fullStars(); track $index) {
             <i class="fa-solid fa-star"></i>
             }
-            <!-- نجمة مفرغة تكميلية لو كان المتوسط أقل من 5 تماماً -->
-            @if (averageRating() < 5) { <i class="fa-solid fa-star-half-stroke"></i>
+            @if (averageRating() < 5) { <i class="fa-solid fa-star-half-stroke fa-flip-horizontal"></i>
                 }
         </div>
 
-        <!-- عدد التقييمات في الأسفل -->
-        <span class="text-[11px] font-sans font-bold text-bosla-charcoal/40">
+        <span class="text-[12px] font-sans font-bold text-bosla-charcoal/40">
             {{ totalReviews() }} تقييم
         </span>
+    </div>
+
+    <div class="w-px h-24 bg-bosla-charcoal/10 shrink-0"></div>
+
+    <div class="flex flex-col gap-2.5 flex-1 w-full" dir="rtl">
+        @for (item of distribution(); track item.stars) {
+        <div class="flex items-center gap-3 w-full">
+
+            <div class="flex items-center gap-1.5 shrink-0 w-6 justify-start">
+                <span class="text-[13px] font-sans font-bold text-bosla-primary">
+                    {{ item.stars }}
+                </span>
+                <i class="fa-solid fa-star text-bosla-orange text-[11px]"></i>
+            </div>
+
+            <div class="h-1.5 flex-1 bg-[#eaf4fa] rounded-full overflow-hidden relative" dir="rtl">
+                <div class="h-full bg-bosla-orange rounded-xl transition-all duration-500"
+                    [style.width.%]="item.percentage"></div>
+            </div>
+
+            <span class="text-[12px] font-sans font-semibold text-bosla-charcoal/40 w-8 text-left shrink-0">
+                {{ item.percentage }}%
+            </span>
+
+        </div>
+        }
     </div>
 
 </div>

@@ -1,0 +1,243 @@
+<div class="user-detail-page">
+
+  <!-- Back Button -->
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    العودة للقائمة
+  </button>
+
+  @if (isLoading()) {
+    <div class="detail-skeleton">
+      <div class="profile-header">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-40"></div>
+            <div class="skeleton-line w-30"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skeleton-block"></div>
+    </div>
+  } @else if (hasError() || !user()) {
+    <div class="error-card">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3>خطأ في تحميل بيانات المستخدم</h3>
+      <p>حدث خطأ أثناء محاولة جلب تفاصيل المستخدم.</p>
+      <button class="retry-btn" (click)="loadUser()">إعادة المحاولة</button>
+    </div>
+  } @else {
+    @let u = user()!;
+    
+    <!-- Profile Header Card -->
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="profile-info">
+          <div class="profile-avatar">
+            @if (u.profilePictureUrl || u.avatarUrl) {
+              <img [src]="u.profilePictureUrl || u.avatarUrl" [alt]="u.fullName">
+            } @else {
+              {{ getUserInitials(u.fullName) }}
+            }
+          </div>
+          <div>
+            <h2 class="profile-name">{{ u.fullName }}</h2>
+            <div class="profile-email">{{ u.email }}</div>
+            <div class="profile-badges">
+              <span class="role-badge" [class]="getRoleClass(u.role)">
+                {{ getRoleName(u.role) }}
+              </span>
+              @if (u.isActive) {
+                <span class="status-active-badge">
+                  <span class="status-dot"></span>نشط
+                </span>
+              } @else {
+                <span class="status-inactive-badge">
+                  <span class="status-dot"></span>معطل
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button 
+            class="toggle-status-btn" 
+            [class.deactivate]="u.isActive" 
+            [class.activate]="!u.isActive"
+            [disabled]="isToggling()"
+            (click)="toggleUserStatus()"
+          >
+            @if (isToggling()) {
+              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              جاري التنفيذ...
+            } @else {
+              @if (u.isActive) {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+                تعطيل الحساب
+              } @else {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                تفعيل الحساب
+              }
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="detail-tabs">
+      <button class="detail-tab" [class.active]="activeTab() === 'info'" (click)="setTab('info')">
+        المعلومات الأساسية
+      </button>
+      <button class="detail-tab" [class.active]="activeTab() === 'education'" (click)="setTab('education')">
+        التعليم ({{ u.education.length || 0 }})
+      </button>
+      <button class="detail-tab" [class.active]="activeTab() === 'social'" (click)="setTab('social')">
+        الروابط الاجتماعية ({{ u.socialLinks.length || 0 }})
+      </button>
+      <button class="detail-tab" [class.active]="activeTab() === 'activity'" (click)="setTab('activity')">
+        النشاط
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      
+      <!-- Info Tab -->
+      @if (activeTab() === 'info') {
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">المسمى الوظيفي</span>
+            <span class="info-value" [class.empty]="!u.title">{{ u.title || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">رقم الهاتف</span>
+            <span class="info-value" [class.empty]="!u.phoneNumber">{{ u.phoneNumber || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">البلد</span>
+            <span class="info-value" [class.empty]="!u.country">{{ u.country || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">الجنس</span>
+            <span class="info-value" [class.empty]="!u.gender">{{ u.gender || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">اللغة المفضلة</span>
+            <span class="info-value" [class.empty]="!u.preferredLanguage">{{ u.preferredLanguage || 'لم يحدد' }}</span>
+          </div>
+        </div>
+
+        @if (u.bio) {
+          <div class="bio-section">
+            <div class="info-label" style="margin-bottom: 0.5rem;">نبذة عن المستخدم</div>
+            <p class="bio-text">{{ u.bio }}</p>
+          </div>
+        }
+      }
+
+      <!-- Education Tab -->
+      @if (activeTab() === 'education') {
+        @if (u.education && u.education.length > 0) {
+          <div class="education-list">
+            @for (edu of u.education; track edu.id) {
+              <div class="education-item">
+                <div class="education-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="education-degree">{{ edu.degree }}</div>
+                  <div class="education-institution">{{ edu.institution }}</div>
+                  <div class="education-years">{{ edu.startYear }} - {{ edu.endYear || 'الآن' }}</div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <p>لا يوجد سجل تعليمي مضاف لهذا المستخدم</p>
+          </div>
+        }
+      }
+
+      <!-- Social Links Tab -->
+      @if (activeTab() === 'social') {
+        @if (u.socialLinks && u.socialLinks.length > 0) {
+          <div class="social-list">
+            @for (link of u.socialLinks; track link.id) {
+              <div class="social-item">
+                <div class="social-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path [attr.d]="getPlatformIcon(link.platform) || 'M13.828 10.172a4 4 0 0 0-5.656 0l-4 4a4 4 0 1 0 5.656 5.656l1.102-1.101m-.758-4.899a4 4 0 0 0 5.656 0l4-4a4 4 0 0 0-5.656-5.656l-1.1 1.1'"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="social-platform">{{ link.platform }}</div>
+                  <a [href]="link.url" target="_blank" class="social-url">{{ link.url }}</a>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </div>
+            <p>لا يوجد روابط تواصل اجتماعي مضافة</p>
+          </div>
+        }
+      }
+
+      <!-- Activity Tab -->
+      @if (activeTab() === 'activity') {
+        <div class="activity-items">
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <span class="activity-label">تاريخ التسجيل</span>
+            <span class="activity-value">{{ u.createdAt | date:'yyyy/MM/dd HH:mm a' }}</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background: #16a34a;"></div>
+            <span class="activity-label">آخر تسجيل دخول</span>
+            <span class="activity-value" [class.empty]="!u.lastLoginAt">{{ u.lastLoginAt ? (u.lastLoginAt | date:'yyyy/MM/dd HH:mm a') : 'غير متوفر' }}</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background: #F39C12;"></div>
+            <span class="activity-label">عدد الحجوزات</span>
+            <span class="activity-value">{{ u.appointmentsCount || 0 }} حجز</span>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>

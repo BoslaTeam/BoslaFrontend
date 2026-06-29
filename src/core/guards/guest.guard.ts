@@ -2,10 +2,12 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AUTH_CONFIG } from '../config/auth.config';
+import { NavigationService } from '../navigation/navigation.service';
 
 export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const navigationService = inject(NavigationService);
 
   if (!authService.isAuthenticated()) {
     return true;
@@ -20,5 +22,5 @@ export const guestGuard: CanActivateFn = () => {
     }
   }
 
-  return router.createUrlTree(['/']);
+  return router.createUrlTree([navigationService.homeRoute]);
 };

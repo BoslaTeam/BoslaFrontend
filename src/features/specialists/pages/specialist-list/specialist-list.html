@@ -1,0 +1,95 @@
+<div class="bg-bosla-offwhite min-h-screen relative z-10 pt-28 pb-16 font-sans" dir="rtl">
+
+    <div class="container mx-auto px-6">
+
+        <!-- Hero -->
+        <div class="text-center max-w-4xl mx-auto mb-12">
+
+            <span
+                class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-bosla-primary/10 text-bosla-primary font-bold mb-6">
+                <i class="fa-solid fa-compass text-bosla-orange"></i>
+                نخبة الخبراء والمتخصصين
+            </span>
+
+            <h1 class="text-5xl md:text-6xl font-black text-bosla-primary leading-tight mb-6">
+                ابحث عن
+                <span class="text-bosla-orange">
+                    المتخصص المناسب
+                </span>
+                لك
+            </h1>
+
+            <p class="text-lg text-bosla-charcoal max-w-2xl mx-auto leading-relaxed">
+                تواصل مع مستشارين وخبراء موثوقين في مختلف المجالات واحجز جلسات استشارية بسهولة.
+            </p>
+
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-10">
+            <specialist-filters [filters]="store.filters()" [expertise]="store.expertise()" [skills]="store.skills()"
+                [tools]="store.tools()" (filtersChanged)="onFiltersChanged($event)">
+            </specialist-filters>
+        </div>
+
+        <!-- Loading -->
+        @if (store.loading()) {
+
+        <div class="flex justify-center py-20">
+            <div class="animate-spin w-12 h-12 border-4 border-white/20 border-t-bosla-orange rounded-full">
+            </div>
+        </div>
+
+        }
+
+        <!-- Empty -->
+        @else if (store.isEmpty()) {
+
+        <div class="bg-white rounded-3xl p-10 shadow-sm border border-slate-200">
+
+            <ui-empty-state title="لا يوجد متخصصون" description="لم يتم العثور على نتائج مطابقة للفلاتر المحددة">
+            </ui-empty-state>
+
+        </div>
+
+        }
+
+        <!-- Results -->
+        @else {
+
+        <!-- Results Header -->
+        <div class="flex items-center justify-between mb-8">
+
+            <h2 class="text-bosla-primary font-black text-2xl">
+                المتخصصون
+            </h2>
+
+            <div
+                class="px-4 py-2 rounded-full bg-white border border-slate-200 text-bosla-charcoal text-sm font-semibold shadow-sm">
+
+                الصفحة {{ store.currentPage() }}
+                من
+                {{ store.totalPages() }}
+
+            </div>
+
+        </div>
+
+        <!-- Grid -->
+        <specialists-grid [specialists]="store.specialists()" (detailsClick)="onSpecialistSelected($event)">
+        </specialists-grid>
+
+        <!-- Pagination -->
+        <div class="mt-12 flex justify-center p-6 rounded-3xl bg-white shadow-sm border border-slate-200">
+
+            <ui-pagination [currentPage]="store.currentPage()" [totalPages]="store.totalPages()"
+                (pageChange)="onPageChanged($event)">
+            </ui-pagination>
+
+        </div>
+
+        }
+
+    </div>
+
+</div>

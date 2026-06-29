@@ -1,0 +1,25 @@
+<div class="min-h-[calc(100vh-80px)] bg-slate-50 flex items-start justify-center p-4 md:p-8" dir="rtl">
+  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-10 mt-20">
+    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()" [titles]="stepTitles" />
+
+    <div class="mt-8">
+      @switch (onboardingStore.currentStep()) {
+      @case (0) {
+      <basic-info-step (completed)="onboardingStore.nextStep()" />
+      }
+      @case (1) {
+      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (2) {
+      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (3) {
+      <experience-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (4) {
+      <availability-step (completed)="onAvailabilityCompleted()" (back)="onboardingStore.previousStep()" />
+      }
+      }
+    </div>
+  </div>
+</div>

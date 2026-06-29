@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
 
 @source "./app";
 @source "./features";
@@ -13,16 +15,57 @@
   --color-bosla-primary: #1B4F72;
   --color-bosla-success: #16a34a;
   --color-bosla-error: #ba1a1a;
+  --color-bosla-grey: #95A5A6;
 
   --font-sans: 'Cairo', sans-serif;
+  --font-inter: 'Inter', sans-serif;
 }
 
 @layer base {
   body {
     @apply bg-bosla-offwhite text-bosla-charcoal font-sans antialiased;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-sans font-bold text-bosla-primary;
+  }
+}
+
+/* ─── View Transition Animations ─── */
+
+::view-transition-old(root) {
+  animation: fade-and-slide-out 0.25s ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: fade-and-slide-in 0.3s ease-out 0.1s both;
+}
+
+@keyframes fade-and-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fade-and-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

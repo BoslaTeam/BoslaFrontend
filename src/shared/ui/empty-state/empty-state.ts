@@ -7,8 +7,13 @@ import { Component, input } from '@angular/core';
   templateUrl: './empty-state.html',
   styleUrl: './empty-state.css',
 })
-export class EmptyState {
-  readonly icon = input<string>('');
-  readonly title = input<string>('No data available');
+export class UiEmptyState {
+  // اسم كلاس أيقونة Font Awesome مثل (fa-solid fa-envelope-open-text)
+  readonly icon = input<string>('fa-solid fa-folder-open'); 
+  
+  // العنوان الرئيسي للحالة الفارغة
+  readonly title = input<string>('لا توجد بيانات متاحة حالياً');
+  
+  // الوصف التفصيلي المساعد للـ Empty State
   readonly description = input<string>('');
 }

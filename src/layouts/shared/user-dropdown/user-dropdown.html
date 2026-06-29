@@ -1,0 +1,43 @@
+<div class="relative user-dropdown-container">
+  <button (click)="toggleDropdown()" title="قائمة المستخدم"
+    class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm border border-white/10 hover:border-white/30 overflow-hidden cursor-pointer focus:outline-none">
+    @if (authService.currentUser()?.avatarUrl && !avatarError) {
+    <img [src]="authService.currentUser()?.avatarUrl" alt="Profile" class="w-full h-full object-cover"
+      (error)="onAvatarError()">
+    } @else {
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+    }
+  </button>
+
+  @if (isDropdownOpen()) {
+  <div
+    class="absolute left-0 mt-3 w-56 bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-100 flex flex-col transform origin-top-left transition-all duration-200">
+    <div class="px-4 py-3 border-b border-slate-100">
+      <p class="text-sm font-bold text-slate-800 truncate">{{ authService.currentUser()?.fullName || 'مستخدم' }}</p>
+      <p class="text-xs text-slate-500 truncate mt-0.5">{{ authService.currentUser()?.email || '' }}</p>
+    </div>
+
+    @for (item of dropdownModel(); track item.label) {
+    @if (item.divider) {
+    <div class="h-px bg-slate-100 my-1"></div>
+    } @else if (item.destructive) {
+    <button (click)="logout(); closeDropdown()"
+      class="w-full text-right px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors">
+      <span [innerHTML]="item.icon"></span>
+      {{ item.label }}
+    </button>
+    } @else {
+    <a [routerLink]="item.route" (click)="closeDropdown()"
+      class="px-4 py-2.5 text-sm text-slate-600 hover:text-bosla-primary hover:bg-slate-50 flex items-center gap-3 transition-colors">
+      <span [innerHTML]="item.icon"></span>
+      {{ item.label }}
+    </a>
+    }
+    }
+  </div>
+  }
+</div>

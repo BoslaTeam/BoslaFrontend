@@ -1,0 +1,346 @@
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans">
+    
+    <!-- Top Header Navigation -->
+    <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Breadcrumb -->
+        <div class="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">
+                الرئيسية
+            </a>
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            <span class="text-bosla-primary font-bold">
+                لوحة تحكم الاختصاصي
+            </span>
+        </div>
+        
+        <!-- Controls -->
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="flex h-12 w-full md:w-[320px] items-center rounded-2xl border border-slate-200 bg-white px-4 shadow-sm focus-within:border-bosla-compass focus-within:ring-2 focus-within:ring-bosla-compass/20 transition-all">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 ml-2"></i>
+                <input #search type="text" (input)="searchTerm.set(search.value)"
+                    placeholder="البحث عن مواعيد أو عملاء..." class="w-full border-none bg-transparent outline-none text-slate-700" />
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-100 text-slate-600 hover:text-bosla-primary hover:border-bosla-primary/30 transition-all group">
+                <i class="fa-regular fa-bell text-xl group-hover:animate-swing"></i>
+                <span class="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-bosla-orange border-2 border-white"></span>
+            </button>
+            
+            <!-- Help -->
+            <button class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-100 text-slate-600 hover:text-bosla-primary hover:border-bosla-primary/30 transition-all">
+                <i class="fa-regular fa-circle-question text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    @if (searchTerm()) {
+    <p class="mb-6 text-sm font-bold text-bosla-compass">
+        تم العثور على {{ filteredAppointments().length }} نتيجة لـ "{{ searchTerm() }}"
+    </p>
+    }
+
+    <!-- Welcome Section -->
+    <div class="mb-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="text-right">
+            <h1 class="text-3xl font-black text-bosla-primary mb-2">
+                👋 مرحباً بك مجدداً، {{ profile()?.name || 'يا اختصاصي' }}
+            </h1>
+            <p class="text-slate-500 text-lg">
+                إليك نظرة سريعة على أدائك وجلساتك اليوم. لديك <span class="font-bold text-bosla-orange">{{ dashboard()?.upcomingAppointments ?? 0 }}</span> جلسات قادمة.
+            </p>
+        </div>
+        <a routerLink="/specialist/profile" class="flex items-center gap-2 px-6 py-3 bg-bosla-primary/5 hover:bg-bosla-primary/10 text-bosla-primary font-bold rounded-xl transition-colors border border-bosla-primary/10 whitespace-nowrap">
+            <i class="fa-regular fa-user"></i>
+            الذهاب للملف الشخصي
+        </a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Rating -->
+        <div class="group rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute -left-6 -top-6 w-24 h-24 bg-yellow-50 rounded-full blur-xl group-hover:bg-yellow-100 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-50 text-yellow-500 border border-yellow-100">
+                        <i class="fa-solid fa-star text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-slate-500 font-medium">التقييم العام</h3>
+                <div class="flex items-end gap-2 mt-2">
+                    <p class="text-4xl font-black text-bosla-primary">{{ dashboard()?.averageRating ?? '0.0' }}</p>
+                    <p class="text-sm font-bold text-slate-400 mb-1">/ 5 ({{ dashboard()?.totalReviews ?? 0 }} تقييم)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings -->
+        <div class="group rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute -left-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-xl group-hover:bg-green-100 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+                        <i class="fa-solid fa-wallet text-2xl"></i>
+                    </div>
+                    <span class="flex items-center gap-1 font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg text-sm border border-green-100">
+                        <i class="fa-solid fa-arrow-trend-up text-xs"></i>
+                        {{ dashboard()?.earningsGrowthPercentage ?? 0 }}%
+                    </span>
+                </div>
+                <h3 class="text-slate-500 font-medium">أرباح الشهر</h3>
+                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.monthlyEarnings ?? 0 }} <span class="text-lg font-bold text-slate-400">ريال</span></p>
+            </div>
+        </div>
+
+        <!-- Completed Appointments -->
+        <div class="group rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute -left-6 -top-6 w-24 h-24 bg-bosla-compass/10 rounded-full blur-xl group-hover:bg-bosla-compass/20 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-bosla-compass/10 text-bosla-compass border border-bosla-compass/20">
+                        <i class="fa-solid fa-clipboard-check text-2xl"></i>
+                    </div>
+                    <span class="flex items-center gap-1 font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg text-sm border border-green-100">
+                        <i class="fa-solid fa-arrow-trend-up text-xs"></i>
+                        {{ dashboard()?.completedAppointmentsGrowthPercentage ?? 0 }}%
+                    </span>
+                </div>
+                <h3 class="text-slate-500 font-medium">جلسات مكتملة</h3>
+                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.completedAppointments ?? 0 }}</p>
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments -->
+        <div class="group rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute -left-6 -top-6 w-24 h-24 bg-bosla-orange/10 rounded-full blur-xl group-hover:bg-bosla-orange/20 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="mb-6 flex items-center justify-between">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-bosla-orange/10 text-bosla-orange border border-bosla-orange/20">
+                        <i class="fa-regular fa-calendar-check text-2xl"></i>
+                    </div>
+                    <span class="flex items-center gap-1 font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg text-sm border border-green-100">
+                        <i class="fa-solid fa-arrow-trend-up text-xs"></i>
+                        {{ dashboard()?.upcomingAppointmentsGrowthPercentage ?? 0 }}%
+                    </span>
+                </div>
+                <h3 class="text-slate-500 font-medium">مواعيد قادمة</h3>
+                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.upcomingAppointments ?? 0 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Line Chart -->
+    <div class="mb-10">
+        <div class="rounded-3xl bg-white p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+            <div class="mb-8 flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-bosla-orange text-xl"></i>
+                        تحليلات الإيرادات
+                    </h2>
+                    <p class="mt-1 text-sm font-medium text-slate-500">
+                        الإيرادات الشهرية خلال السنة الحالية
+                    </p>
+                </div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 px-5 py-2 text-bosla-primary font-bold text-sm">
+                    العام 2026
+                </div>
+            </div>
+
+            <!-- SVG Line Chart Area -->
+            <div class="relative h-[250px] w-full mt-10">
+                <!-- Chart Background Lines -->
+                <div class="absolute inset-0 flex flex-col justify-between opacity-10 pointer-events-none">
+                    <div class="border-t border-slate-400 w-full"></div>
+                    <div class="border-t border-slate-400 w-full"></div>
+                    <div class="border-t border-slate-400 w-full"></div>
+                    <div class="border-t border-slate-400 w-full"></div>
+                    <div class="border-t border-slate-800 w-full"></div>
+                </div>
+
+                @if (dashboard()?.monthlyRevenue?.length) {
+                    <svg class="w-full h-full overflow-visible" viewBox="0 0 800 250" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#F39C12" stop-opacity="1"/>
+                                <stop offset="100%" stop-color="#F39C12" stop-opacity="0.8"/>
+                            </linearGradient>
+                            <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#F39C12" stop-opacity="0.3"/>
+                                <stop offset="100%" stop-color="#F39C12" stop-opacity="0"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Area Fill -->
+                        <path [attr.d]="revenueLineChartPath() + ' L 800,250 L 0,250 Z'" fill="url(#areaGradient)" />
+                        <!-- Line -->
+                        <path [attr.d]="revenueLineChartPath()" fill="none" stroke="url(#lineGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="chart-line-animate" />
+                    </svg>
+                } @else {
+                    <div class="w-full h-full flex items-center justify-center text-slate-400 font-medium">
+                        لا توجد بيانات كافية لعرض الرسم البياني
+                    </div>
+                }
+
+                <!-- X Axis Labels -->
+                <div class="absolute -bottom-8 left-0 right-0 flex justify-between px-2">
+                    @for (item of dashboard()?.monthlyRevenue; track item.month) {
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-slate-500">{{ item.month }}</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ر.س</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="h-8"></div> <!-- Spacer for x-axis labels -->
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments Table & Reviews -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Table -->
+        <div class="lg:col-span-8 rounded-3xl bg-white p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+            <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check text-bosla-compass text-xl"></i>
+                    المواعيد القادمة
+                </h2>
+                <span class="px-3 py-1 bg-bosla-primary/5 text-bosla-primary font-bold rounded-lg text-sm border border-bosla-primary/10">
+                    {{ dashboard()?.upcomingAppointments ?? 0 }} موعد
+                </span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-100">
+                <table class="w-full text-right">
+                    <thead class="bg-slate-50 text-slate-600 font-bold text-sm border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4">العميل</th>
+                            <th class="px-6 py-4">الخدمة</th>
+                            <th class="px-6 py-4">التاريخ والوقت</th>
+                            <th class="px-6 py-4">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @if (filteredAppointments().length === 0) {
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-slate-500 font-medium">
+                                    لا توجد مواعيد قادمة مطابقة.
+                                </td>
+                            </tr>
+                        }
+                        @for (appointment of filteredAppointments(); track appointment.appointmentId) {
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-800">
+                                {{ appointment.clientName }}
+                            </td>
+                            <td class="px-6 py-4 font-medium text-slate-600">
+                                {{ appointment.serviceName }}
+                            </td>
+                            <td class="px-6 py-4 text-slate-500 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-regular fa-clock text-slate-400"></i>
+                                    <span dir="ltr">{{ appointment.startTimeUtc | date:'dd/MM/yyyy HH:mm' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="rounded-xl px-3 py-1 text-xs font-bold border"
+                                    [class.bg-amber-50]="appointment.status === 'Pending'"
+                                    [class.text-amber-600]="appointment.status === 'Pending'"
+                                    [class.border-amber-200]="appointment.status === 'Pending'"
+                                    [class.bg-green-50]="appointment.status === 'Completed'"
+                                    [class.text-green-600]="appointment.status === 'Completed'"
+                                    [class.border-green-200]="appointment.status === 'Completed'"
+                                    [class.bg-red-50]="appointment.status === 'Cancelled'"
+                                    [class.text-red-600]="appointment.status === 'Cancelled'"
+                                    [class.border-red-200]="appointment.status === 'Cancelled'">
+                                    {{
+                                    appointment.status === 'Pending' ? 'قيد الانتظار'
+                                    : appointment.status === 'Completed' ? 'مكتمل'
+                                    : appointment.status === 'Cancelled' ? 'ملغي'
+                                    : appointment.status
+                                    }}
+                                </span>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reviews Sidebar -->
+        <div class="lg:col-span-4 rounded-3xl bg-white p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+            <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+                <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
+                    <i class="fa-regular fa-star-half-stroke text-bosla-orange text-xl"></i>
+                    أحدث التقييمات
+                </h2>
+                <a routerLink="/specialist/profile" class="text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors">
+                    عرض الكل
+                </a>
+            </div>
+
+            <div class="space-y-4">
+                @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
+                <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+                    <i class="fa-regular fa-comments text-4xl text-slate-300 mb-3 block"></i>
+                    <span class="text-slate-500 font-medium">لا توجد تقييمات حتى الآن</span>
+                </div>
+                }
+
+                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdOnUtc) {
+                <div class="group rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:border-bosla-compass/30 hover:bg-white hover:shadow-md">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-bosla-primary/10 font-black text-bosla-primary">
+                                {{ review.userName.charAt(0) }}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">
+                                    {{ review.userName }}
+                                </h3>
+                                <span class="text-[11px] font-medium text-slate-400 block mt-0.5" dir="ltr">
+                                    {{ review.createdOnUtc| date:'dd MMM yyyy' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 rounded-lg bg-yellow-50 border border-yellow-100 px-2 py-1">
+                            <i class="fa-solid fa-star text-[10px] text-yellow-500"></i>
+                            <span class="font-bold text-slate-800 text-xs">
+                                {{ review.rating }}
+                            </span>
+                        </div>
+                    </div>
+                    @if (review.comment) {
+                    <p class="text-sm leading-relaxed text-slate-600">
+                        "{{ review.comment }}"
+                    </p>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes drawLine {
+        from { stroke-dasharray: 2000; stroke-dashoffset: 2000; }
+        to { stroke-dasharray: 2000; stroke-dashoffset: 0; }
+    }
+    .chart-line-animate {
+        animation: drawLine 2s ease-out forwards;
+    }
+    @keyframes swing {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-15deg); }
+        50% { transform: rotate(10deg); }
+        75% { transform: rotate(-5deg); }
+    }
+    .animate-swing {
+        animation: swing 1s ease-in-out;
+    }
+</style>

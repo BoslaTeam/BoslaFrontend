@@ -1,1 +1,17 @@
-<p>specialist-layout works!</p>
+<div dir="rtl" class="specialist-layout min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
+  <app-app-header variant="dashboard"></app-app-header>
+
+  <!-- Mobile Overlay -->
+  <div class="fixed inset-0 bg-black/30 z-40 lg:hidden" [class.hidden]="!sidebarMobileOpen()"
+    (click)="closeMobileSidebar()">
+  </div>
+
+  <div class="flex grow pt-20 relative z-10 min-h-screen">
+    <app-specialist-sidebar [isCollapsed]="sidebarCollapsed()" [isMobileOpen]="sidebarMobileOpen()"
+      (toggleCollapse)="toggleSidebar()" (closeMobile)="closeMobileSidebar()" />
+
+    <main class="grow flex flex-col min-w-0" [style.margin-inline-start]="sidebarCollapsed() ? '80px' : '280px'">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
