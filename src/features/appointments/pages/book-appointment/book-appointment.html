@@ -15,22 +15,14 @@
   <div
     class="absolute inset-0 z-0 bg-[linear-gradient(135deg,rgba(27,79,114,0.85)_0%,rgba(46,134,171,0.6)_100%)]"
   ></div>
-  <div class="mb-6">
-    <a
-      [routerLink]="['/user/appointments']"
-      class="inline-flex items-center gap-2 text-sm text-black font-sans"
-    >
-      <svg
-        class="w-4 h-4 transform rotate-180"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-      العودة إلى المواعيد
-    </a>
-  </div>
+<div class="mb-6 z-10">
+      <a [routerLink]="['/user/appointments']" class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-zinc-400 hover:text-bosla-blue transition-colors font-sans">
+        <svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        العودة إلى المواعيد
+      </a>
+    </div>
   <div
     class="bg-white/60 dark:bg-bosla-charcoal/10 backdrop-blur-md border border-bosla-charcoal/5 dark:border-white/5 rounded-2xl p-6 sm:p-8 shadow-sm"
   >
@@ -42,14 +34,10 @@
         أدخل تفاصيل موعد الجلسة الاستشارية ليتم جدولتها مع المختص فوراً.
       </p>
     </div>
-    @if (specialistId()) {
-      <div
-        class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-xl p-4 mb-6"
-      >
+@if (specialistId()) {
+      <div class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-xl p-4 mb-6">
         <span class="flex h-2 w-2 relative">
-          <span
-            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-          ></span>
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
         <p class="text-sm text-emerald-800 dark:text-emerald-400 font-sans font-medium">
