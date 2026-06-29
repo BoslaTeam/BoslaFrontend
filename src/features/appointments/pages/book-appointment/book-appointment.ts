@@ -49,7 +49,7 @@ ngOnInit(): void {
     };
 
     this.store.createAppointment(request, () => {
-      this.router.navigate(['/user/appointments']);
+      this.router.navigate(['/appointments']);
     });
   }
 }

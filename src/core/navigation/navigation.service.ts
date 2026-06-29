@@ -44,6 +44,7 @@ export class NavigationService {
       chat: '/specialist/chat',
       profile: '/specialist/profile',
       availability: '/specialist/availability',
+      appointments: '/specialist/appointments',
     },
     admin: {
       dashboard: '/admin/dashboard',
@@ -67,6 +68,7 @@ export class NavigationService {
   readonly specialistChatRoute = this.ROUTES.specialist.chat;
   readonly specialistProfileRoute = this.ROUTES.specialist.profile;
   readonly specialistAvailabilityRoute = this.ROUTES.specialist.availability;
+  readonly specialistAppointmentsRoute = this.ROUTES.specialist.appointments;
 
   readonly dashboardRoute = computed(() => {
     const role = this.authService.userRole();
@@ -80,6 +82,8 @@ export class NavigationService {
 
     const items: NavItem[] = [
       { label: 'الرئيسية', route: this.ROUTES.public.home, icon: 'home' },
+      { label: 'عن بوصلة', route: '/about', icon: 'about' },
+      { label: 'اتصل بنا', route: '/contact', icon: 'contact' },
     ];
 
     if (role === UserRole.Admin) {
@@ -160,7 +164,7 @@ export class NavigationService {
       },
       {
         label: 'المواعيد',
-        route: this.ROUTES.user.appointments,
+        route: this.ROUTES.specialist.appointments,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
       },
       {

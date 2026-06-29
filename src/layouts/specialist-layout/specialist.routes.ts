@@ -13,10 +13,6 @@ export const SPECIALIST_ROUTES: Routes = [
         loadChildren: () => import('@features/specialists/specialist-routes').then(m => m.SPECIALIST_PANEL_ROUTES),
       },
       {
-        path: 'appointments',
-        loadChildren: () => import('@features/appointments/routes').then(m => m.APPOINTMENTS_ROUTES),
-      },
-      {
         path: 'chat',
         loadChildren: () => import('@features/communications/routes').then(m => m.COMMUNICATIONS_ROUTES),
       },

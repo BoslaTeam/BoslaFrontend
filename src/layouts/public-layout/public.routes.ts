@@ -52,6 +52,14 @@ export const PUBLIC_ROUTES: Routes = [
         loadChildren: () => import('@features/notifications/routes').then(m => m.NOTIFICATIONS_ROUTES),
       },
       {
+        path: 'about',
+        loadChildren: () => import('@features/about/routes').then(m => m.ABOUT_ROUTES),
+      },
+      {
+        path: 'contact',
+        loadChildren: () => import('@features/contact/routes').then(m => m.CONTACT_ROUTES),
+      },
+      {
         path: 'become-specialist',
         canActivate: [authGuard, nonSpecialistGuard],
         loadComponent: () => import('@features/specialists/pages/onboarding/specialist-onboarding').then(m => m.SpecialistOnboardingPage),
