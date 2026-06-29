@@ -7,8 +7,8 @@ export interface AppointmentDto {
   start: string;
   end: string;
   status: number;
-  sessionTopic: string | null;
-  notes: string | null;
+  sessionTopic?: string;
+  notes?: string;
 }
 
 export interface ConversationParticipantDto {
