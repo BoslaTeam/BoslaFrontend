@@ -1,7 +1,7 @@
 <div class="video-room">
   @if (!agoraService.joined()) {
     <div class="video-room-welcome">
-      <button class="video-room-join-btn" (click)="joinSession()" [disabled]="agoraService.joining()">
+      <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
         {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
       </button>
     </div>
@@ -60,6 +60,8 @@
 
   @if (agoraService.joined()) {
     <div class="video-room-controls">
+      <span class="video-room-timer">{{ sessionTimerService.formattedElapsedTime() }}</span>
+
       <button class="video-room-control-btn"
               [class.video-room-control-btn--off]="!agoraService.cameraEnabled()"
               (click)="toggleCamera()"

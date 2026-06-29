@@ -9,6 +9,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AgoraService } from '@core/services/agora.service';
+import { SessionTimerService } from '@core/services/session-timer.service';
 import { VideoSessionService } from '../../services/video-session.service';
 
 @Component({
@@ -25,10 +26,12 @@ export class VideoRoom {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly agoraService = inject(AgoraService);
+  readonly sessionTimerService = inject(SessionTimerService);
   private readonly videoSessionService = inject(VideoSessionService);
 
   private sessionId: string;
   private isDestroyed = false;
+  private _sessionStartedAt: number | null = null;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -39,6 +42,7 @@ export class VideoRoom {
 
     this.destroyRef.onDestroy(() => {
       this.isDestroyed = true;
+      this.sessionTimerService.stop();
       this.agoraService.disconnect();
     });
   }
@@ -76,9 +80,12 @@ export class VideoRoom {
         return;
       }
 
-      await firstValueFrom(
+      const startRes = await firstValueFrom(
         this.videoSessionService.startSession(this.sessionId)
       );
+      this._sessionStartedAt = startRes.data?.startedAt
+        ? new Date(startRes.data.startedAt).getTime()
+        : null;
       if (this.isDestroyed) return;
 
       this.agoraService.initialize();
@@ -107,6 +114,13 @@ export class VideoRoom {
     }
   }
 
+  async handleJoinClick(): Promise<void> {
+    await this.joinSession();
+    if (this._sessionStartedAt !== null) {
+      this.sessionTimerService.start(this._sessionStartedAt);
+    }
+  }
+
   toggleCamera(): void {
     this.agoraService.toggleCamera();
   }
@@ -117,6 +131,7 @@ export class VideoRoom {
 
   async leaveSession(): Promise<void> {
     this.agoraService.clearError();
+    this.sessionTimerService.stop();
     await this.agoraService.disconnect();
 
     try {

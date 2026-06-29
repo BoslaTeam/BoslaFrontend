@@ -109,6 +109,16 @@
   z-index: 2;
 }
 
+/* ── Session Timer ── */
+
+.video-room-timer {
+  font-size: 0.875rem;
+  color: #ccc;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
 /* ── Call Controls Bar ── */
 
 .video-room-controls {
