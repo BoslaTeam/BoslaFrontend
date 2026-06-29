@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpecialistsFilters } from '@features/specialists/contracts/specialist-filters.contract';
-import { SpecialistsStore } from '@features/specialists/store/specialists.store';
+import { SpecialistListStore } from '@features/specialists/store/specialist-list.store';
 import { UiPagination } from "@shared/ui/pagination/pagination";
 import { SpecialistsGridComponent } from "@features/specialists/components/specialists-grid/specialists-grid";
 import { UiEmptyState } from "@shared/ui/empty-state/empty-state";
@@ -12,10 +12,9 @@ import { SpecialistsFiltersComponent } from '@features/specialists/components/sp
   imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState],
   standalone: true,
   templateUrl: './specialist-list.html',
-  styleUrl: './specialist-list.css',
 })
 export class SpecialistListPage implements OnInit {
-  readonly store = inject(SpecialistsStore);
+  readonly store = inject(SpecialistListStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 

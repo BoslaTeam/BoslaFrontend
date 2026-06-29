@@ -3,23 +3,17 @@ import { finalize } from 'rxjs';
 
 import { LookupItem } from '../models/lookup.model';
 import { Specialist } from '../models/specialist.model';
-import { SpecialistDetails } from '../models/specialist-details.model';
-import { Review } from '../models/review.model';
-import { Availability } from '../models/availability.model';
 
 import { SpecialistsFilters } from '../contracts/specialist-filters.contract';
-import { SpecialistsRepository } from '../data-access/specialist.repository';
+import { SpecialistListRepository } from '../data-access/specialist-list.repository';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpecialistsStore {
-  private readonly repository = inject(SpecialistsRepository);
+  private readonly repository = inject(SpecialistListRepository);
 
   readonly specialists = signal<Specialist[]>([]);
-  readonly specialist = signal<SpecialistDetails | null>(null);
-  readonly reviews = signal<Review[]>([]);
-  readonly availability = signal<Availability[]>([]);
 
   readonly expertise = signal<LookupItem[]>([]);
   readonly skills = signal<LookupItem[]>([]);
@@ -27,7 +21,6 @@ export class SpecialistsStore {
   readonly industries = signal<LookupItem[]>([]);
 
   readonly loading = signal(false);
-  readonly detailsLoading = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly currentPage = signal(1);
@@ -121,45 +114,5 @@ export class SpecialistsStore {
           this.error.set(err.message || 'Failed to load specialists');
         },
       });
-  }
-
-  loadSpecialist(specialistId: string) {
-    this.detailsLoading.set(true);
-    this.error.set(null);
-
-    this.repository
-      .getSpecialistById(specialistId)
-      .pipe(finalize(() => this.detailsLoading.set(false)))
-      .subscribe({
-        next: (specialist) => {
-          this.specialist.set(specialist);
-        },
-        error: (err) => {
-          this.error.set(err.message || 'Failed to load specialist details');
-        },
-      });
-  }
-
-  loadReviews(specialistId: string) {
-    this.error.set(null);
-    this.repository.getReviews(specialistId).subscribe({
-      next: (reviews) => this.reviews.set(reviews),
-      error: (err) => this.error.set(err.message || 'Failed to load reviews'),
-    });
-  }
-
-  loadAvailability(specialistId: string) {
-    this.error.set(null);
-    this.repository.getAvailability(specialistId).subscribe({
-      next: (availability) => this.availability.set(availability),
-      error: (err) =>
-        this.error.set(err.message || 'Failed to load availability'),
-    });
-  }
-
-  loadProfile(specialistId: string) {
-    this.loadSpecialist(specialistId);
-    this.loadReviews(specialistId);
-    this.loadAvailability(specialistId);
   }
 }

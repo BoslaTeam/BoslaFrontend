@@ -2,6 +2,7 @@ import { Component, inject, signal, AfterViewInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { NavigationService } from '../../../../core/navigation/navigation.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AUTH_CONFIG } from '../../../../core/config/auth.config';
 import { UserRole } from '../../../../core/enums/user-role.enum';
@@ -17,6 +18,7 @@ declare var google: any;
 export class Login implements AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private navigationService = inject(NavigationService);
   private router = inject(Router);
 
   loginForm = this.fb.group({
@@ -27,7 +29,6 @@ export class Login implements AfterViewInit {
   readonly isLoading = signal(false);
   errorMessage = '';
 
-  // TODO: Replace with actual Google Client ID
   private googleClientId = '818109149867-jlbj83dcs95rknac2g38asnefamefj5o.apps.googleusercontent.com';
 
   ngAfterViewInit() {
@@ -47,7 +48,7 @@ export class Login implements AfterViewInit {
 
     google.accounts.id.renderButton(
       document.getElementById('google-btn-wrapper'),
-      { theme: 'outline', size: 'large' } // Customize button as needed
+      { theme: 'outline', size: 'large' }
     );
   }
 
@@ -59,7 +60,7 @@ export class Login implements AfterViewInit {
       this.authService.googleLogin({ idToken: response.credential }).subscribe({
         next: (res) => {
           if (res.success) {
-            this.authService.redirectByRole();
+            this.navigationService.redirectAfterLogin();
           } else {
             this.errorMessage = res.message || 'Google Login failed.';
           }
@@ -89,7 +90,7 @@ export class Login implements AfterViewInit {
       next: (res) => {
         console.log('[Login] Response:', res);
         if (res.success) {
-          this.authService.redirectByRole();
+          this.navigationService.redirectAfterLogin();
         } else if (res.message) {
           this.errorMessage = res.message;
         }

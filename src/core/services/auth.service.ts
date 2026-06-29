@@ -1,14 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
 import { ApiResponse } from '../models/api-response.model';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { STORAGE_KEYS } from '../constants/storage-keys';
-import { AUTH_CONFIG } from '../config/auth.config';
 import { StorageService } from './storage.service';
 import { TokenService } from './token.service';
+import { NavigationService } from '../navigation/navigation.service';
 import { CurrentUser } from '@features/auth/models/current-user.model';
 import { UserRole } from '@core/enums/user-role.enum';
 import { RegisterRequest } from '@features/auth/contracts/auth.contracts';
@@ -26,14 +25,16 @@ export interface AuthTokensResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly http = inject(HttpClient);
-    private readonly router = inject(Router);
     private readonly tokenService = inject(TokenService);
     private readonly storage = inject(StorageService);
+    private readonly injector = inject(Injector);
 
     private readonly _currentUser = signal<CurrentUser | null>(this.restoreUser());
 
     readonly currentUser = this._currentUser.asReadonly();
     readonly isAuthenticated = computed(() => !!this._currentUser());
+    readonly roles = computed(() => this._currentUser()?.roles ?? []);
+
     readonly userRole = computed(() => {
         const roles = this._currentUser()?.roles;
         if (!roles || roles.length === 0) return null;
@@ -132,21 +133,13 @@ export class AuthService {
         this.tokenService.clearTokens();
         this.storage.remove(STORAGE_KEYS.currentUser);
         this._currentUser.set(null);
-        this.router.navigateByUrl(AUTH_CONFIG.loginRoute);
+        this.injector.get(NavigationService).redirectAfterLogout();
     }
 
     hasRole(...roles: UserRole[]): boolean {
         const userRoles = this._currentUser()?.roles;
         if (!userRoles) return false;
         return roles.some(r => userRoles.includes(r));
-    }
-
-    redirectByRole(fallback: string = '/'): void {
-        const role = this.userRole();
-        const route = role !== null && AUTH_CONFIG.defaultRedirectByRole[role]
-            ? AUTH_CONFIG.defaultRedirectByRole[role]
-            : fallback;
-        this.router.navigateByUrl(route);
     }
 
     private mapRole(role: unknown): UserRole {

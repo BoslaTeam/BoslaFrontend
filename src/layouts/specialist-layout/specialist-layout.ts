@@ -1,19 +1,34 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
-import { SpecialistHeader } from './specialist-header/specialist-header';
-import { UiLogo } from '@shared/ui/logo/logo';
-import { SpecialistProfileStore } from '@features/specialists/store/specialist-profile.store';
+import { AppHeader } from '@layouts/shared/app-header/app-header';
+import { SpecialistSidebar } from './specialist-sidebar/specialist-sidebar';
+import { SpecialistShellService } from './services/specialist-shell.service';
 
 @Component({
   selector: 'app-specialist-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SpecialistHeader, UiLogo],
+  imports: [RouterOutlet, AppHeader, SpecialistSidebar],
   templateUrl: './specialist-layout.html',
 })
-export class SpecialistLayout implements OnInit {
-  readonly profileStore = inject(SpecialistProfileStore);
+export class SpecialistLayout {
+  private readonly shellService = inject(SpecialistShellService);
 
-  ngOnInit() {
-    this.profileStore.loadMyData();
+  readonly sidebarCollapsed = signal(false);
+  readonly sidebarMobileOpen = signal(false);
+
+  constructor() {
+    this.shellService.bootstrap();
+  }
+
+  toggleSidebar(): void {
+    if (window.innerWidth <= 1024) {
+      this.sidebarMobileOpen.update((v) => !v);
+    } else {
+      this.sidebarCollapsed.update((v) => !v);
+    }
+  }
+
+  closeMobileSidebar(): void {
+    this.sidebarMobileOpen.set(false);
   }
 }

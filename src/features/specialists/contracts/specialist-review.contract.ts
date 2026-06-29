@@ -1,6 +1,8 @@
 export interface SpecialistReviewResponse {
-    reviewerName: string;
+    id: string;
+    userId: string;
+    userName: string;
     rating: number;
     comment: string | null;
-    createdAtUtc: string;
+    createdOnUtc: string;
 }

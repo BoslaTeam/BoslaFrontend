@@ -5,7 +5,7 @@ import { ExperienceRequest } from '../contracts/specialist-experience.contract';
 import { AvailabilityRequest } from '../contracts/specialist-availability.contract';
 import { OnboardSpecialistRequest } from '../contracts/specialist-onboard.contract';
 import { SpecialistOnboardingDraft } from '../models/specialist-onboarding-draft.model';
-import { SpecialistsRepository } from '../data-access/specialist.repository';
+import { SpecialistOnboardingRepository } from '../data-access/specialist-onboarding.repository';
 
 const EMPTY_DRAFT: SpecialistOnboardingDraft = {
   basicInfo: null,
@@ -19,7 +19,7 @@ const EMPTY_DRAFT: SpecialistOnboardingDraft = {
   providedIn: 'root',
 })
 export class SpecialistOnboardingStore {
-  private readonly repository = inject(SpecialistsRepository);
+  private readonly repository = inject(SpecialistOnboardingRepository);
 
   readonly currentStep = signal(0);
   readonly totalSteps = signal(5);

@@ -1,19 +1,12 @@
+import { SpecialistBase } from './specialist-base.model';
 import { LookupItem } from './lookup.model';
 
-export interface SpecialistDetails {
-    id: string;
-
+export interface SpecialistDetails extends SpecialistBase {
     userId: string;
 
     email: string;
 
-    name: string;
-
-    title: string;
-
     bio: string;
-
-    imageUrl: string;
 
     country: string;
 
@@ -23,13 +16,7 @@ export interface SpecialistDetails {
 
     experienceYears: number;
 
-    experienceLevel: number;
-
-    hourlyRate: number;
-
     introVideoUrl: string;
-
-    isVerified: boolean;
 
     tools: LookupItem[];
 
@@ -37,9 +24,5 @@ export interface SpecialistDetails {
 
     industries: LookupItem[];
 
-    rating: number;
-
     reviewsCount: number;
-
-    isOnline: boolean;
 }

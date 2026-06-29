@@ -1,40 +1,17 @@
-<div dir="rtl" class="min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
-  
-  <app-specialist-header></app-specialist-header>
+<div dir="rtl" class="specialist-layout min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
+  <app-app-header variant="dashboard"></app-app-header>
+
+  <!-- Mobile Overlay -->
+  <div class="fixed inset-0 bg-black/30 z-40 lg:hidden" [class.hidden]="!sidebarMobileOpen()"
+    (click)="closeMobileSidebar()">
+  </div>
 
   <div class="flex grow pt-20 relative z-10 min-h-screen">
-    
-    <aside class="hidden lg:flex w-70 shrink-0 flex-col border-l border-slate-200 bg-white">
-      
-      <div class="p-8 flex flex-col items-center">
-        <ui-logo size="xl"></ui-logo>
-        <p class="mt-3 text-sm text-slate-500">بوابتك المهنية</p>
-      </div>
+    <app-specialist-sidebar [isCollapsed]="sidebarCollapsed()" [isMobileOpen]="sidebarMobileOpen()"
+      (toggleCollapse)="toggleSidebar()" (closeMobile)="closeMobileSidebar()" />
 
-      <nav class="px-4 flex-1 space-y-2 mt-4">
-        <a routerLink="/specialist/dashboard" routerLinkActive="bg-bosla-primary text-white" [routerLinkActiveOptions]="{exact: true}" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
-          <i class="fa-solid fa-chart-line ml-3"></i> لوحة التحكم
-        </a>
-        <a routerLink="/specialist/appointments" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
-          <i class="fa-regular fa-calendar-check ml-3"></i> المواعيد
-        </a>
-        <a routerLink="/specialist/availability" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
-          <i class="fa-regular fa-clock ml-3"></i> التوافر
-        </a>
-        <a routerLink="/specialist/chat" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
-          <i class="fa-regular fa-comments ml-3"></i> الرسائل
-        </a>
-        <a routerLink="/specialist/profile" routerLinkActive="bg-bosla-primary text-white" class="flex items-center rounded-2xl px-5 py-4 font-bold text-slate-600 hover:bg-bosla-primary/10 hover:text-bosla-primary transition-colors cursor-pointer">
-          <i class="fa-solid fa-gear ml-3"></i> الإعدادات والملف الشخصي
-        </a>
-      </nav>
-
-
-    </aside>
-
-    <main class="grow flex flex-col min-w-0">
+    <main class="grow flex flex-col min-w-0" [style.margin-inline-start]="sidebarCollapsed() ? '80px' : '280px'">
       <router-outlet></router-outlet>
     </main>
-
   </div>
 </div>

@@ -1,0 +1,38 @@
+<div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+  <div class="flex items-center justify-between border-b border-slate-100 pb-6 mb-6">
+    <h2 class="text-xl font-bold text-slate-800">المراجعات والتقييمات</h2>
+    <div class="bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-yellow-100">
+      <i class="fa-solid fa-star"></i>
+      <span>التقييم العام: {{ reviews()?.averageRating || '0.0' }}</span>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    @for (review of reviews()?.reviews!.items; track review.createdOnUtc) {
+      <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex gap-3 items-center">
+            <div class="h-10 w-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">
+              {{ review.userName.charAt(0) }}
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800">{{ review.userName }}</h4>
+              <p class="text-xs text-slate-400" dir="ltr">{{ review.createdOnUtc | date:'dd MMM yyyy' }}</p>
+            </div>
+          </div>
+          <div class="flex gap-1 text-yellow-400 text-sm">
+            @for (s of [1,2,3,4,5]; track s) {
+              <i class="fa-solid fa-star" [class.text-slate-300]="s > review.rating"></i>
+            }
+          </div>
+        </div>
+        <p class="text-slate-600 leading-relaxed text-sm">{{ review.comment }}</p>
+      </div>
+    } @empty {
+      <div class="text-center py-10">
+        <i class="fa-regular fa-comment-dots text-4xl text-slate-300 mb-4 block"></i>
+        <p class="text-slate-500">لا توجد مراجعات حتى الآن.</p>
+      </div>
+    }
+  </div>
+</div>

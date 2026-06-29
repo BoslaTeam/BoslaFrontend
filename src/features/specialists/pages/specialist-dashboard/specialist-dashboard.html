@@ -150,7 +150,7 @@
             </div>
 
             <!-- SVG Line Chart Area -->
-            <div class="relative h-[250px] w-full mt-10">
+            <div class="relative h-62.5 w-full mt-10">
                 <!-- Chart Background Lines -->
                 <div class="absolute inset-0 flex flex-col justify-between opacity-10 pointer-events-none">
                     <div class="border-t border-slate-400 w-full"></div>
@@ -304,19 +304,19 @@
                 </div>
                 }
 
-                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdAtUtc) {
+                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdOnUtc) {
                 <div class="group rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:border-bosla-compass/30 hover:bg-white hover:shadow-md">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-bosla-primary/10 font-black text-bosla-primary">
-                                {{ review.reviewerName.charAt(0) }}
+                                {{ review.userName.charAt(0) }}
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-800 text-sm">
-                                    {{ review.reviewerName }}
+                                    {{ review.userName }}
                                 </h3>
                                 <span class="text-[11px] font-medium text-slate-400 block mt-0.5" dir="ltr">
-                                    {{ review.createdAtUtc| date:'dd MMM yyyy' }}
+                                    {{ review.createdOnUtc| date:'dd MMM yyyy' }}
                                 </span>
                             </div>
                         </div>

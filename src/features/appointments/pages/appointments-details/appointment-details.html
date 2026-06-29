@@ -1,7 +1,7 @@
 <div class="max-w-6xl mx-auto px-4 py-8 bg-bosla-grey" dir="rtl">
   <div class="mb-6">
     <a
-      [routerLink]="['/user/appointments']"
+      [routerLink]="['/appointments']"
       class="inline-flex items-center gap-2 text-sm text-bosla-charcoal/60 hover:text-bosla-blue transition-colors font-sans"
     >
       <svg
@@ -161,7 +161,7 @@
             @for (history of store.selectedItemHistory(); track history.id) {
               <div class="relative">
                 <span
-                  class="absolute -right-[23px] top-1 w-2.5 h-2.5 rounded-full bg-bosla-blue ring-4 ring-white dark:ring-bosla-charcoal"
+                  class="absolute -right-5.75 top-1 w-2.5 h-2.5 rounded-full bg-bosla-blue ring-4 ring-white dark:ring-bosla-charcoal"
                 ></span>
 
                 <div class="text-xs text-bosla-charcoal/40 dark:text-white/40 font-sans">
