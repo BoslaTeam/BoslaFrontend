@@ -32,6 +32,7 @@ export class VideoRoom {
   private sessionId: string;
   private isDestroyed = false;
   private _sessionStartedAt: number | null = null;
+  private _sessionEndedAt: number | null = null;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -56,6 +57,8 @@ export class VideoRoom {
     if (!this.checkBrowserSupport()) return;
 
     this.agoraService.clearError();
+    this._sessionStartedAt = null;
+    this._sessionEndedAt = null;
 
     try {
       const sessionRes = await firstValueFrom(
@@ -68,6 +71,8 @@ export class VideoRoom {
         this.agoraService.setError('Video session not found.');
         return;
       }
+      this._sessionStartedAt = this.toTimestamp(session.startedAt);
+      this._sessionEndedAt = this.toTimestamp(session.endedAt);
 
       const tokenRes = await firstValueFrom(
         this.videoSessionService.generateToken(session.appointmentId)
@@ -83,9 +88,9 @@ export class VideoRoom {
       const startRes = await firstValueFrom(
         this.videoSessionService.startSession(this.sessionId)
       );
-      this._sessionStartedAt = startRes.data?.startedAt
-        ? new Date(startRes.data.startedAt).getTime()
-        : null;
+      if (this._sessionStartedAt === null) {
+        this._sessionStartedAt = this.toTimestamp(startRes.data?.startedAt);
+      }
       if (this.isDestroyed) return;
 
       this.agoraService.initialize();
@@ -117,7 +122,10 @@ export class VideoRoom {
   async handleJoinClick(): Promise<void> {
     await this.joinSession();
     if (this._sessionStartedAt !== null) {
-      this.sessionTimerService.start(this._sessionStartedAt);
+      this.sessionTimerService.start(
+        this._sessionStartedAt,
+        this._sessionEndedAt ?? undefined
+      );
     }
   }
 
@@ -151,5 +159,11 @@ export class VideoRoom {
       );
     }
     return supported;
+  }
+
+  private toTimestamp(value?: string | null): number | null {
+    if (!value) return null;
+    const timestamp = new Date(value).getTime();
+    return Number.isFinite(timestamp) ? timestamp : null;
   }
 }

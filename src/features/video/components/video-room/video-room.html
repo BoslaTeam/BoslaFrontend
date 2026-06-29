@@ -60,7 +60,7 @@
 
   @if (agoraService.joined()) {
     <div class="video-room-controls">
-      <span class="video-room-timer">{{ sessionTimerService.formattedElapsedTime() }}</span>
+      <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
 
       <button class="video-room-control-btn"
               [class.video-room-control-btn--off]="!agoraService.cameraEnabled()"

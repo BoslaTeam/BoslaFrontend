@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import type { Signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -9,11 +9,13 @@ export class SessionTimerService {
   private readonly _elapsedMs = signal(0);
   private readonly _formattedElapsed = signal('00:00');
 
-  readonly elapsedTime: Signal<number> = this._elapsedMs.asReadonly();
-  readonly formattedElapsedTime: Signal<string> = this._formattedElapsed.asReadonly();
+  readonly elapsed: Signal<number> = this._elapsedMs.asReadonly();
+  readonly formattedElapsed: Signal<string> = this._formattedElapsed.asReadonly();
 
   start(startedAt: number, endedAt?: number): void {
     this.stop();
+    if (!Number.isFinite(startedAt)) return;
+
     this._startedAt = startedAt;
 
     if (endedAt !== undefined) {
