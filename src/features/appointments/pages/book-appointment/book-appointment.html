@@ -1,151 +1,254 @@
-<div
-  class="mx-auto relative flex flex-col items-center justify-center min-h-screen overflow-hidden pt-28 px-2 pb-12"
-  dir="rtl"
->
-  <video
-    autoplay
-    loop
-    [muted]="true"
-    playsinline
-    oncontextmenu="return false;"
-    class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-  >
-    <source src="assets/videos/login.mp4" type="video/mp4" />
-  </video>
-  <div
-    class="absolute inset-0 z-0 bg-[linear-gradient(135deg,rgba(27,79,114,0.85)_0%,rgba(46,134,171,0.6)_100%)]"
-  ></div>
-<div class="mb-6 z-10">
-      <a [routerLink]="['/appointments']" class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-zinc-400 hover:text-bosla-blue transition-colors font-sans">
-        <svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-        العودة إلى المواعيد
-      </a>
-    </div>
-  <div
-    class="bg-white/60 dark:bg-bosla-charcoal/10 backdrop-blur-md border border-bosla-charcoal/5 dark:border-white/5 rounded-2xl p-6 sm:p-8 shadow-sm"
-  >
-    <div class="border-b border-bosla-charcoal/5 dark:border-white/5 pb-5 mb-6">
-      <h1 class="text-xl font-bold text-bosla-charcoal dark:text-white font-sans">
-        طلب حجز موعد جديد
-      </h1>
-      <p class="text-xs text-bosla-charcoal/50 dark:text-white/40 mt-1 font-sans">
-        أدخل تفاصيل موعد الجلسة الاستشارية ليتم جدولتها مع المختص فوراً.
-      </p>
-    </div>
-@if (specialistId()) {
-      <div class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-xl p-4 mb-6">
-        <span class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <p class="text-sm text-emerald-800 dark:text-emerald-400 font-sans font-medium">
-          تم ربط الحجز تلقائياً بالمختص المحدد بنجاح.
-        </p>
+<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+  <div class="max-w-4xl mx-auto px-4 pt-28 pb-12">
+
+    <a [routerLink]="['/appointments']"
+      class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group">
+      <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      العودة إلى المواعيد
+    </a>
+
+    @if (specialistNotFound()) {
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-12 text-center">
+        <div class="w-16 h-16 mx-auto bg-bosla-error/10 text-bosla-error rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-bosla-charcoal mb-2">لم يتم تحديد مختص</h2>
+        <p class="text-sm text-bosla-grey mb-6">يجب اختيار مختص أولاً قبل حجز موعد. يمكنك تصفح المختصين من صفحة المتخصصين.</p>
+        <ui-button variant="primary" size="md" [routerLink]="['/specialists']">تصفح المختصين</ui-button>
       </div>
+    } @else {
+
+      <div class="flex items-center gap-3 mb-8">
+        @for (step of [{id:'form',label:'اختيار الموعد'},{id:'payment',label:'الدفع'},{id:'done',label:'تأكيد الحجز'}]; track step.id) {
+          <div class="flex items-center gap-2">
+            <div [class]="(store.bookingStep() === step.id ? 'bg-bosla-primary text-white' : store.bookingStep() === 'done' && step.id === 'form' ? 'bg-bosla-success text-white' : store.bookingStep() === 'done' ? 'bg-bosla-success text-white' : 'bg-bosla-charcoal/10 text-bosla-charcoal/40') + ' w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300'">
+              @if (store.bookingStep() === 'done' && step.id !== 'done') {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              } @else {
+                {{ step.id === 'form' ? '1' : step.id === 'payment' ? '2' : '3' }}
+              }
+            </div>
+            <span [class]="(store.bookingStep() === step.id ? 'text-bosla-primary font-semibold' : 'text-bosla-grey') + ' text-sm transition-colors duration-300 hidden sm:inline'">
+              {{ step.label }}
+            </span>
+          </div>
+          @if (!step.id.endsWith('done')) {
+            <div class="flex-1 h-px bg-bosla-charcoal/10 max-w-16"></div>
+          }
+        }
+      </div>
+
+      @if (store.bookingStep() === 'form') {
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+          <div class="lg:col-span-2 space-y-6">
+
+            @if (store.specialistInfo(); as specialist) {
+              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+                <div class="flex flex-col items-center text-center">
+                  <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md mb-4">
+                    <img [src]="specialist.imageUrl || 'assets/icons/favicon.ico'"
+                      [alt]="specialist.name"
+                      class="w-full h-full object-cover" />
+                  </div>
+                  <h2 class="text-lg font-bold text-bosla-charcoal">{{ specialist.name }}</h2>
+                  <p class="text-sm text-bosla-grey mt-1">{{ specialist.title || 'مختص معتمد' }}</p>
+                  <div class="flex items-center gap-3 mt-3 text-sm">
+                    <span class="flex items-center gap-1 text-amber-500">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                      {{ specialist.rating.toFixed(1) }}
+                    </span>
+                    <span class="text-bosla-grey">({{ specialist.reviewsCount }} تقييم)</span>
+                  </div>
+                  <div class="mt-4 pt-4 border-t border-bosla-charcoal/5 w-full text-center">
+                    <span class="text-2xl font-bold text-bosla-primary">{{ specialist.hourlyRate }}</span>
+                    <span class="text-sm text-bosla-grey mr-1">ر.س / ساعة</span>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 flex items-center justify-center">
+                <ui-spinner size="md"></ui-spinner>
+              </div>
+            }
+
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <h3 class="text-sm font-bold text-bosla-charcoal mb-4">تفاصيل الجلسة</h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">موضوع الجلسة (اختياري)</label>
+                  <input type="text" [value]="sessionTopic()" (input)="sessionTopic.set($any($event.target).value)"
+                    placeholder="مثال: استشارة تسويقية، تطوير أعمال"
+                    class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal transition-colors" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">ملاحظات للمختص (اختياري)</label>
+                  <textarea [value]="notes()" (input)="notes.set($any($event.target).value)"
+                    placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها..."
+                    class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal resize-none transition-colors"></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="lg:col-span-3 space-y-4">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <h3 class="text-sm font-bold text-bosla-charcoal mb-1">اختر الوقت المناسب</h3>
+              <p class="text-xs text-bosla-grey mb-5">اختر موعداً متاحاً من الأوقات المتاحة للمختص</p>
+
+              @if (store.isActionLoading() && store.availabilitySlots().length === 0) {
+                <div class="flex items-center justify-center py-12">
+                  <ui-spinner size="md"></ui-spinner>
+                </div>
+              } @else if (store.formattedAvailabilitySlots().length === 0) {
+                <div class="text-center py-12">
+                  <div class="w-14 h-14 mx-auto bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p class="text-sm text-bosla-charcoal/60">لا توجد أوقات متاحة حالياً</p>
+                  <p class="text-xs text-bosla-grey mt-1">يرجى المحاولة في وقت لاحق</p>
+                </div>
+              } @else {
+                <div class="space-y-5">
+                  @for (group of store.formattedAvailabilitySlots(); track group.dateStr) {
+                    <div>
+                      <div class="flex items-center gap-2 mb-3">
+                        <div class="w-2 h-2 rounded-full bg-bosla-blue"></div>
+                        <h4 [class]="selectedDate() === group.dateStr ? 'text-bosla-primary font-bold' : 'text-bosla-charcoal font-semibold'" class="text-sm">
+                          {{ group.displayDate }}
+                        </h4>
+                      </div>
+                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        @for (slot of group.slots; track slot.id) {
+                          <button (click)="selectSlot(slot.id, group.dateStr)"
+                            [class]="(selectedSlotId() === slot.id
+                              ? 'bg-bosla-primary text-white border-bosla-primary shadow-md'
+                              : 'bg-bosla-offwhite text-bosla-charcoal border-bosla-charcoal/10 hover:border-bosla-blue hover:bg-bosla-blue/5') +
+                              ' px-3 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200'">
+                            {{ slot.timeStr }}
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (selectedSlotInfo(); as slot) {
+                <div class="mt-5 p-4 bg-bosla-blue/5 border border-bosla-blue/20 rounded-xl">
+                  <div class="flex items-center gap-2 text-bosla-blue">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-sm font-semibold">الموعد المختار:</span>
+                  </div>
+                  <p class="text-sm text-bosla-charcoal/70 mt-1 mr-7">{{ slot.displayDate }} - {{ slot.timeStr }}</p>
+                </div>
+              }
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-bold text-bosla-charcoal">ملخص الحجز</h3>
+                  <p class="text-xs text-bosla-grey mt-1">مراجعة الطلب قبل الإرسال</p>
+                </div>
+                @if (store.specialistInfo(); as s) {
+                  <span class="text-sm text-bosla-charcoal/60">
+                    <span class="font-bold text-bosla-primary text-lg">{{ s.hourlyRate }}</span> ر.س/ساعة
+                  </span>
+                }
+              </div>
+
+              <div class="mt-4 pt-4 border-t border-bosla-charcoal/5">
+                <button (click)="onSubmit()"
+                  [disabled]="!selectedSlotId() || !specialistId()"
+                  [class]="(!selectedSlotId() || !specialistId()
+                    ? 'bg-bosla-grey/30 text-bosla-grey cursor-not-allowed'
+                    : 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer') +
+                    ' w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2'">
+                  @if (store.isActionLoading()) {
+                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                  }
+                  {{ store.isActionLoading() ? 'جاري الحجز...' : 'تأكيد الحجز' }}
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      } @else if (store.bookingStep() === 'payment') {
+
+        <div class="max-w-lg mx-auto">
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
+            <div class="w-16 h-16 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم حجز الموعد مبدئياً</h2>
+            <p class="text-sm text-bosla-grey mb-2">يرجى إتمام عملية الدفع لتأكيد الحجز وجدولة الموعد</p>
+            <p class="text-xs text-bosla-grey mb-6">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع خلال 30 دقيقة</p>
+
+            @if (store.specialistInfo(); as s) {
+              <div class="bg-bosla-offwhite rounded-xl p-4 mb-6 text-right">
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-sm text-bosla-charcoal/60">رسوم الجلسة</span>
+                  <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ر.س</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-t border-bosla-charcoal/5 mt-2 pt-2">
+                  <span class="text-sm font-bold text-bosla-charcoal">الإجمالي</span>
+                  <span class="text-lg font-bold text-bosla-primary">{{ s.hourlyRate }} ر.س</span>
+                </div>
+              </div>
+            }
+
+            <div class="flex flex-col gap-3">
+              <ui-button (click)="processPayment()" [loading]="store.isActionLoading()" size="lg" variant="primary" class="w-full">
+                إتمام الدفع الآن
+              </ui-button>
+              <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+                الدفع لاحقاً
+              </ui-button>
+            </div>
+          </div>
+        </div>
+
+      } @else {
+
+        <div class="max-w-lg mx-auto">
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
+            <div class="w-16 h-16 mx-auto bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم تأكيد الحجز بنجاح!</h2>
+            <p class="text-sm text-bosla-grey mb-6">تم جدولة موعدك مع المختص. يمكنك متابعة التفاصيل من صفحة المواعيد.</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <ui-button (click)="goToAppointments()" size="md" variant="primary">الذهاب إلى المواعيد</ui-button>
+            </div>
+          </div>
+        </div>
+
+      }
     }
-    <form (ngSubmit)="onSubmit()" #bookingForm="ngForm" class="space-y-5">
-      <!-- <div>
-        <label
-          class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-          >معرّف المختص / الخبير *</label
-        >
-        <input
-          type="text"
-          required
-          [value]="specialistId()"
-          (input)="specialistId.set($any($event.target).value)"
-          placeholder="أدخل معرّف المختص (GUID)"
-          class="w-full p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-mono"
-        />
-      </div> -->
 
-      <div>
-        <label
-          class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-          >موضوع أو عنوان الجلسة (اختياري)</label
-        >
-        <input
-          type="text"
-          [value]="sessionTopic()"
-          (input)="sessionTopic.set($any($event.target).value)"
-          placeholder="مثال: استشارة تقنية، تطوير أعمال"
-          class="w-full p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-sans"
-        />
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="sm:col-span-1">
-          <label
-            class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-            >تاريخ الموعد *</label
-          >
-          <input
-            type="date"
-            required
-            [value]="appointmentDate()"
-            (input)="appointmentDate.set($any($event.target).value)"
-            class="w-full p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-sans"
-          />
-        </div>
-
-        <div>
-          <label
-            class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-            >وقت البدء *</label
-          >
-          <input
-            type="time"
-            required
-            [value]="startTime()"
-            (input)="startTime.set($any($event.target).value)"
-            class="w-full p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-sans"
-          />
-        </div>
-
-        <div>
-          <label
-            class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-            >وقت الانتهاء *</label
-          >
-          <input
-            type="time"
-            required
-            [value]="endTime()"
-            (input)="endTime.set($any($event.target).value)"
-            class="w-full p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-sans"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          class="block text-xs font-semibold text-bosla-charcoal/70 dark:text-white/70 mb-2 font-sans"
-          >ملاحظات إضافية للمختص (اختياري)</label
-        >
-        <textarea
-          [value]="notes()"
-          (input)="notes.set($any($event.target).value)"
-          placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها أثناء الجلسة..."
-          class="w-full h-28 p-3 text-sm bg-bosla-offwhite dark:bg-white/5 border border-bosla-charcoal/10 dark:border-white/10 rounded-xl outline-none focus:border-bosla-blue dark:focus:border-bosla-blue text-bosla-charcoal dark:text-white font-sans resize-none"
-        ></textarea>
-      </div>
-
-      <div
-        class="flex justify-end gap-3 border-t border-bosla-charcoal/5 dark:border-white/5 pt-5 mt-6"
-      >
-        <ui-button [routerLink]="['/appointments']" size="md" variant="ghost">إلغاء</ui-button>
-        <ui-button
-          type="submit"
-          size="md"
-          variant="primary"
-          [disabled]="!bookingForm.valid"
-          [loading]="store.isActionLoading()"
-        >
-          تأكيد وإرسال الطلب
-        </ui-button>
-      </div>
-    </form>
   </div>
 </div>

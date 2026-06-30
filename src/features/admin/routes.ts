@@ -29,5 +29,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'users/:id/edit',
     loadComponent: () => import('./pages/users/admin-user-edit').then(m => m.AdminUserEdit),
     title: 'تعديل المستخدم'
+  },
+  {
+    path: 'appointments',
+    loadComponent: () => import('./pages/appointments/admin-appointments').then(m => m.AdminAppointments),
+    title: 'إدارة الحجوزات'
   }
 ];

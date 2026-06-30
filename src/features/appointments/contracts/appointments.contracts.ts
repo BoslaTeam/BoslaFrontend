@@ -31,10 +31,15 @@ export interface AddReminderRequest {
 }
 
 export interface AddReviewRequest {
-  rating: number; 
+  rating: number;
   comment?: string;
 }
 
+export enum PaymentStatus {
+  Unpaid = 0,
+  Paid = 1,
+  Refunded = 2,
+}
 
 export interface AppointmentDto {
   id: string;
@@ -45,6 +50,11 @@ export interface AppointmentDto {
   status: AppointmentStatus;
   sessionTopic?: string;
   notes?: string;
+  specialistName?: string;
+  specialistTitle?: string;
+  specialistImageUrl?: string;
+  amount?: number;
+  paymentStatus?: PaymentStatus;
 }
 
 export interface AppointmentStatusHistoryDto {
@@ -62,4 +72,27 @@ export interface ReminderDto {
   reminderTime: string;
   message: string;
   isSent: boolean;
+}
+
+export interface SpecialistBrief {
+  id: string;
+  name: string;
+  title: string | null;
+  imageUrl: string | null;
+  rating: number;
+  hourlyRate: number;
+  reviewsCount: number;
+}
+
+export interface SpecialistFullDetail extends SpecialistBrief {
+  bio: string | null;
+  skills: { id: string; name: string }[];
+  isOnline: boolean;
+  country: string | null;
+}
+
+export interface AvailabilitySlotDto {
+  id: string;
+  start: string;
+  end: string;
 }

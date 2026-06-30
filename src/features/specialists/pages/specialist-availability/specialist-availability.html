@@ -1,1 +1,161 @@
-<p>specialist-availability works!</p>
+<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+  <div class="max-w-4xl mx-auto px-4 pt-28 pb-12">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-bosla-charcoal">إدارة المواعيد</h1>
+      <p class="text-sm text-bosla-grey mt-1">أضف أو احذف المواعيد المتاحة للحجز.</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-sm text-rose-500">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+        <h2 class="text-sm font-bold text-bosla-charcoal mb-4">إضافة موعد يدوي</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs text-bosla-grey font-semibold">التاريخ</label>
+            <input
+              type="date"
+              [value]="manualDate()"
+              (input)="manualDate.set($any($event.target).value)"
+              class="w-full mt-1 p-2.5 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
+            />
+          </div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="text-xs text-bosla-grey font-semibold">من</label>
+              <select
+                [value]="manualStart()"
+                (change)="manualStart.set($any($event.target).value)"
+                class="w-full mt-1 p-2.5 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
+              >
+                @for (opt of timeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="text-xs text-bosla-grey font-semibold">إلى</label>
+              <select
+                [value]="manualEnd()"
+                (change)="manualEnd.set($any($event.target).value)"
+                class="w-full mt-1 p-2.5 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
+              >
+                @for (opt of timeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <ui-button
+            (click)="addManualSlot()"
+            [loading]="isSaving()"
+            size="sm"
+            class="w-full"
+          >إضافة الموعد</ui-button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+        <h2 class="text-sm font-bold text-bosla-charcoal mb-4">إضافة نمط أسبوعي</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs text-bosla-grey font-semibold">أيام الأسبوع</label>
+            <div class="flex flex-wrap gap-2 mt-2">
+              @for (day of days; track day.key) {
+                <button
+                  type="button"
+                  (click)="day.selected = !day.selected"
+                  [class]="day.selected
+                    ? 'px-3 py-1.5 text-xs font-medium rounded-xl bg-bosla-blue text-white border border-bosla-blue transition-colors'
+                    : 'px-3 py-1.5 text-xs font-medium rounded-xl bg-bosla-offwhite text-bosla-charcoal/70 border border-bosla-charcoal/10 hover:border-bosla-blue/40 transition-colors'"
+                >
+                  {{ day.label }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="text-xs text-bosla-grey font-semibold">من</label>
+              <select
+                [value]="weeklyStart()"
+                (change)="weeklyStart.set($any($event.target).value)"
+                class="w-full mt-1 p-2.5 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
+              >
+                @for (opt of timeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="text-xs text-bosla-grey font-semibold">إلى</label>
+              <select
+                [value]="weeklyEnd()"
+                (change)="weeklyEnd.set($any($event.target).value)"
+                class="w-full mt-1 p-2.5 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
+              >
+                @for (opt of timeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <ui-button
+            (click)="addWeeklyPattern()"
+            [loading]="isSaving()"
+            [disabled]="selectedDayCount() === 0"
+            size="sm"
+            class="w-full"
+          >إضافة النمط الأسبوعي</ui-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+      <h2 class="text-sm font-bold text-bosla-charcoal mb-4">المواعيد المتاحة</h2>
+
+      @if (isLoading()) {
+        <div class="flex justify-center py-12">
+          <ui-spinner size="md"></ui-spinner>
+        </div>
+      } @else if (groupedSlots().length === 0) {
+        <div class="text-center py-12">
+          <p class="text-sm text-bosla-grey">لا توجد مواعيد متاحة بعد. أضف مواعيدك من الأعلى.</p>
+        </div>
+      } @else {
+        <div class="space-y-5">
+          @for (group of groupedSlots(); track group.date) {
+            <div>
+              <h3 class="text-xs font-bold text-bosla-charcoal mb-2">{{ group.displayDate }}</h3>
+              <div class="space-y-2">
+                @for (slot of group.slots; track slot.id) {
+                  <div
+                    class="flex items-center justify-between p-3 rounded-xl bg-bosla-offwhite border border-bosla-charcoal/5"
+                  >
+                    <span class="text-sm font-medium text-bosla-charcoal">
+                      {{ formatTime(slot.start) }} - {{ formatTime(slot.end) }}
+                    </span>
+                    <button
+                      type="button"
+                      (click)="deleteSlot(slot.id)"
+                      class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors"
+                      title="حذف"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

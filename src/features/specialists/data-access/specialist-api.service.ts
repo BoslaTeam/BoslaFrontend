@@ -179,6 +179,12 @@ export class SpecialistsApiService {
     );
   }
 
+  deleteAvailability(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.availabilityById(id)
+    );
+  }
+
   addExperiences(request: AddExperiencesRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.experience,
