@@ -90,15 +90,108 @@ export interface PendingSpecialistDto {
   expertiseAreas: string[];
 }
 
-export interface AdminSpecialistDetailDto extends PendingSpecialistDto {
-  bio?: string;
-  isVerified: boolean;
+export interface AdminSpecialistListItemDto {
+  id: string;
+  fullName: string;
+  email: string;
+  title?: string;
+  verificationStatus: string;
+  country?: string;
+  experienceLevel: string;
   rating?: number;
   totalSessions: number;
   totalEarnings: number;
+  createdAt: string;
+  profileImageUrl?: string | null;
+  expertiseAreas: string[];
+}
+
+export interface SkillDto {
+  id: string;
+  name: string;
+}
+
+export interface ToolDto {
+  id: string;
+  name: string;
+}
+
+export interface ExperienceDto {
+  id: string;
+  jobTitle: string;
+  companyName: string;
+  fromDate: string;
+  toDate?: string;
+  description?: string;
+}
+
+export interface ReviewDto {
+  id: string;
+  reviewerName: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+}
+
+export interface AdminSpecialistDetailDto {
+  id: string;
+  fullName: string;
+  email: string;
+  title?: string;
+  bio?: string;
+  verificationStatus: string;
+  experienceLevel: string;
+  experienceYears: number;
+  hourlyRate?: number;
+  country?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  rating?: number;
+  totalSessions: number;
+  totalEarnings: number;
+  totalReviews: number;
+  profileImageUrl?: string | null;
+  createdAt: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  skills: SkillDto[];
+  tools: ToolDto[];
+  experiences: ExperienceDto[];
+  expertiseAreas: string[];
+  industries: string[];
+  reviews: ReviewDto[];
 }
 
 // ── Appointments ──
+
+export interface AdminAppointmentDetailDto {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  userAvatarUrl?: string;
+  specialistId: string;
+  specialistName: string;
+  specialistAvatarUrl?: string;
+  start: string;
+  end: string;
+  durationMinutes: number;
+  status: string;
+  sessionTopic?: string;
+  notes?: string;
+  cancellationReason?: string;
+  totalAmount?: number;
+  paymentStatus?: string;
+  createdAt: string;
+  statusHistory: AdminAppointmentStatusHistoryDto[];
+}
+
+export interface AdminAppointmentStatusHistoryDto {
+  oldStatus: string;
+  newStatus: string;
+  reason?: string;
+  createdAt: string;
+}
 
 export interface AdminAppointmentDto {
   id: string;
