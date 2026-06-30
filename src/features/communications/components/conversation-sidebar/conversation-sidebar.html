@@ -1,15 +1,14 @@
 <aside
   [class]="(store.activeMobilePanel() === 'chat')
-    ? 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-[320px] md:min-w-[320px] flex flex-col h-full bg-white border-r border-bosla-primary/10 overflow-hidden transition-transform duration-300 -translate-x-full md:translate-x-0'
-    : 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-[320px] md:min-w-[320px] flex flex-col h-full bg-white border-r border-bosla-primary/10 overflow-hidden transition-transform duration-300 translate-x-0'"
+    ? 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-full flex flex-col h-full bg-white border-l border-bosla-primary/10 overflow-hidden transition-transform duration-300 -translate-x-full md:translate-x-0'
+    : 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-full flex flex-col h-full bg-white border-l border-bosla-primary/10 overflow-hidden transition-transform duration-300 translate-x-0'"
   role="navigation"
-  aria-label="Conversations"
+  aria-label="المحادثات"
 >
 
   <!-- Header -->
-  <div class="p-4 pb-3.5 border-b border-bosla-primary/10 shrink-0 bg-white">
+  <div class="p-4 pb-3 border-b border-bosla-primary/10 shrink-0 bg-white">
     <div class="text-sm font-bold text-bosla-primary flex items-center gap-2 mb-3.5 font-sans">
-      <!-- Chat icon -->
       <svg class="text-bosla-primary/80" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
@@ -23,13 +22,6 @@
     <chat-conversation-search
       [query]="store.searchQuery()"
       (queryChange)="onSearch($event)"
-    />
-
-    <!-- Filters -->
-    <chat-conversation-filters
-      [activeFilter]="store.activeFilter()"
-      [unreadTotal]="store.totalUnread()"
-      (filterChange)="onFilterChange($event)"
     />
   </div>
 

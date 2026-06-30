@@ -1,17 +1,17 @@
 import {
-  Component, inject, OnInit, OnDestroy, HostListener, effect
+  Component, inject, OnInit, OnDestroy, HostListener, effect, signal, untracked
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatStore } from '../../store/chat.store';
 import { ChatSignalrService } from '../../services/chat-signalr.service';
-import { ConversationSidebar } from '../../components/conversation-sidebar/conversation-sidebar';
+import { LeftSidebar } from '../../components/left-sidebar/left-sidebar';
 import { ChatArea } from '../../components/chat-area/chat-area';
-import { ContextPanel } from '../../components/context-panel/context-panel';
+import { ConversationSidebar } from '../../components/conversation-sidebar/conversation-sidebar';
 
 @Component({
   selector: 'app-messaging-page',
   standalone: true,
-  imports: [ConversationSidebar, ChatArea, ContextPanel],
+  imports: [LeftSidebar, ChatArea, ConversationSidebar],
   templateUrl: './messaging-page.html',
   styleUrl: './messaging-page.css',
 })
@@ -23,6 +23,8 @@ export class MessagingPage implements OnInit, OnDestroy {
   private readonly conversationId = this.route.snapshot.paramMap.get('id');
   private routeConversationOpened = false;
 
+  readonly showConversationSidebar = signal(true);
+
   constructor() {
     effect(() => {
       const id = this.conversationId;
@@ -32,6 +34,8 @@ export class MessagingPage implements OnInit, OnDestroy {
       this.store.selectConversation(id);
       this.routeConversationOpened = true;
     });
+
+    this.showConversationSidebar.set(window.innerWidth >= 768);
   }
 
   ngOnInit(): void {
@@ -51,6 +55,10 @@ export class MessagingPage implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onResize() {
     this.checkViewport();
+  }
+
+  toggleConversationSidebar() {
+    this.showConversationSidebar.update(v => !v);
   }
 
   private checkViewport() {

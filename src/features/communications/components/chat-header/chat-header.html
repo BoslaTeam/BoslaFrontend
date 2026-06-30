@@ -1,14 +1,16 @@
-<header class="flex items-center gap-3.5 mt-30 px-4 py-3 bg-white border-b border-bosla-primary/10 shrink-0 select-none shadow-sm font-sans">
+<header class="flex items-center gap-3 px-4 py-3 bg-white border-b border-bosla-primary/10 shrink-0 select-none shadow-sm font-sans">
   <!-- Back button (mobile) -->
-  <button class="flex md:hidden items-center justify-center w-9 h-9 rounded-xl bg-bosla-primary/5 text-bosla-primary hover:bg-bosla-primary/10 transition shrink-0 cursor-pointer" (click)="goBack()" aria-label="Back to conversations" id="chat-back-btn">
+  <button
+    class="flex lg:hidden items-center justify-center w-9 h-9 rounded-xl bg-bosla-primary/5 text-bosla-primary hover:bg-bosla-primary/10 transition shrink-0 cursor-pointer"
+    (click)="goBack()" aria-label="العودة إلى المحادثات" id="chat-back-btn">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="m15 18-6-6 6-6"/>
+      <path d="m15 18-6-6 6-6" />
     </svg>
   </button>
 
   <!-- Avatar -->
   <div class="relative shrink-0">
-    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white bg-linear-to-tr from-bosla-primary to-bosla-blue overflow-hidden shadow-sm">
+    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-tr from-bosla-primary to-bosla-blue overflow-hidden shadow-sm">
       @if (participant()?.avatarUrl) {
         <img class="w-full h-full object-cover" [src]="participant()!.avatarUrl" [alt]="participant()!.name" />
       } @else {
@@ -16,50 +18,54 @@
       }
     </div>
     @if (participant()?.isOnline) {
-      <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-bosla-success border-2 border-white" aria-label="Online"></span>
+      <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-bosla-success border-2 border-white" aria-label="متصل"></span>
     }
   </div>
 
   <!-- Info -->
   <div class="flex-1 min-w-0 flex flex-col gap-0.5">
     <div class="flex items-center gap-1.5">
-      <span class="text-xs font-bold text-bosla-charcoal truncate">{{ participant()?.name }}</span>
-      @if (participant()) {
-        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold border tracking-wide uppercase font-sans shrink-0" [class]="roleBadgeClass()">{{ roleLabel() }}</span>
-      }
+      <span class="text-sm font-bold text-bosla-charcoal truncate">{{ participant()?.name }}</span>
     </div>
+    @if (participant()?.specialization) {
+      <span class="text-[11px] text-bosla-grey truncate">{{ participant()!.specialization }}</span>
+    }
     <div class="text-[10px] text-bosla-grey/80 flex items-center gap-1">
       @if (participant()?.isOnline) {
         <span class="w-1.5 h-1.5 rounded-full bg-bosla-success inline-block"></span>
         <span class="text-bosla-success font-semibold">متصل</span>
       } @else {
-        <span>{{ statusText() }}</span>
+        <span>غير متصل</span>
       }
     </div>
   </div>
 
   <!-- Actions -->
   <div class="flex items-center gap-1 text-bosla-grey">
-    <button class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 hover:text-bosla-primary transition cursor-pointer" aria-label="Search messages" title="Search messages">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-    </button>
+    <!-- Toggle conversation list -->
     <button
-      [class]="store.isContextPanelOpen()
-        ? 'w-9 h-9 rounded-xl flex items-center justify-center bg-bosla-primary/10 text-bosla-primary transition cursor-pointer'
-        : 'w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 hover:text-bosla-primary transition cursor-pointer'"
-      (click)="toggleContext()"
-      aria-label="View profile"
-      title="View profile"
+      class="hidden md:flex w-9 h-9 rounded-xl items-center justify-center hover:bg-bosla-primary/5 transition cursor-pointer"
+      [class.text-bosla-primary]="isOpen()"
+      [class.text-bosla-grey]="!isOpen()"
+      [class.bg-bosla-primary/10]="isOpen()"
+      (click)="onTogglePanel()"
+      [attr.aria-expanded]="isOpen()"
+      aria-label="إظهار/إخفاء قائمة المحادثات"
+      title="إظهار/إخفاء قائمة المحادثات"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
     </button>
-    <button class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 hover:text-bosla-primary transition cursor-pointer" aria-label="More options" title="More options">
+
+    <!-- More Menu -->
+    <button
+      class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 hover:text-bosla-primary transition cursor-pointer"
+      aria-label="خيارات أكثر" title="خيارات أكثر">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/>
+        <circle cx="12" cy="5" r="1.2" />
+        <circle cx="12" cy="12" r="1.2" />
+        <circle cx="12" cy="19" r="1.2" />
       </svg>
     </button>
   </div>

@@ -5,7 +5,10 @@
   aria-label="Chat area"
 >
   @if (store.activeConversation()) {
-    <chat-chat-header />
+    <chat-chat-header
+      [isOpen]="isConversationListOpen()"
+      (togglePanel)="toggleConversationList.emit()"
+    />
 
     <chat-message-list />
 
