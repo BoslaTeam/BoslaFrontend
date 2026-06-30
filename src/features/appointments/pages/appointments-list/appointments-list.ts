@@ -1,23 +1,38 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  computed,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { UiButton } from '@shared/ui/button/button';
+import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { AuthService } from '@core/services/auth.service';
+import { AppointmentService } from '../../services/appointments.service';
+import { Subscription } from 'rxjs';
 
 export type AppointmentTab = 'upcoming' | 'past';
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiButton, DatePipe],
+  imports: [CommonModule, RouterLink, UiButton, UiSpinner],
   templateUrl: './appointments-list.html',
-  styleUrl: './appointments-list.css',
 })
-export class AppointmentList implements OnInit {
+export class AppointmentList implements OnInit, OnDestroy {
   readonly store = inject(AppointmentsStore);
+  readonly authService = inject(AuthService);
+  private readonly appointmentService = inject(AppointmentService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly activeTab = signal<AppointmentTab>('upcoming');
+  private sub?: Subscription;
 
   readonly filteredAppointments = computed(() => {
     const allAppointments = this.store.items();
@@ -40,39 +55,48 @@ export class AppointmentList implements OnInit {
     }
   });
 
-  readonly stats = computed(() => {
-    const all = this.store.items();
-    return {
-      total: all.length,
-      upcoming: all.filter(a =>
-        a.status === AppointmentStatus.Pending ||
-        a.status === AppointmentStatus.Confirmed
-      ).length,
-      completed: all.filter(a => a.status === AppointmentStatus.Completed).length,
-      cancelled: all.filter(a => a.status === AppointmentStatus.Cancelled).length,
-    };
-  });
+  readonly userRole = computed(() => this.authService.userRole());
 
   ngOnInit(): void {
     this.store.loadMyAppointments();
+
+    this.sub = this.appointmentService.getMyAppointments().subscribe({
+      next: () => {
+        setTimeout(() => {
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        }, 50);
+      },
+    });
   }
 
   setTab(tab: AppointmentTab): void {
     this.activeTab.set(tab);
+    this.cdr.detectChanges();
   }
 
-  getStatusDetails(status: AppointmentStatus): { text: string; classes: string; dot: string } {
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  getStatusDetails(status: AppointmentStatus): { text: string; classes: string } {
     switch (status) {
       case AppointmentStatus.Pending:
-        return { text: 'قيد الانتظار', classes: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' };
+        return {
+          text: 'قيد الانتظار',
+          classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+        };
       case AppointmentStatus.Confirmed:
-        return { text: 'مؤكد', classes: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' };
+        return {
+          text: 'مؤكد',
+          classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+        };
       case AppointmentStatus.Completed:
-        return { text: 'مكتمل', classes: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500' };
+        return { text: 'مكتمل', classes: 'bg-bosla-blue/10 text-bosla-blue border-bosla-blue/20' };
       case AppointmentStatus.Cancelled:
-        return { text: 'ملغي', classes: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500' };
+        return { text: 'ملغي', classes: 'bg-rose-500/10 text-rose-500 border-rose-500/20' };
       default:
-        return { text: 'غير معروف', classes: 'bg-slate-50 text-slate-500 border-slate-200', dot: 'bg-slate-400' };
+        return { text: 'غير معروف', classes: 'bg-gray-500/10 text-gray-500' };
     }
   }
 }

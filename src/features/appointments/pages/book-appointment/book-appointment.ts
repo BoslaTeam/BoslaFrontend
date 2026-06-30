@@ -1,94 +1,86 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { CreateAppointmentRequest } from '../../contracts/appointments.contracts';
-import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { UiButton } from '@shared/ui/button/button';
-
-interface SpecialistBrief {
-  id: string;
-  name?: string;
-  title?: string;
-  imageUrl?: string;
-  hourlyRate?: number;
-  rating?: number;
-}
+import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, UiButton],
-  templateUrl: './book-appointment.html',
-  styleUrl: './book-appointment.css',
+  imports: [CommonModule, RouterLink, FormsModule, UiButton, UiSpinner],
+  templateUrl: './book-appointment.html'
 })
-export class BookAppointment implements OnInit {
+export class BookAppointment implements OnInit, OnDestroy {
   public store = inject(AppointmentsStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
 
-  readonly specialist = signal<SpecialistBrief | null>(null);
-  readonly specialistLoading = signal(false);
-
+  readonly specialistId = signal('');
   readonly sessionTopic = signal('');
-  readonly appointmentDate = signal('');
-  readonly startTime = signal('');
-  readonly endTime = signal('');
   readonly notes = signal('');
+  readonly selectedSlotId = signal<string | null>(null);
+  readonly selectedDate = signal<string | null>(null);
+
+  specialistNotFound = signal(false);
+
+  readonly selectedSlotInfo = computed(() => {
+    const slotId = this.selectedSlotId();
+    if (!slotId) return null;
+    for (const group of this.store.formattedAvailabilitySlots()) {
+      const slot = group.slots.find(s => s.id === slotId);
+      if (slot) return { ...slot, displayDate: group.displayDate };
+    }
+    return null;
+  });
 
   ngOnInit(): void {
+    this.store.resetBooking();
     const idFromQuery = this.route.snapshot.queryParamMap.get('specialistId');
     if (idFromQuery) {
-      this.loadSpecialist(idFromQuery);
+      this.specialistId.set(idFromQuery);
+      this.store.loadSpecialistInfo(idFromQuery);
+      this.store.loadAvailability(idFromQuery);
+    } else {
+      this.specialistNotFound.set(true);
     }
   }
 
-  private loadSpecialist(id: string): void {
-    this.specialistLoading.set(true);
-    this.http.get<any>(API_ENDPOINTS.specialists.byId(id)).subscribe({
-      next: (res) => {
-        const data = res?.data ?? res;
-        this.specialist.set({
-          id,
-          name: data?.fullName || data?.name || data?.displayName,
-          title: data?.title,
-          imageUrl: data?.profileImageUrl || data?.imageUrl,
-          hourlyRate: data?.hourlyRate,
-          rating: data?.rating,
-        });
-        this.specialistLoading.set(false);
-      },
-      error: () => {
-        this.specialist.set({ id });
-        this.specialistLoading.set(false);
-      },
-    });
+  ngOnDestroy(): void {
+    this.store.resetBooking();
+  }
+
+  selectSlot(slotId: string, dateStr: string): void {
+    this.selectedSlotId.set(slotId);
+    this.selectedDate.set(dateStr);
   }
 
   onSubmit(): void {
-    if (!this.appointmentDate() || !this.startTime() || !this.endTime()) {
-      return;
-    }
-
-    const specialistId = this.specialist()?.id;
-    if (!specialistId) return;
-
-    const startDateTime = new Date(`${this.appointmentDate()}T${this.startTime()}`).toISOString();
-    const endDateTime = new Date(`${this.appointmentDate()}T${this.endTime()}`).toISOString();
+    const slot = this.selectedSlotInfo();
+    if (!slot || !this.specialistId()) return;
 
     const request: CreateAppointmentRequest = {
-      specialistId,
-      start: startDateTime,
-      end: endDateTime,
+      specialistId: this.specialistId(),
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString(),
       sessionTopic: this.sessionTopic().trim() || undefined,
-      notes: this.notes().trim() || undefined,
+      notes: this.notes().trim() || undefined
     };
 
-    this.store.createAppointment(request, () => {
-      this.router.navigate(['/appointments']);
-    });
+    this.store.createAppointment(request);
+  }
+
+  processPayment(): void {
+    const id = this.store.bookingAppointmentId();
+    if (!id) return;
+    this.store.confirmAppointment(id);
+  }
+
+  goToAppointments(): void {
+    this.router.navigate(['/appointments']);
   }
 }

@@ -1,0 +1,99 @@
+<div class="p-6" dir="rtl">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-bosla-charcoal">إدارة الحجوزات</h1>
+      <p class="text-sm text-bosla-grey mt-1">عرض وإدارة جميع الحجوزات في المنصة</p>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-6 border-b border-bosla-charcoal/10 pb-4">
+    @for (tab of filterTabs; track tab.label) {
+      <button (click)="setFilter(tab.value)"
+        [class]="activeFilter() === tab.value
+          ? 'bg-bosla-primary text-white shadow-sm'
+          : 'bg-white text-bosla-charcoal/70 hover:bg-bosla-charcoal/5 border border-bosla-charcoal/10'"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-all">
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <ui-spinner size="lg"></ui-spinner>
+    </div>
+  } @else if (appointments().length === 0) {
+    <div class="bg-white rounded-2xl border border-bosla-charcoal/5 p-12 text-center">
+      <div class="w-16 h-16 mx-auto bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-bosla-charcoal mb-1">لا توجد حجوزات</h3>
+      <p class="text-sm text-bosla-grey">لم يتم العثور على أي حجوزات تطابق المعايير المحددة.</p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl border border-bosla-charcoal/5 overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-right">
+          <thead>
+            <tr class="border-b border-bosla-charcoal/5 bg-bosla-offwhite">
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">المستخدم</th>
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">المختص</th>
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">التاريخ</th>
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">المدة</th>
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">المبلغ</th>
+              <th class="px-5 py-4 text-xs font-bold text-bosla-charcoal/60">الحالة</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-bosla-charcoal/5">
+            @for (apt of appointments(); track apt.id) {
+              <tr class="hover:bg-bosla-offwhite/50 transition-colors">
+                <td class="px-5 py-4">
+                  <span class="text-sm font-semibold text-bosla-charcoal">{{ apt.userName }}</span>
+                </td>
+                <td class="px-5 py-4">
+                  <span class="text-sm text-bosla-charcoal/80">{{ apt.specialistName }}</span>
+                </td>
+                <td class="px-5 py-4">
+                  <span class="text-sm text-bosla-charcoal/70">{{ apt.scheduledAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+                </td>
+                <td class="px-5 py-4">
+                  <span class="text-sm text-bosla-charcoal/70">{{ apt.durationMinutes }} دقيقة</span>
+                </td>
+                <td class="px-5 py-4">
+                  <span class="text-sm font-bold text-bosla-charcoal">{{ apt.totalAmount }} ر.س</span>
+                </td>
+                <td class="px-5 py-4">
+                  <span [class]="(statusClasses[apt.status] || 'bg-gray-500/10 text-gray-500') + ' text-xs font-medium px-2.5 py-1 rounded-full border'">
+                    {{ statusLabels[apt.status] || 'غير معروف' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-center gap-2 mt-6">
+        <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() <= 1"
+          class="px-3 py-2 rounded-lg text-sm border border-bosla-charcoal/10 disabled:opacity-40 hover:bg-bosla-offwhite transition-colors">
+          السابق
+        </button>
+        @for (p of [].constructor(totalPages()); track $index) {
+          <button (click)="goToPage($index + 1)"
+            [class]="currentPage() === $index + 1 ? 'bg-bosla-primary text-white' : 'bg-white text-bosla-charcoal/70 hover:bg-bosla-offwhite'"
+            class="px-3 py-2 rounded-lg text-sm border border-bosla-charcoal/10 transition-colors">
+            {{ $index + 1 }}
+          </button>
+        }
+        <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() >= totalPages()"
+          class="px-3 py-2 rounded-lg text-sm border border-bosla-charcoal/10 disabled:opacity-40 hover:bg-bosla-offwhite transition-colors">
+          التالي
+        </button>
+      </div>
+    }
+  }
+</div>

@@ -1,179 +1,254 @@
-<section class="bg-bosla-offwhite min-h-screen pt-28 pb-16 font-sans" dir="rtl">
-  <div class="container mx-auto px-4 max-w-2xl">
+<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+  <div class="max-w-4xl mx-auto px-4 pt-28 pb-12">
 
-    <!-- Back -->
-    <a [routerLink]="['/appointments']" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-bosla-primary font-bold mb-8 transition-colors">
-      <i class="fa-solid fa-arrow-right"></i>
+    <a [routerLink]="['/appointments']"
+      class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group">
+      <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
       العودة إلى المواعيد
     </a>
 
-    <!-- Hero -->
-    <div class="text-center mb-10">
-      <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-bosla-primary/10 text-bosla-primary font-bold mb-5 text-sm">
-        <i class="fa-solid fa-calendar-plus text-bosla-orange"></i>
-        حجز موعد جديد
-      </span>
-      <h1 class="text-3xl md:text-4xl font-black text-bosla-primary leading-tight">
-        اختر الوقت المناسب لجلساتك
-      </h1>
-      <p class="text-slate-500 mt-3 max-w-md mx-auto">
-        جدول جلستك الاستشارية مع المختص المناسب في خطوات بسيطة وسريعة.
-      </p>
-    </div>
+    @if (specialistNotFound()) {
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-12 text-center">
+        <div class="w-16 h-16 mx-auto bg-bosla-error/10 text-bosla-error rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-bosla-charcoal mb-2">لم يتم تحديد مختص</h2>
+        <p class="text-sm text-bosla-grey mb-6">يجب اختيار مختص أولاً قبل حجز موعد. يمكنك تصفح المختصين من صفحة المتخصصين.</p>
+        <ui-button variant="primary" size="md" [routerLink]="['/specialists']">تصفح المختصين</ui-button>
+      </div>
+    } @else {
 
-    <!-- Specialist Card -->
-    @if (specialist(); as s) {
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm mb-6">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary font-black text-lg overflow-hidden shrink-0">
-            @if (s.imageUrl) {
-              <img [src]="s.imageUrl" [alt]="s.name" class="w-full h-full object-cover" />
+      <div class="flex items-center gap-3 mb-8">
+        @for (step of [{id:'form',label:'اختيار الموعد'},{id:'payment',label:'الدفع'},{id:'done',label:'تأكيد الحجز'}]; track step.id) {
+          <div class="flex items-center gap-2">
+            <div [class]="(store.bookingStep() === step.id ? 'bg-bosla-primary text-white' : store.bookingStep() === 'done' && step.id === 'form' ? 'bg-bosla-success text-white' : store.bookingStep() === 'done' ? 'bg-bosla-success text-white' : 'bg-bosla-charcoal/10 text-bosla-charcoal/40') + ' w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300'">
+              @if (store.bookingStep() === 'done' && step.id !== 'done') {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              } @else {
+                {{ step.id === 'form' ? '1' : step.id === 'payment' ? '2' : '3' }}
+              }
+            </div>
+            <span [class]="(store.bookingStep() === step.id ? 'text-bosla-primary font-semibold' : 'text-bosla-grey') + ' text-sm transition-colors duration-300 hidden sm:inline'">
+              {{ step.label }}
+            </span>
+          </div>
+          @if (!step.id.endsWith('done')) {
+            <div class="flex-1 h-px bg-bosla-charcoal/10 max-w-16"></div>
+          }
+        }
+      </div>
+
+      @if (store.bookingStep() === 'form') {
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+          <div class="lg:col-span-2 space-y-6">
+
+            @if (store.specialistInfo(); as specialist) {
+              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+                <div class="flex flex-col items-center text-center">
+                  <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md mb-4">
+                    <img [src]="specialist.imageUrl || 'assets/icons/favicon.ico'"
+                      [alt]="specialist.name"
+                      class="w-full h-full object-cover" />
+                  </div>
+                  <h2 class="text-lg font-bold text-bosla-charcoal">{{ specialist.name }}</h2>
+                  <p class="text-sm text-bosla-grey mt-1">{{ specialist.title || 'مختص معتمد' }}</p>
+                  <div class="flex items-center gap-3 mt-3 text-sm">
+                    <span class="flex items-center gap-1 text-amber-500">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                      {{ specialist.rating.toFixed(1) }}
+                    </span>
+                    <span class="text-bosla-grey">({{ specialist.reviewsCount }} تقييم)</span>
+                  </div>
+                  <div class="mt-4 pt-4 border-t border-bosla-charcoal/5 w-full text-center">
+                    <span class="text-2xl font-bold text-bosla-primary">{{ specialist.hourlyRate }}</span>
+                    <span class="text-sm text-bosla-grey mr-1">ر.س / ساعة</span>
+                  </div>
+                </div>
+              </div>
             } @else {
-              <i class="fa-solid fa-user-tie text-2xl text-bosla-primary/40"></i>
+              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 flex items-center justify-center">
+                <ui-spinner size="md"></ui-spinner>
+              </div>
             }
-          </div>
-          <div class="min-w-0">
-            <h2 class="font-bold text-bosla-primary text-lg truncate">{{ s.name || 'المختص المحدد' }}</h2>
-            @if (s.title) {
-              <p class="text-sm text-slate-500">{{ s.title }}</p>
-            }
-            <div class="flex items-center gap-3 mt-1.5">
-              @if (s.rating) {
-                <span class="text-xs font-bold text-bosla-orange flex items-center gap-1">
-                  <i class="fa-solid fa-star"></i> {{ s.rating.toFixed(1) }}
-                </span>
-              }
-              @if (s.hourlyRate) {
-                <span class="text-xs text-slate-400">{{ s.hourlyRate }} ر.س / ساعة</span>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    } @else if (specialistLoading()) {
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm mb-6 animate-pulse">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-slate-100"></div>
-          <div class="space-y-2 flex-1">
-            <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-            <div class="h-3 bg-slate-100 rounded w-1/3"></div>
-          </div>
-        </div>
-      </div>
-    }
 
-    <!-- Booking Form Card -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-      <div class="p-6 md:p-8">
-        <form (ngSubmit)="onSubmit()" #bookingForm="ngForm" class="space-y-6">
-
-          <!-- Session Topic -->
-          <div>
-            <label class="block text-sm font-bold text-bosla-primary mb-2">
-              موضوع الجلسة
-              <span class="text-slate-400 font-normal text-xs me-2">(اختياري)</span>
-            </label>
-            <input
-              type="text"
-              [value]="sessionTopic()"
-              (input)="sessionTopic.set($any($event.target).value)"
-              placeholder="مثال: استشارة تقنية، تطوير أعمال، توجيه مهني"
-              class="w-full h-12 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/10 transition-all text-slate-700 placeholder:text-slate-400"
-            />
-          </div>
-
-          <!-- Date & Time -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-sm font-bold text-bosla-primary mb-2">تاريخ الموعد <span class="text-bosla-orange">*</span></label>
-              <input
-                type="date"
-                required
-                [value]="appointmentDate()"
-                (input)="appointmentDate.set($any($event.target).value)"
-                class="w-full h-12 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/10 transition-all text-slate-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-bosla-primary mb-2">وقت البدء <span class="text-bosla-orange">*</span></label>
-              <input
-                type="time"
-                required
-                [value]="startTime()"
-                (input)="startTime.set($any($event.target).value)"
-                class="w-full h-12 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/10 transition-all text-slate-700"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-bosla-primary mb-2">وقت الانتهاء <span class="text-bosla-orange">*</span></label>
-              <input
-                type="time"
-                required
-                [value]="endTime()"
-                (input)="endTime.set($any($event.target).value)"
-                class="w-full h-12 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/10 transition-all text-slate-700"
-              />
-            </div>
-          </div>
-
-          <!-- Notes -->
-          <div>
-            <label class="block text-sm font-bold text-bosla-primary mb-2">
-              ملاحظات إضافية
-              <span class="text-slate-400 font-normal text-xs me-2">(اختياري)</span>
-            </label>
-            <textarea
-              [value]="notes()"
-              (input)="notes.set($any($event.target).value)"
-              placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها أثناء الجلسة..."
-              class="w-full h-28 p-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/10 transition-all text-slate-700 placeholder:text-slate-400 resize-none"
-            ></textarea>
-          </div>
-
-          <!-- Divider -->
-          <div class="border-t border-slate-100 pt-6"></div>
-
-          <!-- Summary -->
-          @if (appointmentDate() && startTime() && endTime()) {
-            <div class="bg-bosla-offwhite rounded-xl p-4 text-sm">
-              <p class="font-bold text-bosla-primary mb-2">ملخص الحجز</p>
-              <div class="space-y-1.5 text-slate-600">
-                <p class="flex items-center gap-2">
-                  <i class="fa-regular fa-calendar text-bosla-primary w-4"></i>
-                  <span>{{ appointmentDate() }}</span>
-                </p>
-                <p class="flex items-center gap-2">
-                  <i class="fa-regular fa-clock text-bosla-primary w-4"></i>
-                  <span dir="ltr">{{ startTime() }} - {{ endTime() }}</span>
-                </p>
-                @if (sessionTopic()) {
-                  <p class="flex items-center gap-2">
-                    <i class="fa-regular fa-note-sticky text-bosla-primary w-4"></i>
-                    <span class="truncate">{{ sessionTopic() }}</span>
-                  </p>
-                }
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <h3 class="text-sm font-bold text-bosla-charcoal mb-4">تفاصيل الجلسة</h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">موضوع الجلسة (اختياري)</label>
+                  <input type="text" [value]="sessionTopic()" (input)="sessionTopic.set($any($event.target).value)"
+                    placeholder="مثال: استشارة تسويقية، تطوير أعمال"
+                    class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal transition-colors" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">ملاحظات للمختص (اختياري)</label>
+                  <textarea [value]="notes()" (input)="notes.set($any($event.target).value)"
+                    placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها..."
+                    class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal resize-none transition-colors"></textarea>
+                </div>
               </div>
             </div>
-          }
 
-          <!-- Actions -->
-          <div class="flex justify-end gap-3">
-            <ui-button [routerLink]="['/appointments']" size="md" variant="ghost">إلغاء</ui-button>
-            <ui-button
-              type="submit"
-              size="lg"
-              variant="primary"
-              [disabled]="!bookingForm.valid"
-              [loading]="store.isActionLoading()"
-            >
-              <i class="fa-solid fa-paper-plane"></i>
-              تأكيد الحجز
-            </ui-button>
           </div>
 
-        </form>
-      </div>
-    </div>
+          <div class="lg:col-span-3 space-y-4">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <h3 class="text-sm font-bold text-bosla-charcoal mb-1">اختر الوقت المناسب</h3>
+              <p class="text-xs text-bosla-grey mb-5">اختر موعداً متاحاً من الأوقات المتاحة للمختص</p>
+
+              @if (store.isActionLoading() && store.availabilitySlots().length === 0) {
+                <div class="flex items-center justify-center py-12">
+                  <ui-spinner size="md"></ui-spinner>
+                </div>
+              } @else if (store.formattedAvailabilitySlots().length === 0) {
+                <div class="text-center py-12">
+                  <div class="w-14 h-14 mx-auto bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p class="text-sm text-bosla-charcoal/60">لا توجد أوقات متاحة حالياً</p>
+                  <p class="text-xs text-bosla-grey mt-1">يرجى المحاولة في وقت لاحق</p>
+                </div>
+              } @else {
+                <div class="space-y-5">
+                  @for (group of store.formattedAvailabilitySlots(); track group.dateStr) {
+                    <div>
+                      <div class="flex items-center gap-2 mb-3">
+                        <div class="w-2 h-2 rounded-full bg-bosla-blue"></div>
+                        <h4 [class]="selectedDate() === group.dateStr ? 'text-bosla-primary font-bold' : 'text-bosla-charcoal font-semibold'" class="text-sm">
+                          {{ group.displayDate }}
+                        </h4>
+                      </div>
+                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        @for (slot of group.slots; track slot.id) {
+                          <button (click)="selectSlot(slot.id, group.dateStr)"
+                            [class]="(selectedSlotId() === slot.id
+                              ? 'bg-bosla-primary text-white border-bosla-primary shadow-md'
+                              : 'bg-bosla-offwhite text-bosla-charcoal border-bosla-charcoal/10 hover:border-bosla-blue hover:bg-bosla-blue/5') +
+                              ' px-3 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200'">
+                            {{ slot.timeStr }}
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (selectedSlotInfo(); as slot) {
+                <div class="mt-5 p-4 bg-bosla-blue/5 border border-bosla-blue/20 rounded-xl">
+                  <div class="flex items-center gap-2 text-bosla-blue">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-sm font-semibold">الموعد المختار:</span>
+                  </div>
+                  <p class="text-sm text-bosla-charcoal/70 mt-1 mr-7">{{ slot.displayDate }} - {{ slot.timeStr }}</p>
+                </div>
+              }
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-bold text-bosla-charcoal">ملخص الحجز</h3>
+                  <p class="text-xs text-bosla-grey mt-1">مراجعة الطلب قبل الإرسال</p>
+                </div>
+                @if (store.specialistInfo(); as s) {
+                  <span class="text-sm text-bosla-charcoal/60">
+                    <span class="font-bold text-bosla-primary text-lg">{{ s.hourlyRate }}</span> ر.س/ساعة
+                  </span>
+                }
+              </div>
+
+              <div class="mt-4 pt-4 border-t border-bosla-charcoal/5">
+                <button (click)="onSubmit()"
+                  [disabled]="!selectedSlotId() || !specialistId()"
+                  [class]="(!selectedSlotId() || !specialistId()
+                    ? 'bg-bosla-grey/30 text-bosla-grey cursor-not-allowed'
+                    : 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer') +
+                    ' w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2'">
+                  @if (store.isActionLoading()) {
+                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                  }
+                  {{ store.isActionLoading() ? 'جاري الحجز...' : 'تأكيد الحجز' }}
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      } @else if (store.bookingStep() === 'payment') {
+
+        <div class="max-w-lg mx-auto">
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
+            <div class="w-16 h-16 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم حجز الموعد مبدئياً</h2>
+            <p class="text-sm text-bosla-grey mb-2">يرجى إتمام عملية الدفع لتأكيد الحجز وجدولة الموعد</p>
+            <p class="text-xs text-bosla-grey mb-6">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع خلال 30 دقيقة</p>
+
+            @if (store.specialistInfo(); as s) {
+              <div class="bg-bosla-offwhite rounded-xl p-4 mb-6 text-right">
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-sm text-bosla-charcoal/60">رسوم الجلسة</span>
+                  <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ر.س</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-t border-bosla-charcoal/5 mt-2 pt-2">
+                  <span class="text-sm font-bold text-bosla-charcoal">الإجمالي</span>
+                  <span class="text-lg font-bold text-bosla-primary">{{ s.hourlyRate }} ر.س</span>
+                </div>
+              </div>
+            }
+
+            <div class="flex flex-col gap-3">
+              <ui-button (click)="processPayment()" [loading]="store.isActionLoading()" size="lg" variant="primary" class="w-full">
+                إتمام الدفع الآن
+              </ui-button>
+              <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+                الدفع لاحقاً
+              </ui-button>
+            </div>
+          </div>
+        </div>
+
+      } @else {
+
+        <div class="max-w-lg mx-auto">
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
+            <div class="w-16 h-16 mx-auto bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم تأكيد الحجز بنجاح!</h2>
+            <p class="text-sm text-bosla-grey mb-6">تم جدولة موعدك مع المختص. يمكنك متابعة التفاصيل من صفحة المواعيد.</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <ui-button (click)="goToAppointments()" size="md" variant="primary">الذهاب إلى المواعيد</ui-button>
+            </div>
+          </div>
+        </div>
+
+      }
+    }
 
   </div>
-</section>
+</div>
