@@ -80,14 +80,41 @@ export interface AdminSocialLinkDto {
 
 // ── Specialists ──
 
-export interface PendingSpecialistDto {
-  id: string;
+export interface CreateSpecialistRequest {
   fullName: string;
   email: string;
+  password: string;
+  phoneNumber?: string;
+  country?: string;
   title?: string;
-  createdAt: string;
-  avatarUrl?: string | null;
-  expertiseAreas: string[];
+  bio?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  experienceYears: number;
+  experienceLevel: string;
+  hourlyRate: number;
+  bookingPolicy?: string;
+  expertiseIds: string[];
+  industryIds: string[];
+  skillIds: string[];
+  toolIds: string[];
+}
+
+export interface AdminUpdateSpecialistRequest {
+  fullName?: string;
+  phoneNumber?: string;
+  country?: string;
+  title?: string;
+  bio?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  experienceYears?: number;
+  experienceLevel?: string;
+  hourlyRate?: number;
+  bookingPolicy?: string;
+  verificationStatus?: string;
+  expertiseIds?: string[];
+  industryIds?: string[];
 }
 
 export interface AdminSpecialistListItemDto {
@@ -96,9 +123,10 @@ export interface AdminSpecialistListItemDto {
   email: string;
   title?: string;
   verificationStatus: string;
-  country?: string;
   experienceLevel: string;
-  rating?: number;
+  hourlyRate: number;
+  rating: number;
+  isOnline: boolean;
   totalSessions: number;
   totalEarnings: number;
   createdAt: string;
@@ -135,6 +163,7 @@ export interface ReviewDto {
 
 export interface AdminSpecialistDetailDto {
   id: string;
+  userId: string;
   fullName: string;
   email: string;
   title?: string;
@@ -142,18 +171,19 @@ export interface AdminSpecialistDetailDto {
   verificationStatus: string;
   experienceLevel: string;
   experienceYears: number;
-  hourlyRate?: number;
+  hourlyRate: number;
   country?: string;
   gender?: string;
   preferredLanguage?: string;
-  rating?: number;
+  rating: number;
+  isVerified: boolean;
   totalSessions: number;
   totalEarnings: number;
   totalReviews: number;
   profileImageUrl?: string | null;
   createdAt: string;
   verifiedAt?: string;
-  verifiedBy?: string;
+  lastLoginAt?: string;
   skills: SkillDto[];
   tools: ToolDto[];
   experiences: ExperienceDto[];

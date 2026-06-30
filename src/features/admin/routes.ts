@@ -36,9 +36,19 @@ export const ADMIN_ROUTES: Routes = [
     title: 'إدارة المتخصصين'
   },
   {
+    path: 'specialists/create',
+    loadComponent: () => import('./pages/specialists/admin-specialist-create').then(m => m.AdminSpecialistCreate),
+    title: 'إضافة متخصص'
+  },
+  {
     path: 'specialists/:id',
     loadComponent: () => import('./pages/specialists/admin-specialist-detail').then(m => m.AdminSpecialistDetail),
     title: 'تفاصيل المتخصص'
+  },
+  {
+    path: 'specialists/:id/edit',
+    loadComponent: () => import('./pages/specialists/admin-specialist-edit').then(m => m.AdminSpecialistEdit),
+    title: 'تعديل المتخصص'
   },
   {
     path: 'appointments',
@@ -69,5 +79,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'payments/:id',
     loadComponent: () => import('./pages/payments/admin-payment-detail').then(m => m.AdminPaymentDetail),
     title: 'تفاصيل الدفع'
+  },
+  {
+    path: 'ai',
+    loadComponent: () => import('./pages/ai/admin-ai').then(m => m.AdminAi),
+    title: 'إدارة AI'
   }
 ];

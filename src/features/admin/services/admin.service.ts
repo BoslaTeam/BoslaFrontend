@@ -10,7 +10,6 @@ import {
   AdminUserDto,
   AdminUserDetailDto,
   AdminSpecialistListItemDto,
-  PendingSpecialistDto,
   AdminSpecialistDetailDto,
   AdminAppointmentDto,
   AdminAppointmentDetailDto,
@@ -18,6 +17,7 @@ import {
   AdminPaymentDetailDto,
   AuditLogDto,
   EmbeddingsStatusDto,
+  CreateSpecialistRequest,
 } from '../contracts/admin.contracts';
 
 @Injectable({ providedIn: 'root' })
@@ -87,13 +87,6 @@ export class AdminService {
     );
   }
 
-  getPendingSpecialists(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<PendingSpecialistDto>>> {
-    return this.http.get<ApiResponse<PaginatedResponse<PendingSpecialistDto>>>(
-      API_ENDPOINTS.admin.pendingSpecialists,
-      { params: this.buildPaginationParams(params) }
-    );
-  }
-
   getSpecialistDetail(id: string): Observable<AdminSpecialistDetailDto> {
     return this.http
       .get<ApiResponse<AdminSpecialistDetailDto>>(API_ENDPOINTS.admin.specialistDetail(id))
@@ -107,6 +100,26 @@ export class AdminService {
   }
 
   // ── Lookups (Expertise, Skills, Tools) ──
+
+  getIndustryList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.industries)
+      .pipe(map((res) => res.data!));
+  }
+
+  createIndustry(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.industries, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateIndustry(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteIndustry(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id))
+      .pipe(map((res) => res.success));
+  }
 
   getExpertiseList(): Observable<{ id: string; name: string }[]> {
     return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.expertise)
@@ -234,6 +247,18 @@ export class AdminService {
       .pipe(map((res) => res.success));
   }
 
+  createSpecialist(payload: CreateSpecialistRequest): Observable<string> {
+    return this.http
+      .post<ApiResponse<string>>(API_ENDPOINTS.admin.createSpecialist, payload)
+      .pipe(map((res) => res.data!));
+  }
+
+  updateSpecialist(id: string, payload: any): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.updateSpecialist(id), payload)
+      .pipe(map((res) => res.success));
+  }
+
   updateUserRoles(id: string, roles: string[]): Observable<boolean> {
     return this.http
       .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.userRoles(id), { roles })
@@ -241,6 +266,12 @@ export class AdminService {
   }
 
   // ── Audit Logs ──
+
+  getAuditLogById(id: string): Observable<AuditLogDto> {
+    return this.http
+      .get<ApiResponse<AuditLogDto>>(API_ENDPOINTS.admin.auditLogById(id))
+      .pipe(map((res) => res.data!));
+  }
 
   getAuditLogs(params: PaginationRequest & {
     action?: string;
