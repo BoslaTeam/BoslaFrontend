@@ -6,8 +6,8 @@ export class FaviconBadgeService {
   private notificationService = inject(NotificationService);
   private destroyRef = inject(DestroyRef);
 
-  private originalHref = '';
-  private badgeLink: HTMLLinkElement | null = null;
+  private targetLink: HTMLLinkElement | null = null;
+  private savedHref = '';
   private baseBitmap: ImageBitmap | null = null;
   private loading = false;
   private canvas: HTMLCanvasElement;
@@ -21,9 +21,12 @@ export class FaviconBadgeService {
     this.ctx = this.canvas.getContext('2d')!;
 
     const links = document.querySelectorAll<HTMLLinkElement>('link[rel*="icon"]');
-    const originalLink = links[0] ?? null;
-    this.originalHref = originalLink?.href ?? '';
-    this.loadBaseImage();
+    this.targetLink = links[0] ?? null;
+    this.savedHref = this.targetLink?.href ?? '';
+
+    if (this.targetLink) {
+      this.loadBaseImage();
+    }
 
     effect(() => {
       const count = this.notificationService.unreadCount();
@@ -31,16 +34,22 @@ export class FaviconBadgeService {
     });
 
     this.destroyRef.onDestroy(() => {
-      this.removeBadgeLink();
+      this.restoreOriginal();
       this.baseBitmap?.close();
     });
   }
 
+  private restoreOriginal(): void {
+    if (this.targetLink && this.savedHref) {
+      this.targetLink.href = this.savedHref;
+    }
+  }
+
   private async loadBaseImage(): Promise<void> {
-    if (!this.originalHref || this.loading) return;
+    if (!this.savedHref || this.loading || this.baseBitmap) return;
     this.loading = true;
     try {
-      const resp = await fetch(this.originalHref, { cache: 'no-cache' });
+      const resp = await fetch(this.savedHref, { cache: 'no-cache' });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const blob = await resp.blob();
       this.baseBitmap = await createImageBitmap(blob);
@@ -51,39 +60,22 @@ export class FaviconBadgeService {
     this.loading = false;
   }
 
-  private ensureBadgeLink(): HTMLLinkElement {
-    if (!this.badgeLink) {
-      this.badgeLink = document.createElement('link');
-      this.badgeLink.rel = 'icon';
-      this.badgeLink.id = 'bosla-favicon-badge';
-      document.head.appendChild(this.badgeLink);
-    }
-    return this.badgeLink;
-  }
-
-  private removeBadgeLink(): void {
-    if (this.badgeLink && this.badgeLink.parentNode) {
-      this.badgeLink.parentNode.removeChild(this.badgeLink);
-    }
-    this.badgeLink = null;
-  }
-
   private drawBadge(count: number): void {
+    if (!this.targetLink) return;
+
     if (count === 0) {
-      this.removeBadgeLink();
+      this.restoreOriginal();
       return;
     }
 
-    const link = this.ensureBadgeLink();
-
     if (this.baseBitmap) {
-      this.renderWithBase(this.baseBitmap, link, count);
+      this.renderWithBase(this.targetLink, count);
     } else {
       if (this.loading) {
         setTimeout(() => this.drawBadge(this.notificationService.unreadCount()), 200);
       } else {
-        this.renderFallback(link, count);
-        if (this.originalHref) {
+        this.renderFallback(this.targetLink, count);
+        if (this.savedHref) {
           this.loadBaseImage().then(() => {
             if (this.baseBitmap && this.notificationService.unreadCount() > 0) {
               this.drawBadge(this.notificationService.unreadCount());
@@ -94,19 +86,23 @@ export class FaviconBadgeService {
     }
   }
 
-  private renderWithBase(bitmap: ImageBitmap, link: HTMLLinkElement, count: number): void {
+  private renderWithBase(link: HTMLLinkElement, count: number): void {
     const s = this.SIZE;
     const ctx = this.ctx;
     ctx.clearRect(0, 0, s, s);
-    ctx.drawImage(bitmap, 0, 0, s, s);
+    ctx.drawImage(this.baseBitmap!, 0, 0, s, s);
     this.drawOverlay(ctx, s, count);
     link.href = this.canvas.toDataURL();
   }
 
   private drawOverlay(ctx: CanvasRenderingContext2D, s: number, count: number): void {
     const display = count > 99 ? '99+' : String(count);
+    const cx = s - 9;
+    const cy = 9;
+    const r = display.length > 2 ? 21 : 18;
+
     ctx.beginPath();
-    ctx.arc(s - 8, 8, display.length > 2 ? 20 : 17, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fillStyle = '#dc2626';
     ctx.fill();
     ctx.strokeStyle = '#fff';
@@ -116,7 +112,7 @@ export class FaviconBadgeService {
     ctx.font = `bold ${display.length > 2 ? 18 : 20}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(display, s - 8, 9);
+    ctx.fillText(display, cx, cy + 1);
   }
 
   private renderFallback(link: HTMLLinkElement, count: number): void {
