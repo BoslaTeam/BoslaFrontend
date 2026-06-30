@@ -118,6 +118,28 @@
   box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.08);
 }
 
+.toolbar-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  background: #1B4F72;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.toolbar-add-btn:hover {
+  background: #2E86AB;
+}
+
 /* ── Table ── */
 .specialists-table-wrapper {
   background: #fff;

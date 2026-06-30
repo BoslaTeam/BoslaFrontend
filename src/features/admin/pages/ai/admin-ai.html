@@ -1,0 +1,92 @@
+<div class="ai-page">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h1>إدارة AI</h1>
+      <p>إدارة التضمينات (Embeddings) للبحث الذكي عن المتخصصين</p>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="status-card skeleton">
+      <div class="skeleton-block">
+        <div class="skeleton-line w-40"></div>
+        <div class="skeleton-line w-60"></div>
+      </div>
+    </div>
+  } @else {
+    @let s = status()!;
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.totalSpecialists }}</span>
+          <span class="stat-label">إجمالي المتخصصين</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon done">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.embeddedCount }}</span>
+          <span class="stat-label">تم تضمينها</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon pending">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.pendingCount }}</span>
+          <span class="stat-label">بانتظار التضمين</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">الحالة</span>
+        <span class="status-badge" [class]="getStatusClass(s.status)">{{ getStatusLabel(s.status) }}</span>
+      </div>
+      @if (s.lastRebuildAt) {
+        <div class="info-row">
+          <span class="info-label">آخر تحديث</span>
+          <span class="info-value">{{ s.lastRebuildAt | date:'EEEE, yyyy/MM/dd hh:mm a' }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="actions-card">
+      <button class="rebuild-btn" (click)="rebuild()" [disabled]="isRebuilding()">
+        @if (isRebuilding()) {
+          <span class="spinner"></span>
+          جاري إعادة البناء...
+        } @else {
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          إعادة بناء التضمينات
+        }
+      </button>
+      <p class="actions-hint">سيتم إعادة إنشاء التضمينات لجميع المتخصصين باستخدام أحدث البيانات</p>
+    </div>
+  }
+</div>
