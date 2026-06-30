@@ -21,6 +21,7 @@ export class AdminUserDetail implements OnInit {
   readonly hasError = signal(false);
   readonly activeTab = signal<'info' | 'education' | 'social' | 'activity'>('info');
   readonly isToggling = signal(false);
+  readonly isUpdatingRole = signal(false);
 
   ngOnInit(): void {
     this.loadUser();
@@ -63,6 +64,23 @@ export class AdminUserDetail implements OnInit {
       error: () => {
         this.isToggling.set(false);
       },
+    });
+  }
+
+  onRoleChange(roleValue: string): void {
+    const u = this.user();
+    if (!u) return;
+    const newRole = parseInt(roleValue, 10);
+    if (u.role === newRole) return;
+
+    this.isUpdatingRole.set(true);
+    const roleName = newRole === 2 ? 'Admin' : newRole === 1 ? 'Specialist' : 'User';
+    this.adminService.updateUserRoles(u.id, [roleName]).subscribe({
+      next: () => {
+        this.user.set({ ...u, role: newRole });
+        this.isUpdatingRole.set(false);
+      },
+      error: () => this.isUpdatingRole.set(false),
     });
   }
 

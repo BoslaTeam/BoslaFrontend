@@ -9,9 +9,11 @@ import {
   AdminDashboardDto,
   AdminUserDto,
   AdminUserDetailDto,
+  AdminSpecialistListItemDto,
   PendingSpecialistDto,
   AdminSpecialistDetailDto,
   AdminAppointmentDto,
+  AdminAppointmentDetailDto,
   AuditLogDto,
   EmbeddingsStatusDto,
 } from '../contracts/admin.contracts';
@@ -73,6 +75,16 @@ export class AdminService {
 
   // ── Specialists Management ──
 
+  getAllSpecialists(params: PaginationRequest & { verificationStatus?: string }): Observable<ApiResponse<PaginatedResponse<AdminSpecialistListItemDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.verificationStatus) httpParams = httpParams.set('verificationStatus', params.verificationStatus);
+
+    return this.http.get<ApiResponse<PaginatedResponse<AdminSpecialistListItemDto>>>(
+      API_ENDPOINTS.admin.specialists,
+      { params: httpParams }
+    );
+  }
+
   getPendingSpecialists(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<PendingSpecialistDto>>> {
     return this.http.get<ApiResponse<PaginatedResponse<PendingSpecialistDto>>>(
       API_ENDPOINTS.admin.pendingSpecialists,
@@ -92,6 +104,68 @@ export class AdminService {
       .pipe(map((res) => res.data!));
   }
 
+  // ── Lookups (Expertise, Skills, Tools) ──
+
+  getExpertiseList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.expertise)
+      .pipe(map((res) => res.data!));
+  }
+
+  createExpertise(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.expertise, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateExpertise(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.expertiseById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteExpertise(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.expertiseById(id))
+      .pipe(map((res) => res.success));
+  }
+
+  getSkillList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.skills)
+      .pipe(map((res) => res.data!));
+  }
+
+  createSkill(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.skills, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateSkill(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.skillById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteSkill(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.skillById(id))
+      .pipe(map((res) => res.success));
+  }
+
+  getToolList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.tools)
+      .pipe(map((res) => res.data!));
+  }
+
+  createTool(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.tools, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateTool(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.toolById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteTool(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.toolById(id))
+      .pipe(map((res) => res.success));
+  }
+
   // ── Appointments ──
 
   getAppointments(params: PaginationRequest & { status?: number }): Observable<ApiResponse<PaginatedResponse<AdminAppointmentDto>>> {
@@ -102,6 +176,42 @@ export class AdminService {
       API_ENDPOINTS.admin.appointments,
       { params: httpParams }
     );
+  }
+
+  getAppointmentDetail(id: string): Observable<AdminAppointmentDetailDto> {
+    return this.http
+      .get<ApiResponse<AdminAppointmentDetailDto>>(API_ENDPOINTS.admin.appointmentDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  cancelAppointment(id: string, reason: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.cancelAppointment(id), { reason })
+      .pipe(map((res) => res.data ?? res.success));
+  }
+
+  confirmAppointment(id: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.confirmAppointment(id), {})
+      .pipe(map((res) => res.success));
+  }
+
+  completeAppointment(id: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.completeAppointment(id), {})
+      .pipe(map((res) => res.success));
+  }
+
+  updateSpecialistStatus(id: string, status: string): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.specialistStatus(id), { status })
+      .pipe(map((res) => res.success));
+  }
+
+  updateUserRoles(id: string, roles: string[]): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.userRoles(id), { roles })
+      .pipe(map((res) => res.success));
   }
 
   // ── Audit Logs ──

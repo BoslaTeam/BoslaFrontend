@@ -1,0 +1,284 @@
+<div class="detail-page">
+
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    العودة للقائمة
+  </button>
+
+  @if (isLoading()) {
+    <div class="detail-skeleton">
+      <div class="profile-header">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-40"></div>
+            <div class="skeleton-line w-30"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skeleton-block"></div>
+    </div>
+  } @else if (hasError() || !specialist()) {
+    <div class="error-card">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem;">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3>خطأ في تحميل بيانات المتخصص</h3>
+      <p>حدث خطأ أثناء محاولة جلب التفاصيل.</p>
+      <button class="retry-btn" (click)="loadSpecialist()">إعادة المحاولة</button>
+    </div>
+  } @else {
+    @let s = specialist()!;
+
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="profile-info">
+          <div class="profile-avatar">
+            @if (s.profileImageUrl) {
+              <img [src]="s.profileImageUrl" [alt]="s.fullName">
+            } @else {
+              {{ getUserInitials(s.fullName) }}
+            }
+          </div>
+          <div>
+            <h2 class="profile-name">{{ s.fullName }}</h2>
+            <div class="profile-email">{{ s.email }}</div>
+            <div class="profile-badges">
+              <span class="status-badge" [class]="getVerificationStatusClass(s.verificationStatus)">
+                {{ getVerificationStatusLabel(s.verificationStatus) }}
+              </span>
+              @if (s.title) {
+                <span class="info-tag">{{ s.title }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="profile-stats-row">
+          <div class="mini-stat">
+            <span class="mini-stat-value">{{ s.rating ? (s.rating.toFixed(1) + ' ★') : '—' }}</span>
+            <span class="mini-stat-label">التقييم</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-value">{{ s.totalSessions || 0 }}</span>
+            <span class="mini-stat-label">الجلسات</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-value">${{ s.totalEarnings.toLocaleString() }}</span>
+            <span class="mini-stat-label">الأرباح</span>
+          </div>
+        </div>
+      </div>
+      <div class="status-actions">
+        <div class="status-select-wrapper">
+          <label class="status-select-label">تغيير الحالة:</label>
+          <select class="status-select" [value]="s.verificationStatus" [disabled]="isUpdatingStatus()" (change)="updateStatus($any($event.target).value)">
+            <option value="Pending">معلق</option>
+            <option value="Approved">مقبول</option>
+            <option value="Rejected">مرفوض</option>
+          </select>
+        </div>
+        @if (isUpdatingStatus()) {
+          <span class="status-updating">جاري التحديث...</span>
+        }
+      </div>
+    </div>
+
+    <div class="detail-tabs">
+      <button class="detail-tab" [class.active]="activeTab() === 'info'" (click)="setTab('info')">المعلومات الأساسية</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'skills'" (click)="setTab('skills')">المهارات والأدوات</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'experience'" (click)="setTab('experience')">الخبرات ({{ s.experiences.length }})</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'expertise'" (click)="setTab('expertise')">التخصصات والمجالات</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">التقييمات ({{ s.totalReviews || 0 }})</button>
+    </div>
+
+    <div class="tab-content">
+
+      @if (activeTab() === 'info') {
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">الاسم الكامل</span>
+            <span class="info-value">{{ s.fullName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">البريد الإلكتروني</span>
+            <span class="info-value">{{ s.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">المسمى الوظيفي</span>
+            <span class="info-value" [class.empty]="!s.title">{{ s.title || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">مستوى الخبرة</span>
+            <span class="info-value">{{ getExperienceLevelLabel(s.experienceLevel) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">سنوات الخبرة</span>
+            <span class="info-value">{{ s.experienceYears || 0 }} سنوات</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">سعر الساعة</span>
+            <span class="info-value">${{ s.hourlyRate?.toFixed(2) || '0.00' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">البلد</span>
+            <span class="info-value" [class.empty]="!s.country">{{ s.country || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">الجنس</span>
+            <span class="info-value" [class.empty]="!s.gender">{{ s.gender || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">اللغة المفضلة</span>
+            <span class="info-value" [class.empty]="!s.preferredLanguage">{{ s.preferredLanguage || 'لم يحدد' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">التقييم العام</span>
+            <span class="info-value">{{ formatRating(s.rating) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">تاريخ التسجيل</span>
+            <span class="info-value">{{ s.createdAt | date:'yyyy/MM/dd' }}</span>
+          </div>
+          @if (s.verifiedAt) {
+            <div class="info-item">
+              <span class="info-label">تاريخ التحقق</span>
+              <span class="info-value">{{ s.verifiedAt | date:'yyyy/MM/dd' }}</span>
+            </div>
+          }
+        </div>
+        @if (s.bio) {
+          <div class="bio-section">
+            <div class="info-label" style="margin-bottom:0.5rem;">نبذة تعريفية</div>
+            <p class="bio-text">{{ s.bio }}</p>
+          </div>
+        }
+      }
+
+      @if (activeTab() === 'skills') {
+        <div class="two-col-content">
+          <div class="sub-section">
+            <h4 class="sub-section-title">المهارات</h4>
+            @if (s.skills && s.skills.length > 0) {
+              <div class="tags-list">
+                @for (skill of s.skills; track skill.id) {
+                  <span class="tag primary">{{ skill.name }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">لا توجد مهارات مضافة</p>
+            }
+          </div>
+          <div class="sub-section">
+            <h4 class="sub-section-title">الأدوات</h4>
+            @if (s.tools && s.tools.length > 0) {
+              <div class="tags-list">
+                @for (tool of s.tools; track tool.id) {
+                  <span class="tag secondary">{{ tool.name }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">لا توجد أدوات مضافة</p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activeTab() === 'experience') {
+        @if (s.experiences && s.experiences.length > 0) {
+          <div class="experience-list">
+            @for (exp of s.experiences; track exp.id) {
+              <div class="experience-item">
+                <div class="exp-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="exp-title">{{ exp.jobTitle }}</div>
+                  <div class="exp-company">{{ exp.companyName }}</div>
+                  <div class="exp-years">{{ exp.fromDate }} — {{ exp.toDate || 'الآن' }}</div>
+                  @if (exp.description) {
+                    <p class="exp-desc">{{ exp.description }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <p>لا توجد خبرات عملية مضافة</p>
+          </div>
+        }
+      }
+
+      @if (activeTab() === 'expertise') {
+        <div class="two-col-content">
+          <div class="sub-section">
+            <h4 class="sub-section-title">التخصصات</h4>
+            @if (s.expertiseAreas && s.expertiseAreas.length > 0) {
+              <div class="tags-list">
+                @for (area of s.expertiseAreas; track area) {
+                  <span class="tag primary">{{ area }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">لا توجد تخصصات مضافة</p>
+            }
+          </div>
+          <div class="sub-section">
+            <h4 class="sub-section-title">المجالات</h4>
+            @if (s.industries && s.industries.length > 0) {
+              <div class="tags-list">
+                @for (ind of s.industries; track ind) {
+                  <span class="tag secondary">{{ ind }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">لا توجد مجالات مضافة</p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activeTab() === 'reviews') {
+        @if (s.reviews && s.reviews.length > 0) {
+          <div class="reviews-list">
+            @for (rev of s.reviews; track rev.id) {
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-avatar">{{ rev.reviewerName.substring(0, 2) }}</div>
+                  <div>
+                    <div class="reviewer-name">{{ rev.reviewerName }}</div>
+                    <div class="review-date">{{ rev.createdAt | date:'yyyy/MM/dd' }}</div>
+                  </div>
+                  <div class="review-rating">{{ rev.rating }} ★</div>
+                </div>
+                @if (rev.comment) {
+                  <p class="review-comment">{{ rev.comment }}</p>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 15l-2 5l9-11h-5l2-5L7 15z"/>
+              </svg>
+            </div>
+            <p>لا توجد تقييمات بعد</p>
+          </div>
+        }
+      }
+
+    </div>
+  }
+</div>

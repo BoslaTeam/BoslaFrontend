@@ -31,8 +31,28 @@ export const ADMIN_ROUTES: Routes = [
     title: 'تعديل المستخدم'
   },
   {
+    path: 'specialists',
+    loadComponent: () => import('./pages/specialists/admin-specialists-list').then(m => m.AdminSpecialistsList),
+    title: 'إدارة المتخصصين'
+  },
+  {
+    path: 'specialists/:id',
+    loadComponent: () => import('./pages/specialists/admin-specialist-detail').then(m => m.AdminSpecialistDetail),
+    title: 'تفاصيل المتخصص'
+  },
+  {
     path: 'appointments',
-    loadComponent: () => import('./pages/appointments/admin-appointments').then(m => m.AdminAppointments),
+    loadComponent: () => import('./pages/appointments/admin-appointments-list').then(m => m.AdminAppointmentsList),
     title: 'إدارة الحجوزات'
+  },
+  {
+    path: 'appointments/:id',
+    loadComponent: () => import('./pages/appointments/admin-appointment-detail').then(m => m.AdminAppointmentDetail),
+    title: 'تفاصيل الحجز'
+  },
+  {
+    path: 'lookups',
+    loadComponent: () => import('./pages/lookups/admin-lookups').then(m => m.AdminLookups),
+    title: 'إدارة البيانات الأساسية'
   }
 ];

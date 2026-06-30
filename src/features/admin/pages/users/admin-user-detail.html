@@ -68,6 +68,14 @@
         </div>
 
         <div class="profile-actions">
+          <div class="role-select-wrapper">
+            <label class="role-select-label">الدور:</label>
+            <select class="role-select" [value]="u.role" [disabled]="isUpdatingRole()" (change)="onRoleChange($any($event.target).value)">
+              <option value="0">مستخدم</option>
+              <option value="1">متخصص</option>
+              <option value="2">مدير</option>
+            </select>
+          </div>
           <button 
             class="toggle-status-btn" 
             [class.deactivate]="u.isActive" 

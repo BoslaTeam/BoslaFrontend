@@ -2,7 +2,6 @@ import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileStore } from '../../stores/profile.store';
-import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-profile-basic',
@@ -12,11 +11,7 @@ import { AuthService } from '@core/services/auth.service';
 })
 export class ProfileBasic {
   readonly profileStore = inject(ProfileStore);
-  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
-
-  avatarPreviewUrl: string | null = null;
-  profileImageError = false;
 
   basicInfoForm: FormGroup;
 
@@ -43,7 +38,6 @@ export class ProfileBasic {
           gender: p.gender || '',
           preferredLanguage: p.preferredLanguage || ''
         });
-        this.avatarPreviewUrl = p.profilePictureUrl || this.authService.currentUser()?.avatarUrl || null;
       }
     });
   }
@@ -52,25 +46,5 @@ export class ProfileBasic {
     if (this.basicInfoForm.valid) {
       this.profileStore.updateProfile(this.basicInfoForm.value);
     }
-  }
-
-  onAvatarSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.avatarPreviewUrl = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-
-      this.profileImageError = false;
-      this.profileStore.uploadAvatar(file);
-    }
-  }
-
-  onProfileImageError() {
-    this.profileImageError = true;
-    this.avatarPreviewUrl = null;
   }
 }
