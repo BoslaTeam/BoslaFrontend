@@ -20,4 +20,8 @@ export class NotificationsService {
   markAllAsRead(): Observable<ApiResponse<boolean>> {
     return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.notifications.markAllRead, {});
   }
+
+  delete(id: string): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.notifications.delete(id));
+  }
 }

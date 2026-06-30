@@ -65,7 +65,7 @@ export class SpecialistDetailsStore {
   readonly reviewItems = computed<ReviewItem[]>(() => {
     return this.reviews().map(r => ({
       id: r.id,
-      authorName: r.userName,
+      authorName: r.reviewerName,
       timeAgo: formatTimeAgo(r.createdAt),
       rating: r.rating,
       comment: r.comment,

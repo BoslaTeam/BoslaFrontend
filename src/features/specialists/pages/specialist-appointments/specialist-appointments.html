@@ -46,6 +46,10 @@
         <p class="text-xs font-medium text-slate-500 mt-1">مؤكد</p>
       </div>
       <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-emerald-600">{{ stats().paid }}</p>
+        <p class="text-xs font-medium text-slate-500 mt-1">مدفوع</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
         <p class="text-2xl font-black text-green-600">{{ stats().completed }}</p>
         <p class="text-xs font-medium text-slate-500 mt-1">مكتمل</p>
       </div>
@@ -95,7 +99,7 @@
         [class.hover:bg-slate-50]="activeTab() !== 'all'">
         الكل
       </button>
-      @for (st of [ApptStatus.Pending, ApptStatus.Confirmed, ApptStatus.Completed, ApptStatus.Cancelled]; track st) {
+      @for (st of [ApptStatus.Pending, ApptStatus.Confirmed, ApptStatus.Paid, ApptStatus.Completed, ApptStatus.Cancelled]; track st) {
         <button (click)="setStatusTab(st)"
           class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border"
           [class.bg-bosla-primary]="activeTab() === st"
@@ -133,7 +137,7 @@
           <div class="bg-white rounded-3xl border border-slate-100 shadow-sm transition-all duration-300 overflow-hidden"
             [class.ring-2]="isInProgress(apt.id)"
             [class.ring-green-500]="isInProgress(apt.id)"
-            [class.shadow-md]="isSessionActive(apt.id)">
+            [class.shadow-md]="isInProgress(apt.id)">
 
             <div class="p-6">
               <!-- Card Header -->
@@ -171,15 +175,26 @@
                 </div>
               </div>
 
-              <!-- Pending: Countdown mock -->
+              <!-- Pending: Awaiting specialist confirmation -->
               @if (apt.status === ApptStatus.Pending) {
-                <div class="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl px-4 py-2 border border-amber-200">
-                  <i class="fa-regular fa-clock ml-1"></i> في انتظار ردك
+                <div class="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl px-4 py-2 border border-amber-200 flex items-center gap-2">
+                  <i class="fa-regular fa-clock ml-1"></i>
+                  <span>في انتظار موافقتك</span>
+                  <span class="me-auto font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg text-[10px]">قيد المراجعة</span>
                 </div>
               }
 
-              <!-- Confirmed / InProgress: Countdown or Meeting Timer -->
-              @if (apt.status === ApptStatus.Confirmed) {
+              <!-- Paid: Payment completed -->
+              @if (apt.status === ApptStatus.Paid) {
+                <div class="mt-3 text-xs text-emerald-600 bg-emerald-50 rounded-xl px-4 py-2 border border-emerald-200 flex items-center gap-2">
+                  <i class="fa-solid fa-circle-check ml-1"></i>
+                  <span class="font-bold">تم الدفع</span>
+                  <span class="me-auto font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg text-[10px]">مدفوع</span>
+                </div>
+              }
+
+              <!-- Confirmed / Paid / InProgress: Countdown, Late, Missed or Meeting Timer -->
+              @if (apt.status === ApptStatus.Confirmed || apt.status === ApptStatus.Paid) {
                 @if (isInProgress(apt.id)) {
                   <div class="mt-3 flex items-center gap-2 text-green-600 bg-green-50 rounded-xl px-4 py-3 border border-green-200">
                     <span class="relative flex h-3 w-3">
@@ -190,19 +205,31 @@
                     <span dir="ltr" class="font-black text-sm me-auto">{{ getMeetingTimer(apt.id) }}</span>
                   </div>
                 } @else {
-                  @if (countdowns()[apt.id] && countdowns()[apt.id] !== 'session_active') {
+                  @if (getCountdownType(apt.id) === 'countdown') {
                     <div class="mt-3 flex items-center gap-2 bg-blue-50 rounded-xl px-4 py-3 border border-blue-200">
                       <i class="fa-regular fa-hourglass-half text-blue-400"></i>
                       <span class="text-sm">
                         <span class="font-bold text-blue-700">يبدأ بعد:</span>
-                        <span dir="ltr" class="font-black text-blue-700 me-1">{{ countdowns()[apt.id] }}</span>
+                        <span dir="ltr" class="font-black text-blue-700 me-1">{{ getCountdownValue(apt.id) }}</span>
                       </span>
                     </div>
                   }
-                  @if (isSessionActive(apt.id) && !isInProgress(apt.id)) {
-                    <div class="mt-3 flex items-center gap-2 text-blue-600 bg-blue-50 rounded-xl px-4 py-3 border border-blue-200">
-                      <i class="fa-regular fa-bell text-blue-400"></i>
-                      <span class="font-bold text-sm">موعد الجلسة الآن</span>
+                  @if (getCountdownType(apt.id) === 'late') {
+                    <div class="mt-3 flex items-center gap-2 bg-amber-50 rounded-xl px-4 py-3 border border-amber-200">
+                      <i class="fa-regular fa-bell text-amber-400"></i>
+                      <span class="text-sm">
+                        <span class="font-bold text-amber-700">متأخر بـ:</span>
+                        <span dir="ltr" class="font-black text-amber-700 me-1">{{ getCountdownValue(apt.id) }}</span>
+                      </span>
+                    </div>
+                  }
+                  @if (getCountdownType(apt.id) === 'missed') {
+                    <div class="mt-3 flex items-center gap-2 bg-red-50 rounded-xl px-4 py-3 border border-red-200">
+                      <i class="fa-regular fa-clock text-red-400"></i>
+                      <span class="text-sm">
+                        <span class="font-bold text-red-700">فات الوقت بـ:</span>
+                        <span dir="ltr" class="font-black text-red-700 me-1">{{ getCountdownValue(apt.id) }}</span>
+                      </span>
                     </div>
                   }
                 }
@@ -212,33 +239,37 @@
               <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
                 @if (apt.status === ApptStatus.Pending) {
                   <button (click)="confirmAppointment(apt.id)"
-                    class="flex-1 px-4 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-colors">
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-teal-500 text-white font-bold text-xs hover:bg-teal-600 transition-colors shadow-sm">
                     <i class="fa-solid fa-check ml-1"></i> قبول
                   </button>
-                  <button (click)="rejectAppointment(apt.id)"
+                  <button (click)="openRejectPrompt(apt.id)"
                     class="px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold text-xs border border-red-200 hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-xmark ml-1"></i> رفض
                   </button>
                 }
 
-                @if (apt.status === ApptStatus.Confirmed && !isInProgress(apt.id)) {
+                @if ((apt.status === ApptStatus.Confirmed || apt.status === ApptStatus.Paid) && !isInProgress(apt.id)) {
                   @if (canJoin(apt.id)) {
                     <button (click)="joinSession(apt.id)"
                       class="flex-1 px-4 py-2.5 rounded-xl bg-green-500 text-white font-bold text-xs hover:bg-green-600 transition-colors shadow-sm">
                       <i class="fa-solid fa-video ml-1"></i> بدء الجلسة
                     </button>
+                  } @else if (!apt.isPaid) {
+                    <span class="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs border border-slate-200 flex items-center justify-center gap-1.5 cursor-not-allowed opacity-70">
+                      <i class="fa-solid fa-lock ml-1"></i> غير مدفوع
+                    </span>
                   }
                   <button (click)="toggleDetails(apt.id)"
                     class="px-4 py-2.5 rounded-xl bg-slate-50 text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-100 transition-colors">
                     <i class="fa-solid ml-1" [class.fa-chevron-up]="expandedId() === apt.id" [class.fa-chevron-down]="expandedId() !== apt.id"></i> التفاصيل
                   </button>
-                  <button (click)="cancelAppointment(apt.id)"
+                  <button (click)="openCancelPrompt(apt.id)"
                     class="px-4 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold text-xs border border-red-200 hover:bg-red-100 transition-colors">
                     <i class="fa-solid fa-ban ml-1"></i> إلغاء
                   </button>
                 }
 
-                @if (apt.status === ApptStatus.Confirmed && isInProgress(apt.id)) {
+                @if ((apt.status === ApptStatus.Confirmed || apt.status === ApptStatus.Paid) && isInProgress(apt.id)) {
                   <button (click)="endSession(apt.id)"
                     class="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white font-bold text-xs hover:bg-red-600 transition-colors shadow-sm">
                     <i class="fa-solid fa-stop ml-1"></i> إنهاء الجلسة
@@ -297,6 +328,61 @@
             }
           </div>
         }
+      </div>
+    }
+
+    <!-- Reason Modals -->
+    @if (showRejectModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" (click)="showRejectModal.set(false)">
+        <div class="bg-white rounded-3xl max-w-sm w-full mx-auto shadow-2xl border border-slate-100 p-6" (click)="$event.stopPropagation()">
+          <div class="text-center mb-4">
+            <div class="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3">
+              <i class="fa-solid fa-xmark text-2xl text-red-400"></i>
+            </div>
+            <h3 class="text-lg font-black text-slate-800">رفض الموعد</h3>
+            <p class="text-sm text-slate-500 mt-1">يرجى إدخال سبب الرفض (اختياري)</p>
+          </div>
+          <textarea [(ngModel)]="reason" rows="3"
+            class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl resize-none outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 transition-all bg-slate-50"
+            placeholder="سبب الرفض..."></textarea>
+          <div class="flex gap-3 mt-5">
+            <button (click)="showRejectModal.set(false)"
+              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors">
+              إلغاء
+            </button>
+            <button (click)="confirmReject()"
+              class="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors">
+              تأكيد الرفض
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showCancelModal()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" (click)="showCancelModal.set(false)">
+        <div class="bg-white rounded-3xl max-w-sm w-full mx-auto shadow-2xl border border-slate-100 p-6" (click)="$event.stopPropagation()">
+          <div class="text-center mb-4">
+            <div class="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3">
+              <i class="fa-solid fa-ban text-2xl text-red-400"></i>
+            </div>
+            <h3 class="text-lg font-black text-slate-800">إلغاء الموعد</h3>
+            <p class="text-sm text-slate-500 mt-1">يرجى إدخال سبب الإلغاء (اختياري)</p>
+          </div>
+          <textarea [(ngModel)]="reason" rows="3"
+            class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl resize-none outline-none focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 transition-all bg-slate-50"
+            placeholder="سبب الإلغاء..."></textarea>
+          <div class="flex gap-3 mt-5">
+            <button (click)="showCancelModal.set(false)"
+              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors">
+              إلغاء
+            </button>
+            <button (click)="confirmCancel()"
+              class="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors">
+              تأكيد الإلغاء
+            </button>
+          </div>
+        </div>
       </div>
     }
 
