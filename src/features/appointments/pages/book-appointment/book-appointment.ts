@@ -1,55 +1,86 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { CreateAppointmentRequest } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
-// import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, UiButton],
+  imports: [CommonModule, RouterLink, FormsModule, UiButton, UiSpinner],
   templateUrl: './book-appointment.html'
 })
-export class BookAppointment {
+export class BookAppointment implements OnInit, OnDestroy {
   public store = inject(AppointmentsStore);
   private readonly router = inject(Router);
-private readonly route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
+  private readonly toast = inject(ToastService);
 
   readonly specialistId = signal('');
   readonly sessionTopic = signal('');
-  readonly appointmentDate = signal('');
-  readonly startTime = signal('');
-  readonly endTime = signal('');
   readonly notes = signal('');
+  readonly selectedSlotId = signal<string | null>(null);
+  readonly selectedDate = signal<string | null>(null);
 
-ngOnInit(): void {
+  specialistNotFound = signal(false);
 
+  readonly selectedSlotInfo = computed(() => {
+    const slotId = this.selectedSlotId();
+    if (!slotId) return null;
+    for (const group of this.store.formattedAvailabilitySlots()) {
+      const slot = group.slots.find(s => s.id === slotId);
+      if (slot) return { ...slot, displayDate: group.displayDate };
+    }
+    return null;
+  });
+
+  ngOnInit(): void {
+    this.store.resetBooking();
     const idFromQuery = this.route.snapshot.queryParamMap.get('specialistId');
     if (idFromQuery) {
       this.specialistId.set(idFromQuery);
+      this.store.loadSpecialistInfo(idFromQuery);
+      this.store.loadAvailability(idFromQuery);
+    } else {
+      this.specialistNotFound.set(true);
     }
   }
-  onSubmit(): void {
-    if (!this.specialistId() || !this.appointmentDate() || !this.startTime() || !this.endTime()) {
-      return;
-    }
 
-    const startDateTime = new Date(`${this.appointmentDate()}T${this.startTime()}`).toISOString();
-    const endDateTime = new Date(`${this.appointmentDate()}T${this.endTime()}`).toISOString();
+  ngOnDestroy(): void {
+    this.store.resetBooking();
+  }
+
+  selectSlot(slotId: string, dateStr: string): void {
+    this.selectedSlotId.set(slotId);
+    this.selectedDate.set(dateStr);
+  }
+
+  onSubmit(): void {
+    const slot = this.selectedSlotInfo();
+    if (!slot || !this.specialistId()) return;
 
     const request: CreateAppointmentRequest = {
       specialistId: this.specialistId(),
-      start: startDateTime,
-      end: endDateTime,
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString(),
       sessionTopic: this.sessionTopic().trim() || undefined,
       notes: this.notes().trim() || undefined
     };
 
-    this.store.createAppointment(request, () => {
-      this.router.navigate(['/appointments']);
-    });
+    this.store.createAppointment(request);
+  }
+
+  processPayment(): void {
+    const id = this.store.bookingAppointmentId();
+    if (!id) return;
+    this.store.confirmAppointment(id);
+  }
+
+  goToAppointments(): void {
+    this.router.navigate(['/appointments']);
   }
 }

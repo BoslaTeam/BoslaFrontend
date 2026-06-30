@@ -1,30 +1,41 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { AppointmentService } from '../services/appointments.service';
-import { 
-  AppointmentDto, 
-  CreateAppointmentRequest, 
-  CancelAppointmentRequest, 
+import {
+  AppointmentDto,
+  CreateAppointmentRequest,
+  CancelAppointmentRequest,
   RescheduleAppointmentRequest,
   RejectAppointmentRequest,
   UpdateAppointmentNotesRequest,
   AddReviewRequest,
   AddReminderRequest,
   ReminderDto,
-  AppointmentStatusHistoryDto
+  AppointmentStatusHistoryDto,
+  SpecialistBrief,
+  SpecialistFullDetail,
+  AvailabilitySlotDto,
 } from '../contracts/appointments.contracts';
 import { ToastService } from '@core/services/toast.service';
 import { finalize } from 'rxjs';
+import { SpecialistsApiService } from '@features/specialists/data-access/specialist-api.service';
+import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 
 export interface AppointmentsState {
   items: AppointmentDto[];
   upcomingItems: AppointmentDto[];
   specialistItems: AppointmentDto[];
   selectedItem: AppointmentDto | null;
-  selectedItemHistory: AppointmentStatusHistoryDto[]; 
+  selectedItemHistory: AppointmentStatusHistoryDto[];
   selectedItemReminders: ReminderDto[];
   isLoading: boolean;
   isActionLoading: boolean;
+  isLoadingSpecialist: boolean;
   error: string | null;
+  specialistInfo: SpecialistBrief | null;
+  selectedSpecialistDetail: SpecialistFullDetail | null;
+  availabilitySlots: AvailabilitySlotDto[];
+  bookingAppointmentId: string | null;
+  bookingStep: 'form' | 'payment' | 'done';
 }
 
 @Injectable({
@@ -32,6 +43,7 @@ export interface AppointmentsState {
 })
 export class AppointmentsStore {
   private readonly appointmentService = inject(AppointmentService);
+  private readonly specialistApi = inject(SpecialistsApiService);
   private readonly toast = inject(ToastService);
 
   private readonly _state = signal<AppointmentsState>({
@@ -43,9 +55,14 @@ export class AppointmentsStore {
     selectedItemReminders: [],
     isLoading: false,
     isActionLoading: false,
-    error: null
+    isLoadingSpecialist: false,
+    error: null,
+    specialistInfo: null,
+    selectedSpecialistDetail: null,
+    availabilitySlots: [],
+    bookingAppointmentId: null,
+    bookingStep: 'form',
   });
-
 
   readonly items = computed(() => this._state().items);
   readonly upcomingItems = computed(() => this._state().upcomingItems);
@@ -55,20 +72,61 @@ export class AppointmentsStore {
   readonly selectedItemReminders = computed(() => this._state().selectedItemReminders);
   readonly isLoading = computed(() => this._state().isLoading);
   readonly isActionLoading = computed(() => this._state().isActionLoading);
+  readonly isLoadingSpecialist = computed(() => this._state().isLoadingSpecialist);
   readonly error = computed(() => this._state().error);
+  readonly specialistInfo = computed(() => this._state().specialistInfo);
+  readonly selectedSpecialistDetail = computed(() => this._state().selectedSpecialistDetail);
+  readonly availabilitySlots = computed(() => this._state().availabilitySlots);
+  readonly bookingAppointmentId = computed(() => this._state().bookingAppointmentId);
+  readonly bookingStep = computed(() => this._state().bookingStep);
 
+  readonly formattedAvailabilitySlots = computed(() => {
+    const slots = this._state().availabilitySlots;
+    const groups: { dateStr: string; displayDate: string; slots: { id: string; start: Date; end: Date; timeStr: string }[] }[] = [];
+    const map = new Map<string, { displayDate: string; slots: { id: string; start: Date; end: Date; timeStr: string }[] }>();
+
+    for (const s of slots) {
+      const start = new Date(s.start);
+      const end = new Date(s.end);
+      const key = start.toISOString().split('T')[0];
+      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      const displayDate = `${days[start.getDay()]}، ${start.getDate()} ${months[start.getMonth()]}`;
+
+      const fmtTime = (d: Date) => {
+        const h = d.getHours();
+        const m = d.getMinutes().toString().padStart(2, '0');
+        return `${h.toString().padStart(2, '0')}:${m}`;
+      };
+
+      if (!map.has(key)) {
+        map.set(key, { displayDate, slots: [] });
+      }
+      map.get(key)!.slots.push({
+        id: s.id,
+        start,
+        end,
+        timeStr: `${fmtTime(start)} - ${fmtTime(end)}`,
+      });
+    }
+
+    for (const [key, val] of map) {
+      groups.push({ dateStr: key, ...val });
+    }
+
+    return groups.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+  });
 
   loadMyAppointments(): void {
     this.updateState({ isLoading: true, error: null });
     this.appointmentService.getMyAppointments()
       .pipe(finalize(() => this.updateState({ isLoading: false })))
       .subscribe({
-        next: (items) => this.updateState({ items : items.data }),
+        next: (items) => this.updateState({ items: items.data }),
         error: (err) => this.handleError(err, 'فشل في تحميل مواعيدك.')
       });
   }
 
- 
   loadUpcomingAppointments(): void {
     this.updateState({ isLoading: true, error: null });
     this.appointmentService.getUpcomingAppointments()
@@ -79,28 +137,27 @@ export class AppointmentsStore {
       });
   }
 
-
   loadSpecialistAppointments(specialistId: string): void {
     this.updateState({ isLoading: true, error: null });
     this.appointmentService.getAppointmentsBySpecialist(specialistId)
       .pipe(finalize(() => this.updateState({ isLoading: false })))
       .subscribe({
-        next: (specialistItems) => this.updateState({ specialistItems : specialistItems.data}),
+        next: (specialistItems) => this.updateState({ specialistItems: specialistItems.data }),
         error: (err) => this.handleError(err, 'فشل في تحميل مواعيد المختص.')
       });
   }
 
-
   loadAppointmentDetails(id: string): void {
-    this.updateState({ isLoading: true, error: null, selectedItem: null, selectedItemHistory: [], selectedItemReminders: [] });
-    
+    this.updateState({ isLoading: true, error: null, selectedItem: null, selectedItemHistory: [], selectedItemReminders: [], selectedSpecialistDetail: null });
 
     this.appointmentService.getById(id)
       .pipe(finalize(() => this.updateState({ isLoading: false })))
       .subscribe({
         next: (selectedItem) => {
-          this.updateState({ selectedItem : selectedItem.data});
-          
+          this.updateState({ selectedItem: selectedItem.data });
+          if (selectedItem.data?.specialistId) {
+            this.loadSpecialistInfo(selectedItem.data.specialistId);
+          }
           this.loadStatusHistory(id);
           this.loadReminders(id);
         },
@@ -108,21 +165,65 @@ export class AppointmentsStore {
       });
   }
 
+  loadSpecialistInfo(id: string): void {
+    this.updateState({ isLoadingSpecialist: true });
+    this.specialistApi.getSpecialistById(id).subscribe({
+      next: (res) => {
+        const d = res.data;
+        this.updateState({
+          isLoadingSpecialist: false,
+          specialistInfo: {
+            id: d.id,
+            name: d.name,
+            title: d.title,
+            imageUrl: d.profileImageUrl,
+            rating: d.rating,
+            hourlyRate: d.hourlyRate,
+            reviewsCount: d.reviewsCount,
+          },
+          selectedSpecialistDetail: {
+            id: d.id,
+            name: d.name,
+            title: d.title,
+            imageUrl: d.profileImageUrl,
+            rating: d.rating,
+            hourlyRate: d.hourlyRate,
+            reviewsCount: d.reviewsCount,
+            bio: d.bio,
+            skills: d.skills,
+            isOnline: d.isOnline,
+            country: d.country,
+          }
+        });
+      },
+      error: () => {
+        this.updateState({ isLoadingSpecialist: false });
+        this.toast.danger('فشل في تحميل بيانات المختص.');
+      }
+    });
+  }
 
-  createAppointment(request: CreateAppointmentRequest, onSuccess?: () => void): void {
+  loadAvailability(specialistId: string): void {
+    this.appointmentService.getSpecialistAvailability(specialistId).subscribe({
+      next: (res) => this.updateState({ availabilitySlots: res.data }),
+      error: () => this.toast.danger('فشل في تحميل الأوقات المتاحة.')
+    });
+  }
+
+  createAppointment(request: CreateAppointmentRequest, onSuccess?: (id: string) => void): void {
     this.updateState({ isActionLoading: true, error: null });
     this.appointmentService.create(request)
       .pipe(finalize(() => this.updateState({ isActionLoading: false })))
       .subscribe({
-        next: () => {
-          this.toast.success('تم حجز الموعد بنجاح.');
-          this.loadMyAppointments();
-          if (onSuccess) onSuccess();
+        next: (res) => {
+          this.toast.success('تم حجز الموعد بنجاح. يرجى إتمام الدفع لتأكيد الحجز.');
+          const appointmentId = res.data;
+          this.updateState({ bookingAppointmentId: appointmentId, bookingStep: 'payment' });
+          if (onSuccess) onSuccess(appointmentId);
         },
         error: (err) => this.handleError(err, 'فشل في إتمام عملية حجز الموعد.')
       });
   }
-
 
   confirmAppointment(id: string): void {
     this.updateState({ isActionLoading: true });
@@ -130,7 +231,8 @@ export class AppointmentsStore {
       .pipe(finalize(() => this.updateState({ isActionLoading: false })))
       .subscribe({
         next: () => {
-          this.toast.success('تم تأكيد الموعد بنجاح.');
+          this.toast.success('تم تأكيد الموعد وإتمام الدفع بنجاح.');
+          this.updateState({ bookingStep: 'done' });
           this.refreshAfterAction(id);
         },
         error: (err) => this.handleError(err, 'فشل في تأكيد الموعد.')
@@ -221,7 +323,7 @@ export class AppointmentsStore {
     this.appointmentService.addReminder(id, request).subscribe({
       next: () => {
         this.toast.success('تم إضافة التذكير بنجاح.');
-        this.loadReminders(id); 
+        this.loadReminders(id);
       },
       error: (err) => this.handleError(err, 'فشل في إضافة التذكير.')
     });
@@ -239,9 +341,18 @@ export class AppointmentsStore {
     });
   }
 
+  resetBooking(): void {
+    this.updateState({
+      specialistInfo: null,
+      availabilitySlots: [],
+      bookingAppointmentId: null,
+      bookingStep: 'form',
+    });
+  }
+
   private loadStatusHistory(id: string): void {
     this.appointmentService.getStatusHistory(id).subscribe({
-      next: (selectedItemHistory) => this.updateState({ selectedItemHistory :selectedItemHistory.data}),
+      next: (selectedItemHistory) => this.updateState({ selectedItemHistory: selectedItemHistory.data }),
       error: (err) => console.error('History load failed:', err)
     });
   }

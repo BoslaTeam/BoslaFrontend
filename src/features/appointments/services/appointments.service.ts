@@ -101,4 +101,9 @@ export class AppointmentService {
       .delete<ApiResponse<void>>(this.endpoints.reminderById(id, reminderId))
       .pipe(map(() => undefined));
   }
+
+  getSpecialistAvailability(specialistId: string): Observable<ApiResponse<contract.AvailabilitySlotDto[]>> {
+    return this.http
+      .get<ApiResponse<contract.AvailabilitySlotDto[]>>(API_ENDPOINTS.specialists.availabilityFor(specialistId));
+  }
 }

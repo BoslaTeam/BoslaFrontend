@@ -77,6 +77,13 @@ export class NavigationService {
     return this.ROUTES.user.profile;
   });
 
+  readonly userRoute = computed(() => {
+    const role = this.authService.userRole();
+    if (role === UserRole.Admin) return this.ROUTES.admin.dashboard;
+    if (role === UserRole.Specialist) return this.ROUTES.specialist.dashboard;
+    return this.ROUTES.user.appointments;
+  });
+
   readonly mainNavigation = computed<NavItem[]>(() => {
     const role = this.authService.userRole();
 
@@ -90,6 +97,9 @@ export class NavigationService {
       items.push({ label: 'لوحة التحكم', route: this.ROUTES.admin.dashboard, icon: 'dashboard' });
     } else {
       items.push({ label: 'المتخصصين', route: this.ROUTES.public.specialists, icon: 'specialists' });
+      if (role === UserRole.User) {
+        items.push({ label: 'الحجوزات', route: this.ROUTES.user.appointments, icon: 'appointments' });
+      }
       if (role === UserRole.Specialist) {
         items.push({ label: 'لوحة التحكم', route: this.ROUTES.specialist.dashboard, icon: 'dashboard' });
       }
@@ -101,15 +111,8 @@ export class NavigationService {
   readonly dropdownNavigation = computed<DropdownItem[]>(() => {
     const role = this.authService.userRole();
     const isSpecialist = role === UserRole.Specialist;
+    const isAdmin = role === UserRole.Admin;
     const items: DropdownItem[] = [];
-
-    // if (isSpecialist) {
-    //   items.push({
-    //     label: 'لوحة التحكم',
-    //     route: this.dashboardRoute(),
-    //     icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
-    //   });
-    // }
 
     items.push({
       label: 'الإعدادات والملف الشخصي',
@@ -117,25 +120,31 @@ export class NavigationService {
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
     });
 
-    items.push({
-      label: 'سجل الحجوزات',
-      route: this.ROUTES.user.appointments,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
-    });
+    if (!isAdmin) {
+      items.push({
+        label: isSpecialist ? 'الحجوزات' : 'سجل الحجوزات',
+        route: isSpecialist ? this.ROUTES.specialist.appointments : this.ROUTES.user.appointments,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+      });
+    }
 
-    items.push({
-      label: 'جلسات الفيديو',
-      route: this.ROUTES.user.video,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
-    });
+    if (!isAdmin) {
+      items.push({
+        label: 'جلسات الفيديو',
+        route: isSpecialist ? this.ROUTES.specialist.chat : this.ROUTES.user.video,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
+      });
+    }
 
-    items.push({
-      label: 'المعاملات المالية',
-      route: this.ROUTES.user.payments,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
-    });
+    if (!isSpecialist && !isAdmin) {
+      items.push({
+        label: 'المعاملات المالية',
+        route: this.ROUTES.user.payments,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
+      });
+    }
 
-    if (!isSpecialist) {
+    if (!isSpecialist && !isAdmin) {
       items.push({ label: '', route: '', icon: '', divider: true });
       items.push({
         label: 'انضم كاختصاصي',
@@ -163,12 +172,12 @@ export class NavigationService {
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
       },
       {
-        label: 'المواعيد',
+        label: 'الحجوزات',
         route: this.ROUTES.specialist.appointments,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
       },
       {
-        label: 'التوافر',
+        label: 'إدارة المواعيد',
         route: this.ROUTES.specialist.availability,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       },
