@@ -27,6 +27,7 @@ export const API_ENDPOINTS = {
   },
   notifications: {
     mine: `${V}/notifications`,
+    unreadCount: `${V}/notifications/unread-count`,
     markAllRead: `${V}/notifications/read`,
     markRead: (id: string) => `${V}/notifications/${id}/read`,
     delete: (id: string) => `${V}/notifications/${id}`,
