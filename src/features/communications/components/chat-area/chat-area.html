@@ -8,6 +8,8 @@
     <chat-chat-header
       [isOpen]="isConversationListOpen()"
       (togglePanel)="toggleConversationList.emit()"
+      [isDetailsOpen]="isDetailsOpen()"
+      (toggleDetailsPanel)="toggleDetailsPanel.emit()"
     />
 
     <chat-message-list />

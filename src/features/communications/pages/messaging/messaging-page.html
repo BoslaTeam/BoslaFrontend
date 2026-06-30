@@ -20,17 +20,29 @@
 <!-- Main Layout: flex row -->
 <div class="flex flex-row flex-1 min-h-0 overflow-hidden bg-bosla-offwhite font-sans">
 
-  <!-- Left Sidebar (Specialist Card + Upcoming Session + Shared Resources) -->
-  <chat-left-sidebar
-    class="w-[260px] shrink-0"
-    [class.hidden]="store.isMobileView() && store.activeMobilePanel() === 'list'"
-  />
+  <!-- Left Sidebar (Specialist Card + Upcoming Session + Shared Resources) — animated wrapper -->
+  @if (!store.isMobileView()) {
+    <div
+      class="shrink-0 h-full transition-all duration-280 ease-in-out"
+      [style.width]="showDetailsSidebar() ? '260px' : '0px'"
+      [style.opacity]="showDetailsSidebar() ? '1' : '0'"
+      [style.overflow]="showDetailsSidebar() ? 'visible' : 'hidden'"
+    >
+      <chat-left-sidebar />
+    </div>
+  } @else {
+    <chat-left-sidebar
+      [class.hidden]="store.activeMobilePanel() === 'list'"
+    />
+  }
 
   <!-- Chat Area (dominant — flex-1 fills remaining space) -->
   <chat-chat-area
     class="flex-1 min-w-0"
     [isConversationListOpen]="showConversationSidebar()"
     (toggleConversationList)="toggleConversationSidebar()"
+    [isDetailsOpen]="showDetailsSidebar()"
+    (toggleDetailsPanel)="toggleDetailsSidebar()"
   />
 
   <!-- Conversation Sidebar (Desktop / Tablet — animated wrapper) -->

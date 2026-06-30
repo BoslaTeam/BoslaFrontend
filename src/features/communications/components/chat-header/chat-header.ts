@@ -17,6 +17,9 @@ export class ChatHeader {
   readonly isOpen = input(false);
   readonly togglePanel = output<void>();
 
+  readonly isDetailsOpen = input(false);
+  readonly toggleDetailsPanel = output<void>();
+
   readonly participant = computed(() => this.store.activeConversation()?.participant ?? null);
 
   readonly initials = computed(() => {
@@ -33,5 +36,9 @@ export class ChatHeader {
 
   onTogglePanel() {
     this.togglePanel.emit();
+  }
+
+  onToggleDetailsPanel() {
+    this.toggleDetailsPanel.emit();
   }
 }

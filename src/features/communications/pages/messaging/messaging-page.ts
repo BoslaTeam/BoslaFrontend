@@ -1,5 +1,5 @@
 import {
-  Component, inject, OnInit, OnDestroy, HostListener, effect, signal, untracked
+  Component, inject, OnInit, OnDestroy, HostListener, computed, effect, signal, untracked
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatStore } from '../../store/chat.store';
@@ -24,6 +24,7 @@ export class MessagingPage implements OnInit, OnDestroy {
   private routeConversationOpened = false;
 
   readonly showConversationSidebar = signal(true);
+  readonly showDetailsSidebar = signal(true);
 
   constructor() {
     effect(() => {
@@ -36,6 +37,7 @@ export class MessagingPage implements OnInit, OnDestroy {
     });
 
     this.showConversationSidebar.set(window.innerWidth >= 768);
+    this.showDetailsSidebar.set(window.innerWidth >= 768);
   }
 
   ngOnInit(): void {
@@ -60,6 +62,12 @@ export class MessagingPage implements OnInit, OnDestroy {
   toggleConversationSidebar() {
     this.showConversationSidebar.update(v => !v);
   }
+
+  toggleDetailsSidebar() {
+    this.showDetailsSidebar.update(v => !v);
+  }
+
+  readonly focusMode = computed(() => !this.showConversationSidebar() && !this.showDetailsSidebar());
 
   private checkViewport() {
     this.store.isMobileView.set(window.innerWidth < 768);

@@ -19,4 +19,7 @@ export class ChatArea {
 
   readonly isConversationListOpen = input(false);
   readonly toggleConversationList = output<void>();
+
+  readonly isDetailsOpen = input(false);
+  readonly toggleDetailsPanel = output<void>();
 }

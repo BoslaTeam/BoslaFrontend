@@ -58,6 +58,24 @@
       </svg>
     </button>
 
+    <!-- Toggle details sidebar -->
+    <button
+      class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 transition cursor-pointer"
+      [class.text-bosla-primary]="isDetailsOpen()"
+      [class.text-bosla-grey]="!isDetailsOpen()"
+      [class.bg-bosla-primary/10]="isDetailsOpen()"
+      (click)="onToggleDetailsPanel()"
+      [attr.aria-expanded]="isDetailsOpen()"
+      aria-label="إظهار/إخفاء التفاصيل"
+      title="إظهار/إخفاء التفاصيل"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+    </button>
+
     <!-- More Menu -->
     <button
       class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 hover:text-bosla-primary transition cursor-pointer"
