@@ -18,11 +18,6 @@ export class TokenService {
   public isRefreshing = false;
   public refreshedToken$ = new BehaviorSubject<string | null>(null);
 
-  createTokenSubject(): BehaviorSubject<string | null> {
-    this.refreshedToken$ = new BehaviorSubject<string | null>(null);
-    return this.refreshedToken$;
-  }
-
   getAccessToken(): string | null {
     return this.storage.get(STORAGE_KEYS.accessToken);
   }
