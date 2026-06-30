@@ -56,6 +56,11 @@ export const ADMIN_ROUTES: Routes = [
     title: 'إدارة البيانات الأساسية'
   },
   {
+    path: 'audit-logs',
+    loadComponent: () => import('./pages/audit-logs/admin-audit-logs').then(m => m.AdminAuditLogs),
+    title: 'سجل التدقيق'
+  },
+  {
     path: 'payments',
     loadComponent: () => import('./pages/payments/admin-payments-list').then(m => m.AdminPaymentsList),
     title: 'المدفوعات'

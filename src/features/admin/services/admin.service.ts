@@ -242,10 +242,21 @@ export class AdminService {
 
   // ── Audit Logs ──
 
-  getAuditLogs(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+  getAuditLogs(params: PaginationRequest & {
+    action?: string;
+    entityType?: string;
+    from?: string;
+    to?: string;
+  }): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.action) httpParams = httpParams.set('action', params.action);
+    if (params.entityType) httpParams = httpParams.set('entityType', params.entityType);
+    if (params.from) httpParams = httpParams.set('from', params.from);
+    if (params.to) httpParams = httpParams.set('to', params.to);
+
     return this.http.get<ApiResponse<PaginatedResponse<AuditLogDto>>>(
       API_ENDPOINTS.admin.auditLogs,
-      { params: this.buildPaginationParams(params) }
+      { params: httpParams }
     );
   }
 

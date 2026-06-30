@@ -215,6 +215,8 @@ export interface AuditLogDto {
   userName: string;
   entityType: string;
   entityId: string;
+  oldValues?: string;
+  newValues?: string;
   details?: string;
   ipAddress?: string;
   createdAt: string;
