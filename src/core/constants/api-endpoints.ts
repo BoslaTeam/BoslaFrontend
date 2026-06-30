@@ -131,5 +131,8 @@ export const API_ENDPOINTS = {
     dashboard: `${V}/admin/dashboard`,
     embeddingsStatus: `${V}/admin/ai/embeddings`,
     embeddingsRebuild: `${V}/admin/ai/embeddings/rebuild`,
+    payments: `${V}/admin/payments`,
+    paymentDetail: (id: string) => `${V}/admin/payments/${id}`,
+    refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
   },
 } as const;

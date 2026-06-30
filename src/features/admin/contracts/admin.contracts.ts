@@ -220,6 +220,44 @@ export interface AuditLogDto {
   createdAt: string;
 }
 
+// ── Payments ──
+
+export interface AdminPaymentDto {
+  id: string;
+  appointmentId: string;
+  userName: string;
+  specialistName: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  paidAt?: string;
+  createdAt: string;
+}
+
+export interface AdminPaymentDetailDto {
+  id: string;
+  appointmentId: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  userAvatarUrl?: string;
+  specialistId: string;
+  specialistName: string;
+  specialistAvatarUrl?: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  externalPaymentId?: string;
+  paidAt?: string;
+  platformFeeAmount: number;
+  specialistAmount: number;
+  taxAmount: number;
+  refundReason?: string;
+  createdAt: string;
+}
+
 // ── AI Embeddings ──
 
 export interface EmbeddingsStatusDto {

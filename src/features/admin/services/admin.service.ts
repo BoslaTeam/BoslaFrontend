@@ -14,6 +14,8 @@ import {
   AdminSpecialistDetailDto,
   AdminAppointmentDto,
   AdminAppointmentDetailDto,
+  AdminPaymentDto,
+  AdminPaymentDetailDto,
   AuditLogDto,
   EmbeddingsStatusDto,
 } from '../contracts/admin.contracts';
@@ -199,6 +201,30 @@ export class AdminService {
   completeAppointment(id: string): Observable<boolean> {
     return this.http
       .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.completeAppointment(id), {})
+      .pipe(map((res) => res.success));
+  }
+
+  // ── Payments ──
+
+  getPayments(params: PaginationRequest & { status?: string }): Observable<ApiResponse<PaginatedResponse<AdminPaymentDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+
+    return this.http.get<ApiResponse<PaginatedResponse<AdminPaymentDto>>>(
+      API_ENDPOINTS.admin.payments,
+      { params: httpParams }
+    );
+  }
+
+  getPaymentDetail(id: string): Observable<AdminPaymentDetailDto> {
+    return this.http
+      .get<ApiResponse<AdminPaymentDetailDto>>(API_ENDPOINTS.admin.paymentDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  refundPayment(id: string, reason?: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.refundPayment(id), { reason })
       .pipe(map((res) => res.success));
   }
 

@@ -54,5 +54,15 @@ export const ADMIN_ROUTES: Routes = [
     path: 'lookups',
     loadComponent: () => import('./pages/lookups/admin-lookups').then(m => m.AdminLookups),
     title: 'إدارة البيانات الأساسية'
+  },
+  {
+    path: 'payments',
+    loadComponent: () => import('./pages/payments/admin-payments-list').then(m => m.AdminPaymentsList),
+    title: 'المدفوعات'
+  },
+  {
+    path: 'payments/:id',
+    loadComponent: () => import('./pages/payments/admin-payment-detail').then(m => m.AdminPaymentDetail),
+    title: 'تفاصيل الدفع'
   }
 ];
