@@ -1,81 +1,76 @@
-import { Injectable, inject, effect, DestroyRef } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '@environments/environment';
-import { NotificationService, AppNotification } from './notification.service';
-import { AuthService } from './auth.service';
-import { TokenService } from './token.service';
+import { AppNotification, NotificationService } from './notification.service';
 
-function mapNotificationType(type: string): number {
-  switch (type) {
-    case 'Message': return 0;
-    case 'Booking': return 1;
-    case 'Reminder': return 2;
-    case 'SpecialistVerification': return 3;
-    default: return 0;
-  }
-}
-
-interface SignalRNotificationPayload {
+interface SignalRNotificationDto {
   id: string;
   title: string;
   message: string;
   type: string;
   isRead: boolean;
   createdAtUtc: string;
+  appointmentId?: string;
+  appointmentStatus?: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class NotificationSignalrService {
-  private notificationService = inject(NotificationService);
-  private authService = inject(AuthService);
-  private tokenService = inject(TokenService);
-  private destroyRef = inject(DestroyRef);
-
   private hubConnection: signalR.HubConnection | null = null;
+  private notificationService = inject(NotificationService);
 
-  constructor() {
-    effect(() => {
-      if (this.authService.isAuthenticated()) {
-        this.connect();
-      } else {
-        this.disconnect();
-      }
-    });
+  readonly connectionState = signal<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
 
-    this.destroyRef.onDestroy(() => this.disconnect());
-  }
-
-  private connect(): void {
+  init(): void {
     if (this.hubConnection) return;
 
+    const baseUrl = environment.apiBaseUrl.includes('/api/v1')
+      ? environment.apiBaseUrl.replace('/api/v1', '')
+      : environment.apiBaseUrl;
+    const hubUrl = `${baseUrl.replace(/\/$/, '')}/hubs/notifications`;
+
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.hubBaseUrl + '/hubs/notifications', {
-        accessTokenFactory: () => this.tokenService.getAccessToken() ?? '',
+      .withUrl(hubUrl, {
+        accessTokenFactory: () => localStorage.getItem('bosla_access_token') ?? '',
       })
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.on('ReceiveNotification', (payload: SignalRNotificationPayload) => {
+    this.connectionState.set('connecting');
+
+    this.hubConnection.onreconnecting(() => this.connectionState.set('reconnecting'));
+    this.hubConnection.onreconnected(() => this.connectionState.set('connected'));
+    this.hubConnection.onclose(() => {
+      this.connectionState.set('disconnected');
+      this.hubConnection = null;
+    });
+
+    this.hubConnection.on('ReceiveNotification', (dto: SignalRNotificationDto) => {
       const notification: AppNotification = {
-        id: payload.id,
-        type: mapNotificationType(payload.type) as any,
-        title: payload.title,
-        message: payload.message,
-        isRead: payload.isRead,
-        createdAtUtc: payload.createdAtUtc,
+        id: dto.id,
+        type: parseInt(dto.type, 10) || 1,
+        title: dto.title,
+        message: dto.message,
+        isRead: dto.isRead,
+        createdAtUtc: dto.createdAtUtc,
+        appointmentId: dto.appointmentId,
+        appointmentStatus: dto.appointmentStatus,
       };
       this.notificationService.push(notification);
     });
 
-    this.hubConnection.onreconnecting(() => {});
-    this.hubConnection.onreconnected(() => {});
-    this.hubConnection.onclose(() => {});
-
-    this.hubConnection.start().catch(() => {});
+    this.hubConnection
+      .start()
+      .then(() => this.connectionState.set('connected'))
+      .catch((err) => {
+        console.error('Notification SignalR connection error:', err);
+        this.connectionState.set('disconnected');
+      });
   }
 
-  private disconnect(): void {
+  disconnect(): void {
     this.hubConnection?.stop();
     this.hubConnection = null;
+    this.connectionState.set('disconnected');
   }
 }

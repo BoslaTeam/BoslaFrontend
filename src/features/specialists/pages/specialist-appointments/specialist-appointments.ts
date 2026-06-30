@@ -2,6 +2,7 @@ import { Component, signal, computed, OnInit, OnDestroy, inject } from '@angular
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { ApiResponse } from '@core/models/api-response.model';
@@ -13,6 +14,7 @@ export enum ApptStatus {
   Completed = 2,
   Cancelled = 3,
   Rejected = 4,
+  Paid = 5,
 }
 
 interface SpecialistAppointment {
@@ -25,6 +27,7 @@ interface SpecialistAppointment {
   endTimeUtc: string;
   status: ApptStatus;
   amount: number;
+  isPaid: boolean;
 }
 
 function toStatus(raw: unknown): ApptStatus {
@@ -32,7 +35,7 @@ function toStatus(raw: unknown): ApptStatus {
   const map: Record<string, ApptStatus> = {
     Pending: ApptStatus.Pending, Confirmed: ApptStatus.Confirmed,
     Completed: ApptStatus.Completed, Cancelled: ApptStatus.Cancelled,
-    Rejected: ApptStatus.Rejected,
+    Rejected: ApptStatus.Rejected, Paid: ApptStatus.Paid,
   };
   return map[String(raw)] ?? ApptStatus.Pending;
 }
@@ -61,6 +64,7 @@ const STATUS_LABELS: Record<ApptStatus, string> = {
   [ApptStatus.Completed]: 'مكتمل',
   [ApptStatus.Cancelled]: 'ملغي',
   [ApptStatus.Rejected]: 'مرفوض',
+  [ApptStatus.Paid]: 'مدفوع',
 };
 
 const STATUS_CLASSES: Record<ApptStatus, string> = {
@@ -69,6 +73,7 @@ const STATUS_CLASSES: Record<ApptStatus, string> = {
   [ApptStatus.Completed]: 'bg-green-50 text-green-700 border-green-200',
   [ApptStatus.Cancelled]: 'bg-red-50 text-red-700 border-red-200',
   [ApptStatus.Rejected]: 'bg-slate-50 text-slate-600 border-slate-200',
+  [ApptStatus.Paid]: 'bg-emerald-50 text-emerald-700 border-emerald-200',
 };
 
 const STATUS_DOTS: Record<ApptStatus, string> = {
@@ -77,12 +82,13 @@ const STATUS_DOTS: Record<ApptStatus, string> = {
   [ApptStatus.Completed]: 'bg-green-500',
   [ApptStatus.Cancelled]: 'bg-red-500',
   [ApptStatus.Rejected]: 'bg-slate-400',
+  [ApptStatus.Paid]: 'bg-emerald-500',
 };
 
 @Component({
   selector: 'app-specialist-appointments',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink],
+  imports: [CommonModule, DatePipe, RouterLink, FormsModule],
   templateUrl: './specialist-appointments.html',
   styleUrl: './specialist-appointments.css',
 })
@@ -214,12 +220,10 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private startCountdowns(): void {
     Object.values(this.countdownTimers).forEach(clearInterval);
     this.countdownTimers = {};
-    const now = Date.now();
     this.appointments().forEach(a => {
-      if (a.status !== ApptStatus.Confirmed) return;
+      if (a.status !== ApptStatus.Confirmed && a.status !== ApptStatus.Paid) return;
       const startMs = new Date(a.startTimeUtc).getTime();
       const endMs = new Date(a.endTimeUtc).getTime();
-      if (now > endMs) return;
       this.startCountdown(a.id, startMs, endMs);
     });
   }
@@ -227,22 +231,35 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private startCountdown(id: string, startMs: number, endMs: number): void {
     const tick = () => {
       const now = Date.now();
-      if (now >= startMs && now <= endMs) {
-        this.activeSessions.update(m => ({ ...m, [id]: true }));
-        this.countdowns.update(m => ({ ...m, [id]: 'session_active' }));
-        return;
-      }
-      if (now > endMs) {
+      if (now < startMs) {
         this.activeSessions.update(m => ({ ...m, [id]: false }));
-        this.countdowns.update(m => ({ ...m, [id]: 'ended' }));
-        this.stopCountdown(id);
-        return;
+        this.countdowns.update(m => ({ ...m, [id]: 'countdown_' + this.formatRemaining(startMs - now) }));
+      } else if (now >= startMs && now <= endMs) {
+        this.activeSessions.update(m => ({ ...m, [id]: true }));
+        this.countdowns.update(m => ({ ...m, [id]: 'late_' + this.formatDuration(now - startMs) }));
+      } else {
+        this.activeSessions.update(m => ({ ...m, [id]: false }));
+        this.countdowns.update(m => ({ ...m, [id]: 'missed_' + this.formatDuration(now - endMs) }));
       }
-      this.activeSessions.update(m => ({ ...m, [id]: false }));
-      this.countdowns.update(m => ({ ...m, [id]: this.formatRemaining(startMs - now) }));
     };
     tick();
     this.countdownTimers[id] = setInterval(tick, 1000);
+  }
+
+  getCountdownType(id: string): string {
+    const val = this.countdowns()[id] ?? '';
+    if (val.startsWith('countdown_')) return 'countdown';
+    if (val.startsWith('late_')) return 'late';
+    if (val.startsWith('missed_')) return 'missed';
+    return '';
+  }
+
+  getCountdownValue(id: string): string {
+    const val = this.countdowns()[id] ?? '';
+    if (val.startsWith('countdown_')) return val.slice('countdown_'.length);
+    if (val.startsWith('late_')) return val.slice('late_'.length);
+    if (val.startsWith('missed_')) return val.slice('missed_'.length);
+    return val;
   }
 
   private stopCountdown(id: string): void {
@@ -263,12 +280,12 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
 
   canJoin(id: string): boolean {
     const apt = this.appointments().find(a => a.id === id);
-    if (!apt || apt.status !== ApptStatus.Confirmed) return false;
+    if (!apt) return false;
+    if (apt.status !== ApptStatus.Paid) return false;
     if (this.inProgressSessions()[id]) return false;
     const now = Date.now();
     const startMs = new Date(apt.startTimeUtc).getTime() - 10 * 60 * 1000;
-    const endMs = new Date(apt.endTimeUtc).getTime();
-    return now >= startMs && now <= endMs;
+    return now >= startMs;
   }
 
   joinSession(id: string): void {
@@ -327,18 +344,18 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   }
 
   private toAppointment(item: any): SpecialistAppointment {
-    // TODO: Backend should include clientName and amount in GET /appointments/my-appointments response.
+    const userId = item.userId ?? '';
     return {
       id: item.id ?? '',
-      clientId: item.userId ?? '',
-      clientDisplay: item.clientName ?? item.userId ?? 'غير محدد',
-      clientInitials: initialsOf(item.clientName ?? item.userId ?? '--'),
-      serviceName: item.sessionTopic ?? 'استشارة',
+      clientId: userId,
+      clientDisplay: userId,
+      clientInitials: initialsOf(userId),
+      serviceName: item.sessionTopic ?? '',
       startTimeUtc: item.start ?? '',
       endTimeUtc: item.end ?? '',
       status: toStatus(item.status),
-      amount: 0,
-      // TODO: Replace 0 with actual amount when backend provides it
+      amount: item.sessionPrice ?? item.amount ?? 0,
+      isPaid: item.isPaid ?? false,
     };
   }
 
@@ -352,20 +369,46 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
     });
   }
 
-  rejectAppointment(id: string): void {
-    this.http.put<ApiResponse<any>>(`${API_ENDPOINTS.appointments.base}/${id}/reject`, {}).subscribe({
+  reason = signal('');
+
+  showRejectModal = signal(false);
+  showCancelModal = signal(false);
+  pendingActionId = signal<string | null>(null);
+
+  openRejectPrompt(id: string): void {
+    this.reason.set('');
+    this.pendingActionId.set(id);
+    this.showRejectModal.set(true);
+  }
+
+  openCancelPrompt(id: string): void {
+    this.reason.set('');
+    this.pendingActionId.set(id);
+    this.showCancelModal.set(true);
+  }
+
+  confirmReject(): void {
+    const id = this.pendingActionId();
+    if (!id) return;
+    this.http.put<ApiResponse<any>>(`${API_ENDPOINTS.appointments.base}/${id}/reject`, { reason: this.reason() || undefined }).subscribe({
       next: () => {
         this.toast.success('تم رفض الموعد');
+        this.showRejectModal.set(false);
+        this.pendingActionId.set(null);
         this.loadAppointments();
       },
       error: () => this.toast.danger('فشل رفض الموعد'),
     });
   }
 
-  cancelAppointment(id: string): void {
-    this.http.put<ApiResponse<any>>(API_ENDPOINTS.appointments.cancel(id), {}).subscribe({
+  confirmCancel(): void {
+    const id = this.pendingActionId();
+    if (!id) return;
+    this.http.put<ApiResponse<any>>(API_ENDPOINTS.appointments.cancel(id), { reason: this.reason() || undefined }).subscribe({
       next: () => {
         this.toast.success('تم إلغاء الموعد');
+        this.showCancelModal.set(false);
+        this.pendingActionId.set(null);
         this.loadAppointments();
       },
       error: () => this.toast.danger('فشل إلغاء الموعد'),
@@ -378,14 +421,6 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
 
   toggleCancelledVisibility(): void {
     this.showCancelled.update(v => !v);
-  }
-
-  getCountdown(id: string): string {
-    return this.countdowns()[id] ?? '';
-  }
-
-  isSessionActive(id: string): boolean {
-    return this.activeSessions()[id] ?? false;
   }
 
   isInProgress(id: string): boolean {
@@ -427,6 +462,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
       confirmed: all.filter(a => a.status === ApptStatus.Confirmed).length,
       completed: count,
       pending: all.filter(a => a.status === ApptStatus.Pending).length,
+      paid: all.filter(a => a.status === ApptStatus.Paid).length,
       cancelled: all.filter(a => a.status === ApptStatus.Cancelled || a.status === ApptStatus.Rejected).length,
       totalRevenue: revenue,
       avgRevenue: count > 0 ? revenue / count : 0,

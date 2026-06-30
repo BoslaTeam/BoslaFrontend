@@ -8,6 +8,8 @@ export interface AppNotification {
   message: string;
   isRead: boolean;
   createdAtUtc: string;
+  appointmentId?: string;
+  appointmentStatus?: number;
 }
 
 /**
@@ -38,6 +40,10 @@ export class NotificationService {
 
   markAllAsRead(): void {
     this._notifications.update((list) => list.map((n) => ({ ...n, isRead: true })));
+  }
+
+  remove(id: string): void {
+    this._notifications.update((list) => list.filter((n) => n.id !== id));
   }
 
   setAll(notifications: AppNotification[]): void {

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { ApiResponse } from '@core/models/api-response.model';
 import { NotificationDto } from '../contracts/notifications.contracts';
@@ -48,5 +48,10 @@ export class NotificationsService {
   markAllAsRead(): Observable<ApiResponse<boolean>> {
     this.notificationState.markAllAsRead();
     return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.notifications.markAllRead, {});
+  }
+
+  delete(id: string): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.notifications.delete(id))
+      .pipe(tap(() => this.notificationState.remove(id)));
   }
 }

@@ -5,4 +5,6 @@ export interface NotificationDto {
   type: string;
   isRead: boolean;
   createdAtUtc: string;
+  appointmentId?: string;
+  appointmentStatus?: number;
 }

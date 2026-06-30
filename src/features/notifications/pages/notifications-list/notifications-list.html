@@ -125,10 +125,20 @@
             <p class="text-sm text-slate-500 mt-0.5 leading-relaxed">{{ notif.message }}</p>
           </div>
 
-          <!-- Unread dot -->
-          @if (!notif.isRead) {
-          <div class="w-2.5 h-2.5 bg-bosla-orange rounded-full mt-2 shrink-0"></div>
-          }
+          <!-- Actions -->
+          <div class="flex flex-col items-center gap-1.5 shrink-0">
+            @if (!notif.isRead) {
+            <div class="w-2.5 h-2.5 bg-bosla-orange rounded-full"></div>
+            }
+            <button (click)="deleteNotification(notif.id, $event)"
+              class="p-1.5 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+              title="حذف الإشعار">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         }
       </div>

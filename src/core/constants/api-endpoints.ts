@@ -30,6 +30,7 @@ export const API_ENDPOINTS = {
     unreadCount: `${V}/notifications/unread-count`,
     markAllRead: `${V}/notifications/read`,
     markRead: (id: string) => `${V}/notifications/${id}/read`,
+    delete: (id: string) => `${V}/notifications/${id}`,
   },
   appointments: {
     base: `${V}/Appointments`,
@@ -43,6 +44,7 @@ export const API_ENDPOINTS = {
     reschedule: (id: string) => `${V}/appointments/${id}/reschedule`,
     complete: (id: string) => `${V}/appointments/${id}/complete`,
     reject: (id: string) => `${V}/appointments/${id}/reject`,
+    markAsPaid: (id: string) => `${V}/appointments/${id}/mark-as-paid`,
     notes: (id: string) => `${V}/appointments/${id}/notes`,
     reviews: (id: string) => `${V}/appointments/${id}/reviews`,
     reminders: (id: string) => `${V}/appointments/${id}/reminders`,

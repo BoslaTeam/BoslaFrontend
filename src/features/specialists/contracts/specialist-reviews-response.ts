@@ -1,12 +1,5 @@
 import { SpecialistReviewResponse } from './specialist-review.contract';
 
-export interface ReviewItem {
-  reviewerName: string;
-  rating: number;
-  comment: string;
-  createdAtUtc: string;
-}
-
 export interface ReviewsMetadata {
   currentPage: number;
   pageSize: number;

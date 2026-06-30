@@ -64,6 +64,13 @@ export class NotificationsList implements OnInit {
     });
   }
 
+  deleteNotification(id: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.notificationsService.delete(id).subscribe({
+      next: () => this.notificationState.remove(id),
+    });
+  }
+
   setTab(tab: 'all' | 'unread' | 'read') {
     this.activeTab.set(tab);
   }
