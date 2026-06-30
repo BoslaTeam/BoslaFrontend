@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { catchError, filter, race, switchMap, take, throwError, timer } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints'; 
 import { AuthService } from '@core/services/auth.service';
 import { TokenService } from '@core/services/token.service';
@@ -8,7 +8,9 @@ import { TokenService } from '@core/services/token.service';
 const REFRESH_EXCLUDED_PATHS = [
   API_ENDPOINTS.auth.login,
   API_ENDPOINTS.auth.register,
-  API_ENDPOINTS.auth.refresh
+  API_ENDPOINTS.auth.refresh,
+  API_ENDPOINTS.auth.forgotPassword,
+  API_ENDPOINTS.auth.resetPassword,
 ];
 
 export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
@@ -32,7 +34,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
             if (!res.data) return throwError(() => new Error('Refresh returned no data'));
             tokenService.isRefreshing = false;
             tokenService.refreshedToken$.next(res.data.accessToken);
-            
+
             return next(
               req.clone({ setHeaders: { Authorization: `Bearer ${res.data.accessToken}` } }),
             );
@@ -40,7 +42,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
           catchError((refreshError) => {
             tokenService.isRefreshing = false;
             tokenService.refreshedToken$.next(null);
-            
+
             tokenService.clearTokens();
             authService.clearSession();
             return throwError(() => refreshError);
@@ -48,13 +50,16 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      return tokenService.refreshedToken$.pipe(
-        filter((token): token is string => token !== null),
-        take(1),
-        switchMap((token) =>
-          next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })),
+      return race([
+        tokenService.refreshedToken$.pipe(
+          filter((token): token is string => token !== null),
+          take(1),
+          switchMap((token) =>
+            next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })),
+          ),
         ),
-      );
+        timer(10_000).pipe(switchMap(() => throwError(() => new Error('Refresh timed out')))),
+      ]);
     }),
   );
 };
