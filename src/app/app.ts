@@ -7,6 +7,7 @@ import { FaviconBadgeService } from '@core/services/favicon-badge.service';
 import { NotificationToast } from '@features/notifications/components/notification-toast/notification-toast';
 import { NotificationsService } from '@features/notifications/services/notifications.service';
 import { NotificationService } from '@core/services/notification.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,9 +22,14 @@ export class App {
   private _favicon = inject(FaviconBadgeService);
   private _notifHttp = inject(NotificationsService);
   private _notifState = inject(NotificationService);
+  private _auth = inject(AuthService);
 
   constructor() {
-    this._notifHttp.getNotifications().subscribe();
+    effect(() => {
+      if (this._auth.isAuthenticated()) {
+        this._notifHttp.getNotifications().subscribe();
+      }
+    });
 
     effect(() => {
       const push = this._notifState.livePush();

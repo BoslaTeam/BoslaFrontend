@@ -40,10 +40,12 @@ export class FaviconBadgeService {
     if (!this.originalHref || this.loading) return;
     this.loading = true;
     try {
-      const resp = await fetch(this.originalHref);
+      const resp = await fetch(this.originalHref, { cache: 'no-cache' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const blob = await resp.blob();
       this.baseBitmap = await createImageBitmap(blob);
-    } catch {
+    } catch (err) {
+      console.warn('[FaviconBadge] fallback – could not load base image:', err);
       this.baseBitmap = null;
     }
     this.loading = false;
@@ -76,10 +78,19 @@ export class FaviconBadgeService {
 
     if (this.baseBitmap) {
       this.renderWithBase(this.baseBitmap, link, count);
-    } else if (this.loading) {
-      setTimeout(() => this.drawBadge(this.notificationService.unreadCount()), 100);
     } else {
-      this.renderFallback(link, count);
+      if (this.loading) {
+        setTimeout(() => this.drawBadge(this.notificationService.unreadCount()), 200);
+      } else {
+        this.renderFallback(link, count);
+        if (this.originalHref) {
+          this.loadBaseImage().then(() => {
+            if (this.baseBitmap && this.notificationService.unreadCount() > 0) {
+              this.drawBadge(this.notificationService.unreadCount());
+            }
+          });
+        }
+      }
     }
   }
 
