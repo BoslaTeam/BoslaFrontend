@@ -58,6 +58,7 @@ export class AdminSidebar {
     {
       title: 'النظام',
       items: [
+        { label: 'البيانات الأساسية', route: '/admin/lookups', icon: 'lookups' },
         { label: 'سجل التدقيق', route: '/admin/audit-logs', icon: 'audit' },
         { label: 'إدارة AI', route: '/admin/ai', icon: 'ai' },
       ],

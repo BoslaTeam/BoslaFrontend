@@ -1,25 +1,4 @@
-<div class="flex flex-col items-center text-center">
-  <div class="relative group cursor-pointer mb-4">
-    <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md bg-slate-100 flex items-center justify-center relative">
-      @if (avatarPreviewUrl && !profileImageError) {
-        <img [src]="avatarPreviewUrl" alt="Profile avatar" class="w-full h-full object-cover" (error)="onProfileImageError()">
-      } @else {
-        <svg class="w-14 h-14 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      }
-      <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <i class="fa-solid fa-camera text-white text-xl"></i>
-      </div>
-    </div>
-    <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" (change)="onAvatarSelected($event)">
-  </div>
-
-  <h1 class="text-2xl font-black text-bosla-primary">{{ profileStore.profile()?.name || 'مستخدم جديد' }}</h1>
-  <p class="text-bosla-charcoal/70 mt-1 max-w-md line-clamp-1">{{ profileStore.profile()?.title || 'قم بإضافة المسمى الوظيفي' }}</p>
-</div>
-
-<div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm mt-8">
+<div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-sm">
   <div class="flex items-center gap-3 mb-6">
     <div class="bg-bosla-primary/10 p-2.5 rounded-lg">
       <svg class="w-6 h-6 text-bosla-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,11 +15,11 @@
         <input type="text" formControlName="name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
       </div>
       <div class="space-y-2 md:col-span-2">
-        <label class="block text-sm font-semibold text-slate-700">المسمى الوظيفي / اللقب (Title)</label>
+        <label class="block text-sm font-semibold text-slate-700">المسمى الوظيفي / اللقب</label>
         <input type="text" formControlName="title" placeholder="مثال: استشاري أسري، مطور برمجيات..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
       </div>
       <div class="space-y-2 md:col-span-2">
-        <label class="block text-sm font-semibold text-slate-700">نبذة تعريفية (Bio)</label>
+        <label class="block text-sm font-semibold text-slate-700">نبذة تعريفية</label>
         <textarea formControlName="bio" rows="3" placeholder="تحدث عن نفسك وخبراتك باختصار..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all resize-y"></textarea>
       </div>
       <div class="space-y-2">
