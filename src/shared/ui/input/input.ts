@@ -15,7 +15,6 @@ export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date
       multi: true,
     },
   ],
-  styleUrl: './input.css',
 })
 export class UiInput implements ControlValueAccessor {
 

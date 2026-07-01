@@ -4,7 +4,6 @@ import { Component, input } from '@angular/core';
   selector: 'ui-table-row-skeleton',
   standalone: true,
   templateUrl: './table-row-skeleton.html',
-  styleUrl: './table-row-skeleton.css'
 })
 export class UiTableRowSkeleton {
   // تحديد عدد الأسطر الوهمية المطلوب عرضها أثناء التحميل

@@ -6,13 +6,13 @@ export class FaviconBadgeService {
   private notificationService = inject(NotificationService);
   private destroyRef = inject(DestroyRef);
 
-  private targetLink: HTMLLinkElement | null = null;
-  private savedHref = '';
   private baseBitmap: ImageBitmap | null = null;
   private loading = false;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private readonly SIZE = 64;
+
+  private targetLinks: { el: HTMLLinkElement; originalHref: string }[] = [];
 
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -20,12 +20,13 @@ export class FaviconBadgeService {
     this.canvas.height = this.SIZE;
     this.ctx = this.canvas.getContext('2d')!;
 
-    const links = document.querySelectorAll<HTMLLinkElement>('link[rel*="icon"]');
-    this.targetLink = links[0] ?? null;
-    this.savedHref = this.targetLink?.href ?? '';
+    const rawLinks = [...document.querySelectorAll<HTMLLinkElement>('link[rel*="icon"]')];
+    this.targetLinks = rawLinks.map((el) => ({ el, originalHref: el.href }));
 
-    if (this.targetLink) {
-      this.loadBaseImage();
+    const firstHref = this.targetLinks[0]?.originalHref ?? '';
+
+    if (firstHref) {
+      this.loadBaseImage(firstHref);
     }
 
     effect(() => {
@@ -40,16 +41,16 @@ export class FaviconBadgeService {
   }
 
   private restoreOriginal(): void {
-    if (this.targetLink && this.savedHref) {
-      this.targetLink.href = this.savedHref;
+    for (const { el, originalHref } of this.targetLinks) {
+      el.href = originalHref;
     }
   }
 
-  private async loadBaseImage(): Promise<void> {
-    if (!this.savedHref || this.loading || this.baseBitmap) return;
+  private async loadBaseImage(url: string): Promise<void> {
+    if (this.loading || this.baseBitmap) return;
     this.loading = true;
     try {
-      const resp = await fetch(this.savedHref, { cache: 'no-cache' });
+      const resp = await fetch(url, { cache: 'no-cache' });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const blob = await resp.blob();
       this.baseBitmap = await createImageBitmap(blob);
@@ -61,22 +62,28 @@ export class FaviconBadgeService {
   }
 
   private drawBadge(count: number): void {
-    if (!this.targetLink) return;
+    if (this.targetLinks.length === 0) return;
 
     if (count === 0) {
       this.restoreOriginal();
       return;
     }
 
+    const firstHref = this.targetLinks[0].originalHref;
+
     if (this.baseBitmap) {
-      this.renderWithBase(this.targetLink, count);
+      for (const { el } of this.targetLinks) {
+        this.renderWithBase(el, count);
+      }
     } else {
       if (this.loading) {
         setTimeout(() => this.drawBadge(this.notificationService.unreadCount()), 200);
       } else {
-        this.renderFallback(this.targetLink, count);
-        if (this.savedHref) {
-          this.loadBaseImage().then(() => {
+        for (const { el } of this.targetLinks) {
+          this.renderFallback(el, count);
+        }
+        if (firstHref) {
+          this.loadBaseImage(firstHref).then(() => {
             if (this.baseBitmap && this.notificationService.unreadCount() > 0) {
               this.drawBadge(this.notificationService.unreadCount());
             }
@@ -97,8 +104,8 @@ export class FaviconBadgeService {
 
   private drawOverlay(ctx: CanvasRenderingContext2D, s: number, count: number): void {
     const display = count > 99 ? '99+' : String(count);
-    const cx = s - 9;
-    const cy = 9;
+    const cx = s - 18;
+    const cy = 20;
     const r = display.length > 2 ? 21 : 18;
 
     ctx.beginPath();

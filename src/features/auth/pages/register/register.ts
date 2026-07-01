@@ -44,11 +44,9 @@ export class Register {
       preferredLanguage: 'ar',
       role: 'user'
     } as RegisterRequest;
-    console.log('[Register] Sending request:', req);
 
     this.authService.register(req).subscribe({
       next: (res) => {
-        console.log('[Register] Response:', res);
         if (res.success) {
           this.router.navigate(['/auth/check-email'], { queryParams: { email: req.email } });
         } else {

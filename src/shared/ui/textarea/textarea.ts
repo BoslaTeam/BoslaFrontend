@@ -13,8 +13,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     },
   ],
   templateUrl: './textarea.html',
-  styleUrl: './textarea.css',
 })
+
 export class UiTextarea implements ControlValueAccessor {
 
   readonly label = input<string>('');

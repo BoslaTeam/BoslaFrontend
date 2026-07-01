@@ -229,6 +229,7 @@
                 </ui-button>
               } @else {
                 <app-stripe-payment-form
+                  [clientSecret]="stripeClientSecret()!"
                   [appointmentId]="store.bookingAppointmentId()!"
                   [amount]="(store.specialistInfo()?.hourlyRate ?? 0)"
                   currency="usd"

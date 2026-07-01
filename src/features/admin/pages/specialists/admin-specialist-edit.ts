@@ -46,7 +46,7 @@ export class AdminSpecialistEdit implements OnInit {
   }
 
   private loadLookups(): void {
-    this.adminService.getExpertiseList().subscribe((items) => this.expertiseList.set(items));
+    this.adminService.getExpertiseList().subscribe({ next: (items) => this.expertiseList.set(items), error: () => {} });
     this.adminService.getIndustryList().subscribe({
       next: (items) => this.industryList.set(items),
     });

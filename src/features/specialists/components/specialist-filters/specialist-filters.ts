@@ -17,7 +17,6 @@ import { LookupItem } from '@features/specialists/models/lookup.model';
   selector: 'specialist-filters',
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './specialist-filters.html',
-  styleUrl: './specialist-filters.css',
 })
 export class SpecialistsFiltersComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);

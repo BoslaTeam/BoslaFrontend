@@ -32,6 +32,7 @@ export class BookAppointment implements OnInit, OnDestroy {
   specialistNotFound = signal(false);
   showStripe = signal(false);
   initiatingPayment = signal(false);
+  stripeClientSecret = signal<string | undefined>(undefined);
 
   readonly selectedSlotInfo = computed(() => {
     const slotId = this.selectedSlotId();
@@ -87,6 +88,7 @@ export class BookAppointment implements OnInit, OnDestroy {
       next: (res) => {
         this.initiatingPayment.set(false);
         if (res.data?.clientSecret) {
+          this.stripeClientSecret.set(res.data.clientSecret);
           this.showStripe.set(true);
         } else {
           this.store.confirmAppointment(id);
@@ -102,7 +104,7 @@ export class BookAppointment implements OnInit, OnDestroy {
   onPaymentSuccess(paymentIntentId: string) {
     const id = this.store.bookingAppointmentId();
     if (id) {
-      this.store.confirmAppointment(id);
+      this.store.confirmPayment(id, paymentIntentId);
     }
   }
 

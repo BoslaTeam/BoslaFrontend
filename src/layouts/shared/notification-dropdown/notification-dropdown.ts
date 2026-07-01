@@ -25,7 +25,7 @@ export class NotificationDropdown implements OnInit {
 
   ngOnInit() {
     if (this.notifications().length === 0) {
-      this.httpService.getNotifications().subscribe();
+      this.httpService.getNotifications().subscribe({ error: () => {} });
     }
   }
 
@@ -43,6 +43,6 @@ export class NotificationDropdown implements OnInit {
 
   markAsRead(id: string, e: MouseEvent) {
     e.stopPropagation();
-    this.httpService.markAsRead(id).subscribe();
+    this.httpService.markAsRead(id).subscribe({ error: () => {} });
   }
 }

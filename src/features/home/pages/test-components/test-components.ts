@@ -41,7 +41,6 @@ import { UiPagination } from '@shared/ui/pagination/pagination';
     UiPagination
   ],
   templateUrl: './test-components.html',
-  styleUrl: './test-components.css',
 })
 export class TestComponents {
 
