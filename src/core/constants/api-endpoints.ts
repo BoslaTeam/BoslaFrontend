@@ -1,4 +1,3 @@
-import { generate } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const V = environment.apiBaseUrl;
@@ -27,6 +26,7 @@ export const API_ENDPOINTS = {
   },
   notifications: {
     mine: `${V}/notifications`,
+    unreadCount: `${V}/notifications/unread-count`,
     markAllRead: `${V}/notifications/read`,
     markRead: (id: string) => `${V}/notifications/${id}/read`,
     delete: (id: string) => `${V}/notifications/${id}`,
@@ -36,14 +36,15 @@ export const API_ENDPOINTS = {
     byId: (id: string) => `${V}/Appointments/${id}`,
     myappointments: `${V}/Appointments/my-appointments`,
     bySpecialist: (specialistId: string) => `${V}/appointments/specialist/${specialistId}`,
+    mySpecialistAppointments: `${V}/Appointments/my-specialist-appointments`,
     upcoming: `${V}/appointments/upcoming`,
     history: (id: string) => `${V}/appointments/${id}/history`,
     confirm: (id: string) => `${V}/appointments/${id}/confirm`,
+    confirmPayment: (id: string) => `${V}/appointments/${id}/confirm-payment`,
     cancel: (id: string) => `${V}/appointments/${id}/cancel`,
     reschedule: (id: string) => `${V}/appointments/${id}/reschedule`,
     complete: (id: string) => `${V}/appointments/${id}/complete`,
     reject: (id: string) => `${V}/appointments/${id}/reject`,
-    markAsPaid: (id: string) => `${V}/appointments/${id}/mark-as-paid`,
     notes: (id: string) => `${V}/appointments/${id}/notes`,
     reviews: (id: string) => `${V}/appointments/${id}/reviews`,
     reminders: (id: string) => `${V}/appointments/${id}/reminders`,
@@ -66,8 +67,9 @@ export const API_ENDPOINTS = {
     webhook: `${V}/webhooks/agora`,
   },
   specialists: {
-    onboard: `${V}/specialists/onboard`,
+    start: `${V}/specialists/me/start`,
     me: `${V}/specialists/me`,
+    updateProfile: `${V}/specialists/me`,
     cancellationPolicy: `${V}/specialists/me/cancellation-policy`,
     bookingPolicy: `${V}/specialists/me/booking-policy`,
     availability: `${V}/specialists/me/availability`,
@@ -87,7 +89,10 @@ export const API_ENDPOINTS = {
     embeddingRefresh: `${V}/specialists/me/embedding/refresh`,
     dashboard: `${V}/specialists/me/dashboard`,
     myReviews: `${V}/specialists/me/reviews`,
-   
+    submit: `${V}/specialists/me/submit`,
+    documents: `${V}/specialists/me/documents`,
+    documentById: (id: string) => `${V}/specialists/me/documents/${id}`,
+    verification: `${V}/specialists/me/verification`,
   },
   lookup: {
     expertise: `${V}/lookup/expertise`,

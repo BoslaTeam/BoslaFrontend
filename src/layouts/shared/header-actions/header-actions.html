@@ -9,27 +9,37 @@
       ابدأ الآن
     </a>
   } @else {
-    <a [routerLink]="navigationService.chatRoute" class="relative text-white hover:text-bosla-orange transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10" title="الرسائل">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
-      <span class="absolute top-1 right-1 flex h-3 w-3">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-bosla-orange opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-3 w-3 bg-bosla-orange"></span>
-      </span>
-    </a>
+    <div class="relative">
+      <button data-msg-toggle (click)="toggleMsg()"
+        class="relative text-white hover:text-bosla-orange transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10"
+        title="الرسائل">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="absolute top-1 right-1 flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-bosla-orange opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-bosla-orange"></span>
+        </span>
+      </button>
+      <app-message-dropdown [isOpen]="msgOpen()" (close)="msgOpen.set(false)" />
+    </div>
 
-    <a [routerLink]="navigationService.notificationsRoute" class="relative text-white hover:text-bosla-orange transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10" title="الإشعارات">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-      </svg>
-      @if (notificationService.unreadCount() > 0) {
-        <span class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+    <div class="relative">
+      <button data-notif-toggle (click)="toggleNotif()"
+        class="relative text-white hover:text-bosla-orange transition-colors cursor-pointer w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10"
+        title="الإشعارات">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        @if (notificationService.unreadCount() > 0) {
+        <span class="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none shadow-md">
           {{ notificationService.unreadCount() > 99 ? '99+' : notificationService.unreadCount() }}
         </span>
-      }
-    </a>
+        }
+      </button>
+      <app-notification-dropdown [isOpen]="notifOpen()" (close)="notifOpen.set(false)" />
+    </div>
 
     <app-user-dropdown />
   }

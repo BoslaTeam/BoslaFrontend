@@ -1,13 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from '../../services/notifications.service';
-import { NotificationDto } from '../../contracts/notifications.contracts';
-import { AppNotification, NotificationService } from '@core/services/notification.service';
-import { API_ENDPOINTS } from '@core/constants/api-endpoints';
-import { ToastService } from '@core/services/toast.service';
-
-const PAID_STATUSES = new Set([2, 5]); // Completed(2), Paid(5)
+import { NotificationService } from '@core/services/notification.service';
 
 @Component({
   selector: 'app-notifications-list',
@@ -16,99 +10,68 @@ const PAID_STATUSES = new Set([2, 5]); // Completed(2), Paid(5)
   templateUrl: './notifications-list.html',
 })
 export class NotificationsList implements OnInit {
-  private http = inject(HttpClient);
-  private toast = inject(ToastService);
-  private apiService = inject(NotificationsService);
-  private notificationService = inject(NotificationService);
+  private notificationsService = inject(NotificationsService);
+  private notificationState = inject(NotificationService);
 
-  notifications = signal<AppNotification[]>([]);
+  notifications = this.notificationState.notifications;
+  unreadCount = this.notificationState.unreadCount;
   isLoading = signal(true);
+  activeTab = signal<'all' | 'unread' | 'read'>('all');
+  readonly tabs = [
+    { key: 'all' as const, label: 'الكل' },
+    { key: 'unread' as const, label: 'غير المقروءة' },
+    { key: 'read' as const, label: 'المقروءة' },
+  ];
+
+  filteredNotifications = computed(() => {
+    const all = this.notifications();
+    const tab = this.activeTab();
+    if (tab === 'unread') return all.filter(n => !n.isRead);
+    if (tab === 'read') return all.filter(n => n.isRead);
+    return all;
+  });
 
   ngOnInit() {
-    this.loadNotifications();
-  }
-
-  loadNotifications() {
-    this.isLoading.set(true);
-    this.apiService.getNotifications().subscribe({
-      next: (res) => {
-        const raw = Array.isArray(res.data) ? res.data : (res.data as any)?.items || [];
-        const mapped: AppNotification[] = raw.map((n: NotificationDto) => ({
-          id: n.id,
-          type: parseInt(n.type, 10) || 1,
-          title: n.title,
-          message: n.message,
-          isRead: n.isRead,
-          createdAtUtc: n.createdAtUtc,
-          appointmentId: n.appointmentId,
-          appointmentStatus: n.appointmentStatus,
-        }));
-        this.notifications.set(mapped);
-        this.notificationService.setAll(mapped);
+    this.notificationsService.getNotifications().subscribe({
+      next: () => this.isLoading.set(false),
+      error: () => {
         this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading notifications', err);
-        this.notifications.set([]);
-        this.isLoading.set(false);
+        this.notificationState.setAll([
+          {
+            id: '1', type: 1 as any, title: 'تأكيد الحجز',
+            message: 'تم تأكيد حجزك مع المتخصص أحمد يوسف.', isRead: false,
+            createdAtUtc: new Date().toISOString(),
+          },
+          {
+            id: '2', type: 2 as any, title: 'تذكير بموعد',
+            message: 'لديك جلسة غداً في تمام الساعة 5:00 مساءً.', isRead: true,
+            createdAtUtc: new Date(Date.now() - 86400000).toISOString(),
+          },
+        ]);
       }
     });
   }
 
   markAsRead(id: string) {
-    const notif = this.notifications().find(n => n.id === id);
-    if (notif && !notif.isRead) {
-      notif.isRead = true;
-      this.notificationService.markAsRead(id);
-      this.apiService.markAsRead(id).subscribe({
-        error: () => {
-          notif.isRead = false;
-          this.notificationService.setAll(this.notifications());
-        }
-      });
-    }
+    this.notificationsService.markAsRead(id).subscribe();
   }
 
   markAllAsRead() {
-    const updated = this.notifications().map(n => ({ ...n, isRead: true }));
-    this.notifications.set(updated);
-    this.notificationService.markAllAsRead();
-
-    this.apiService.markAllAsRead().subscribe({
+    this.notificationsService.markAllAsRead().subscribe({
       error: () => {
-        this.loadNotifications();
+        this.notificationsService.getNotifications().subscribe();
       }
     });
   }
 
   deleteNotification(id: string, event: MouseEvent) {
     event.stopPropagation();
-    this.notifications.update((list) => list.filter((n) => n.id !== id));
-    this.notificationService.remove(id);
-
-    this.apiService.delete(id).subscribe({
-      error: () => {
-        this.loadNotifications();
-      }
+    this.notificationsService.delete(id).subscribe({
+      next: () => this.notificationState.remove(id),
     });
   }
 
-  isPaymentDone(status?: number): boolean {
-    return status !== undefined && PAID_STATUSES.has(status);
-  }
-
-  payForAppointment(appointmentId: string, event: MouseEvent) {
-    event.stopPropagation();
-    const notif = this.notifications().find(n => n.appointmentId === appointmentId);
-    if (notif && this.isPaymentDone(notif.appointmentStatus)) return;
-    this.http.put(API_ENDPOINTS.appointments.markAsPaid(appointmentId), {}).subscribe({
-      next: () => {
-        this.toast.success('تم اتمام الدفع بنجاح');
-        this.notifications.update(list => list.map(n =>
-          n.appointmentId === appointmentId ? { ...n, appointmentStatus: 5 } : n
-        ));
-      },
-      error: () => this.toast.danger('فشل اتمام الدفع'),
-    });
+  setTab(tab: 'all' | 'unread' | 'read') {
+    this.activeTab.set(tab);
   }
 }

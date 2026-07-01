@@ -1,25 +1,31 @@
 <div class="max-w-xl mx-auto">
   <div class="text-center mb-8">
-    <h3 class="text-2xl font-bold text-slate-800 mb-2">الخبرات السابقة</h3>
-    <p class="text-slate-500">أضف خبراتك السابقة لعرضها في ملفك التعريفي</p>
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-blue/10 text-bosla-blue mb-4">
+      <i class="fa-solid fa-briefcase text-lg"></i>
+    </div>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">الخبرات السابقة</h3>
+    <p class="text-bosla-grey">شارك مسيرتك المهنية — كل خبرة تضيف مصداقية لملفك التعريفي</p>
   </div>
 
   @if (errorMessage()) {
-    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
-      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
-      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    <div class="mb-6 bg-bosla-error/5 border-r-4 border-bosla-error p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-bosla-error mt-0.5"></i>
+      <p class="text-sm text-bosla-error font-medium">{{ errorMessage() }}</p>
     </div>
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
     <div formArrayName="experiences" class="space-y-4">
       @for (entry of experiences.controls; track $index) {
-        <div [formGroupName]="$index" class="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+        <div [formGroupName]="$index" class="border border-bosla-charcoal/10 rounded-2xl p-5 space-y-4 bg-bosla-offwhite">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-slate-700">خبرة #{{ $index + 1 }}</span>
+            <span class="text-sm font-bold text-bosla-charcoal">
+              <i class="fa-solid fa-briefcase text-bosla-blue ml-1"></i>
+              خبرة #{{ $index + 1 }}
+            </span>
             @if (experiences.length > 1) {
               <button type="button" (click)="removeEntry($index)"
-                class="text-red-500 hover:text-red-700 text-sm cursor-pointer">
+                class="text-bosla-error/60 hover:text-bosla-error text-sm cursor-pointer">
                 <i class="fa-solid fa-trash-can"></i>
                 حذف
               </button>
@@ -42,7 +48,7 @@
     </div>
 
     <button type="button" (click)="addEntry()"
-      class="w-full py-3 border-2 border-dashed border-slate-300 rounded-2xl text-slate-500 hover:border-bosla-blue hover:text-bosla-blue transition-colors cursor-pointer font-sans font-medium text-sm">
+      class="w-full py-3 border-2 border-dashed border-bosla-charcoal/20 rounded-2xl text-bosla-grey hover:border-bosla-blue hover:text-bosla-blue transition-colors cursor-pointer font-sans font-medium text-sm">
       <i class="fa-solid fa-plus ml-1"></i>
       إضافة خبرة أخرى
     </button>

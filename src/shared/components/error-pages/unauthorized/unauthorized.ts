@@ -6,6 +6,5 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './unauthorized.html',
-  styleUrl: './unauthorized.css',
 })
 export class Unauthorized {}

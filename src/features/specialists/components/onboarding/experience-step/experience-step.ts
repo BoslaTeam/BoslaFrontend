@@ -1,4 +1,4 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, effect, inject, output, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
 import { ExperienceRequest } from '../../../contracts/specialist-experience.contract';
@@ -31,12 +31,14 @@ export class ExperienceStep {
   }
 
   constructor() {
-    const savedExperiences = this.onboardingStore.draft().experiences;
-    if (savedExperiences.length > 0) {
-      savedExperiences.forEach(exp => {
-        this.experiences.push(this.createExperience(exp));
-      });
-    }
+    effect(() => {
+      const savedExperiences = this.onboardingStore.draft().experiences;
+      if (savedExperiences.length > 0 && this.experiences.length === 0) {
+        savedExperiences.forEach(exp => {
+          this.experiences.push(this.createExperience(exp));
+        });
+      }
+    });
   }
 
   private createExperience(exp?: ExperienceRequest) {

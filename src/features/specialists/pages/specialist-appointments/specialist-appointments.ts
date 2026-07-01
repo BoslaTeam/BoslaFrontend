@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { AppointmentService } from '@features/appointments/services/appointments.service';
 import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
 
@@ -90,11 +91,11 @@ const STATUS_DOTS: Record<ApptStatus, string> = {
   standalone: true,
   imports: [CommonModule, DatePipe, RouterLink, FormsModule],
   templateUrl: './specialist-appointments.html',
-  styleUrl: './specialist-appointments.css',
 })
 export class SpecialistAppointments implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
+  private appointmentService = inject(AppointmentService);
 
   // Core state
   readonly activeTab = signal<ApptStatus | 'all'>('all');
@@ -151,6 +152,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
         this.isLoading.set(false);
         this.isLoadingMore.set(false);
       }))
+
       .subscribe({
         next: (res) => {
           const items = res.data ?? [];

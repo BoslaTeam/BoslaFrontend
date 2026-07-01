@@ -1,36 +1,25 @@
 <aside
   [class]="(store.activeMobilePanel() === 'chat')
-    ? 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-[320px] md:min-w-[320px] flex flex-col h-full bg-white border-r border-bosla-primary/10 overflow-hidden transition-transform duration-300 -translate-x-full md:translate-x-0'
-    : 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-[320px] md:min-w-[320px] flex flex-col h-full bg-white border-r border-bosla-primary/10 overflow-hidden transition-transform duration-300 translate-x-0'"
-  role="navigation"
-  aria-label="Conversations"
->
+    ? 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-full flex flex-col h-full bg-white border-l  border-bosla-primary/10 overflow-hidden transition-transform duration-300 -translate-x-full md:translate-x-0'
+    : 'absolute inset-0 w-full min-w-full z-10 md:relative md:w-full flex flex-col h-full bg-white border-l max-md:pt-20 border-bosla-primary/10 overflow-hidden transition-transform duration-300 translate-x-0'"
+  role="navigation" aria-label="المحادثات">
 
   <!-- Header -->
-  <div class="p-4 pb-3.5 border-b border-bosla-primary/10 shrink-0 bg-white">
+  <div class="p-4 pb-3 border-b border-bosla-primary/10 shrink-0 bg-white">
     <div class="text-sm font-bold text-bosla-primary flex items-center gap-2 mb-3.5 font-sans">
-      <!-- Chat icon -->
-      <svg class="text-bosla-primary/80" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <svg class="text-bosla-primary/80" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
       <span>الرسائل</span>
       @if (store.totalUnread() > 0) {
-        <span class="px-1.5 py-0.5 rounded-full bg-bosla-orange text-white text-[10px] font-bold">{{ store.totalUnread() > 99 ? '99+' : store.totalUnread() }}</span>
+      <span class="px-1.5 py-0.5 rounded-full bg-bosla-orange text-white text-[10px] font-bold">{{ store.totalUnread() >
+        99 ? '99+' : store.totalUnread() }}</span>
       }
     </div>
 
     <!-- Search -->
-    <chat-conversation-search
-      [query]="store.searchQuery()"
-      (queryChange)="onSearch($event)"
-    />
-
-    <!-- Filters -->
-    <chat-conversation-filters
-      [activeFilter]="store.activeFilter()"
-      [unreadTotal]="store.totalUnread()"
-      (filterChange)="onFilterChange($event)"
-    />
+    <chat-conversation-search [query]="store.searchQuery()" (queryChange)="onSearch($event)" />
   </div>
 
   <!-- List -->
@@ -38,75 +27,80 @@
 
     <!-- Loading Skeleton -->
     @if (store.isLoadingConversations()) {
-      @for (i of [1,2,3,4,5]; track i) {
-        <div class="flex items-center gap-3 p-4 animate-pulse border-b border-bosla-primary/5">
-          <div class="w-11 h-11 bg-bosla-primary/10 rounded-full shrink-0"></div>
-          <div class="flex-1 space-y-2.5">
-            <div class="h-3.5 bg-bosla-primary/10 rounded w-1/3"></div>
-            <div class="h-3 bg-bosla-primary/5 rounded w-3/4"></div>
-          </div>
-        </div>
-      }
+    @for (i of [1,2,3,4,5]; track i) {
+    <div class="flex items-center gap-3 p-4 animate-pulse border-b border-bosla-primary/5">
+      <div class="w-11 h-11 bg-bosla-primary/10 rounded-full shrink-0"></div>
+      <div class="flex-1 space-y-2.5">
+        <div class="h-3.5 bg-bosla-primary/10 rounded w-1/3"></div>
+        <div class="h-3 bg-bosla-primary/5 rounded w-3/4"></div>
+      </div>
+    </div>
+    }
     }
 
     <!-- Error State -->
     @else if (store.isErrorConversations()) {
-      <div class="flex flex-col items-center justify-center p-8 text-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-bosla-error/5 flex items-center justify-center text-bosla-error">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <h4 class="text-sm font-bold text-bosla-charcoal font-sans">تعذر تحميل المحادثات</h4>
-        <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">يرجى التحقق من اتصالك والمحاولة مرة أخرى.</p>
-        <button class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-sans" (click)="store.loadConversations()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-          </svg>
-          إعادة المحاولة
-        </button>
+    <div class="flex flex-col items-center justify-center p-8 text-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-bosla-error/5 flex items-center justify-center text-bosla-error">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
       </div>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">تعذر تحميل المحادثات</h4>
+      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">يرجى التحقق من اتصالك والمحاولة مرة أخرى.</p>
+      <button
+        class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-sans"
+        (click)="store.loadConversations()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
+        إعادة المحاولة
+      </button>
+    </div>
     }
 
     <!-- Empty State -->
     @else if (store.filteredConversations().length === 0) {
-      <div class="flex flex-col items-center justify-center p-8 text-center gap-4 min-h-[320px]">
-        @if (store.searchQuery()) {
-          <div class="w-14 h-14 rounded-2xl bg-bosla-primary/5 flex items-center justify-center text-bosla-grey/80">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-          </div>
-          <h4 class="text-sm font-bold text-bosla-charcoal font-sans">لم يتم العثور على نتائج</h4>
-          <p class="text-xs text-bosla-grey leading-relaxed max-w-[220px]">لا توجد محادثات تطابق "{{ store.searchQuery() }}"</p>
-        } @else {
-          <div class="w-14 h-14 rounded-2xl bg-bosla-primary/5 flex items-center justify-center text-bosla-blue">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <h4 class="text-sm font-bold text-bosla-charcoal font-sans">لا توجد محادثات حتى الآن</h4>
-          <p class="text-xs text-bosla-grey leading-relaxed max-w-[220px]">احجز جلسة مع متخصص لبدء المراسلة.</p>
-          <a routerLink="/specialists" class="inline-flex items-center gap-1.5 px-4.5 py-2.5 bg-bosla-orange text-white text-xs font-bold rounded-xl hover:bg-bosla-orange/90 transition shadow-sm cursor-pointer font-sans">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            ابحث عن متخصص
-          </a>
-        }
+    <div class="flex flex-col items-center justify-center p-8 text-center gap-4 min-h-[320px]">
+      @if (store.searchQuery()) {
+      <div class="w-14 h-14 rounded-2xl bg-bosla-primary/5 flex items-center justify-center text-bosla-grey/80">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
       </div>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">لم يتم العثور على نتائج</h4>
+      <p class="text-xs text-bosla-grey leading-relaxed max-w-[220px]">لا توجد محادثات تطابق "{{ store.searchQuery() }}"
+      </p>
+      } @else {
+      <div class="w-14 h-14 rounded-2xl bg-bosla-primary/5 flex items-center justify-center text-bosla-blue">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      </div>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">لا توجد محادثات حتى الآن</h4>
+      <p class="text-xs text-bosla-grey leading-relaxed max-w-[220px]">احجز جلسة مع متخصص لبدء المراسلة.</p>
+      <a routerLink="/specialists"
+        class="inline-flex items-center gap-1.5 px-4.5 py-2.5 bg-bosla-orange text-white text-xs font-bold rounded-xl hover:bg-bosla-orange/90 transition shadow-sm cursor-pointer font-sans">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        ابحث عن متخصص
+      </a>
+      }
+    </div>
     }
 
     <!-- Conversation List -->
     @else {
-      @for (conv of store.filteredConversations(); track conv.id; let i = $index) {
-        <chat-conversation-item
-          [conversation]="conv"
-          [isActive]="store.activeConversationId() === conv.id"
-          (selected)="onSelectConversation($event)"
-          role="listitem"
-        />
-      }
+    @for (conv of store.filteredConversations(); track conv.id; let i = $index) {
+    <chat-conversation-item [conversation]="conv" [isActive]="store.activeConversationId() === conv.id"
+      (selected)="onSelectConversation($event)" role="listitem" />
+    }
     }
 
   </div>

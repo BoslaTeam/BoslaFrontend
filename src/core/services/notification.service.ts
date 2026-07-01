@@ -23,8 +23,13 @@ export class NotificationService {
   readonly notifications = this._notifications.asReadonly();
   readonly unreadCount = computed(() => this._notifications().filter((n) => !n.isRead).length);
 
+  /** Fired only on real-time push (not setAll) for toast component */
+  private readonly _livePush = signal<AppNotification | null>(null);
+  readonly livePush = this._livePush.asReadonly();
+
   push(notification: AppNotification): void {
     this._notifications.update((list) => [notification, ...list]);
+    this._livePush.set(notification);
   }
 
   markAsRead(id: string): void {

@@ -10,7 +10,6 @@ export interface BreadcrumbItem {
   standalone: true,
   imports: [],
   templateUrl: './breadcrumbs.html',
-  styleUrl: './breadcrumbs.css',
 })
 export class UiBreadcrumbs {
   readonly items = input<BreadcrumbItem[]>([]);

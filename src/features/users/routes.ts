@@ -9,6 +9,7 @@ export const USERS_ROUTES: Routes = [
   },  
   {
     path: 'specialist-onboarding',
+    canActivate: [nonSpecialistGuard],
     loadComponent: () => import('../specialists/pages/onboarding/specialist-onboarding').then(m => m.SpecialistOnboardingPage),
   },
   { path: '', redirectTo: 'profile', pathMatch: 'full' },

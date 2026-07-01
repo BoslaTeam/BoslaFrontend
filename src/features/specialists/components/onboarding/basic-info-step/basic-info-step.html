@@ -1,17 +1,28 @@
 <div class="max-w-lg mx-auto">
   <div class="text-center mb-8">
-    <h3 class="text-2xl font-bold text-slate-800 mb-2">المعلومات الأساسية</h3>
-    <p class="text-slate-500">أكمل بيانات اختصاصك للبدء في استقبال الاستشارات</p>
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-orange/10 text-bosla-orange mb-4">
+      <i class="fa-solid fa-star text-lg"></i>
+    </div>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">الخبرة والتسعيرة</h3>
+    <p class="text-bosla-grey">حدد خبرتك وتسعيرتك — أنت من تضع قيمة خدماتك</p>
   </div>
 
   @if (errorMessage()) {
-    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
-      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
-      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    <div class="mb-6 bg-bosla-error/5 border-r-4 border-bosla-error p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-bosla-error mt-0.5"></i>
+      <p class="text-sm text-bosla-error font-medium">{{ errorMessage() }}</p>
     </div>
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <ui-input
+      formControlName="title"
+      label="المسمى الوظيفي"
+      type="text"
+      placeholder="مثال: أخصائي نفسي إكلينيكي"
+      [required]="true"
+    />
+
     <div class="grid grid-cols-2 gap-4">
       <div class="space-y-2">
         <ui-input
@@ -23,7 +34,7 @@
         />
       </div>
       <div class="flex flex-col justify-end pb-2">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">مستوى الخبرة</label>
+        <label class="block text-sm font-semibold text-bosla-charcoal mb-2">مستوى الخبرة</label>
         <div class="h-11 px-4 rounded-xl bg-bosla-primary/10 border border-bosla-primary/20 flex items-center">
           <span class="text-sm font-bold text-bosla-primary">{{ levelLabel() }}</span>
         </div>
@@ -47,9 +58,13 @@
     />
 
     <div class="flex justify-between pt-4">
+      <ui-button variant="ghost" type="button" (btnClick)="back.emit()">
+        <i class="fa-solid fa-chevron-right"></i>
+        السابق
+      </ui-button>
       <ui-button type="submit" [loading]="isLoading()" variant="primary">
-        <i class="fa-solid fa-arrow-left"></i>
         حفظ ومتابعة
+        <i class="fa-solid fa-arrow-left"></i>
       </ui-button>
     </div>
   </form>
