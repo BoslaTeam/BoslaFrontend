@@ -16,19 +16,18 @@ import { isPlatformBrowser } from '@angular/common';
  * ─────────────────────────────────────────────────────────────────────────────
  * Reusable emoji picker built on top of `emoji-picker-element` (Web Component).
  *
- * Features
- * ────────
- * • Lazy-loads the picker library on first open → zero initial-bundle impact
- * • RTL-aware: popover anchors to `inset-inline-end` (CSS logical property)
- * • Responsive: absolute popover on md+, CSS-driven bottom-sheet on mobile
- * • Click-outside & Escape → close
- * • Emits a plain Unicode emoji string (e.g. "😊") via `emojiSelected`
- * • Themed via CSS custom properties to match the Bosla Design System
- * • Fully zoneless-compatible (app uses provideZonelessChangeDetection)
+ * Responsive strategy (Bosla-specific)
+ * ─────────────────────────────────────
+ * ≥ 768px (md)  → Floating popover, opens upward, anchored to inset-inline-end.
+ *                 Width is 340 px, capped at calc(100vw − 32 px) for safety.
+ * < 768px       → Fixed bottom-sheet with dim backdrop + drag handle.
+ *                 Width is 100vw — no overflow possible.
  *
- * Usage
- * ─────
- * <bosla-emoji-picker (emojiSelected)="insertEmoji($event)" />
+ * Why 768px?  The rest of the Bosla app uses md (768 px) as the
+ * mobile/desktop boundary (isMobileView, md: Tailwind breakpoint).
+ * The previous breakpoint (max-width: 639px = Tailwind `sm`) left the
+ * 640–767 px range using the desktop popover, which would overflow a
+ * viewport narrower than 340 px + the button's right offset.
  */
 @Component({
   selector: 'bosla-emoji-picker',
@@ -37,23 +36,28 @@ import { isPlatformBrowser } from '@angular/common';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
-    /* ── Host positioning context ─────────────────────────────────────── */
+    /* ── Host: positioning context for the absolute popover ────────────── */
     :host {
       position: relative;
       display: inline-block;
     }
 
-    /* ── Popover wrapper ─────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════════════════════════════
+       DESKTOP POPOVER  (≥ 768 px)
+       Absolute, opens upward, RTL-aware via inset-inline-end.
+       max-width clamp guarantees it never overflows even at the md boundary.
+    ══════════════════════════════════════════════════════════════════════ */
     .ep-popover {
       position: absolute;
-      /* Open upward: above the toolbar (composer is pinned to the bottom) */
       bottom: calc(100% + 10px);
-      /* RTL logical property: right on LTR, left on RTL */
+      /* CSS logical property: resolves to right in LTR, left in RTL */
       inset-inline-end: 0;
       z-index: 50;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 8px 32px rgba(27, 79, 114, 0.18), 0 2px 8px rgba(0,0,0,.08);
+      box-shadow:
+        0 8px 32px rgba(27, 79, 114, 0.18),
+        0 2px 8px rgba(0, 0, 0, 0.08);
       border: 1px solid rgba(27, 79, 114, 0.1);
       animation: ep-fade-in 0.15s ease-out;
     }
@@ -63,17 +67,25 @@ import { isPlatformBrowser } from '@angular/common';
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Mobile: full-width bottom sheet ─────────────────────────────── */
-    @media (max-width: 639px) {
+    /* ══════════════════════════════════════════════════════════════════════
+       COMPACT / MOBILE  (< 768 px)
+       Fixed bottom-sheet — never overflows the viewport horizontally.
+       Breakpoint aligned to Bosla's md (768 px) not Tailwind's sm (640 px).
+    ══════════════════════════════════════════════════════════════════════ */
+    @media (max-width: 767px) {
       .ep-popover {
+        /* Switch from absolute (relative to button) to fixed (relative to viewport) */
         position: fixed;
         bottom: 0;
-        /* Override logical positioning for true full-width bottom sheet */
+        /* Cancel the logical property anchoring — bottom-sheet must be full-width */
         inset-inline-end: auto;
         left: 0;
         right: 0;
+        /* No bottom offset — sheet extends to the bottom edge */
         border-radius: 20px 20px 0 0;
-        animation: ep-slide-up 0.2s ease-out;
+        /* Cancel the upward opening transform from desktop */
+        transform: none;
+        animation: ep-slide-up 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       @keyframes ep-slide-up {
@@ -82,6 +94,7 @@ import { isPlatformBrowser } from '@angular/common';
       }
 
       .ep-backdrop {
+        /* Show the dim overlay only on compact screens */
         display: block !important;
       }
 
@@ -96,7 +109,7 @@ import { isPlatformBrowser } from '@angular/common';
       }
     }
 
-    /* ── Backdrop (mobile only, hidden by default) ────────────────────── */
+    /* ── Dim backdrop — hidden on desktop, shown on compact via media query ─ */
     .ep-backdrop {
       display: none;
       position: fixed;
@@ -111,7 +124,7 @@ import { isPlatformBrowser } from '@angular/common';
       to   { opacity: 1; }
     }
 
-    /* ── Mobile drag handle (hidden on desktop) ───────────────────────── */
+    /* ── Drag handle pill — hidden on desktop ─────────────────────────── */
     .ep-drag-handle {
       display: none;
       width: 40px;
@@ -121,16 +134,23 @@ import { isPlatformBrowser } from '@angular/common';
       margin: 10px auto 4px;
     }
 
-    /* ── emoji-picker-element CSS custom property theming ─────────────── */
+    /* ══════════════════════════════════════════════════════════════════════
+       emoji-picker-element sizing + Bosla Design System theming
+    ══════════════════════════════════════════════════════════════════════ */
     emoji-picker {
-      /* Sizing: fixed on desktop, full-width on mobile (overridden above) */
+      /*
+        Desktop: 340 px wide, but capped so it never exceeds the viewport.
+        The calc subtracts 32 px (16 px margin on each side) as a safety buffer
+        so the popover never triggers a horizontal scroll bar even when the
+        host button is near an edge.
+      */
       width: 340px;
-      max-width: calc(100vw - 16px);
+      max-width: calc(100vw - 32px);
 
-      /* Bosla Design System colours */
+      /* Bosla Design System colours via CSS custom properties */
       --background: #ffffff;
       --border-color: rgba(27, 79, 114, 0.1);
-      --border-radius: 0px;          /* outer radius handled by .ep-popover */
+      --border-radius: 0px;           /* outer radius is on .ep-popover */
       --category-button-active-color: #1B4F72;
       --category-button-color: #95A5A6;
       --indicator-color: #1B4F72;
@@ -144,13 +164,11 @@ import { isPlatformBrowser } from '@angular/common';
       --emoji-size: 1.45rem;
       --emoji-padding: 0.35rem;
       --num-columns: 8;
-
-      /* Skin tone */
       --skintone-border-radius: 50%;
     }
   `],
   template: `
-    <!-- ── Trigger button ─────────────────────────────────────────────── -->
+    <!-- ── Trigger button ──────────────────────────────────────────────── -->
     <button
       type="button"
       class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-150
@@ -176,10 +194,10 @@ import { isPlatformBrowser } from '@angular/common';
     </button>
 
     @if (isOpen()) {
-      <!-- ── Backdrop: visible on mobile via CSS ─────────────────────── -->
+      <!-- Dim backdrop — visible on compact screens via CSS media query -->
       <div class="ep-backdrop" (click)="close()" aria-hidden="true"></div>
 
-      <!-- ── Picker popover / bottom sheet ──────────────────────────── -->
+      <!-- Popover (desktop) / bottom-sheet (compact) -->
       <div
         class="ep-popover"
         role="dialog"
@@ -187,19 +205,10 @@ import { isPlatformBrowser } from '@angular/common';
         aria-label="منتقي الرموز التعبيرية"
         id="bosla-emoji-popover"
       >
-        <!-- Mobile drag handle -->
+        <!-- Drag handle — shown on compact via CSS media query -->
         <div class="ep-drag-handle"></div>
 
-        <!--
-          emoji-picker is a native Custom Element from emoji-picker-element.
-          It is lazy-loaded the first time toggle() is called.
-          The (emoji-click) binding listens to the custom DOM event it fires.
-          $any() cast avoids strict-template errors since Angular doesn't know
-          the type of a custom element's event.
-        -->
-        <emoji-picker
-          (emoji-click)="onEmojiClick($event)">
-        </emoji-picker>
+        <emoji-picker (emoji-click)="onEmojiClick($event)"></emoji-picker>
       </div>
     }
   `,
@@ -214,7 +223,7 @@ export class EmojiPickerComponent {
 
   readonly isOpen = signal(false);
 
-  // ── Public API ────────────────────────────────────────────────────────
+  // ── Public API ─────────────────────────────────────────────────────────
 
   async toggle(event: MouseEvent): Promise<void> {
     event.stopPropagation();
@@ -241,7 +250,7 @@ export class EmojiPickerComponent {
     }
   }
 
-  // ── Keyboard & focus handling ─────────────────────────────────────────
+  // ── Keyboard & focus handling ───────────────────────────────────────────
 
   /** ESC key closes the picker from anywhere on the page */
   @HostListener('document:keydown.escape')
@@ -260,7 +269,7 @@ export class EmojiPickerComponent {
     }
   }
 
-  // ── Private helpers ───────────────────────────────────────────────────
+  // ── Private helpers ─────────────────────────────────────────────────────
 
   /**
    * Lazy-loads `emoji-picker-element` on first use.
