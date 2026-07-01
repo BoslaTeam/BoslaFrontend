@@ -28,6 +28,14 @@ export const APPOINTMENTS_ROUTES: Routes = [
           ),
         title: 'تفاصيل الموعد | بوصلة',
       },
+      {
+        path: ':id/track',
+        loadComponent: () =>
+          import('./pages/appointment-tracking/appointment-tracking').then(
+            (m) => m.AppointmentTracking,
+          ),
+        title: 'تتبع حالة الموعد | بوصلة',
+      },
     ],
   },
 ];

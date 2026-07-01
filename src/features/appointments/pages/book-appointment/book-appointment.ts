@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,6 @@ import { AppointmentsStore } from '../../store/appointments.store';
 import { CreateAppointmentRequest } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
-import { ToastService } from '@core/services/toast.service';
 
 @Component({
   selector: 'app-book-appointment',
@@ -14,11 +13,10 @@ import { ToastService } from '@core/services/toast.service';
   imports: [CommonModule, RouterLink, FormsModule, UiButton, UiSpinner],
   templateUrl: './book-appointment.html'
 })
-export class BookAppointment implements OnInit, OnDestroy {
+export class BookAppointment implements OnInit {
   public store = inject(AppointmentsStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly toast = inject(ToastService);
 
   readonly specialistId = signal('');
   readonly sessionTopic = signal('');
@@ -38,6 +36,12 @@ export class BookAppointment implements OnInit, OnDestroy {
     return null;
   });
 
+  readonly selectedGroup = computed(() => {
+    const date = this.selectedDate();
+    if (!date) return null;
+    return this.store.formattedAvailabilitySlots().find(g => g.dateStr === date) ?? null;
+  });
+
   ngOnInit(): void {
     this.store.resetBooking();
     const idFromQuery = this.route.snapshot.queryParamMap.get('specialistId');
@@ -48,10 +52,6 @@ export class BookAppointment implements OnInit, OnDestroy {
     } else {
       this.specialistNotFound.set(true);
     }
-  }
-
-  ngOnDestroy(): void {
-    this.store.resetBooking();
   }
 
   selectSlot(slotId: string, dateStr: string): void {
@@ -72,12 +72,6 @@ export class BookAppointment implements OnInit, OnDestroy {
     };
 
     this.store.createAppointment(request);
-  }
-
-  processPayment(): void {
-    const id = this.store.bookingAppointmentId();
-    if (!id) return;
-    this.store.confirmAppointment(id);
   }
 
   goToAppointments(): void {

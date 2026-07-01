@@ -64,6 +64,15 @@ export class AppointmentDetail implements OnInit {
     return (u === UserRole.Specialist || u === UserRole.Admin) && s === AppointmentStatus.Confirmed;
   });
 
+  readonly canPay = computed(() => {
+    const u = this.userRole();
+    const s = this.store.selectedItem();
+    if (u !== UserRole.User) return false;
+    if (s?.status !== AppointmentStatus.Confirmed) return false;
+    if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded) return false;
+    return true;
+  });
+
   readonly canCancel = computed(() => {
     const s = this.store.selectedItem()?.status;
     return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed;

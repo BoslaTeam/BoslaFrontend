@@ -17,7 +17,9 @@ import { AuthService } from '@core/services/auth.service';
 import { AppointmentService } from '../../services/appointments.service';
 import { Subscription } from 'rxjs';
 
-export type AppointmentTab = 'upcoming' | 'past';
+import { PaymentStatus } from '../../contracts/appointments.contracts';
+
+export type AppointmentTab = 'upcoming' | 'past' | 'pending_payment';
 
 @Component({
   selector: 'app-appointment-list',
@@ -38,7 +40,14 @@ export class AppointmentList implements OnInit, OnDestroy {
     const allAppointments = this.store.items();
     const now = new Date();
 
-    if (this.activeTab() === 'upcoming') {
+    if (this.activeTab() === 'pending_payment') {
+      return allAppointments.filter(
+        (app) =>
+          app.status === AppointmentStatus.Confirmed &&
+          app.paymentStatus !== PaymentStatus.Paid &&
+          app.paymentStatus !== PaymentStatus.Refunded,
+      );
+    } else if (this.activeTab() === 'upcoming') {
       return allAppointments.filter(
         (app) =>
           app.status === AppointmentStatus.Pending ||
@@ -55,7 +64,18 @@ export class AppointmentList implements OnInit, OnDestroy {
     }
   });
 
+  readonly pendingPaymentCount = computed(() => {
+    return this.store.items().filter(
+      (app) =>
+        app.status === AppointmentStatus.Confirmed &&
+        app.paymentStatus !== PaymentStatus.Paid &&
+        app.paymentStatus !== PaymentStatus.Refunded,
+    ).length;
+  });
+
   readonly userRole = computed(() => this.authService.userRole());
+  readonly AppointmentStatus = AppointmentStatus;
+  readonly PaymentStatus = PaymentStatus;
 
   ngOnInit(): void {
     this.store.loadMyAppointments();

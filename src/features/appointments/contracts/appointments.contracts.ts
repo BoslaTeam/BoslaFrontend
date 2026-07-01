@@ -95,4 +95,5 @@ export interface AvailabilitySlotDto {
   id: string;
   start: string;
   end: string;
+  isBooked?: boolean;
 }
