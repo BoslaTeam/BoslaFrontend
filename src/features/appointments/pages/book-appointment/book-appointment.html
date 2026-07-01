@@ -220,12 +220,21 @@
             }
 
             <div class="flex flex-col gap-3">
-              <ui-button (click)="processPayment()" [loading]="store.isActionLoading()" size="lg" variant="primary" class="w-full">
-                إتمام الدفع الآن
-              </ui-button>
-              <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
-                الدفع لاحقاً
-              </ui-button>
+              @if (!showStripe()) {
+                <ui-button (click)="processPayment()" [loading]="initiatingPayment()" size="lg" variant="primary" class="w-full">
+                  {{ initiatingPayment() ? 'جاري التحميل...' : 'إتمام الدفع الآن' }}
+                </ui-button>
+                <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+                  الدفع لاحقاً
+                </ui-button>
+              } @else {
+                <app-stripe-payment-form
+                  [appointmentId]="store.bookingAppointmentId()!"
+                  [amount]="(store.specialistInfo()?.hourlyRate ?? 0)"
+                  currency="usd"
+                  (paymentSuccess)="onPaymentSuccess($event)"
+                  (paymentError)="onPaymentError($event)" />
+              }
             </div>
           </div>
         </div>
