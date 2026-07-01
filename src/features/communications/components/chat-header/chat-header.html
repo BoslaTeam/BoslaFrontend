@@ -17,7 +17,7 @@
         {{ initials() }}
       }
     </div>
-    @if (participant()?.isOnline) {
+    @if (isOnline()) {
       <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-bosla-success border-2 border-white" aria-label="متصل"></span>
     }
   </div>
@@ -31,7 +31,7 @@
       <span class="text-[11px] text-bosla-grey truncate">{{ participant()!.specialization }}</span>
     }
     <div class="text-[10px] text-bosla-grey/80 flex items-center gap-1">
-      @if (participant()?.isOnline) {
+      @if (isOnline()) {
         <span class="w-1.5 h-1.5 rounded-full bg-bosla-success inline-block"></span>
         <span class="text-bosla-success font-semibold">متصل</span>
       } @else {

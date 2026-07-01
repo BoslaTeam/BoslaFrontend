@@ -1,5 +1,6 @@
 import { Component, inject, computed, input, output } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
+import { PresenceStore } from '../../store/presence.store';
 
 @Component({
   selector: 'chat-chat-header',
@@ -13,6 +14,7 @@ import { ChatStore } from '../../store/chat.store';
 })
 export class ChatHeader {
   readonly store = inject(ChatStore);
+  private readonly presenceStore = inject(PresenceStore);
 
   readonly isOpen = input(false);
   readonly togglePanel = output<void>();
@@ -21,6 +23,11 @@ export class ChatHeader {
   readonly toggleDetailsPanel = output<void>();
 
   readonly participant = computed(() => this.store.activeConversation()?.participant ?? null);
+
+  readonly isOnline = computed(() => {
+    const p = this.participant();
+    return p ? this.presenceStore.isOnline(p.id) : false;
+  });
 
   readonly initials = computed(() => {
     const name = this.participant()?.name ?? '';
