@@ -1,4 +1,5 @@
-<header class="flex items-center gap-3 px-4 py-3 bg-white border-b border-bosla-primary/10 shrink-0 select-none shadow-sm font-sans">
+<header
+  class="flex items-center gap-3 px-4 py-3 bg-white border-b  border-bosla-primary/10 shrink-0 select-none shadow-sm font-sans">
   <!-- Back button (mobile) -->
   <button
     class="flex lg:hidden items-center justify-center w-9 h-9 rounded-xl bg-bosla-primary/5 text-bosla-primary hover:bg-bosla-primary/10 transition shrink-0 cursor-pointer"
@@ -10,15 +11,17 @@
 
   <!-- Avatar -->
   <div class="relative shrink-0">
-    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-tr from-bosla-primary to-bosla-blue overflow-hidden shadow-sm">
+    <div
+      class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-tr from-bosla-primary to-bosla-blue overflow-hidden shadow-sm">
       @if (participant()?.avatarUrl) {
-        <img class="w-full h-full object-cover" [src]="participant()!.avatarUrl" [alt]="participant()!.name" />
+      <img class="w-full h-full object-cover" [src]="participant()!.avatarUrl" [alt]="participant()!.name" />
       } @else {
-        {{ initials() }}
+      {{ initials() }}
       }
     </div>
     @if (isOnline()) {
-      <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-bosla-success border-2 border-white" aria-label="متصل"></span>
+    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-bosla-success border-2 border-white"
+      aria-label="متصل"></span>
     }
   </div>
 
@@ -28,14 +31,14 @@
       <span class="text-sm font-bold text-bosla-charcoal truncate">{{ participant()?.name }}</span>
     </div>
     @if (participant()?.specialization) {
-      <span class="text-[11px] text-bosla-grey truncate">{{ participant()!.specialization }}</span>
+    <span class="text-[11px] text-bosla-grey truncate">{{ participant()!.specialization }}</span>
     }
     <div class="text-[10px] text-bosla-grey/80 flex items-center gap-1">
       @if (isOnline()) {
-        <span class="w-1.5 h-1.5 rounded-full bg-bosla-success inline-block"></span>
-        <span class="text-bosla-success font-semibold">متصل</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-bosla-success inline-block"></span>
+      <span class="text-bosla-success font-semibold">متصل</span>
       } @else {
-        <span>غير متصل</span>
+      <span>غير متصل</span>
       }
     </div>
   </div>
@@ -45,14 +48,9 @@
     <!-- Toggle conversation list -->
     <button
       class="hidden md:flex w-9 h-9 rounded-xl items-center justify-center hover:bg-bosla-primary/5 transition cursor-pointer"
-      [class.text-bosla-primary]="isOpen()"
-      [class.text-bosla-grey]="!isOpen()"
-      [class.bg-bosla-primary/10]="isOpen()"
-      (click)="onTogglePanel()"
-      [attr.aria-expanded]="isOpen()"
-      aria-label="إظهار/إخفاء قائمة المحادثات"
-      title="إظهار/إخفاء قائمة المحادثات"
-    >
+      [class.text-bosla-primary]="isOpen()" [class.text-bosla-grey]="!isOpen()" [class.bg-bosla-primary/10]="isOpen()"
+      (click)="onTogglePanel()" [attr.aria-expanded]="isOpen()" aria-label="إظهار/إخفاء قائمة المحادثات"
+      title="إظهار/إخفاء قائمة المحادثات">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
@@ -61,18 +59,13 @@
     <!-- Toggle details sidebar -->
     <button
       class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-bosla-primary/5 transition cursor-pointer"
-      [class.text-bosla-primary]="isDetailsOpen()"
-      [class.text-bosla-grey]="!isDetailsOpen()"
-      [class.bg-bosla-primary/10]="isDetailsOpen()"
-      (click)="onToggleDetailsPanel()"
-      [attr.aria-expanded]="isDetailsOpen()"
-      aria-label="إظهار/إخفاء التفاصيل"
-      title="إظهار/إخفاء التفاصيل"
-    >
+      [class.text-bosla-primary]="isDetailsOpen()" [class.text-bosla-grey]="!isDetailsOpen()"
+      [class.bg-bosla-primary/10]="isDetailsOpen()" (click)="onToggleDetailsPanel()"
+      [attr.aria-expanded]="isDetailsOpen()" aria-label="إظهار/إخفاء التفاصيل" title="إظهار/إخفاء التفاصيل">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
       </svg>
     </button>
 
