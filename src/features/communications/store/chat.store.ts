@@ -420,7 +420,8 @@ export class ChatStore {
         if (res.success && res.data) {
           this.selectedConversation.set(res.data);
         }
-      }
+      },
+      error: () => {}
     });
   }
 

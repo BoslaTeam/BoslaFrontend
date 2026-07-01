@@ -7,7 +7,6 @@ export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
   standalone: true,
   imports: [],
   templateUrl: './avatar.html',
-  styleUrl: './avatar.css',
 })
 export class Avatar {
 

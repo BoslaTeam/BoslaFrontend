@@ -13,7 +13,6 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
     },
   ],
   templateUrl: './checkbox.html',
-  styleUrl: './checkbox.css',
 })
 export class Checkbox implements ControlValueAccessor {
   readonly label = input<string>('');

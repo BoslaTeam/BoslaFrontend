@@ -36,9 +36,19 @@ export const ADMIN_ROUTES: Routes = [
     title: 'إدارة المتخصصين'
   },
   {
+    path: 'specialists/create',
+    loadComponent: () => import('./pages/specialists/admin-specialist-create').then(m => m.AdminSpecialistCreate),
+    title: 'إضافة متخصص'
+  },
+  {
     path: 'specialists/:id',
     loadComponent: () => import('./pages/specialists/admin-specialist-detail').then(m => m.AdminSpecialistDetail),
     title: 'تفاصيل المتخصص'
+  },
+  {
+    path: 'specialists/:id/edit',
+    loadComponent: () => import('./pages/specialists/admin-specialist-edit').then(m => m.AdminSpecialistEdit),
+    title: 'تعديل المتخصص'
   },
   {
     path: 'appointments',
@@ -54,5 +64,25 @@ export const ADMIN_ROUTES: Routes = [
     path: 'lookups',
     loadComponent: () => import('./pages/lookups/admin-lookups').then(m => m.AdminLookups),
     title: 'إدارة البيانات الأساسية'
+  },
+  {
+    path: 'audit-logs',
+    loadComponent: () => import('./pages/audit-logs/admin-audit-logs').then(m => m.AdminAuditLogs),
+    title: 'سجل التدقيق'
+  },
+  {
+    path: 'payments',
+    loadComponent: () => import('./pages/payments/admin-payments-list').then(m => m.AdminPaymentsList),
+    title: 'المدفوعات'
+  },
+  {
+    path: 'payments/:id',
+    loadComponent: () => import('./pages/payments/admin-payment-detail').then(m => m.AdminPaymentDetail),
+    title: 'تفاصيل الدفع'
+  },
+  {
+    path: 'ai',
+    loadComponent: () => import('./pages/ai/admin-ai').then(m => m.AdminAi),
+    title: 'إدارة AI'
   }
 ];

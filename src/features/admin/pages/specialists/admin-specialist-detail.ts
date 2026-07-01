@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
@@ -7,7 +7,7 @@ import { AdminSpecialistDetailDto } from '../../contracts/admin.contracts';
 
 @Component({
   selector: 'app-admin-specialist-detail',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, RouterLink],
   templateUrl: './admin-specialist-detail.html',
   styleUrl: './admin-specialist-detail.css',
 })
@@ -93,7 +93,7 @@ export class AdminSpecialistDetail implements OnInit {
     return name.substring(0, 2).toUpperCase();
   }
 
-  formatRating(rating: number | undefined | null): string {
+  formatRating(rating: number): string {
     if (!rating || rating <= 0) return 'لا توجد تقييمات';
     return `${rating.toFixed(1)} ★`;
   }

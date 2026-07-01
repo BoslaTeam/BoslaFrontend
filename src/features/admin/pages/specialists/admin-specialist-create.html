@@ -1,0 +1,153 @@
+<div class="user-form-page">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    العودة للقائمة
+  </button>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h2>إضافة متخصص جديد</h2>
+      <p>أدخل بيانات المتخصص الجديد أدناه. سيتم إنشاء الحساب وتفعيله تلقائياً بحالة "معلق".</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
+      <!-- Basic Info -->
+      <div class="form-section-title">المعلومات الأساسية</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>الاسم الكامل *</label>
+          <input type="text" formControlName="fullName" placeholder="الاسم الكامل" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني *</label>
+          <input type="email" formControlName="email" placeholder="example@domain.com" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور *</label>
+          <input type="password" formControlName="password" placeholder="6 أحرف على الأقل" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input type="text" formControlName="phoneNumber" placeholder="رقم الهاتف" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>البلد</label>
+          <input type="text" formControlName="country" placeholder="البلد" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>الجنس</label>
+          <select formControlName="gender" class="form-input">
+            <option value="">اختر</option>
+            <option value="Male">ذكر</option>
+            <option value="Female">أنثى</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>اللقب المهني</label>
+          <input type="text" formControlName="title" placeholder="مثال: استشاري نفسي" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>اللغة المفضلة</label>
+          <input type="text" formControlName="preferredLanguage" placeholder="مثال: العربية" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group form-group-full">
+        <label>نبذة تعريفية</label>
+        <textarea formControlName="bio" placeholder="نبذة عن المتخصص" class="form-input form-textarea" rows="3"></textarea>
+      </div>
+
+      <!-- Professional Info -->
+      <div class="form-section-title">المعلومات المهنية</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>سنوات الخبرة *</label>
+          <input type="number" formControlName="experienceYears" placeholder="0" class="form-input" min="0">
+        </div>
+        <div class="form-group">
+          <label>مستوى الخبرة *</label>
+          <select formControlName="experienceLevel" class="form-input">
+            <option value="Entry">مبتدئ</option>
+            <option value="Mid">متوسط</option>
+            <option value="Senior">متقدم</option>
+            <option value="Lead">خبير</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>السعر للساعة *</label>
+          <input type="number" formControlName="hourlyRate" placeholder="0" class="form-input" min="0">
+        </div>
+        <div class="form-group">
+          <label>سياسة الحجز</label>
+          <input type="text" formControlName="bookingPolicy" placeholder="سياسة الحجز" class="form-input">
+        </div>
+      </div>
+
+      <!-- Expertise -->
+      <div class="form-section-title">مجالات الخبرة</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">جاري التحميل...</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of expertiseList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('expertiseIds', item.id)" (click)="toggleSelection('expertiseIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Industries -->
+      <div class="form-section-title">الصناعات</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">جاري التحميل...</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of industryList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('industryIds', item.id)" (click)="toggleSelection('industryIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Skills -->
+      <div class="form-section-title">المهارات</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">جاري التحميل...</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of skillList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('skillIds', item.id)" (click)="toggleSelection('skillIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Tools -->
+      <div class="form-section-title">الأدوات</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">جاري التحميل...</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of toolList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('toolIds', item.id)" (click)="toggleSelection('toolIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">إلغاء</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
+          إضافة المتخصص
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -16,7 +16,7 @@ interface LookupItem {
 export class AdminLookups implements OnInit {
   private readonly adminService = inject(AdminService);
 
-  readonly activeTab = signal<'expertise' | 'skills' | 'tools'>('expertise');
+  readonly activeTab = signal<'expertise' | 'skills' | 'tools' | 'industries'>('expertise');
   readonly items = signal<LookupItem[]>([]);
   readonly isLoading = signal(false);
   readonly showForm = signal(false);
@@ -30,7 +30,7 @@ export class AdminLookups implements OnInit {
     this.loadItems();
   }
 
-  setTab(tab: 'expertise' | 'skills' | 'tools'): void {
+  setTab(tab: 'expertise' | 'skills' | 'tools' | 'industries'): void {
     this.activeTab.set(tab);
     this.closeForm();
     this.loadItems();
@@ -43,7 +43,9 @@ export class AdminLookups implements OnInit {
       ? this.adminService.getExpertiseList()
       : tab === 'skills'
         ? this.adminService.getSkillList()
-        : this.adminService.getToolList();
+        : tab === 'tools'
+          ? this.adminService.getToolList()
+          : this.adminService.getIndustryList();
 
     obs.subscribe({
       next: (data) => { this.items.set(data); this.isLoading.set(false); },
@@ -84,7 +86,9 @@ export class AdminLookups implements OnInit {
         ? this.adminService.updateExpertise(this.editId, name)
         : tab === 'skills'
           ? this.adminService.updateSkill(this.editId, name)
-          : this.adminService.updateTool(this.editId, name);
+          : tab === 'tools'
+            ? this.adminService.updateTool(this.editId, name)
+            : this.adminService.updateIndustry(this.editId, name);
 
       obs.subscribe({
         next: () => { this.isSaving.set(false); this.closeForm(); this.loadItems(); },
@@ -95,7 +99,9 @@ export class AdminLookups implements OnInit {
         ? this.adminService.createExpertise(name)
         : tab === 'skills'
           ? this.adminService.createSkill(name)
-          : this.adminService.createTool(name);
+          : tab === 'tools'
+            ? this.adminService.createTool(name)
+            : this.adminService.createIndustry(name);
 
       obs.subscribe({
         next: () => { this.isSaving.set(false); this.closeForm(); this.loadItems(); },
@@ -112,19 +118,21 @@ export class AdminLookups implements OnInit {
       ? this.adminService.deleteExpertise(item.id)
       : tab === 'skills'
         ? this.adminService.deleteSkill(item.id)
-        : this.adminService.deleteTool(item.id);
+        : tab === 'tools'
+          ? this.adminService.deleteTool(item.id)
+          : this.adminService.deleteIndustry(item.id);
 
     obs.subscribe({ next: () => this.loadItems() });
   }
 
   getTabTitle(): string {
-    const titles: Record<string, string> = { expertise: 'مجالات الخبراء', skills: 'المهارات', tools: 'الأدوات' };
+    const titles: Record<string, string> = { expertise: 'مجالات الخبراء', skills: 'المهارات', tools: 'الأدوات', industries: 'الصناعات' };
     return titles[this.activeTab()] ?? '';
   }
 
   getItemCountLabel(): string {
     const count = this.items().length;
-    const titles: Record<string, string> = { expertise: 'مجال', skills: 'مهارة', tools: 'أداة' };
+    const titles: Record<string, string> = { expertise: 'مجال', skills: 'مهارة', tools: 'أداة', industries: 'صناعة' };
     return `${count} ${titles[this.activeTab()] ?? ''}`;
   }
 }

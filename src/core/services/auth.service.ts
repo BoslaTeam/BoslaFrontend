@@ -134,6 +134,13 @@ export class AuthService {
         this.storage.remove(STORAGE_KEYS.currentUser);
         this._currentUser.set(null);
         this.injector.get(NavigationService).redirectAfterLogout();
+        this.clearProfileStore();
+    }
+
+    private clearProfileStore(): void {
+        import('@features/profile/stores/profile.store').then(m => {
+            this.injector.get(m.ProfileStore).reset();
+        }).catch(() => {});
     }
 
     hasRole(...roles: UserRole[]): boolean {

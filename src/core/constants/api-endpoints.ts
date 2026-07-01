@@ -1,4 +1,3 @@
-import { generate } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const V = environment.apiBaseUrl;
@@ -27,17 +26,21 @@ export const API_ENDPOINTS = {
   },
   notifications: {
     mine: `${V}/notifications`,
+    unreadCount: `${V}/notifications/unread-count`,
     markAllRead: `${V}/notifications/read`,
     markRead: (id: string) => `${V}/notifications/${id}/read`,
+    delete: (id: string) => `${V}/notifications/${id}`,
   },
   appointments: {
     base: `${V}/Appointments`,
     byId: (id: string) => `${V}/Appointments/${id}`,
     myappointments: `${V}/Appointments/my-appointments`,
     bySpecialist: (specialistId: string) => `${V}/appointments/specialist/${specialistId}`,
+    mySpecialistAppointments: `${V}/Appointments/my-specialist-appointments`,
     upcoming: `${V}/appointments/upcoming`,
     history: (id: string) => `${V}/appointments/${id}/history`,
     confirm: (id: string) => `${V}/appointments/${id}/confirm`,
+    confirmPayment: (id: string) => `${V}/appointments/${id}/confirm-payment`,
     cancel: (id: string) => `${V}/appointments/${id}/cancel`,
     reschedule: (id: string) => `${V}/appointments/${id}/reschedule`,
     complete: (id: string) => `${V}/appointments/${id}/complete`,
@@ -110,6 +113,8 @@ export const API_ENDPOINTS = {
     specialistDetail: (id: string) => `${V}/admin/specialists/${id}`,
     verifySpecialist: (id: string) => `${V}/admin/specialists/${id}/verify`,
     specialistStatus: (id: string) => `${V}/admin/specialists/${id}/status`,
+    createSpecialist: `${V}/admin/specialists`,
+    updateSpecialist: (id: string) => `${V}/admin/specialists/${id}`,
     users: `${V}/admin/users`,
     userDetail: (id: string) => `${V}/admin/users/${id}`,
     userRoles: (id: string) => `${V}/admin/users/${id}/roles`,
@@ -121,6 +126,8 @@ export const API_ENDPOINTS = {
     skillById: (id: string) => `${V}/admin/skills/${id}`,
     tools: `${V}/admin/tools`,
     toolById: (id: string) => `${V}/admin/tools/${id}`,
+    industries: `${V}/admin/industries`,
+    industryById: (id: string) => `${V}/admin/industries/${id}`,
     appointments: `${V}/admin/appointments`,
     appointmentDetail: (id: string) => `${V}/admin/appointments/${id}`,
     confirmAppointment: (id: string) => `${V}/admin/appointments/${id}/confirm`,
@@ -131,5 +138,8 @@ export const API_ENDPOINTS = {
     dashboard: `${V}/admin/dashboard`,
     embeddingsStatus: `${V}/admin/ai/embeddings`,
     embeddingsRebuild: `${V}/admin/ai/embeddings/rebuild`,
+    payments: `${V}/admin/payments`,
+    paymentDetail: (id: string) => `${V}/admin/payments/${id}`,
+    refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
   },
 } as const;

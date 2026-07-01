@@ -32,6 +32,11 @@ export class AppointmentService {
       .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.bySpecialist(specialistId));
   }
 
+  getMySpecialistAppointments(pageNumber = 1, pageSize = 50): Observable<ApiResponse<contract.AppointmentDto[]>> {
+    return this.http
+      .get<ApiResponse<contract.AppointmentDto[]>>(`${this.endpoints.mySpecialistAppointments}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
   getUpcomingAppointments(): Observable<ApiResponse<contract.AppointmentDto[]>> {
     return this.http
       .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.upcoming);
@@ -45,6 +50,12 @@ export class AppointmentService {
   confirm(id: string): Observable<void> {
     return this.http
       .put<ApiResponse<void>>(this.endpoints.confirm(id), {})
+      .pipe(map(() => undefined));
+  }
+
+  confirmPayment(id: string, paymentIntentId: string): Observable<void> {
+    return this.http
+      .put<ApiResponse<void>>(this.endpoints.confirmPayment(id), { paymentIntentId })
       .pipe(map(() => undefined));
   }
 
