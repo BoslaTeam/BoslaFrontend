@@ -84,6 +84,14 @@
   50% { opacity: 1; }
 }
 
+.video-room-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.5rem;
+  min-height: 1.8rem;
+}
+
 .video-room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));

@@ -16,12 +16,13 @@ import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '../../services/video-session.service';
 import { VideoSignalrService } from '../../services/video-signalr.service';
-import type { VideoSignalrConnectionState } from '../../services/video-signalr.service';
 import { VideoSessionDto } from '../../models/video-session.model';
+import { ConnectionStatusBadge } from '../connection-status-badge/connection-status-badge';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
+  imports: [ConnectionStatusBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
