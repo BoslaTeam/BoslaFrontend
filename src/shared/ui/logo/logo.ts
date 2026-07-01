@@ -5,7 +5,6 @@ import { Component, input } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './logo.html',
-  styleUrl: './logo.css',
 })
 export class UiLogo {
   readonly size = input<'sm' | 'md' | 'lg' | 'xl' | '2xl'>('md');

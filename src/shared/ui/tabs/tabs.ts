@@ -10,7 +10,6 @@ export interface TabItem {
   standalone: true,
   imports: [],
   templateUrl: './tabs.html',
-  styleUrl: './tabs.css',
 })
 export class UiTabs {
   // استقبال قائمة التبويبات ديناميكياً

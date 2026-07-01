@@ -17,7 +17,6 @@ export interface ExpertData {
   selector: 'specialists-grid',
   imports: [UiExpertCard],
   templateUrl: './specialists-grid.html',
-  styleUrl: './specialists-grid.css',
 })
 export class SpecialistsGridComponent {
   @Input({ required: true }) specialists: Specialist[] = [];

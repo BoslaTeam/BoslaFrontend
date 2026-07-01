@@ -14,8 +14,8 @@ import { SelectOption } from '@shared/types/select-option.type';
     },
   ],
   templateUrl: './select.html',
-  styleUrl: './select.css',
 })
+
 export class Select implements ControlValueAccessor {
 
   readonly label = input<string>('');

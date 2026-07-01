@@ -17,7 +17,6 @@ export interface ExpertData {
   standalone: true,
   imports: [DecimalPipe],
   templateUrl: './expert-card.html',
-  styleUrl: './expert-card.css',
 })
 export class UiExpertCard {
   readonly expert = input.required<ExpertData>();
