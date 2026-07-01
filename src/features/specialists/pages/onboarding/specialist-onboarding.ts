@@ -43,6 +43,16 @@ export class SpecialistOnboardingPage implements OnInit {
     'المراجعة والإرسال',
   ];
 
+  readonly stepIcons = [
+    'fa-regular fa-id-card',
+    'fa-solid fa-briefcase',
+    'fa-solid fa-star',
+    'fa-regular fa-lightbulb',
+    'fa-solid fa-screwdriver-wrench',
+    'fa-regular fa-calendar-days',
+    'fa-solid fa-paper-plane',
+  ];
+
   ngOnInit() {
     this.specialistsStore.loadLookups();
     this.onboardingStore.reset();
