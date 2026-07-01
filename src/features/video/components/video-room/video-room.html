@@ -72,6 +72,7 @@
   </div>
 
   @if (agoraService.joined()) {
+    <app-screen-share-indicator />
     @if (networkQualityService.warningActive()) {
       <div class="video-room-nq-warning">
         جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.
@@ -88,9 +89,15 @@
         <app-speaker-test-button />
       </div>
     </div>
+    @if (screenShareService.error()) {
+      <div class="video-room-screenshare-error" role="alert">
+        {{ screenShareService.error() }}
+      </div>
+    }
     <div class="video-room-controls">
       <app-connection-status-badge />
       <app-network-quality-badge />
+      <app-screen-share-button />
       <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
 
       <button class="video-room-control-btn"

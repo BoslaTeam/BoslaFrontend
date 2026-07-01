@@ -26,11 +26,14 @@ import { MicrophoneSelector } from '../microphone-selector/microphone-selector';
 import { SpeakerSelector } from '../speaker-selector/speaker-selector';
 import { MicrophoneLevelIndicator } from '../microphone-level-indicator/microphone-level-indicator';
 import { SpeakerTestButton } from '../speaker-test-button/speaker-test-button';
+import { VideoScreenShareService } from '../../services/video-screen-share.service';
+import { ScreenShareButton } from '../screen-share-button/screen-share-button';
+import { ScreenShareIndicator } from '../screen-share-indicator/screen-share-indicator';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -45,6 +48,7 @@ export class VideoRoom {
   readonly sessionTimerService = inject(SessionTimerService);
   readonly networkQualityService = inject(VideoNetworkQualityService);
   readonly videoDeviceService = inject(VideoDeviceService);
+  readonly screenShareService = inject(VideoScreenShareService);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
@@ -60,6 +64,28 @@ export class VideoRoom {
   readonly isWaitingForSpecialist = signal(false);
   readonly isSessionEnded = signal(false);
   readonly signalrFailed = signal(false);
+
+  /** Effect: swap local preview between screen and camera tracks */
+  private readonly _screenShareEffect = effect(() => {
+    const state = this.screenShareService.state();
+    const joined = this.agoraService.joined();
+    if (!joined) return;
+
+    if (state === 'Sharing') {
+      Promise.resolve().then(() => {
+        const screenTrack = this.screenShareService.getScreenTrack();
+        if (screenTrack && this.localPlayer) {
+          screenTrack.play(this.localPlayer.nativeElement);
+        }
+      });
+    } else if (state === 'Idle') {
+      Promise.resolve().then(() => {
+        if (this.localPlayer) {
+          this.agoraService.renderLocalVideo(this.localPlayer.nativeElement);
+        }
+      });
+    }
+  });
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');

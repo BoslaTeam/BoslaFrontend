@@ -103,6 +103,8 @@
   min-height: 200px;
 }
 
+
+
 .video-room-local,
 .video-room-remote {
   width: 100%;
@@ -245,6 +247,16 @@
   background: rgba(255, 152, 0, 0.12);
   border-bottom: 1px solid rgba(255, 152, 0, 0.25);
   animation: fadeIn 0.35s ease;
+}
+
+.video-room-screenshare-error {
+  text-align: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  color: #ef9a9a;
+  background: rgba(244, 67, 54, 0.1);
+  border-bottom: 1px solid rgba(244, 67, 54, 0.2);
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {

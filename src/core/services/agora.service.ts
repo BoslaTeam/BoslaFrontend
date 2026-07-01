@@ -7,6 +7,8 @@ import AgoraRTC, {
   IRemoteVideoTrack,
   IRemoteAudioTrack,
   IAgoraRTCRemoteUser,
+  ILocalTrack,
+  ILocalVideoTrack,
 } from 'agora-rtc-sdk-ng';
 import { AGORA_CONFIG } from '@features/video/constants/agora.constants';
 
@@ -24,6 +26,7 @@ export class AgoraService {
   private client: IAgoraRTCClient | null = null;
   private localAudioTrack: IMicrophoneAudioTrack | null = null;
   private localVideoTrack: ICameraVideoTrack | null = null;
+  private screenTrack: ILocalVideoTrack | null = null;
 
   private remoteVideoTracks = new Map<number, IRemoteVideoTrack>();
   private remoteAudioTracks = new Map<number, IRemoteAudioTrack>();
@@ -35,6 +38,8 @@ export class AgoraService {
   private readonly _microphoneEnabled = signal(true);
   private readonly _error = signal<string | null>(null);
   private readonly _remoteParticipants = signal<RemoteParticipant[]>([]);
+  private readonly _screenSharing = signal(false);
+  private readonly _localUid = signal<number | null>(null);
 
   readonly connectionState: Signal<AgoraConnectionState> = this._connectionState.asReadonly();
   readonly joined: Signal<boolean> = this._joined.asReadonly();
@@ -43,6 +48,8 @@ export class AgoraService {
   readonly microphoneEnabled: Signal<boolean> = this._microphoneEnabled.asReadonly();
   readonly error: Signal<string | null> = this._error.asReadonly();
   readonly remoteParticipants: Signal<RemoteParticipant[]> = this._remoteParticipants.asReadonly();
+  readonly screenSharing: Signal<boolean> = this._screenSharing.asReadonly();
+  readonly localUid: Signal<number | null> = this._localUid.asReadonly();
 
   setError(message: string | null): void {
     this._error.set(message);
@@ -74,6 +81,7 @@ export class AgoraService {
 
     try {
       await this.client.join(appId, channel, token, uid);
+      this._localUid.set(uid);
       this._connectionState.set('connected');
     } catch (err) {
       const message = this.mapJoinError(err);
@@ -234,9 +242,14 @@ export class AgoraService {
   async disconnect(): Promise<void> {
     this._joining.set(false);
 
-    if (this.client && this.localAudioTrack && this.localVideoTrack) {
+    const unpublishTracks: ILocalTrack[] = [];
+    if (this.localAudioTrack) unpublishTracks.push(this.localAudioTrack);
+    if (this.localVideoTrack) unpublishTracks.push(this.localVideoTrack);
+    if (this.screenTrack) unpublishTracks.push(this.screenTrack);
+
+    if (this.client && unpublishTracks.length > 0) {
       try {
-        await this.client.unpublish([this.localAudioTrack, this.localVideoTrack]);
+        await this.client.unpublish(unpublishTracks);
       } catch (err) {
         console.warn('[Agora] Unpublish error during cleanup', err);
       }
@@ -252,6 +265,11 @@ export class AgoraService {
       this.localVideoTrack.stop();
       this.localVideoTrack.close();
       this.localVideoTrack = null;
+    }
+
+    if (this.screenTrack) {
+      this.screenTrack.close();
+      this.screenTrack = null;
     }
 
     if (this.client) {
@@ -278,6 +296,8 @@ export class AgoraService {
     this._microphoneEnabled.set(true);
     this._error.set(null);
     this._remoteParticipants.set([]);
+    this._screenSharing.set(false);
+    this._localUid.set(null);
   }
 
   // ── Camera controls ──
@@ -354,6 +374,51 @@ export class AgoraService {
       throw new Error('No audio track to switch');
     }
     await this.localAudioTrack.setDevice(deviceId);
+  }
+
+  // ── Screen share (Single-stream swap) ──
+  //
+  // Agora Web SDK NG does NOT support publishing multiple local video tracks
+  // from the same client.  When screen sharing starts, the camera track must
+  // be unpublished before the screen track is published (and vice versa when
+  // sharing stops).  The camera track is kept alive (not closed) during the
+  // swap so it can be republished without re-creating it.
+
+  async replaceWithScreenTrack(newTrack: ILocalVideoTrack): Promise<void> {
+    if (!this.client || !this.localVideoTrack) {
+      throw new Error('Cannot screen share — not connected');
+    }
+
+    if (this._screenSharing()) {
+      throw new Error('Screen sharing is already active');
+    }
+
+    await this.client.unpublish(this.localVideoTrack);
+    await this.client.publish(newTrack);
+
+    this.screenTrack = newTrack;
+    this._screenSharing.set(true);
+  }
+
+  async restoreCameraTrack(): Promise<void> {
+    if (!this.client || !this.localVideoTrack) return;
+
+    if (this.screenTrack) {
+      try {
+        await this.client.unpublish(this.screenTrack);
+      } catch {
+        // Track may already be closed by the browser (Stop Sharing button)
+      }
+      this.screenTrack.close();
+      this.screenTrack = null;
+    }
+
+    await this.client.publish(this.localVideoTrack);
+    this._screenSharing.set(false);
+  }
+
+  getScreenTrack(): ILocalVideoTrack | null {
+    return this.screenTrack;
   }
 
   // ── Error mapping ──
