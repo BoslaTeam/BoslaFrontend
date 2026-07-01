@@ -84,6 +84,7 @@ export function formatArabicCountdown(targetDate: Date): string {
 const STATUS_MAP: Record<AppointmentStatus, string> = {
   [AppointmentStatus.Pending]: 'قيد الانتظار',
   [AppointmentStatus.Confirmed]: 'مؤكدة',
+  [AppointmentStatus.Paid]: 'تم الدفع',
   [AppointmentStatus.Completed]: 'مكتملة',
   [AppointmentStatus.Cancelled]: 'ملغاة',
   [AppointmentStatus.Rescheduled]: 'معاد جدولتها',
