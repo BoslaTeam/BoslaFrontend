@@ -19,6 +19,7 @@
     "@angular/router": "^21.2.0",
     "@microsoft/signalr": "^10.0.0",
     "agora-rtc-sdk-ng": "^4.24.5",
+    "emoji-picker-element": "^1.29.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
