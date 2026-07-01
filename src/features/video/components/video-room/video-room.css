@@ -36,6 +36,54 @@
   padding: 0.5rem;
 }
 
+.video-room-ended-msg {
+  font-size: 1.25rem;
+  color: #ff5252;
+  text-align: center;
+  padding: 2rem;
+}
+
+.video-room-waiting-msg {
+  font-size: 1.125rem;
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.video-room-signalr-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.video-room-signalr-error-text {
+  font-size: 1rem;
+  color: #ff5252;
+  margin: 0;
+}
+
+.video-room-retry-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  background: #4f6ef7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.video-room-retry-btn:hover {
+  background: #3b57d9;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 .video-room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -109,8 +157,6 @@
   z-index: 2;
 }
 
-/* ── Session Timer ── */
-
 .video-room-timer {
   font-size: 0.875rem;
   color: #ccc;
@@ -118,8 +164,6 @@
   min-width: 3.5rem;
   text-align: center;
 }
-
-/* ── Call Controls Bar ── */
 
 .video-room-controls {
   display: flex;

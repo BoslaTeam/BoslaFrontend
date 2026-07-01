@@ -87,6 +87,7 @@ const STATUS_MAP: Record<AppointmentStatus, string> = {
   [AppointmentStatus.Completed]: 'مكتملة',
   [AppointmentStatus.Cancelled]: 'ملغاة',
   [AppointmentStatus.Rescheduled]: 'معاد جدولتها',
+  [AppointmentStatus.Paid]: 'تم الدفع',
 };
 
 export function localizeAppointmentStatus(status: AppointmentStatus): string {

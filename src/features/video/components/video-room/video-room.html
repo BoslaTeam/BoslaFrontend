@@ -1,9 +1,22 @@
 <div class="video-room">
   @if (!agoraService.joined()) {
     <div class="video-room-welcome">
-      <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
-        {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
-      </button>
+      @if (isSessionEnded()) {
+        <div class="video-room-ended-msg">انتهت الجلسة.</div>
+      } @else if (isWaitingForSpecialist()) {
+        @if (signalrFailed()) {
+          <div class="video-room-signalr-error">
+            <p class="video-room-signalr-error-text">تعذر الاتصال بخادم الجلسة.</p>
+            <button class="video-room-retry-btn" (click)="retryJoin()">إعادة المحاولة</button>
+          </div>
+        } @else {
+          <div class="video-room-waiting-msg">بانتظار أن يبدأ المتخصص الجلسة</div>
+        }
+      } @else {
+        <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
+          {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
+        </button>
+      }
     </div>
   }
 
