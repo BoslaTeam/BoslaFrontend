@@ -57,7 +57,7 @@ export class AuthService {
     readonly needsSpecialistOnboarding = computed(() => {
         const role = this.userRole();
         const status = this._specialistStatus();
-        return role === UserRole.Specialist && (status === null || status === 'Draft' || status === 'Rejected');
+        return role === UserRole.Specialist && status === 'Draft';
     });
 
     login(payload: LoginPayload): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
