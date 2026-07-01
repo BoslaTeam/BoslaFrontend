@@ -84,14 +84,6 @@
   50% { opacity: 1; }
 }
 
-.video-room-status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.5rem;
-  min-height: 1.8rem;
-}
-
 .video-room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -219,4 +211,19 @@
 
 .video-room-control-btn--leave:hover {
   background: #e53935;
+}
+
+.video-room-nq-warning {
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.12);
+  border-bottom: 1px solid rgba(255, 152, 0, 0.25);
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

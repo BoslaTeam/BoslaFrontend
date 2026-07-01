@@ -17,12 +17,14 @@ import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '../../services/video-session.service';
 import { VideoSignalrService } from '../../services/video-signalr.service';
 import { VideoSessionDto } from '../../models/video-session.model';
+import { VideoNetworkQualityService } from '../../services/video-network-quality.service';
+import { NetworkQualityBadge } from '../network-quality-badge/network-quality-badge';
 import { ConnectionStatusBadge } from '../connection-status-badge/connection-status-badge';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -35,6 +37,7 @@ export class VideoRoom {
   private readonly destroyRef = inject(DestroyRef);
   readonly agoraService = inject(AgoraService);
   readonly sessionTimerService = inject(SessionTimerService);
+  readonly networkQualityService = inject(VideoNetworkQualityService);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
@@ -84,6 +87,7 @@ export class VideoRoom {
       this.isWaitingForSpecialist.set(false);
 
       if (this.agoraService.joined()) {
+        this.networkQualityService.stop();
         this.agoraService.disconnect();
       }
     });
@@ -103,6 +107,7 @@ export class VideoRoom {
 
     this.destroyRef.onDestroy(() => {
       this.isDestroyed = true;
+      this.networkQualityService.stop();
       this.videoSignalrService.disconnect();
       this.sessionTimerService.stop();
       this.agoraService.disconnect();
@@ -256,6 +261,7 @@ export class VideoRoom {
         return;
       }
 
+      this.networkQualityService.start();
       this.agoraService.renderLocalVideo(this.localPlayer.nativeElement);
     } catch (err) {
       console.error('[VideoRoom] Join failed, rolling back', err);
@@ -275,6 +281,7 @@ export class VideoRoom {
 
   async leaveSession(): Promise<void> {
     this.agoraService.clearError();
+    this.networkQualityService.stop();
     this.sessionTimerService.stop();
     await this.agoraService.disconnect();
 

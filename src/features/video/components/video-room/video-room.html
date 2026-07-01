@@ -26,10 +26,6 @@
     </div>
   }
 
-  <div class="video-room-status-bar">
-    <app-connection-status-badge />
-  </div>
-
   <div class="video-room-grid">
     <div class="video-room-local-container">
       <div #localPlayer
@@ -76,8 +72,14 @@
   </div>
 
   @if (agoraService.joined()) {
+    @if (networkQualityService.warningActive()) {
+      <div class="video-room-nq-warning">
+        جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.
+      </div>
+    }
     <div class="video-room-controls">
       <app-connection-status-badge />
+      <app-network-quality-badge />
       <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
 
       <button class="video-room-control-btn"
