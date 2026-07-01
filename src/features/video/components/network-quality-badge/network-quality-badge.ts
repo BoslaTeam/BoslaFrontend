@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, input, inject, computed } from '@angular/core';
 import { VideoNetworkQualityService } from '../../services/video-network-quality.service';
 import { NetworkQuality } from '../../models/network-quality.enum';
 
@@ -11,9 +11,25 @@ import { NetworkQuality } from '../../models/network-quality.enum';
 export class NetworkQualityBadge {
   private readonly networkQualityService = inject(VideoNetworkQualityService);
 
-  readonly quality = this.networkQualityService.localQuality;
+  /**
+   * Optional override for displaying a specific participant's quality.
+   * When omitted, the badge reads from the local user's quality.
+   * Future participant cards pass their participant's uid here.
+   */
+  readonly forUid = input<number>();
+
+  readonly quality = computed(() => {
+    const uid = this.forUid();
+    if (uid !== undefined) {
+      return this.networkQualityService.getRemoteQuality(uid);
+    }
+    return this.networkQualityService.localQuality();
+  });
 
   readonly label = computed(() => {
+    if (this.networkQualityService.measuring()) {
+      return 'جارٍ قياس جودة الشبكة...';
+    }
     switch (this.quality()) {
       case NetworkQuality.Excellent: return 'ممتاز';
       case NetworkQuality.Good: return 'جيد';
@@ -25,6 +41,9 @@ export class NetworkQualityBadge {
   });
 
   readonly cssClass = computed(() => {
+    if (this.networkQualityService.measuring()) {
+      return 'nq-badge--measuring';
+    }
     switch (this.quality()) {
       case NetworkQuality.Excellent: return 'nq-badge--excellent';
       case NetworkQuality.Good: return 'nq-badge--good';

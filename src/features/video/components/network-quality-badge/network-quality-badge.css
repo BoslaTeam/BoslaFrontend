@@ -70,3 +70,17 @@
 .nq-badge--unknown .nq-badge-dot {
   background-color: #9e9e9e;
 }
+
+.nq-badge--measuring {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #78909c;
+  animation: nq-badge-pulse 1.6s ease-in-out infinite;
+}
+.nq-badge--measuring .nq-badge-dot {
+  background-color: #78909c;
+}
+
+@keyframes nq-badge-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
