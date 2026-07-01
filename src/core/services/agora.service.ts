@@ -340,6 +340,22 @@ export class AgoraService {
     }
   }
 
+  // ── Device switching ──
+
+  async switchCamera(deviceId: string): Promise<void> {
+    if (!this.localVideoTrack) {
+      throw new Error('No video track to switch');
+    }
+    await this.localVideoTrack.setDevice(deviceId);
+  }
+
+  async switchMicrophone(deviceId: string): Promise<void> {
+    if (!this.localAudioTrack) {
+      throw new Error('No audio track to switch');
+    }
+    await this.localAudioTrack.setDevice(deviceId);
+  }
+
   // ── Error mapping ──
 
   private mapJoinError(err: unknown): string {

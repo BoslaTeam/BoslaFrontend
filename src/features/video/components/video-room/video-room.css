@@ -213,6 +213,18 @@
   background: #e53935;
 }
 
+.video-room-devices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 0.4rem 1rem;
+  background: rgba(15, 52, 96, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
 .video-room-nq-warning {
   text-align: center;
   padding: 0.5rem 1rem;

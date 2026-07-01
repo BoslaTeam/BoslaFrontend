@@ -18,13 +18,17 @@ import { VideoSessionService } from '../../services/video-session.service';
 import { VideoSignalrService } from '../../services/video-signalr.service';
 import { VideoSessionDto } from '../../models/video-session.model';
 import { VideoNetworkQualityService } from '../../services/video-network-quality.service';
+import { VideoDeviceService } from '../../services/video-device.service';
 import { NetworkQualityBadge } from '../network-quality-badge/network-quality-badge';
 import { ConnectionStatusBadge } from '../connection-status-badge/connection-status-badge';
+import { CameraSelector } from '../camera-selector/camera-selector';
+import { MicrophoneSelector } from '../microphone-selector/microphone-selector';
+import { SpeakerSelector } from '../speaker-selector/speaker-selector';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -38,6 +42,7 @@ export class VideoRoom {
   readonly agoraService = inject(AgoraService);
   readonly sessionTimerService = inject(SessionTimerService);
   readonly networkQualityService = inject(VideoNetworkQualityService);
+  readonly videoDeviceService = inject(VideoDeviceService);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
@@ -60,6 +65,8 @@ export class VideoRoom {
       this.router.navigate(['..']);
     }
     this.sessionId = id!;
+
+    this.videoDeviceService.enumerateDevices();
 
     effect(() => {
       const payload = this.videoSignalrService.sessionStarted();
@@ -262,6 +269,7 @@ export class VideoRoom {
       }
 
       this.networkQualityService.start();
+      this.videoDeviceService.enumerateDevices();
       this.agoraService.renderLocalVideo(this.localPlayer.nativeElement);
     } catch (err) {
       console.error('[VideoRoom] Join failed, rolling back', err);

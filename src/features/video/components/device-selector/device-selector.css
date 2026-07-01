@@ -1,0 +1,53 @@
+.device-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.device-selector-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: #b0bec5;
+  user-select: none;
+}
+
+.device-selector-icon {
+  display: inline-flex;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+}
+
+.device-selector-text {
+  font-weight: 500;
+}
+
+.device-selector-dropdown {
+  background: #1a3a6b;
+  color: #eceff1;
+  border: 1px solid #2a4a8b;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.75rem;
+  outline: none;
+  cursor: pointer;
+  max-width: 180px;
+  direction: rtl;
+  transition: border-color 0.15s;
+}
+
+.device-selector-dropdown:focus {
+  border-color: #4f6ef7;
+}
+
+.device-selector-dropdown:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.device-selector-dropdown option {
+  background: #0f3460;
+  color: #eceff1;
+}
