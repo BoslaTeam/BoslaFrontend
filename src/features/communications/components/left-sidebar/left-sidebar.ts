@@ -1,6 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChatStore } from '../../store/chat.store';
+import { PresenceStore } from '../../store/presence.store';
 import { UpcomingSessionCard } from '../upcoming-session-card/upcoming-session-card';
 
 @Component({
@@ -15,10 +16,18 @@ import { UpcomingSessionCard } from '../upcoming-session-card/upcoming-session-c
 })
 export class LeftSidebar {
   readonly store = inject(ChatStore);
+  private readonly presenceStore = inject(PresenceStore);
   private readonly router = inject(Router);
 
   readonly participant = computed(() => this.store.activeConversation()?.participant ?? null);
   readonly appointmentId = computed(() => this.store.activeConversation()?.appointmentId ?? null);
+
+  // Single source of truth — reads from PresenceStore signal, same as ChatHeader.
+  // Automatically updates whenever PresenceChanged or OnlineUsersSnapshot is received.
+  readonly isOnline = computed(() => {
+    const p = this.participant();
+    return p ? this.presenceStore.isOnline(p.id) : false;
+  });
 
   readonly initials = computed(() => {
     const name = this.participant()?.name ?? '';
