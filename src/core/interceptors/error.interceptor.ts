@@ -8,7 +8,7 @@ import { catchError, throwError } from 'rxjs';
 
 
 /** Statuses handled by dedicated flows elsewhere — do not surface a generic toast for these. */
-const SILENT_STATUSES = [401, 422];
+const SILENT_STATUSES = [401, 404, 409, 422];
 
 const DATA_PREFIXES = ['/api/', '/v1/'];
 

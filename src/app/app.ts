@@ -31,6 +31,7 @@ export class App {
       if (this._auth.isAuthenticated()) {
         this._signalr.init();
         this._notifHttp.getNotifications().subscribe({ error: () => {} });
+        this._auth.refreshSpecialistStatus();
       }
     });
 

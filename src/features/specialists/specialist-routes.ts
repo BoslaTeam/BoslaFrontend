@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { SpecialistDashboard } from './pages/specialist-dashboard/specialist-dashboard';
+import { nonSpecialistGuard } from '@core/guards/non-specialist.guard';
 
 export const SPECIALIST_PANEL_ROUTES: Routes = [
   {
@@ -15,6 +16,7 @@ export const SPECIALIST_PANEL_ROUTES: Routes = [
   },
   {
     path: 'onboarding',
+    canActivate: [nonSpecialistGuard],
     loadComponent: () =>
       import('./pages/onboarding/specialist-onboarding')
         .then(m => m.SpecialistOnboardingPage),

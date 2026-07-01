@@ -67,8 +67,9 @@ export const API_ENDPOINTS = {
     webhook: `${V}/webhooks/agora`,
   },
   specialists: {
-    onboard: `${V}/specialists/onboard`,
+    start: `${V}/specialists/me/start`,
     me: `${V}/specialists/me`,
+    updateProfile: `${V}/specialists/me`,
     cancellationPolicy: `${V}/specialists/me/cancellation-policy`,
     bookingPolicy: `${V}/specialists/me/booking-policy`,
     availability: `${V}/specialists/me/availability`,
@@ -88,7 +89,10 @@ export const API_ENDPOINTS = {
     embeddingRefresh: `${V}/specialists/me/embedding/refresh`,
     dashboard: `${V}/specialists/me/dashboard`,
     myReviews: `${V}/specialists/me/reviews`,
-   
+    submit: `${V}/specialists/me/submit`,
+    documents: `${V}/specialists/me/documents`,
+    documentById: (id: string) => `${V}/specialists/me/documents/${id}`,
+    verification: `${V}/specialists/me/verification`,
   },
   lookup: {
     expertise: `${V}/lookup/expertise`,

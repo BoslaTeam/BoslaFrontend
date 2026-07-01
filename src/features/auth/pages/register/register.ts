@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -25,8 +25,13 @@ export class Register {
     country: ['', [Validators.required]]
   });
 
+  selectedRole = signal<'user' | 'specialist'>('user');
   isLoading = false;
   errorMessage = '';
+
+  selectRole(role: 'user' | 'specialist') {
+    this.selectedRole.set(role);
+  }
 
   onSubmit() {
     if (this.registerForm.invalid) {
@@ -42,7 +47,7 @@ export class Register {
       ...formValue,
       name: `${formValue.firstName} ${formValue.lastName}`,
       preferredLanguage: 'ar',
-      role: 'user'
+      role: this.selectedRole()
     } as RegisterRequest;
 
     this.authService.register(req).subscribe({
