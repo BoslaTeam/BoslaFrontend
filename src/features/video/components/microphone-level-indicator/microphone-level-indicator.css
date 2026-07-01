@@ -1,0 +1,45 @@
+.level-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 100px;
+}
+
+.level-indicator-bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.level-indicator-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.08s linear, background-color 0.2s;
+}
+
+.level-bar--low {
+  background-color: #4caf50;
+}
+
+.level-bar--medium {
+  background-color: #ffc107;
+}
+
+.level-bar--high {
+  background-color: #f44336;
+}
+
+.level-indicator-percent {
+  font-size: 0.65rem;
+  color: #b0bec5;
+  min-width: 2.2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.level-indicator-error {
+  font-size: 0.7rem;
+  color: #ef9a9a;
+}

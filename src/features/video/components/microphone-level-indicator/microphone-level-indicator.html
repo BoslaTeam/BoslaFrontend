@@ -1,0 +1,14 @@
+<div class="level-indicator" role="meter" aria-label="مستوى الصوت" aria-valuenow="{{ barPercent() }}">
+  @if (error()) {
+    <span class="level-indicator-error">{{ error() }}</span>
+  } @else {
+    <div class="level-indicator-bar-track">
+      <div
+        class="level-indicator-bar-fill"
+        [class]="barClass()"
+        [style.width.%]="barPercent()"
+      ></div>
+    </div>
+    <span class="level-indicator-percent">{{ barPercent() }}%</span>
+  }
+</div>

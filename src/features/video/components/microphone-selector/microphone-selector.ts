@@ -13,21 +13,50 @@ const MIC_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" st
   standalone: true,
   imports: [DeviceSelector],
   template: `
-    <app-device-selector
-      [devices]="devices()"
-      [selectedDeviceId]="selectedMicrophoneId()"
-      [label]="'الميكروفون'"
-      [icon]="micIcon"
-      (selectedDeviceChanged)="onMicChange($event)"
-    />
+    @if (deviceService.microphoneLabelsAvailable()) {
+      <app-device-selector
+        [devices]="deviceService.audioInputs()"
+        [selectedDeviceId]="deviceService.selectedMicrophoneId()"
+        [label]="'الميكروفون'"
+        [icon]="micIcon"
+        (selectedDeviceChanged)="onMicChange($event)"
+      />
+    } @else {
+      <div class="device-permission-placeholder">
+        <span class="device-permission-placeholder-icon" [innerHTML]="micIcon"></span>
+        <span class="device-permission-placeholder-text">امنح صلاحية الميكروفون لإظهار أسماء الأجهزة.</span>
+      </div>
+    }
   `,
+  styles: [`
+    .device-permission-placeholder {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.7rem;
+      color: #78909c;
+      user-select: none;
+      max-width: 180px;
+    }
+    .device-permission-placeholder-icon {
+      display: inline-flex;
+      align-items: center;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .device-permission-placeholder-text {
+      font-weight: 400;
+      line-height: 1.35;
+    }
+  `],
 })
 export class MicrophoneSelector {
-  private readonly deviceService = inject(VideoDeviceService);
+  readonly deviceService = inject(VideoDeviceService);
 
   readonly micIcon = MIC_ICON;
-  readonly devices = this.deviceService.audioInputs;
-  readonly selectedMicrophoneId = this.deviceService.selectedMicrophoneId;
 
   async onMicChange(deviceId: string): Promise<void> {
     await this.deviceService.selectMicrophone(deviceId);

@@ -79,8 +79,14 @@
     }
     <div class="video-room-devices">
       <app-camera-selector />
-      <app-microphone-selector />
-      <app-speaker-selector />
+      <div class="video-room-mic-group">
+        <app-microphone-selector />
+        <app-microphone-level-indicator />
+      </div>
+      <div class="video-room-speaker-group">
+        <app-speaker-selector />
+        <app-speaker-test-button />
+      </div>
     </div>
     <div class="video-room-controls">
       <app-connection-status-badge />

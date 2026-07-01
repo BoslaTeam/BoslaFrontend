@@ -24,11 +24,13 @@ import { ConnectionStatusBadge } from '../connection-status-badge/connection-sta
 import { CameraSelector } from '../camera-selector/camera-selector';
 import { MicrophoneSelector } from '../microphone-selector/microphone-selector';
 import { SpeakerSelector } from '../speaker-selector/speaker-selector';
+import { MicrophoneLevelIndicator } from '../microphone-level-indicator/microphone-level-indicator';
+import { SpeakerTestButton } from '../speaker-test-button/speaker-test-button';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -269,6 +271,7 @@ export class VideoRoom {
       }
 
       this.networkQualityService.start();
+      this.videoDeviceService.refreshPermissions();
       this.videoDeviceService.enumerateDevices();
       this.agoraService.renderLocalVideo(this.localPlayer.nativeElement);
     } catch (err) {
