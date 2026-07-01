@@ -1,0 +1,114 @@
+<div class="max-w-xl mx-auto">
+  <div class="text-center mb-8">
+    <h3 class="text-2xl font-bold text-slate-800 mb-2">المستندات</h3>
+    <p class="text-slate-500">حمّل المستندات المطلوبة للتحقق من هويتك</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
+      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  <div class="space-y-6">
+
+    <!-- Identity Documents -->
+    <div class="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-bosla-blue"></i>
+          <h4 class="text-sm font-bold text-slate-700">الهوية الشخصية</h4>
+        </div>
+      </div>
+
+      @if (identityDocs().length > 0) {
+        <div class="space-y-2">
+          @for (doc of identityDocs(); track doc.id) {
+            <div class="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <i class="fa-regular fa-file text-bosla-blue shrink-0"></i>
+                <span class="text-sm font-sans text-bosla-charcoal truncate">{{ doc.originalFileName }}</span>
+              </div>
+              <button type="button" (click)="deleteDocument(doc)" [disabled]="isDeleting()[doc.id]"
+                class="text-red-400 hover:text-red-600 transition-colors cursor-pointer p-1 shrink-0">
+                @if (isDeleting()[doc.id]) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-trash-can"></i>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-slate-400 text-center py-4">لم يتم رفع أي مستند هوية بعد</p>
+      }
+
+      <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
+        <i class="fa-solid fa-upload"></i>
+        @if (isUploading()) {
+          جاري الرفع...
+        } @else {
+          رفع مستند هوية
+        }
+        <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 1)" [disabled]="isUploading()" />
+      </label>
+    </div>
+
+    <!-- Certificates -->
+    <div class="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-certificate text-bosla-blue"></i>
+          <h4 class="text-sm font-bold text-slate-700">الشهادات</h4>
+        </div>
+      </div>
+
+      @if (certificateDocs().length > 0) {
+        <div class="space-y-2">
+          @for (doc of certificateDocs(); track doc.id) {
+            <div class="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <i class="fa-regular fa-file text-bosla-blue shrink-0"></i>
+                <span class="text-sm font-sans text-bosla-charcoal truncate">{{ doc.originalFileName }}</span>
+              </div>
+              <button type="button" (click)="deleteDocument(doc)" [disabled]="isDeleting()[doc.id]"
+                class="text-red-400 hover:text-red-600 transition-colors cursor-pointer p-1 shrink-0">
+                @if (isDeleting()[doc.id]) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-trash-can"></i>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-slate-400 text-center py-4">لم يتم رفع أي شهادة بعد</p>
+      }
+
+      <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
+        <i class="fa-solid fa-upload"></i>
+        @if (isUploading()) {
+          جاري الرفع...
+        } @else {
+          رفع شهادة
+        }
+        <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 2)" [disabled]="isUploading()" />
+      </label>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex justify-between pt-4">
+      <ui-button variant="ghost" (btnClick)="back.emit()">
+        <i class="fa-solid fa-chevron-right"></i>
+        السابق
+      </ui-button>
+      <ui-button (btnClick)="onNext()">
+        حفظ ومتابعة
+        <i class="fa-solid fa-arrow-left"></i>
+      </ui-button>
+    </div>
+  </div>
+</div>

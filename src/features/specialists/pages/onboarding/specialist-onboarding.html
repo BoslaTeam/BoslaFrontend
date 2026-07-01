@@ -5,19 +5,25 @@
     <div class="mt-8">
       @switch (onboardingStore.currentStep()) {
       @case (0) {
-      <basic-info-step (completed)="onboardingStore.nextStep()" />
+      <documents-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
       }
       @case (1) {
-      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
-      }
-      @case (2) {
-      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
-      }
-      @case (3) {
       <experience-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
       }
+      @case (2) {
+      <basic-info-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (3) {
+      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
       @case (4) {
+      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (5) {
       <availability-step (completed)="onAvailabilityCompleted()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (6) {
+      <submit-step (back)="onboardingStore.previousStep()" />
       }
       }
     </div>

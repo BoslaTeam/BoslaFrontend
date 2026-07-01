@@ -1,7 +1,7 @@
 <div class="max-w-lg mx-auto">
   <div class="text-center mb-8">
-    <h3 class="text-2xl font-bold text-slate-800 mb-2">المعلومات الأساسية</h3>
-    <p class="text-slate-500">أكمل بيانات اختصاصك للبدء في استقبال الاستشارات</p>
+    <h3 class="text-2xl font-bold text-slate-800 mb-2">الخبرة والتسعيرة</h3>
+    <p class="text-slate-500">حدد سنوات الخبرة والتسعيرة الخاصة بك</p>
   </div>
 
   @if (errorMessage()) {
@@ -12,6 +12,14 @@
   }
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <ui-input
+      formControlName="title"
+      label="المسمى الوظيفي"
+      type="text"
+      placeholder="مثال: أخصائي نفسي إكلينيكي"
+      [required]="true"
+    />
+
     <div class="grid grid-cols-2 gap-4">
       <div class="space-y-2">
         <ui-input
@@ -47,9 +55,13 @@
     />
 
     <div class="flex justify-between pt-4">
+      <ui-button variant="ghost" type="button" (btnClick)="back.emit()">
+        <i class="fa-solid fa-chevron-right"></i>
+        السابق
+      </ui-button>
       <ui-button type="submit" [loading]="isLoading()" variant="primary">
-        <i class="fa-solid fa-arrow-left"></i>
         حفظ ومتابعة
+        <i class="fa-solid fa-arrow-left"></i>
       </ui-button>
     </div>
   </form>

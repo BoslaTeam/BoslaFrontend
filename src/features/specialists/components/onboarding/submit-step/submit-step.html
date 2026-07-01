@@ -1,0 +1,143 @@
+<div class="max-w-xl mx-auto">
+  <div class="text-center mb-8">
+    <h3 class="text-2xl font-bold text-slate-800 mb-2">مراجعة الطلب</h3>
+    <p class="text-slate-500">يرجى مراجعة بياناتك قبل الإرسال</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
+      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  @if (status === 'Pending' || status === 'Approved') {
+    <div class="bg-blue-50 border-r-4 border-blue-500 p-4 rounded-l-lg flex items-start gap-3 mb-6">
+      <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+      <p class="text-sm text-blue-700 font-medium">
+        @if (status === 'Approved') {
+          تمت الموافقة على طلبك بالفعل. يمكنك الآن استخدام لوحة التحكم.
+        } @else {
+          طلبك قيد المراجعة حالياً. سنقوم بإعلامك عند اكتمال المراجعة.
+        }
+      </p>
+    </div>
+  }
+
+  <div class="space-y-4">
+    <!-- Summary Cards -->
+    <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl bg-white overflow-hidden">
+
+      <!-- Basic Info -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasBasicInfo"
+            [class.text-slate-300]="!hasBasicInfo"></i>
+          <span class="text-sm font-medium text-slate-700">المعلومات الأساسية</span>
+        </div>
+        @if (hasBasicInfo) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+
+      <!-- Skills -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasSkills"
+            [class.text-slate-300]="!hasSkills"></i>
+          <span class="text-sm font-medium text-slate-700">المهارات</span>
+        </div>
+        @if (hasSkills) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+
+      <!-- Tools -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasTools"
+            [class.text-slate-300]="!hasTools"></i>
+          <span class="text-sm font-medium text-slate-700">الأدوات</span>
+        </div>
+        @if (hasTools) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+
+      <!-- Experiences -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasExperiences"
+            [class.text-slate-300]="!hasExperiences"></i>
+          <span class="text-sm font-medium text-slate-700">الخبرات</span>
+        </div>
+        @if (hasExperiences) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+
+      <!-- Availabilities -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasAvailabilities"
+            [class.text-slate-300]="!hasAvailabilities"></i>
+          <span class="text-sm font-medium text-slate-700">المواعيد المتاحة</span>
+        </div>
+        @if (hasAvailabilities) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+
+      <!-- Documents -->
+      <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-regular fa-circle-check text-lg"
+            [class.text-green-500]="hasDocuments"
+            [class.text-slate-300]="!hasDocuments"></i>
+          <span class="text-sm font-medium text-slate-700">المستندات</span>
+        </div>
+        @if (hasDocuments) {
+          <span class="text-xs text-green-600 font-semibold">مكتمل</span>
+        } @else {
+          <span class="text-xs text-slate-400">غير مكتمل</span>
+        }
+      </div>
+    </div>
+
+    <!-- Action -->
+    @if (status !== 'Approved' && status !== 'Pending') {
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+        <p class="text-sm text-amber-800 mb-4">
+          بتقديم طلبك، ستتم مراجعة بياناتك من قبل فريق بوصلة. سيتم إعلامك عند اكتمال المراجعة.
+        </p>
+        <ui-button [loading]="isSubmitting()" (btnClick)="onSubmit()">
+          <i class="fa-solid fa-paper-plane"></i>
+          إرسال الطلب للمراجعة
+        </ui-button>
+      </div>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <div class="flex justify-between pt-4">
+    <ui-button variant="ghost" (btnClick)="back.emit()">
+      <i class="fa-solid fa-chevron-right"></i>
+      السابق
+    </ui-button>
+  </div>
+</div>
