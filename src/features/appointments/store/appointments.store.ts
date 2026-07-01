@@ -116,7 +116,6 @@ export class AppointmentsStore {
 
     return groups.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
   });
-
   loadMyAppointments(): void {
     this.updateState({ isLoading: true, error: null });
     this.appointmentService.getMyAppointments()

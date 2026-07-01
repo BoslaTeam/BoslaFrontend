@@ -37,4 +37,10 @@ export const SPECIALIST_PANEL_ROUTES: Routes = [
       import('./pages/specialist-availability/specialist-availability')
         .then(m => m.SpecialistAvailability),
   },
+  {
+    path: 'profile-management',
+    loadComponent: () =>
+      import('./pages/specialist-profile-management/specialist-profile-management')
+        .then(m => m.SpecialistProfileManagement),
+  },
 ];
