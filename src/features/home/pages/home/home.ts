@@ -31,11 +31,11 @@ export class Home implements OnInit, AfterViewInit {
   searchQuery = '';
 
   // Typewriter
-  typewriterText = '';
+  typewriterText = 'الخبير المناسب';
   private typewriterWords = ['الخبير المناسب', 'الاستشارة المناسبة', 'المستقبل المناسب'];
   private typewriterIndex = 0;
   private charIndex = 0;
-  private isDeleting = false;
+  private isDeleting = true;
 
   // Animated counters
   counters = { specialists: 0, consultations: 0, fields: 0 };
@@ -91,6 +91,9 @@ export class Home implements OnInit, AfterViewInit {
 
   /* ── Typewriter ── */
   private startTypewriter() {
+    this.charIndex = this.typewriterWords[0].length;
+    this.isDeleting = true;
+
     const tick = () => {
       const word = this.typewriterWords[this.typewriterIndex];
       if (this.isDeleting) {

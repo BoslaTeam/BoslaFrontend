@@ -1,8 +1,7 @@
-import { Component, inject, output, signal, computed } from '@angular/core';
+import { Component, effect, inject, output, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
-import { AuthService } from '@core/services/auth.service';
-import { OnboardSpecialistResponse } from '../../../contracts/specialist-onboard.contract';
 import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
 import { UiTextarea } from '@shared/ui/textarea/textarea';
@@ -30,7 +29,6 @@ const LEVEL_LABELS = ['مبتدئ', 'متوسط', 'متقدم', 'خبير'];
 export class BasicInfoStep {
   private readonly fb = inject(FormBuilder);
   private readonly onboardingStore = inject(SpecialistOnboardingStore);
-  private readonly authService = inject(AuthService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
@@ -41,6 +39,7 @@ export class BasicInfoStep {
   readonly experienceLevel = signal(0);
 
   readonly form = this.fb.nonNullable.group({
+    title: ['', Validators.required],
     experienceYears: [0, [Validators.required, Validators.min(0)]],
     hourlyRate: [0, [Validators.required, Validators.min(1)]],
     bookingPolicy: ['', Validators.required],
@@ -49,6 +48,19 @@ export class BasicInfoStep {
   readonly levelLabel = computed(() => LEVEL_LABELS[this.experienceLevel()]);
 
   constructor() {
+    effect(() => {
+      const saved = this.onboardingStore.draft().basicInfo;
+      if (saved && !this.form.dirty) {
+        this.form.patchValue({
+          title: saved.title ?? '',
+          experienceYears: saved.experienceYears,
+          hourlyRate: saved.hourlyRate,
+          bookingPolicy: saved.bookingPolicy,
+        });
+        this.experienceLevel.set(calcLevel(saved.experienceYears));
+      }
+    });
+
     this.form.get('experienceYears')!.valueChanges.subscribe(v => {
       this.experienceLevel.set(calcLevel(v ?? 0));
     });
@@ -57,6 +69,7 @@ export class BasicInfoStep {
   private buildRequest() {
     const raw = this.form.getRawValue();
     return {
+      title: raw.title,
       experienceYears: raw.experienceYears,
       experienceLevel: this.experienceLevel(),
       hourlyRate: raw.hourlyRate,
@@ -75,25 +88,16 @@ export class BasicInfoStep {
 
     const payload = this.buildRequest();
     this.onboardingStore.updateBasicInfo(payload);
-    this.onboardingStore.onboard().subscribe({
-      next: (response: OnboardSpecialistResponse) => {
-        this.authService.setSession(response.token.accessToken, response.token.refreshToken);
 
-        this.onboardingStore.initDraft().subscribe({
-          next: () => {
-            this.isLoading.set(false);
-            this.completed.emit();
-          },
-          error: () => {
-            this.isLoading.set(false);
-            this.completed.emit();
-          },
-        });
+    this.onboardingStore.updateProfile(payload).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.completed.emit();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         this.errorMessage.set(
-          err.error?.title ?? 'حدث خطأ أثناء الانضمام. يرجى المحاولة مرة أخرى.'
+          err.error?.title ?? 'حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى.'
         );
       },
     });

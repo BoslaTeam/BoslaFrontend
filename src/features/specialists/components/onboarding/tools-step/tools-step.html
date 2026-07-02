@@ -1,13 +1,16 @@
 <div class="max-w-lg mx-auto">
   <div class="text-center mb-8">
-    <h3 class="text-2xl font-bold text-slate-800 mb-2">الأدوات</h3>
-    <p class="text-slate-500">اختر الأدوات التي تستخدمها في عملك</p>
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-primary/10 text-bosla-primary mb-4">
+      <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
+    </div>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">الأدوات</h3>
+    <p class="text-bosla-grey">ما هي أدواتك؟ اختر ما تستخدمه في عملك اليومي</p>
   </div>
 
   @if (errorMessage()) {
-    <div class="mb-6 bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
-      <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5"></i>
-      <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+    <div class="mb-6 bg-bosla-error/5 border-r-4 border-bosla-error p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-bosla-error mt-0.5"></i>
+      <p class="text-sm text-bosla-error font-medium">{{ errorMessage() }}</p>
     </div>
   }
 

@@ -3,6 +3,12 @@ import * as signalR from '@microsoft/signalr';
 import { environment } from '@environments/environment';
 import { MessageDto } from '../models/chat.model';
 
+export interface PresenceChangedPayload {
+  userId: string;
+  isOnline: boolean;
+  lastSeen: string | null;
+}
+
 export interface TypingEvent {
   conversationId: string;
   userId: string;
@@ -32,6 +38,12 @@ export class ChatSignalrService {
 
   private readonly _messageDeleted = signal<{ conversationId: string; messageId: string } | null>(null);
   readonly messageDeleted = this._messageDeleted.asReadonly();
+
+  private readonly _presenceChanged = signal<PresenceChangedPayload | null>(null);
+  readonly presenceChanged = this._presenceChanged.asReadonly();
+
+  private readonly _onlineUsersSnapshot = signal<readonly string[]>([]);
+  readonly onlineUsersSnapshot = this._onlineUsersSnapshot.asReadonly();
 
   readonly connectionState = signal<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
   readonly typingUsers = signal<Map<string, Set<string>>>(new Map());
@@ -187,12 +199,16 @@ export class ChatSignalrService {
     connection.on('MessageReceived', this.handleMessageReceived);
     connection.on('MessageEdited', this.handleMessageEdited);
     connection.on('MessageDeleted', this.handleMessageDeleted);
+    connection.on('PresenceChanged', this.handlePresenceChanged);
+    connection.on('OnlineUsersSnapshot', this.handleOnlineUsersSnapshot);
   }
 
   private unregisterChatListeners(connection: signalR.HubConnection): void {
     connection.off('MessageReceived', this.handleMessageReceived);
     connection.off('MessageEdited', this.handleMessageEdited);
     connection.off('MessageDeleted', this.handleMessageDeleted);
+    connection.off('PresenceChanged', this.handlePresenceChanged);
+    connection.off('OnlineUsersSnapshot', this.handleOnlineUsersSnapshot);
   }
 
   private readonly handleMessageReceived = (message: MessageDto): void => {
@@ -201,6 +217,14 @@ export class ChatSignalrService {
 
   private readonly handleMessageEdited = (message: MessageDto): void => {
     this._messageEdited.set(message);
+  };
+
+  private readonly handlePresenceChanged = (payload: PresenceChangedPayload): void => {
+    this._presenceChanged.set(payload);
+  };
+
+  private readonly handleOnlineUsersSnapshot = (userIds: string[]): void => {
+    this._onlineUsersSnapshot.set(Object.freeze([...userIds]));
   };
 
   private readonly handleMessageDeleted = (data: unknown): void => {

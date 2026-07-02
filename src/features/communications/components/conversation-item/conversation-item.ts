@@ -1,5 +1,6 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, input, output, computed, inject } from '@angular/core';
 import { ConversationPreview } from '../../models/conversation.model';
+import { PresenceStore } from '../../store/presence.store';
 
 @Component({
   selector: 'chat-conversation-item',
@@ -9,9 +10,15 @@ import { ConversationPreview } from '../../models/conversation.model';
   styleUrl: '../../chat.css',
 })
 export class ConversationItem {
+  private readonly presenceStore = inject(PresenceStore);
+
   readonly conversation = input.required<ConversationPreview>();
   readonly isActive = input(false);
   readonly selected = output<string>();
+
+  readonly isOnline = computed(() =>
+    this.presenceStore.isOnline(this.conversation().participant.id)
+  );
 
   readonly initials = computed(() => {
     const name = this.conversation().participant.name;

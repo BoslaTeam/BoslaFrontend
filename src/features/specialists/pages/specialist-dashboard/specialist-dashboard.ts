@@ -22,6 +22,12 @@ export class SpecialistDashboard implements OnInit, OnDestroy {
 
   dashboard = signal<any>(null);
   showAllReviews = signal(false);
+  readonly currentYear = computed(() => new Date().getFullYear());
+  readonly totalEarnings = computed(() => {
+    const revenue = this.dashboard()?.monthlyRevenue ?? [];
+    if (!Array.isArray(revenue) || revenue.length === 0) return 0;
+    return revenue.reduce((sum: number, item: any) => sum + (item.amount || 0), 0);
+  });
 
   /** AI Dashboard Insights */
   aiInsights = signal<DashboardInsightsDto | null>(null);
