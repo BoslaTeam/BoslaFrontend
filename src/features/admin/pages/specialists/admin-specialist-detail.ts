@@ -20,9 +20,15 @@ export class AdminSpecialistDetail implements OnInit {
   readonly specialist = signal<AdminSpecialistDetailDto | null>(null);
   readonly isLoading = signal(true);
   readonly hasError = signal(false);
-  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'ai'>('info');
+  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'ai'>('info');
   readonly isVerifying = signal(false);
   readonly isUpdatingStatus = signal(false);
+  readonly adminNotes = signal('');
+
+  readonly documentTypeLabels: Record<string, string> = {
+    Identity: 'هوية شخصية',
+    Certificate: 'شهادة / مؤهل',
+  };
 
   ngOnInit(): void {
     this.loadSpecialist();
@@ -35,6 +41,7 @@ export class AdminSpecialistDetail implements OnInit {
     this.adminService.getSpecialistDetail(this.id()).subscribe({
       next: (data) => {
         this.specialist.set(data);
+        this.adminNotes.set(data.adminNotes || '');
         this.isLoading.set(false);
       },
       error: () => {
@@ -44,13 +51,16 @@ export class AdminSpecialistDetail implements OnInit {
     });
   }
 
-  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'ai'): void {
+  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'ai'): void {
     this.activeTab.set(tab);
   }
 
-  verify(isApproved: boolean): void {
+  verifyWithNotes(isApproved: boolean): void {
     this.isVerifying.set(true);
-    this.adminService.verifySpecialist(this.id(), { isVerified: isApproved }).subscribe({
+    this.adminService.verifySpecialist(this.id(), {
+      isVerified: isApproved,
+      adminNotes: this.adminNotes() || undefined,
+    }).subscribe({
       next: () => this.loadSpecialist(),
       error: () => this.isVerifying.set(false),
       complete: () => this.isVerifying.set(false),
@@ -73,13 +83,13 @@ export class AdminSpecialistDetail implements OnInit {
   }
 
   getVerificationStatusLabel(status: string): string {
-    const labels: Record<string, string> = { Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
+    const labels: Record<string, string> = { Draft: 'مسودة', Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
     return labels[status] ?? status;
   }
 
   getVerificationStatusClass(status: string): string {
-    const classes: Record<string, string> = { Pending: 'status-pending', Approved: 'status-approved', Rejected: 'status-rejected' };
-    return classes[status] ?? 'status-pending';
+    const classes: Record<string, string> = { Draft: 'status-draft', Pending: 'status-pending', Approved: 'status-approved', Rejected: 'status-rejected' };
+    return classes[status] ?? 'status-draft';
   }
 
   getExperienceLevelLabel(level: string): string {
