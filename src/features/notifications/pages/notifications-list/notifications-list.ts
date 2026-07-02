@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationsService } from '../../services/notifications.service';
-import { NotificationService } from '@core/services/notification.service';
+import { NotificationService, AppNotification } from '@core/services/notification.service';
 
 @Component({
   selector: 'app-notifications-list',
