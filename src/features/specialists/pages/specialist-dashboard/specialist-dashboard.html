@@ -53,6 +53,122 @@
         </div>
     </div>
 
+    <!-- ✨ AI Insights Card -->
+    @if (aiInsights()) {
+    <div id="ai-insights-card" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm" dir="rtl">
+        <!-- Header gradient -->
+        <div class="bg-gradient-to-l from-indigo-600 to-violet-700 px-8 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-white font-bold text-base leading-tight">تحليلات AI</h2>
+                    <p class="text-white/65 text-xs">مُحدَّثة تلقائياً</p>
+                </div>
+            </div>
+            <button
+                class="text-white/60 hover:text-white transition-colors"
+                (click)="loadAiInsights()"
+                title="تحديث"
+                type="button"
+                aria-label="تحديث تحليلات AI"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="bg-white px-8 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- Today -->
+                <div class="flex gap-3 items-start">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0 border border-indigo-100">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">اليوم</p>
+                        <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.todaySummary }}</p>
+                    </div>
+                </div>
+
+                <!-- Upcoming -->
+                <div class="flex gap-3 items-start">
+                    <div class="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0 border border-violet-100">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">الأسبوع القادم</p>
+                        <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.upcomingSummary }}</p>
+                    </div>
+                </div>
+
+                <!-- Stats / AI Tip -->
+                <div class="flex gap-3 items-start">
+                    <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">نصيحة AI</p>
+                        <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.aiTip || aiInsights()?.statsBrief || '—' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Actions -->
+            @if (aiInsights()?.pendingActions && aiInsights()!.pendingActions.length > 0) {
+            <div class="mt-5 pt-5 border-t border-slate-100">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">مواعيد تنتظر الموافقة</p>
+                <div class="flex flex-wrap gap-2">
+                    @for (pending of aiInsights()!.pendingActions; track pending.appointmentId) {
+                    <div class="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
+                        <span class="text-sm font-semibold text-orange-800">{{ pending.clientName }}</span>
+                        <span class="text-xs text-orange-500">{{ pending.time }}</span>
+                        <a
+                          [routerLink]="['/specialist/appointments']"
+                          class="text-xs font-bold text-bosla-primary hover:underline ml-1 cursor-pointer"
+                        >عرض</a>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- Stats Brief -->
+            @if (aiInsights()?.statsBrief) {
+            <p class="mt-4 text-xs text-slate-400 flex items-center gap-1">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                {{ aiInsights()?.statsBrief }}
+            </p>
+            }
+        </div>
+    </div>
+    }
+
+    @if (aiInsightsLoading()) {
+    <div id="ai-insights-skeleton" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm animate-pulse" aria-label="جاري تحميل تحليلات AI...">
+        <div class="h-16 bg-gradient-to-l from-indigo-200 to-violet-200"></div>
+        <div class="bg-white px-8 py-6 flex gap-6">
+            <div class="flex-1 h-12 bg-slate-100 rounded-xl"></div>
+            <div class="flex-1 h-12 bg-slate-100 rounded-xl"></div>
+            <div class="flex-1 h-12 bg-slate-100 rounded-xl"></div>
+        </div>
+    </div>
+    }
+
     <!-- Stat Cards -->
     <div class="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Rating -->

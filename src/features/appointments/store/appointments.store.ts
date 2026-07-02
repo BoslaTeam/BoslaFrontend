@@ -14,9 +14,10 @@ import {
   SpecialistBrief,
   SpecialistFullDetail,
   AvailabilitySlotDto,
+  SessionSummaryDto,
 } from '../contracts/appointments.contracts';
 import { ToastService } from '@core/services/toast.service';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { SpecialistsApiService } from '@features/specialists/data-access/specialist-api.service';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 
@@ -27,15 +28,17 @@ export interface AppointmentsState {
   selectedItem: AppointmentDto | null;
   selectedItemHistory: AppointmentStatusHistoryDto[];
   selectedItemReminders: ReminderDto[];
+  selectedSummary: SessionSummaryDto | null;
   isLoading: boolean;
   isActionLoading: boolean;
   isLoadingSpecialist: boolean;
+  isLoadingSummary: boolean;
   error: string | null;
   specialistInfo: SpecialistBrief | null;
   selectedSpecialistDetail: SpecialistFullDetail | null;
   availabilitySlots: AvailabilitySlotDto[];
   bookingAppointmentId: string | null;
-  bookingStep: 'form' | 'payment' | 'done';
+  bookingStep: 'form' | 'pending_approval' | 'payment' | 'done';
 }
 
 @Injectable({
@@ -53,9 +56,11 @@ export class AppointmentsStore {
     selectedItem: null,
     selectedItemHistory: [],
     selectedItemReminders: [],
+    selectedSummary: null,
     isLoading: false,
     isActionLoading: false,
     isLoadingSpecialist: false,
+    isLoadingSummary: false,
     error: null,
     specialistInfo: null,
     selectedSpecialistDetail: null,
@@ -70,9 +75,11 @@ export class AppointmentsStore {
   readonly selectedItem = computed(() => this._state().selectedItem);
   readonly selectedItemHistory = computed(() => this._state().selectedItemHistory);
   readonly selectedItemReminders = computed(() => this._state().selectedItemReminders);
+  readonly selectedSummary = computed(() => this._state().selectedSummary);
   readonly isLoading = computed(() => this._state().isLoading);
   readonly isActionLoading = computed(() => this._state().isActionLoading);
   readonly isLoadingSpecialist = computed(() => this._state().isLoadingSpecialist);
+  readonly isLoadingSummary = computed(() => this._state().isLoadingSummary);
   readonly error = computed(() => this._state().error);
   readonly specialistInfo = computed(() => this._state().specialistInfo);
   readonly selectedSpecialistDetail = computed(() => this._state().selectedSpecialistDetail);
@@ -82,15 +89,33 @@ export class AppointmentsStore {
 
   readonly formattedAvailabilitySlots = computed(() => {
     const slots = this._state().availabilitySlots;
-    const groups: { dateStr: string; displayDate: string; slots: { id: string; start: Date; end: Date; timeStr: string }[] }[] = [];
-    const map = new Map<string, { displayDate: string; slots: { id: string; start: Date; end: Date; timeStr: string }[] }>();
+    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const shortDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+
+    const groups: {
+      dateStr: string;
+      displayDate: string;
+      dayNumber: number;
+      dayName: string;
+      monthName: string;
+      availableCount: number;
+      slots: { id: string; start: Date; end: Date; timeStr: string; isBooked: boolean }[];
+    }[] = [];
+
+    const map = new Map<string, {
+      displayDate: string;
+      dayNumber: number;
+      dayName: string;
+      monthName: string;
+      slots: { id: string; start: Date; end: Date; timeStr: string; isBooked: boolean }[];
+    }>();
 
     for (const s of slots) {
       const start = new Date(s.start);
       const end = new Date(s.end);
       const key = start.toISOString().split('T')[0];
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      const isBooked = s.isBooked ?? false;
       const displayDate = `${days[start.getDay()]}، ${start.getDate()} ${months[start.getMonth()]}`;
 
       const fmtTime = (d: Date) => {
@@ -100,18 +125,29 @@ export class AppointmentsStore {
       };
 
       if (!map.has(key)) {
-        map.set(key, { displayDate, slots: [] });
+        map.set(key, {
+          displayDate,
+          dayNumber: start.getDate(),
+          dayName: shortDays[start.getDay()],
+          monthName: months[start.getMonth()],
+          slots: [],
+        });
       }
       map.get(key)!.slots.push({
         id: s.id,
         start,
         end,
         timeStr: `${fmtTime(start)} - ${fmtTime(end)}`,
+        isBooked: s.isBooked ?? false,
       });
     }
 
     for (const [key, val] of map) {
-      groups.push({ dateStr: key, ...val });
+      groups.push({
+        dateStr: key,
+        ...val,
+        availableCount: val.slots.filter(sl => !sl.isBooked).length,
+      });
     }
 
     return groups.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
@@ -159,6 +195,7 @@ export class AppointmentsStore {
           }
           this.loadStatusHistory(id);
           this.loadReminders(id);
+          this.loadSummary(id);
         },
         error: (err) => this.handleError(err, 'فشل في تحميل تفاصيل الموعد.')
       });
@@ -203,8 +240,30 @@ export class AppointmentsStore {
   }
 
   loadAvailability(specialistId: string): void {
-    this.appointmentService.getSpecialistAvailability(specialistId).subscribe({
-      next: (res) => this.updateState({ availabilitySlots: res.data }),
+    forkJoin({
+      slots: this.appointmentService.getSpecialistAvailability(specialistId),
+      appointments: this.appointmentService.getAppointmentsBySpecialist(specialistId),
+    }).subscribe({
+      next: ({ slots, appointments }) => {
+        const bookedAppointments = appointments.data.filter(
+          a => a.status === AppointmentStatus.Pending || a.status === AppointmentStatus.Confirmed
+        );
+
+        const availabilitySlots = slots.data.map(slot => {
+          const slotStart = new Date(slot.start).getTime();
+          const slotEnd = new Date(slot.end).getTime();
+
+          const isBooked = bookedAppointments.some(apt => {
+            const aptStart = new Date(apt.start).getTime();
+            const aptEnd = new Date(apt.end).getTime();
+            return slotStart < aptEnd && slotEnd > aptStart;
+          });
+
+          return { ...slot, isBooked };
+        });
+
+        this.updateState({ availabilitySlots });
+      },
       error: () => this.toast.danger('فشل في تحميل الأوقات المتاحة.')
     });
   }
@@ -215,12 +274,32 @@ export class AppointmentsStore {
       .pipe(finalize(() => this.updateState({ isActionLoading: false })))
       .subscribe({
         next: (res) => {
-          this.toast.success('تم حجز الموعد بنجاح. يرجى إتمام الدفع لتأكيد الحجز.');
+          this.toast.success('تم إرسال طلب الحجز بنجاح. سيتم إشعارك عند موافقة المختص.');
           const appointmentId = res.data;
-          this.updateState({ bookingAppointmentId: appointmentId, bookingStep: 'payment' });
+          this.updateState({ bookingAppointmentId: appointmentId, bookingStep: 'done' });
           if (onSuccess) onSuccess(appointmentId);
         },
         error: (err) => this.handleError(err, 'فشل في إتمام عملية حجز الموعد.')
+      });
+  }
+
+  checkAppointmentStatus(id: string): void {
+    this.updateState({ isActionLoading: true });
+    this.appointmentService.getById(id)
+      .pipe(finalize(() => this.updateState({ isActionLoading: false })))
+      .subscribe({
+        next: (res) => {
+          if (res.data?.status === AppointmentStatus.Confirmed) {
+            this.toast.success('تمت موافقة المختص! يمكنك الآن إتمام الدفع.');
+            this.updateState({ bookingStep: 'payment' });
+          } else if (res.data?.status === AppointmentStatus.Cancelled) {
+            this.toast.danger('تم رفض طلب الموعد من قبل المختص.');
+            this.updateState({ bookingAppointmentId: null, bookingStep: 'form' });
+          } else {
+            this.toast.info('لم يتم الموافقة على الطلب بعد. سيتم إشعارك فور الموافقة.');
+          }
+        },
+        error: (err) => this.handleError(err, 'فشل في التحقق من حالة الموعد.')
       });
   }
 
@@ -374,6 +453,14 @@ export class AppointmentsStore {
     this.appointmentService.getReminders(id).subscribe({
       next: (selectedItemReminders) => this.updateState({ selectedItemReminders }),
       error: (err) => console.error('Reminders load failed:', err)
+    });
+  }
+
+  loadSummary(id: string): void {
+    this.updateState({ isLoadingSummary: true, selectedSummary: null });
+    this.appointmentService.getSummary(id).subscribe({
+      next: (res) => this.updateState({ selectedSummary: res.data, isLoadingSummary: false }),
+      error: () => this.updateState({ isLoadingSummary: false })
     });
   }
 

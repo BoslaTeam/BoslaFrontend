@@ -1,0 +1,83 @@
+<div class="withdrawals-page">
+  <div class="page-header">
+    <h1>إدارة السحوبات</h1>
+    <p class="page-subtitle">إدارة طلبات السحب المقدمة من المتخصصين</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-tabs">
+      @for (opt of statusOptions; track $index) {
+        <button
+          class="filter-tab"
+          [class.active]="selectedStatus() === opt.value"
+          (click)="onStatusFilter(opt.value)">
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  } @else if (withdrawals().length === 0) {
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="7 17 17 7"/>
+        <path d="M15 7h-8v8"/>
+        <circle cx="12" cy="12" r="10"/>
+      </svg>
+      <h3>لا توجد سحوبات</h3>
+      <p>لم يتم تقديم أي طلبات سحب بعد.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>المتخصص</th>
+            <th>المبلغ</th>
+            <th>طريقة الدفع</th>
+            <th>الحالة</th>
+            <th>تاريخ الطلب</th>
+            <th>تاريخ المعالجة</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (w of withdrawals(); track w.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-sm">{{ getUserInitials(w.specialistName) }}</div>
+                  <div>
+                    <div class="user-name">{{ w.specialistName }}</div>
+                    @if (w.specialistTitle) {
+                      <div class="user-title">{{ w.specialistTitle }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="amount-cell">{{ w.amount | number:'1.2-2' }} ر.س</td>
+              <td>{{ getMethodLabel(w.paymentMethod) }}</td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(w.status)">
+                  {{ getStatusLabel(w.status) }}
+                </span>
+              </td>
+              <td>{{ w.requestedAt | date:'yyyy/MM/dd' }}</td>
+              <td>{{ w.processedAt ? (w.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
+              <td>
+                <a [routerLink]="['/admin/withdrawals', w.id]" class="btn btn-sm">تفاصيل</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

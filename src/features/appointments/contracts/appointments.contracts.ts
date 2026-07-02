@@ -35,7 +35,7 @@ export interface AddReviewRequest {
   comment?: string;
 }
 
-export enum AppointmentPaymentStatus {
+export enum PaymentStatus {
   Unpaid = 0,
   Paid = 1,
   Refunded = 2,
@@ -54,7 +54,7 @@ export interface AppointmentDto {
   specialistTitle?: string;
   specialistImageUrl?: string;
   amount?: number;
-  paymentStatus?: AppointmentPaymentStatus;
+  paymentStatus?: PaymentStatus;
 }
 
 export interface AppointmentStatusHistoryDto {
@@ -91,8 +91,24 @@ export interface SpecialistFullDetail extends SpecialistBrief {
   country: string | null;
 }
 
+export interface SessionSummaryDto {
+  id: string;
+  appointmentId: string;
+  transcriptId?: string;
+  keyTakeaways: string;
+  actionItemsForUser: string;
+  actionItemsForSpec: string;
+  llmProvider: string;
+  status: number;
+  createdAtUtc: string;
+  createdBy?: string;
+  lastModifiedUtc?: string;
+  lastModifiedBy?: string;
+}
+
 export interface AvailabilitySlotDto {
   id: string;
   start: string;
   end: string;
+  isBooked?: boolean;
 }

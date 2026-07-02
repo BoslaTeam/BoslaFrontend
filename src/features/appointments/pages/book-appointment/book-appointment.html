@@ -22,28 +22,6 @@
       </div>
     } @else {
 
-      <div class="flex items-center gap-3 mb-8">
-        @for (step of [{id:'form',label:'اختيار الموعد'},{id:'payment',label:'الدفع'},{id:'done',label:'تأكيد الحجز'}]; track step.id) {
-          <div class="flex items-center gap-2">
-            <div [class]="(store.bookingStep() === step.id ? 'bg-bosla-primary text-white' : store.bookingStep() === 'done' && step.id === 'form' ? 'bg-bosla-success text-white' : store.bookingStep() === 'done' ? 'bg-bosla-success text-white' : 'bg-bosla-charcoal/10 text-bosla-charcoal/40') + ' w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300'">
-              @if (store.bookingStep() === 'done' && step.id !== 'done') {
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-              } @else {
-                {{ step.id === 'form' ? '1' : step.id === 'payment' ? '2' : '3' }}
-              }
-            </div>
-            <span [class]="(store.bookingStep() === step.id ? 'text-bosla-primary font-semibold' : 'text-bosla-grey') + ' text-sm transition-colors duration-300 hidden sm:inline'">
-              {{ step.label }}
-            </span>
-          </div>
-          @if (!step.id.endsWith('done')) {
-            <div class="flex-1 h-px bg-bosla-charcoal/10 max-w-16"></div>
-          }
-        }
-      </div>
-
       @if (store.bookingStep() === 'form') {
 
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -102,8 +80,8 @@
           <div class="lg:col-span-3 space-y-4">
 
             <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-              <h3 class="text-sm font-bold text-bosla-charcoal mb-1">اختر الوقت المناسب</h3>
-              <p class="text-xs text-bosla-grey mb-5">اختر موعداً متاحاً من الأوقات المتاحة للمختص</p>
+              <h3 class="text-sm font-bold text-bosla-charcoal mb-1">اختر اليوم المناسب</h3>
+              <p class="text-xs text-bosla-grey mb-5">اختر تاريخاً ثم اختر الوقت المتاح</p>
 
               @if (store.isActionLoading() && store.availabilitySlots().length === 0) {
                 <div class="flex items-center justify-center py-12">
@@ -120,33 +98,76 @@
                   <p class="text-xs text-bosla-grey mt-1">يرجى المحاولة في وقت لاحق</p>
                 </div>
               } @else {
-                <div class="space-y-5">
+                <!-- Date Chips -->
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin" dir="ltr">
                   @for (group of store.formattedAvailabilitySlots(); track group.dateStr) {
-                    <div>
-                      <div class="flex items-center gap-2 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-bosla-blue"></div>
-                        <h4 [class]="selectedDate() === group.dateStr ? 'text-bosla-primary font-bold' : 'text-bosla-charcoal font-semibold'" class="text-sm">
-                          {{ group.displayDate }}
-                        </h4>
-                      </div>
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button (click)="selectedDate.set(group.dateStr); selectedSlotId.set(null)"
+                      [class]="(selectedDate() === group.dateStr
+                        ? 'bg-bosla-primary text-white shadow-md ring-2 ring-bosla-primary/20'
+                        : 'bg-bosla-offwhite text-bosla-charcoal hover:border-bosla-blue hover:bg-bosla-blue/5') +
+                        ' flex flex-col items-center gap-0.5 px-4 py-3 rounded-xl border border-bosla-charcoal/10 min-w-[80px] transition-all duration-200 shrink-0'">
+                      <span class="text-lg font-bold leading-tight">{{ group.dayNumber }}</span>
+                      <span class="text-[11px] font-medium leading-tight">{{ group.dayName }}</span>
+                      <span class="text-[10px] text-bosla-grey leading-tight">{{ group.monthName }}</span>
+                      @if (group.availableCount > 0) {
+                        <span class="mt-1 text-[10px] font-medium"
+                          [class.text-white]="selectedDate() === group.dateStr"
+                          [class.text-emerald-600]="selectedDate() !== group.dateStr">
+                          {{ group.availableCount }} موعد
+                        </span>
+                      } @else {
+                        <span class="mt-1 text-[10px] text-rose-400 font-medium">محجوز بالكامل</span>
+                      }
+                    </button>
+                  }
+                </div>
+
+                <!-- Slots for selected date -->
+                @if (selectedGroup(); as group) {
+                  <div class="mt-6 pt-5 border-t border-bosla-charcoal/5">
+                    <div class="flex items-center justify-between mb-4">
+                      <h4 class="text-sm font-bold text-bosla-charcoal">{{ group.displayDate }}</h4>
+                      <span class="text-xs text-bosla-grey">{{ group.slots.length }} مواعيد</span>
+                    </div>
+
+                    @if (group.slots.length > 0) {
+                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                         @for (slot of group.slots; track slot.id) {
-                          <button (click)="selectSlot(slot.id, group.dateStr)"
-                            [class]="(selectedSlotId() === slot.id
-                              ? 'bg-bosla-primary text-white border-bosla-primary shadow-md'
-                              : 'bg-bosla-offwhite text-bosla-charcoal border-bosla-charcoal/10 hover:border-bosla-blue hover:bg-bosla-blue/5') +
-                              ' px-3 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200'">
-                            {{ slot.timeStr }}
+                          <button (click)="!slot.isBooked && selectSlot(slot.id, group.dateStr)"
+                            [disabled]="slot.isBooked"
+                            [class]="(slot.isBooked
+                              ? 'bg-rose-50 text-rose-300 border-rose-200 cursor-not-allowed opacity-70'
+                              : selectedSlotId() === slot.id
+                                ? 'bg-bosla-primary text-white border-bosla-primary shadow-md'
+                                : 'bg-bosla-offwhite text-bosla-charcoal border-bosla-charcoal/10 hover:border-bosla-blue hover:bg-bosla-blue/5 cursor-pointer') +
+                              ' relative px-3 py-3 rounded-xl text-sm font-medium border transition-all duration-200'">
+                            @if (slot.isBooked) {
+                              <span class="absolute top-1.5 left-1.5">
+                                <svg class="w-3.5 h-3.5 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </span>
+                            }
+                            <span [class.line-through]="slot.isBooked" [class.text-rose-300]="slot.isBooked">
+                              {{ slot.timeStr }}
+                            </span>
+                            @if (slot.isBooked) {
+                              <span class="block text-[10px] text-rose-400 font-semibold mt-0.5">غير متاح</span>
+                            }
                           </button>
                         }
                       </div>
-                    </div>
-                  }
-                </div>
+                    }
+                  </div>
+                } @else if (selectedDate()) {
+                  <div class="mt-6 text-center py-8 bg-bosla-offwhite rounded-xl">
+                    <p class="text-sm text-bosla-grey">لم نتمكن من العثور على المواعيد لهذا التاريخ</p>
+                  </div>
+                }
               }
 
               @if (selectedSlotInfo(); as slot) {
-                <div class="mt-5 p-4 bg-bosla-blue/5 border border-bosla-blue/20 rounded-xl">
+                <div class="mt-5 p-4 bg-gradient-to-r from-bosla-blue/5 to-bosla-primary/5 border border-bosla-blue/20 rounded-xl">
                   <div class="flex items-center gap-2 text-bosla-blue">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -193,21 +214,34 @@
 
         </div>
 
-      } @else if (store.bookingStep() === 'payment') {
+      } @else {
 
         <div class="max-w-lg mx-auto">
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
-            <div class="w-16 h-16 mx-auto bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mb-4">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
+            <div class="relative w-20 h-20 mx-auto mb-5">
+              <div class="absolute inset-0 bg-bosla-orange/10 rounded-full animate-ping"></div>
+              <div class="relative w-20 h-20 bg-bosla-orange/10 text-bosla-orange rounded-full flex items-center justify-center">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
             </div>
-            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم حجز الموعد مبدئياً</h2>
-            <p class="text-sm text-bosla-grey mb-2">يرجى إتمام عملية الدفع لتأكيد الحجز وجدولة الموعد</p>
-            <p class="text-xs text-bosla-grey mb-6">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع خلال 30 دقيقة</p>
+
+            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">في انتظار موافقة المختص</h2>
+            <p class="text-sm text-bosla-grey mb-1">تم إرسال طلب الحجز إلى المختص بنجاح</p>
+            <p class="text-xs text-bosla-grey mb-6">سيتم إشعارك فور الموافقة على الطلب لتتمكن من إتمام الدفع</p>
 
             @if (store.specialistInfo(); as s) {
               <div class="bg-bosla-offwhite rounded-xl p-4 mb-6 text-right">
+                <div class="flex items-center gap-3 mb-3 pb-3 border-b border-bosla-charcoal/5">
+                  <div class="w-10 h-10 rounded-full overflow-hidden bg-bosla-blue/10 shrink-0">
+                    <img [src]="s.imageUrl || 'assets/icons/favicon.ico'" [alt]="s.name" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-semibold text-bosla-charcoal">{{ s.name }}</p>
+                    <p class="text-xs text-bosla-grey">{{ s.title || 'مختص معتمد' }}</p>
+                  </div>
+                </div>
                 <div class="flex justify-between items-center py-1">
                   <span class="text-sm text-bosla-charcoal/60">رسوم الجلسة</span>
                   <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ج.م</span>
@@ -220,39 +254,18 @@
             }
 
             <div class="flex flex-col gap-3">
-              @if (!showStripe()) {
-                <ui-button (click)="processPayment()" [loading]="initiatingPayment()" size="lg" variant="primary" class="w-full">
-                  {{ initiatingPayment() ? 'جاري التحميل...' : 'إتمام الدفع الآن' }}
-                </ui-button>
-                <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
-                  الدفع لاحقاً
-                </ui-button>
-              } @else {
-                <app-stripe-payment-form
-                  [clientSecret]="stripeClientSecret()!"
-                  [appointmentId]="store.bookingAppointmentId()!"
-                  [amount]="(store.specialistInfo()?.hourlyRate ?? 0)"
-                  currency="usd"
-                  (paymentSuccess)="onPaymentSuccess($event)"
-                  (paymentError)="onPaymentError($event)" />
-              }
-            </div>
-          </div>
-        </div>
-
-      } @else {
-
-        <div class="max-w-lg mx-auto">
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
-            <div class="w-16 h-16 mx-auto bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-4">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم تأكيد الحجز بنجاح!</h2>
-            <p class="text-sm text-bosla-grey mb-6">تم جدولة موعدك مع المختص. يمكنك متابعة التفاصيل من صفحة المواعيد.</p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-              <ui-button (click)="goToAppointments()" size="md" variant="primary">الذهاب إلى المواعيد</ui-button>
+              <a
+                [routerLink]="['/appointments', store.bookingAppointmentId(), 'pay']"
+                class="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-bosla-primary to-bosla-blue text-white font-bold text-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                إتمام الدفع الآن
+              </a>
+              <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+                الدفع لاحقاً
+              </ui-button>
             </div>
           </div>
         </div>

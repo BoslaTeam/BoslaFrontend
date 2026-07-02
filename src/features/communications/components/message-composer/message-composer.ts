@@ -1,14 +1,17 @@
 import {
-  Component, inject, ElementRef, ViewChild, HostListener, signal, DestroyRef
+  Component, inject, ElementRef, ViewChild, HostListener, signal, DestroyRef, computed
 } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { ChatSignalrService } from '../../services/chat-signalr.service';
+import { AuthService } from '@core/services/auth.service';
+import { UserRole } from '@core/enums/user-role.enum';
+import { AiSmartReply } from '@features/ai/components/ai-smart-reply/ai-smart-reply';
 import { EmojiPickerComponent } from '@shared/components/emoji-picker/emoji-picker.component';
 
 @Component({
   selector: 'chat-message-composer',
   standalone: true,
-  imports: [EmojiPickerComponent],
+  imports: [AiSmartReply, EmojiPickerComponent],
   templateUrl: './message-composer.html',
   styleUrl: '../../chat.css',
   host: {
@@ -18,6 +21,7 @@ import { EmojiPickerComponent } from '@shared/components/emoji-picker/emoji-pick
 export class MessageComposer {
   readonly store = inject(ChatStore);
   readonly signalr = inject(ChatSignalrService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
@@ -25,6 +29,11 @@ export class MessageComposer {
   readonly message = signal('');
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isCurrentlyTyping = false;
+
+  /** True when the current user is a Specialist → show AI smart reply button */
+  readonly isSpecialist = computed(() =>
+    this.authService.userRole() === UserRole.Specialist
+  );
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -63,6 +72,16 @@ export class MessageComposer {
       this.textareaRef.nativeElement.style.height = 'auto';
       this.textareaRef.nativeElement.focus();
     }
+  }
+
+  /** Called when the user picks an AI suggestion chip */
+  fillFromReply(text: string): void {
+    this.message.set(text);
+    this.handleTypingSignal(!!text);
+    setTimeout(() => {
+      this.autoResize();
+      this.textareaRef?.nativeElement?.focus();
+    });
   }
 
   /**

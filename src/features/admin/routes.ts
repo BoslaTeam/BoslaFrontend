@@ -84,5 +84,15 @@ export const ADMIN_ROUTES: Routes = [
     path: 'ai',
     loadComponent: () => import('./pages/ai/admin-ai').then(m => m.AdminAi),
     title: 'إدارة AI'
+  },
+  {
+    path: 'withdrawals',
+    loadComponent: () => import('./pages/withdrawals/admin-withdrawals-list').then(m => m.AdminWithdrawalsList),
+    title: 'إدارة السحوبات'
+  },
+  {
+    path: 'withdrawals/:id',
+    loadComponent: () => import('./pages/withdrawals/admin-withdrawal-detail').then(m => m.AdminWithdrawalDetail),
+    title: 'تفاصيل السحب'
   }
 ];
