@@ -23,44 +23,62 @@ import { ScreenShareState } from '../../models/screen-share-state.enum';
     }
   `,
   styles: [`
+    /* ── Floating Pill Badge (top-right inside stage) ── */
     .ss-indicator {
-      display: flex;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 10;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 0.75rem;
-      background: rgba(244, 67, 54, 0.12);
-      border-bottom: 1px solid rgba(244, 67, 54, 0.25);
-      font-size: 0.8rem;
-      color: #ef9a9a;
-      flex-shrink: 0;
-      animation: fadeIn 0.25s ease;
+      gap: 8px;
+      padding: 7px 12px 7px 10px;
+      background: rgba(27, 79, 114, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+      color: #ffffff;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      white-space: nowrap;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      animation: ss-fade-in 0.25s ease;
     }
     .ss-indicator-icon {
-      font-size: 1rem;
+      font-size: 0.9rem;
+      line-height: 1;
     }
     .ss-indicator-text {
-      flex: 1;
+      font-weight: 500;
     }
     .ss-indicator-stop {
-      background: rgba(244, 67, 54, 0.2);
-      color: #ef9a9a;
-      border: 1px solid rgba(244, 67, 54, 0.35);
-      border-radius: 4px;
-      padding: 0.2rem 0.6rem;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 9999px;
+      padding: 4px 12px;
       font-size: 0.75rem;
+      font-family: 'Cairo', 'Inter', sans-serif;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.15s;
+      transition: background 0.15s ease;
+      font-weight: 500;
+      margin-left: 2px;
     }
     .ss-indicator-stop:hover:not(:disabled) {
-      background: rgba(244, 67, 54, 0.35);
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .ss-indicator-stop:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.6);
+      outline-offset: 2px;
     }
     .ss-indicator-stop:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
+    @keyframes ss-fade-in {
+      from { opacity: 0; transform: translateY(-6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
   `],

@@ -36,73 +36,99 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
     }
   `,
   styles: [`
+    /* ── Toolbar Circle Button ── */
     .rec-btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.35rem;
-      background: rgba(255, 255, 255, 0.08);
-      color: #b0bec5;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
-      padding: 0.35rem 0.6rem;
-      font-size: 0.75rem;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: #f0f4f8;
+      color: #2C3E50;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      position: relative;
     }
     .rec-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.14);
-      color: #eceff1;
+      background: #e8ecf0;
+      transform: scale(1.05);
+    }
+    .rec-btn:focus-visible {
+      outline: 3px solid #2E86AB;
+      outline-offset: 2px;
     }
     .rec-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
     }
+    /* Active = Recording → orange accent (REC is allowed orange use case) */
     .rec-btn--active {
-      background: rgba(244, 67, 54, 0.18);
-      color: #ef9a9a;
-      border-color: rgba(244, 67, 54, 0.35);
+      background: rgba(243, 156, 18, 0.12);
+      color: #F39C12;
     }
     .rec-btn--active:hover:not(:disabled) {
-      background: rgba(244, 67, 54, 0.26);
-      color: #ffcdd2;
+      background: rgba(243, 156, 18, 0.2);
     }
     .rec-btn--loading {
       pointer-events: none;
     }
+    /* Record dot icon */
     .rec-btn-dot {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2.5px solid currentColor;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .rec-btn-dot::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
       border-radius: 50%;
       background: currentColor;
     }
     .rec-btn--active .rec-btn-dot {
       animation: rec-pulse 1.4s ease-in-out infinite;
     }
+    /* Label hidden — aria-label handles accessibility */
     .rec-btn-label {
-      font-weight: 500;
+      display: none;
     }
+
+    /* ── Confirmation Modal ── */
     .rec-confirm-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     .rec-confirm-box {
-      background: #1a1a2e;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 1.5rem 2rem;
-      max-width: 320px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 2rem 2.5rem;
+      max-width: 380px;
+      width: 90%;
       text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: rec-scale-in 0.2s ease;
     }
     .rec-confirm-text {
-      margin: 0 0 1rem;
-      font-size: 0.95rem;
-      color: #eceff1;
+      margin: 0 0 1.5rem;
+      font-size: 1rem;
+      color: #2C3E50;
+      font-family: 'Cairo', sans-serif;
+      line-height: 1.65;
+      font-weight: 500;
     }
     .rec-confirm-actions {
       display: flex;
@@ -110,30 +136,37 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       justify-content: center;
     }
     .rec-confirm-btn {
-      padding: 0.45rem 1.25rem;
+      padding: 10px 28px;
       border: none;
-      border-radius: 6px;
-      font-size: 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.9375rem;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.15s ease;
     }
     .rec-confirm-btn--yes {
-      background: #d32f2f;
+      background: #F39C12;
       color: #fff;
     }
     .rec-confirm-btn--yes:hover {
-      background: #e53935;
+      background: #d68910;
+      transform: translateY(-1px);
     }
     .rec-confirm-btn--no {
-      background: rgba(255,255,255,0.1);
-      color: #b0bec5;
+      background: #f0f4f8;
+      color: #2C3E50;
     }
     .rec-confirm-btn--no:hover {
-      background: rgba(255,255,255,0.16);
+      background: #e8ecf0;
     }
     @keyframes rec-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.88); }
+    }
+    @keyframes rec-scale-in {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
     }
   `],
 })

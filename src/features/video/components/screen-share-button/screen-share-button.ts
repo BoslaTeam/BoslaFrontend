@@ -31,44 +31,51 @@ const STOP_ICON = `<svg viewBox="0 0 24 24" width="18" height="18" fill="current
     </button>
   `,
   styles: [`
+    /* ── Toolbar Circle Button ── */
     .screen-share-btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.35rem;
-      background: rgba(255, 255, 255, 0.08);
-      color: #b0bec5;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
-      padding: 0.35rem 0.6rem;
-      font-size: 0.75rem;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: #f0f4f8;
+      color: #2C3E50;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
     }
     .screen-share-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.14);
-      color: #eceff1;
+      background: #e8ecf0;
+      transform: scale(1.05);
+    }
+    .screen-share-btn:focus-visible {
+      outline: 3px solid #2E86AB;
+      outline-offset: 2px;
     }
     .screen-share-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
     }
+    /* Active (Sharing) state → Bosla blue tint */
     .screen-share-btn--active {
-      background: rgba(244, 67, 54, 0.18);
-      color: #ef9a9a;
-      border-color: rgba(244, 67, 54, 0.35);
+      background: rgba(46, 134, 171, 0.12);
+      color: #2E86AB;
     }
     .screen-share-btn--active:hover:not(:disabled) {
-      background: rgba(244, 67, 54, 0.26);
-      color: #ffcdd2;
+      background: rgba(46, 134, 171, 0.2);
     }
     .screen-share-btn-icon {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      width: 18px;
-      height: 18px;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
     }
+    /* Label hidden — aria-label on button provides context */
     .screen-share-btn-label {
-      font-weight: 500;
+      display: none;
     }
   `],
 })

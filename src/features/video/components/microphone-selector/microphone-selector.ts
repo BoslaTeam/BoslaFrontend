@@ -29,15 +29,17 @@ const MIC_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" st
     }
   `,
   styles: [`
+    /* ── Permission Placeholder — Light Mode ── */
     .device-permission-placeholder {
       display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.3rem 0.5rem;
-      font-size: 0.7rem;
-      color: #78909c;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 4px 0;
+      font-family: 'Cairo', 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      color: #95A5A6;
       user-select: none;
-      max-width: 180px;
+      line-height: 1.5;
     }
     .device-permission-placeholder-icon {
       display: inline-flex;
@@ -45,11 +47,12 @@ const MIC_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" st
       width: 14px;
       height: 14px;
       flex-shrink: 0;
-      opacity: 0.6;
+      margin-top: 2px;
+      opacity: 0.7;
     }
     .device-permission-placeholder-text {
       font-weight: 400;
-      line-height: 1.35;
+      line-height: 1.5;
     }
   `],
 })

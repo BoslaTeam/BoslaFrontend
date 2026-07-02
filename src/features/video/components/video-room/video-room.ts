@@ -68,6 +68,7 @@ export class VideoRoom {
   readonly isWaitingForSpecialist = signal(false);
   readonly isSessionEnded = signal(false);
   readonly signalrFailed = signal(false);
+  readonly currentYear = new Date().getFullYear();
 
   /** Effect: swap local preview between screen and camera tracks */
   private readonly _screenShareEffect = effect(() => {

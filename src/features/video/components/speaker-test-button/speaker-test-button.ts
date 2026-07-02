@@ -23,32 +23,44 @@ const SPEAKER_ICON = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none
     </button>
   `,
   styles: [`
+    /* ── Device Card Test Button ── */
     .speaker-test-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      background: rgba(255, 255, 255, 0.08);
-      color: #b0bec5;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.7rem;
+      justify-content: center;
+      gap: 6px;
+      background: #f0f4f8;
+      color: #2C3E50;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: 'Cairo', 'Inter', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: all 0.15s ease;
+      width: 100%;
+      box-sizing: border-box;
     }
     .speaker-test-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.14);
-      color: #eceff1;
+      background: #e8ecf0;
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .speaker-test-btn:focus-visible {
+      outline: 3px solid #2E86AB;
+      outline-offset: 2px;
     }
     .speaker-test-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: not-allowed;
     }
     .speaker-test-btn-icon {
       display: inline-flex;
       align-items: center;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
+      color: #2E86AB;
+      flex-shrink: 0;
     }
     .speaker-test-btn-label {
       font-weight: 500;
