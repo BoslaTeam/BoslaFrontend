@@ -28,4 +28,11 @@ export class ConversationService {
       API_ENDPOINTS.conversations.byId(conversationId)
     );
   }
+
+  create(appointmentId: string): Observable<ApiResponse<string>> {
+    return this.http.post<ApiResponse<string>>(
+      API_ENDPOINTS.conversations.base,
+      { appointmentId }
+    );
+  }
 }

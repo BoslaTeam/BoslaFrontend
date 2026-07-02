@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
@@ -16,6 +16,7 @@ import { UserRole } from '@core/enums/user-role.enum';
 })
 export class AppointmentDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -46,6 +47,12 @@ export class AppointmentDetail implements OnInit {
   readonly showRejectModal = signal(false);
   readonly rejectReason = signal('');
 
+  readonly newConversationId = signal<string | null>(null);
+
+  readonly hasConversation = computed(() => {
+    return this.newConversationId() ?? this.store.selectedItem()?.conversationId ?? null;
+  });
+
   readonly userRole = computed(() => this.authService.userRole());
   readonly UserRole = UserRole;
   readonly AppointmentStatus = AppointmentStatus;
@@ -60,15 +67,14 @@ export class AppointmentDetail implements OnInit {
   readonly canComplete = computed(() => {
     const u = this.userRole();
     const s = this.store.selectedItem()?.status;
-    return (u === UserRole.Specialist || u === UserRole.Admin) && s === AppointmentStatus.Confirmed;
+    return (u === UserRole.Specialist || u === UserRole.Admin) && (s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid);
   });
 
   readonly canPay = computed(() => {
     const u = this.userRole();
     const s = this.store.selectedItem();
     if (u !== UserRole.User) return false;
-    const canPayInStatus = s?.status === AppointmentStatus.Confirmed || s?.status === AppointmentStatus.Pending;
-    if (!canPayInStatus) return false;
+    if (s?.status !== AppointmentStatus.Confirmed) return false;
     if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded) return false;
     return true;
   });
@@ -120,6 +126,13 @@ export class AppointmentDetail implements OnInit {
       this.store.isActionLoading();
       this.cdr.detectChanges();
     });
+    effect(() => {
+      const convId = this.store.lastCreatedConversationId();
+      if (convId) {
+        this.newConversationId.set(convId);
+        this.store.lastCreatedConversationId.set(null);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -129,7 +142,18 @@ export class AppointmentDetail implements OnInit {
   }
 
   onConfirm(): void {
-    this.store.confirmAppointment(this.appointmentId);
+    this.store.confirmAppointment(this.appointmentId, (convId) => {
+      if (convId) {
+        this.newConversationId.set(convId);
+      }
+    });
+  }
+
+  goToConversation(): void {
+    const convId = this.hasConversation();
+    if (convId) {
+      this.router.navigate(['/chat', convId]);
+    }
   }
 
   onComplete(): void {
@@ -201,6 +225,7 @@ export class AppointmentDetail implements OnInit {
     switch (status) {
       case AppointmentStatus.Pending: return 'linear-gradient(135deg, #F39C12, #E67E22)';
       case AppointmentStatus.Confirmed: return 'linear-gradient(135deg, #1B4F72, #2E86AB)';
+      case AppointmentStatus.Paid: return 'linear-gradient(135deg, #059669, #10B981)';
       case AppointmentStatus.Completed: return 'linear-gradient(135deg, #059669, #10B981)';
       case AppointmentStatus.Cancelled: return 'linear-gradient(135deg, #DC2626, #EF4444)';
       case AppointmentStatus.Rescheduled: return 'linear-gradient(135deg, #7C3AED, #8B5CF6)';
@@ -212,6 +237,7 @@ export class AppointmentDetail implements OnInit {
     switch (status) {
       case AppointmentStatus.Pending: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
       case AppointmentStatus.Confirmed: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Paid: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
       case AppointmentStatus.Completed: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
       case AppointmentStatus.Cancelled: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
       default: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
@@ -223,10 +249,15 @@ export class AppointmentDetail implements OnInit {
     switch (status) {
       case AppointmentStatus.Pending:
         return {
-          text: 'قيد الانتظار',
+          text: 'بانتظار موافقة المختص',
           classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
         };
       case AppointmentStatus.Confirmed:
+        return {
+          text: 'قابل للدفع',
+          classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+        };
+      case AppointmentStatus.Paid:
         return {
           text: 'مؤكدة',
           classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
@@ -259,6 +290,7 @@ export class AppointmentDetail implements OnInit {
     switch (status) {
       case AppointmentStatus.Pending: return 'text-amber-500';
       case AppointmentStatus.Confirmed: return 'text-emerald-500';
+      case AppointmentStatus.Paid: return 'text-emerald-500';
       case AppointmentStatus.Completed: return 'text-bosla-blue';
       case AppointmentStatus.Cancelled: return 'text-rose-500';
       case AppointmentStatus.Rescheduled: return 'text-purple-500';
@@ -270,6 +302,7 @@ export class AppointmentDetail implements OnInit {
     switch (status) {
       case AppointmentStatus.Pending: return 'bg-amber-500';
       case AppointmentStatus.Confirmed: return 'bg-emerald-500';
+      case AppointmentStatus.Paid: return 'bg-emerald-500';
       case AppointmentStatus.Completed: return 'bg-bosla-blue';
       case AppointmentStatus.Cancelled: return 'bg-rose-500';
       case AppointmentStatus.Rescheduled: return 'bg-purple-500';
@@ -280,7 +313,8 @@ export class AppointmentDetail implements OnInit {
   getStatusTimelineLabel(status: AppointmentStatus | undefined): string {
     switch (status) {
       case AppointmentStatus.Pending: return 'تم إنشاء طلب الموعد';
-      case AppointmentStatus.Confirmed: return 'تم تأكيد الموعد';
+      case AppointmentStatus.Confirmed: return 'تم قبول الموعد من قبل المختص';
+      case AppointmentStatus.Paid: return 'تم تأكيد الموعد بعد الدفع';
       case AppointmentStatus.Completed: return 'تم إتمام الجلسة';
       case AppointmentStatus.Cancelled: return 'تم إلغاء الموعد';
       case AppointmentStatus.Rescheduled: return 'تم إعادة جدولة الموعد';

@@ -17,9 +17,10 @@ import {
   SessionSummaryDto,
 } from '../contracts/appointments.contracts';
 import { ToastService } from '@core/services/toast.service';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, switchMap, of, catchError } from 'rxjs';
 import { SpecialistsApiService } from '@features/specialists/data-access/specialist-api.service';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import { ConversationService } from '@features/communications/services/conversation.service';
 
 export interface AppointmentsState {
   items: AppointmentDto[];
@@ -47,6 +48,7 @@ export interface AppointmentsState {
 export class AppointmentsStore {
   private readonly appointmentService = inject(AppointmentService);
   private readonly specialistApi = inject(SpecialistsApiService);
+  private readonly conversationService = inject(ConversationService);
   private readonly toast = inject(ToastService);
 
   private readonly _state = signal<AppointmentsState>({
@@ -86,6 +88,8 @@ export class AppointmentsStore {
   readonly availabilitySlots = computed(() => this._state().availabilitySlots);
   readonly bookingAppointmentId = computed(() => this._state().bookingAppointmentId);
   readonly bookingStep = computed(() => this._state().bookingStep);
+
+  readonly lastCreatedConversationId = signal<string | null>(null);
 
   readonly formattedAvailabilitySlots = computed(() => {
     const slots = this._state().availabilitySlots;
@@ -303,15 +307,37 @@ export class AppointmentsStore {
       });
   }
 
-  confirmAppointment(id: string): void {
+  confirmAppointment(id: string, onSuccess?: (conversationId?: string) => void): void {
+    if (this._state().isActionLoading) return;
     this.updateState({ isActionLoading: true });
     this.appointmentService.confirm(id)
-      .pipe(finalize(() => this.updateState({ isActionLoading: false })))
+      .pipe(
+        switchMap(() =>
+          this.conversationService.create(id).pipe(
+            catchError(() => {
+              return of({ data: null } as any);
+            }),
+          ),
+        ),
+        finalize(() => this.updateState({ isActionLoading: false })),
+      )
       .subscribe({
-        next: () => {
-          this.toast.success('تم تأكيد الموعد بنجاح.');
+        next: (res) => {
+          const conversationId = res?.data;
+          if (conversationId) {
+            this.lastCreatedConversationId.set(conversationId);
+            if (this._state().selectedItem?.id === id) {
+              this.updateState({
+                selectedItem: { ...this._state().selectedItem!, conversationId }
+              });
+            }
+            this.toast.success('تم تأكيد الموعد وفتح المحادثة مع المستخدم بنجاح.');
+          } else {
+            this.toast.success('تم تأكيد الموعد بنجاح.');
+          }
           this.updateState({ bookingStep: 'done' });
           this.refreshAfterAction(id);
+          onSuccess?.(conversationId ?? undefined);
         },
         error: (err) => this.handleError(err, 'فشل في تأكيد الموعد.')
       });
