@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { AppointmentsStore } from '@features/appointments/store/appointments.store';
 import { AppointmentService } from '@features/appointments/services/appointments.service';
 import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
@@ -29,6 +30,7 @@ interface SpecialistAppointment {
   status: ApptStatus;
   amount: number;
   isPaid: boolean;
+  conversationId?: string;
 }
 
 function toStatus(raw: unknown): ApptStatus {
@@ -61,11 +63,11 @@ function clientNumber(userId: string): string {
 
 const STATUS_LABELS: Record<ApptStatus, string> = {
   [ApptStatus.Pending]: 'قيد الانتظار',
-  [ApptStatus.Confirmed]: 'مؤكد',
+  [ApptStatus.Confirmed]: 'بانتظار الدفع',
   [ApptStatus.Completed]: 'مكتمل',
   [ApptStatus.Cancelled]: 'ملغي',
   [ApptStatus.Rejected]: 'مرفوض',
-  [ApptStatus.Paid]: 'مدفوع',
+  [ApptStatus.Paid]: 'مؤكد ومدفوع',
 };
 
 const STATUS_CLASSES: Record<ApptStatus, string> = {
@@ -96,12 +98,16 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
   private appointmentService = inject(AppointmentService);
+  readonly store = inject(AppointmentsStore);
 
   // Core state
   readonly activeTab = signal<ApptStatus | 'all'>('all');
   readonly searchTerm = signal('');
   readonly appointments = signal<SpecialistAppointment[]>([]);
   readonly isLoading = signal(false);
+  readonly isLoadingMore = signal(false);
+  readonly hasMore = signal(false);
+  readonly pageNumber = signal(1);
   readonly error = signal<string | null>(null);
   readonly totalEarnings = signal<number>(0);
   readonly earningsError = signal<string | null>(null);
@@ -132,18 +138,36 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
     Object.values(this.meetingTimerRefs).forEach(clearInterval);
   }
 
-  loadAppointments(): void {
-    this.isLoading.set(true);
+  readonly pageSize = 8;
+
+  loadAppointments(page: number = 1, append: boolean = false): void {
+    if (append) {
+      this.isLoadingMore.set(true);
+    } else {
+      this.isLoading.set(true);
+      this.pageNumber.set(1);
+    }
     this.error.set(null);
     this.loadEarnings();
 
-    this.appointmentService.getMySpecialistAppointments()
-      .pipe(finalize(() => this.isLoading.set(false)))
+    this.http.get<any>(`${API_ENDPOINTS.appointments.base}/my-appointments?pageNumber=${page}&pageSize=${this.pageSize}`)
+      .pipe(finalize(() => {
+        this.isLoading.set(false);
+        this.isLoadingMore.set(false);
+      }))
+
       .subscribe({
         next: (res) => {
           const items = res.data ?? [];
           const list = (Array.isArray(items) ? items : []).map(i => this.toAppointment(i));
-          this.appointments.set(list);
+          if (append) {
+            this.appointments.update(existing => [...existing, ...list]);
+          } else {
+            this.appointments.set(list);
+          }
+          this.pageNumber.set(page);
+          const pagination = res.pagination;
+          this.hasMore.set(pagination?.hasNextPage ?? false);
           this.fetchClientNames(list);
           this.startCountdowns();
         },
@@ -152,6 +176,11 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
           this.error.set(msg);
         },
       });
+  }
+
+  loadMore(): void {
+    if (this.isLoadingMore() || !this.hasMore()) return;
+    this.loadAppointments(this.pageNumber() + 1, true);
   }
 
   private loadEarnings(): void {
@@ -178,7 +207,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
     const toFetch = uniqueIds.filter(id => !existing[id]);
 
     if (!toFetch.length) {
-      this.updateClientDisplay(list, existing);
+      this.updateClientDisplay(this.appointments(), existing);
       return;
     }
 
@@ -357,16 +386,18 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
       status: toStatus(item.status),
       amount: item.sessionPrice ?? item.amount ?? 0,
       isPaid: item.isPaid ?? false,
+      conversationId: item.conversationId ?? undefined,
     };
   }
 
   confirmAppointment(id: string): void {
-    this.http.put<ApiResponse<any>>(API_ENDPOINTS.appointments.confirm(id), {}).subscribe({
-      next: () => {
-        this.toast.success('تم تأكيد الموعد');
-        this.loadAppointments();
-      },
-      error: () => this.toast.danger('فشل تأكيد الموعد'),
+    this.store.confirmAppointment(id, (convId) => {
+      if (convId) {
+        this.appointments.update(list =>
+          list.map(apt => apt.id === id ? { ...apt, conversationId: convId } : apt)
+        );
+      }
+      this.loadAppointments();
     });
   }
 
@@ -374,6 +405,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
 
   showRejectModal = signal(false);
   showCancelModal = signal(false);
+  showDeleteModal = signal(false);
   pendingActionId = signal<string | null>(null);
 
   openRejectPrompt(id: string): void {
@@ -413,6 +445,25 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
         this.loadAppointments();
       },
       error: () => this.toast.danger('فشل إلغاء الموعد'),
+    });
+  }
+
+  openDeletePrompt(id: string): void {
+    this.pendingActionId.set(id);
+    this.showDeleteModal.set(true);
+  }
+
+  confirmDelete(): void {
+    const id = this.pendingActionId();
+    if (!id) return;
+    this.http.delete<ApiResponse<any>>(API_ENDPOINTS.appointments.byId(id)).subscribe({
+      next: () => {
+        this.toast.success('تم حذف الموعد');
+        this.showDeleteModal.set(false);
+        this.pendingActionId.set(null);
+        this.loadAppointments();
+      },
+      error: () => this.toast.danger('فشل حذف الموعد'),
     });
   }
 

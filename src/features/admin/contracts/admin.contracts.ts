@@ -132,6 +132,7 @@ export interface AdminSpecialistListItemDto {
   createdAt: string;
   profileImageUrl?: string | null;
   expertiseAreas: string[];
+  isEmbedded?: boolean;
 }
 
 export interface SkillDto {
@@ -190,6 +191,22 @@ export interface AdminSpecialistDetailDto {
   expertiseAreas: string[];
   industries: string[];
   reviews: ReviewDto[];
+  isEmbedded?: boolean;
+  lastEmbeddedAt?: string;
+  documents: SpecialistDocumentDto[];
+  adminNotes?: string;
+}
+
+export interface SpecialistDocumentDto {
+  id: string;
+  type: string;
+  url: string;
+  originalFileName: string;
+}
+
+export interface VerifySpecialistRequest {
+  isVerified: boolean;
+  adminNotes?: string;
 }
 
 // ── Appointments ──
@@ -214,6 +231,9 @@ export interface AdminAppointmentDetailDto {
   paymentStatus?: string;
   createdAt: string;
   statusHistory: AdminAppointmentStatusHistoryDto[];
+  keyTakeaways?: string;
+  actionItemsForUser?: string;
+  actionItemsForSpec?: string;
 }
 
 export interface AdminAppointmentStatusHistoryDto {
@@ -296,6 +316,7 @@ export interface EmbeddingsStatusDto {
   totalSpecialists: number;
   embeddedCount: number;
   pendingCount: number;
+  outdatedCount: number;
   lastRebuildAt?: string;
   status: string;
 }

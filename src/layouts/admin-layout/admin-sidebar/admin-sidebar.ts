@@ -53,6 +53,7 @@ export class AdminSidebar {
         { label: 'المتخصصون', route: '/admin/specialists', icon: 'specialists' },
         { label: 'الحجوزات', route: '/admin/appointments', icon: 'appointments' },
         { label: 'المدفوعات', route: '/admin/payments', icon: 'payments' },
+        { label: 'السحوبات', route: '/admin/withdrawals', icon: 'payments' },
       ],
     },
     {

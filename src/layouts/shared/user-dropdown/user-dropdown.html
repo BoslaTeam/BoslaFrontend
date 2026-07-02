@@ -15,7 +15,7 @@
 
   @if (isDropdownOpen()) {
   <div
-    class="absolute left-0 mt-3 w-56 bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-100 flex flex-col transform origin-top-left transition-all duration-200">
+    class="absolute right-0 mt-3 w-56 max-w-[calc(100vw-32px)] bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-100 flex flex-col transition-all duration-200">
     <div class="px-4 py-3 border-b border-slate-100">
       <p class="text-sm font-bold text-slate-800 truncate">{{ authService.currentUser()?.fullName || 'مستخدم' }}</p>
       <p class="text-xs text-slate-500 truncate mt-0.5">{{ authService.currentUser()?.email || '' }}</p>

@@ -20,6 +20,7 @@
   <!-- Tabs -->
   <div class="specialists-tabs">
     <button class="tab-btn" [class.active]="selectedTab === 'all'" (click)="setTab('all')">الكل</button>
+    <button class="tab-btn" [class.active]="selectedTab === 'draft'" (click)="setTab('draft')">مسودة</button>
     <button class="tab-btn" [class.active]="selectedTab === 'pending'" (click)="setTab('pending')">معلق</button>
     <button class="tab-btn" [class.active]="selectedTab === 'approved'" (click)="setTab('approved')">مقبول</button>
     <button class="tab-btn" [class.active]="selectedTab === 'rejected'" (click)="setTab('rejected')">مرفوض</button>
@@ -84,6 +85,7 @@
             <th>المتخصص</th>
             <th>التخصصات</th>
             <th>الحالة</th>
+            <th class="col-embedding">AI</th>
             <th>التقييم</th>
             <th>الجلسات</th>
             <th>الإجراءات</th>
@@ -121,6 +123,13 @@
                 <span class="status-badge" [class]="getVerificationStatusClass(spec.verificationStatus)">
                   {{ getVerificationStatusLabel(spec.verificationStatus) }}
                 </span>
+              </td>
+              <td class="col-embedding">
+                @if (spec.isEmbedded) {
+                  <span class="embedding-dot done" title="مضمن">✅</span>
+                } @else {
+                  <span class="embedding-dot pending" title="بانتظار التضمين">⏳</span>
+                }
               </td>
               <td>
                 <span class="rating-value">

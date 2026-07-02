@@ -126,6 +126,33 @@
         </div>
       </div>
 
+      <!-- Session Summary -->
+      @if (a.status === 'Completed' && (a.keyTakeaways || a.actionItemsForUser || a.actionItemsForSpec)) {
+        <div class="detail-card full">
+          <h3 class="card-title">ملخص الجلسة</h3>
+          <div class="summary-section">
+            @if (a.keyTakeaways) {
+              <div class="summary-block">
+                <h4>النقاط الرئيسية</h4>
+                <p>{{ a.keyTakeaways }}</p>
+              </div>
+            }
+            @if (a.actionItemsForUser) {
+              <div class="summary-block">
+                <h4>الإجراءات المطلوبة من العميل</h4>
+                <p>{{ a.actionItemsForUser }}</p>
+              </div>
+            }
+            @if (a.actionItemsForSpec) {
+              <div class="summary-block">
+                <h4>متابعة من المتخصص</h4>
+                <p>{{ a.actionItemsForSpec }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Payment Info -->
       <div class="detail-card">
         <h3 class="card-title">الدفع</h3>

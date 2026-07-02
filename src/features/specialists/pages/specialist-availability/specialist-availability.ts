@@ -32,7 +32,7 @@ interface BookedApptInfo {
   status: number;
 }
 
-interface ScheduleDefinition {
+export interface ScheduleDefinition {
   id: string;
   days: number[];
   startTime: string;
@@ -50,7 +50,7 @@ interface ScheduleSlotMap {
 
 // ─── Constants ─────────────────────────────────────────────────────
 const MIN_SESSION_MINUTES = 15;
-const MAX_GENERATION_DAYS = 90;
+const MAX_GENERATION_DAYS = 15;
 
 const WEEKDAY_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -60,9 +60,6 @@ const MONTH_NAMES = [
 ];
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
-
-const STORAGE_SCHEDULES = 'bosla_schedules';
-const STORAGE_SLOT_MAP = 'bosla_schedule_slot_map';
 
 const STATUS_META: Record<SlotStatus, { label: string }> = {
   available: { label: 'متاح' },
@@ -109,23 +106,6 @@ function generateId(): string {
   return `sch_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveToStorage(key: string, data: unknown): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch {
-    /* quota exceeded – silently ignore */
-  }
-}
-
 function dayNameEn(n: number): string {
   return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][n];
 }
@@ -138,20 +118,19 @@ function formatTimeShort(hhmm: string): string {
 }
 
 // ─── Schedule → Slots engine ──────────────────────────────────────
-function generateSlotsFromSchedule(
+export function generateSlotsFromSchedule(
   schedule: ScheduleDefinition,
   existingSlots: { start: Date; end: Date }[],
 ): { start: Date; end: Date; existingSlotId?: string }[] {
   const result: { start: Date; end: Date; existingSlotId?: string }[] = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const now = new Date();
 
   const startDate = new Date(schedule.startDate + 'T00:00:00');
   const endDate = schedule.endDate
     ? new Date(schedule.endDate + 'T00:00:00')
     : null;
 
-  const maxDate = new Date(today);
+  const maxDate = new Date(now);
   maxDate.setDate(maxDate.getDate() + MAX_GENERATION_DAYS);
   const effectiveEnd = endDate && endDate < maxDate ? endDate : maxDate;
 
@@ -170,7 +149,7 @@ function generateSlotsFromSchedule(
       while (slotStart.getTime() + schedule.sessionDuration * 60000 <= dayEnd.getTime()) {
         const slotEnd = new Date(slotStart.getTime() + schedule.sessionDuration * 60000);
 
-        if (slotEnd > today) {
+        if (slotStart > now) {
           const match = existingSlots.find(
             e => Math.abs(e.start.getTime() - slotStart.getTime()) < 60000
               && Math.abs(e.end.getTime() - slotEnd.getTime()) < 60000,
@@ -191,8 +170,18 @@ function generateSlotsFromSchedule(
 }
 
 function schedulesConflict(a: ScheduleDefinition, b: ScheduleDefinition): boolean {
+  // Date-range overlap
+  const aStart = new Date(a.startDate + 'T00:00:00').getTime();
+  const aEndMs = a.endDate ? new Date(a.endDate + 'T00:00:00').getTime() : Infinity;
+  const bStart = new Date(b.startDate + 'T00:00:00').getTime();
+  const bEndMs = b.endDate ? new Date(b.endDate + 'T00:00:00').getTime() : Infinity;
+  if (aStart > bEndMs || bStart > aEndMs) return false;
+
+  // Shared weekdays
   const sharedDays = a.days.filter(d => b.days.includes(d));
   if (sharedDays.length === 0) return false;
+
+  // Time overlap
   return a.startTime < b.endTime && a.endTime > b.startTime;
 }
 
@@ -227,6 +216,7 @@ export class SpecialistAvailability implements OnInit {
   readonly formatDuration = formatDuration;
   readonly formatTime = formatTime;
   readonly dayNameEn = dayNameEn;
+  readonly todayStr = new Date().toISOString().slice(0, 10);
 
   // Schedule form
   readonly editingScheduleId = signal<string | null>(null);
@@ -238,6 +228,32 @@ export class SpecialistAvailability implements OnInit {
   readonly formEndDate = signal('');
   readonly formError = signal('');
   readonly showForm = signal(false);
+
+  readonly availableWeekdays = computed(() => {
+    const startStr = this.formStartDate();
+    const endStr = this.formEndDate();
+    if (!startStr) return Array(7).fill(true);
+
+    const start = new Date(startStr + 'T00:00:00');
+    if (isNaN(start.getTime())) return Array(7).fill(true);
+
+    let end: Date;
+    if (endStr) {
+      end = new Date(endStr + 'T00:00:00');
+    } else {
+      end = new Date(start);
+      end.setDate(end.getDate() + MAX_GENERATION_DAYS);
+    }
+    if (isNaN(end.getTime()) || end < start) return Array(7).fill(true);
+
+    const available = Array(7).fill(false);
+    const cur = new Date(start);
+    while (cur <= end) {
+      available[cur.getDay()] = true;
+      cur.setDate(cur.getDate() + 1);
+    }
+    return available;
+  });
 
   // Delete confirmation for schedules
   readonly showDeleteConfirm = signal(false);
@@ -264,11 +280,11 @@ export class SpecialistAvailability implements OnInit {
     const existing = this.rawSlots();
     const appts = this.appointments();
     const names = this.clientNames();
-    const map = this.scheduleSlotMap();
 
     const now = new Date();
     const result: SlotDisplay[] = [];
 
+    // Generate slots from active schedules
     for (const sch of schedules) {
       if (!sch.enabled) continue;
       const genSlots = generateSlotsFromSchedule(sch, existing);
@@ -311,19 +327,20 @@ export class SpecialistAvailability implements OnInit {
       }
     }
 
-    // Also include manual slots (existing slots not linked to any schedule)
-    const allScheduleSlotIds = new Set<string>();
-    for (const ids of Object.values(map)) ids.forEach(id => allScheduleSlotIds.add(id));
-
-    for (const slot of existing) {
-      if (allScheduleSlotIds.has(slot.id)) continue;
+    // Add unmatched backend slots (not covered by any schedule)
+    for (const raw of existing) {
+      const isCovered = result.some(s =>
+        Math.abs(s.start.getTime() - raw.start.getTime()) < 60000 &&
+        Math.abs(s.end.getTime() - raw.end.getTime()) < 60000
+      );
+      if (isCovered) continue;
 
       const matchingAppt = appts.find(a =>
-        slotsOverlap(slot.start, slot.end, new Date(a.startTimeUtc), new Date(a.endTimeUtc)),
+        slotsOverlap(raw.start, raw.end, new Date(a.startTimeUtc), new Date(a.endTimeUtc)),
       );
 
       let status: SlotStatus;
-      if (slot.end < now) {
+      if (raw.end < now) {
         status = 'ended';
       } else if (!matchingAppt) {
         status = 'available';
@@ -342,14 +359,15 @@ export class SpecialistAvailability implements OnInit {
       }
 
       result.push({
-        id: slot.id,
-        start: slot.start,
-        end: slot.end,
+        id: raw.id,
+        start: raw.start,
+        end: raw.end,
         status,
         clientName: matchingAppt ? (names[matchingAppt.userId] || '') : '',
         clientId: matchingAppt ? matchingAppt.userId : '',
         appointmentStatus: matchingAppt ? matchingAppt.status : null,
         source: 'manual',
+        scheduleId: undefined,
       });
     }
 
@@ -372,12 +390,24 @@ export class SpecialistAvailability implements OnInit {
   // ─── Filter + Search ─────────────────────────────────────────
   readonly activeFilter = signal<'all' | 'available' | 'booked' | 'ended'>('all');
   readonly searchQuery = signal('');
+  readonly slotScheduleFilter = signal<string | null>(null);
+
+  readonly scheduleFilterOptions = computed(() => {
+    const all = this.schedules();
+    const current = this.slotScheduleFilter();
+    return [{ id: null, label: 'كل الجداول' }, ...all.map(s => ({
+      id: s.id,
+      label: `${s.days.map(d => WEEKDAY_NAMES[d]).join('، ')} — ${formatTimeShort(s.startTime)}-${formatTimeShort(s.endTime)}`,
+    }))];
+  });
 
   readonly filteredSlots = computed(() => {
     let list = this.generatedSlots();
     const f = this.activeFilter();
     const q = this.searchQuery().trim().toLowerCase();
+    const schedFilter = this.slotScheduleFilter();
 
+    if (schedFilter) list = list.filter(s => s.scheduleId === schedFilter);
     if (f !== 'all') list = list.filter(s => s.status === f);
     if (q) {
       list = list.filter(s => {
@@ -456,21 +486,7 @@ export class SpecialistAvailability implements OnInit {
   // ─── Lifecycle ────────────────────────────────────────────────
   ngOnInit(): void {
     this.initFormDate();
-    this.loadSchedules();
     this.loadData();
-  }
-
-  // ─── Local Storage ────────────────────────────────────────────
-  private loadSchedules(): void {
-    const schedules = loadFromStorage<ScheduleDefinition[]>(STORAGE_SCHEDULES, []);
-    const slotMap = loadFromStorage<ScheduleSlotMap>(STORAGE_SLOT_MAP, {});
-    this.schedules.set(schedules);
-    this.scheduleSlotMap.set(slotMap);
-  }
-
-  private persistSchedules(): void {
-    saveToStorage(STORAGE_SCHEDULES, this.schedules());
-    saveToStorage(STORAGE_SLOT_MAP, this.scheduleSlotMap());
   }
 
   // ─── API Data ─────────────────────────────────────────────────
@@ -579,6 +595,7 @@ export class SpecialistAvailability implements OnInit {
   }
 
   toggleDay(index: number): void {
+    if (!this.availableWeekdays()[index]) return;
     this.formDays.update((d) => {
       const next = [...d];
       next[index] = !next[index];
@@ -608,6 +625,20 @@ export class SpecialistAvailability implements OnInit {
 
     if (!this.formStartDate()) {
       this.formError.set('يرجى تحديد تاريخ البداية.');
+      return;
+    }
+
+    const startDate = this.formStartDate();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(startDate + 'T00:00:00') < today) {
+      this.formError.set('تاريخ البداية يجب أن يكون اليوم أو بعده.');
+      return;
+    }
+
+    const endDate = this.formEndDate();
+    if (endDate && endDate < startDate) {
+      this.formError.set('تاريخ النهاية يجب أن يكون بعد تاريخ البداية أو يساويه.');
       return;
     }
 
@@ -651,7 +682,6 @@ export class SpecialistAvailability implements OnInit {
 
     // Sync slots to backend
     this.syncScheduleSlots(draft);
-    this.persistSchedules();
     this.closeForm();
     this.toast.success(editId ? 'تم تحديث الجدول بنجاح' : 'تم إنشاء الجدول بنجاح');
   }
@@ -691,7 +721,6 @@ export class SpecialistAvailability implements OnInit {
           completed += batch.length;
           if (completed >= newSlots.length) {
             this.scheduleSlotMap.update((m) => ({ ...m, [schedule.id]: slotIds }));
-            this.persistSchedules();
             this.isSyncing.set(false);
             this.loadData();
           } else {
@@ -728,7 +757,6 @@ export class SpecialistAvailability implements OnInit {
       delete next[scheduleId];
       return next;
     });
-    this.persistSchedules();
   }
 
   // ─── Schedule management ──────────────────────────────────────
@@ -748,7 +776,6 @@ export class SpecialistAvailability implements OnInit {
 
     this.deleteSlotsForSchedule(schedule.id, false);
     this.schedules.update((list) => list.filter((s) => s.id !== schedule.id));
-    this.persistSchedules();
     this.showDeleteConfirm.set(false);
     this.scheduleToDelete.set(null);
     this.toast.success('تم حذف الجدول وجميع مواعيده المرتبطة');
@@ -773,8 +800,6 @@ export class SpecialistAvailability implements OnInit {
       this.toast.success('تم تعطيل الجدول');
       this.loadData();
     }
-
-    this.persistSchedules();
   }
 
   // ─── Slot Deletion (manual slots) ─────────────────────────────
@@ -786,7 +811,7 @@ export class SpecialistAvailability implements OnInit {
       this.toast.danger('لا يمكن حذف موعد مرتبط بحجز نشط.');
       return;
     }
-    if (slot.source === 'schedule') {
+    if (slot.source !== 'manual') {
       this.toast.danger('هذا الموعد ناتج عن جدول عمل. قم بتعطيل أو حذف الجدول لإزالته.');
       return;
     }

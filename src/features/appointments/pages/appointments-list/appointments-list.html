@@ -30,6 +30,22 @@
       >
         المواعيد السابقة
       </button>
+      <button
+        (click)="setTab('pending_payment')"
+        [class]="
+          activeTab() === 'pending_payment'
+            ? 'border-bosla-orange text-bosla-orange font-bold'
+            : 'border-transparent text-bosla-grey hover:text-bosla-orange'
+        "
+        class="py-3 px-6 text-sm font-sans border-b-2 transition-all duration-200 outline-none relative"
+      >
+        دفعات معلقة
+        @if (pendingPaymentCount() > 0) {
+          <span class="absolute -top-1 -left-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            {{ pendingPaymentCount() }}
+          </span>
+        }
+      </button>
     </div>
 
     @if (store.isLoading()) {
@@ -40,98 +56,141 @@
     } @else {
       @if (filteredAppointments().length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          @for (appointment of filteredAppointments(); track appointment.id) {
-            <div
-              [routerLink]="['/appointments', appointment.id]"
-              class="group block bg-white rounded-2xl border border-bosla-charcoal/5 hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden"
-            >
-              <div class="p-5">
-                <div class="flex items-start justify-between mb-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-full bg-bosla-primary/10 flex items-center justify-center overflow-hidden shrink-0"
-                    >
-                      @if (appointment.specialistImageUrl) {
-                        <img
-                          [src]="appointment.specialistImageUrl"
-                          class="w-full h-full object-cover"
-                        />
-                      } @else {
-                        <span class="text-bosla-primary text-sm font-bold">
-                          {{ (appointment.specialistName || 'م').charAt(0) }}
-                        </span>
-                      }
-                    </div>
-                    <div>
-                      <h3
-                        class="text-sm font-bold text-bosla-charcoal group-hover:text-bosla-blue transition-colors leading-tight"
-                      >
-                        {{ appointment.sessionTopic || 'جلسة استشارية' }}
-                      </h3>
-                      @if (appointment.specialistName) {
-                        <p class="text-xs text-bosla-grey mt-0.5">
-                          {{ appointment.specialistName }}
-                        </p>
-                      }
-                    </div>
-                  </div>
-
-                  @let statusInfo = getStatusDetails(appointment.status);
-                  <span
-                    [class]="
-                      'text-xs font-medium px-2.5 py-1 rounded-full border shrink-0 ' +
-                      statusInfo.classes
-                    "
-                  >
-                    {{ statusInfo.text }}
-                  </span>
-                </div>
-
+          @for (appointment of displayedAppointments(); track appointment.id) {
                 <div
-                  class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-t border-bosla-charcoal/5 pt-4"
-                >
-                  <div class="flex items-center gap-1.5">
-                    <svg
-                      class="w-4 h-4 text-bosla-blue"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+              class="group block bg-white rounded-2xl border border-bosla-charcoal/5 hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+            >
+              <div
+                [routerLink]="['/appointments', appointment.id]"
+                class="cursor-pointer"
+              >
+                <div class="p-5 pb-3">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-10 h-10 rounded-full bg-bosla-primary/10 flex items-center justify-center overflow-hidden shrink-0"
+                      >
+                        @if (appointment.specialistImageUrl) {
+                          <img
+                            [src]="appointment.specialistImageUrl"
+                            class="w-full h-full object-cover"
+                          />
+                        } @else {
+                          <span class="text-bosla-primary text-sm font-bold">
+                            {{ (appointment.specialistName || 'م').charAt(0) }}
+                          </span>
+                        }
+                      </div>
+                      <div>
+                        <h3
+                          class="text-sm font-bold text-bosla-charcoal group-hover:text-bosla-blue transition-colors leading-tight"
+                        >
+                          {{ appointment.sessionTopic || 'جلسة استشارية' }}
+                        </h3>
+                        @if (appointment.specialistName) {
+                          <p class="text-xs text-bosla-grey mt-0.5">
+                            {{ appointment.specialistName }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+
+                    @let statusInfo = getStatusDetails(appointment.status);
+                    <span
+                      [class]="
+                        'text-xs font-medium px-2.5 py-1 rounded-full border shrink-0 ' +
+                        statusInfo.classes
+                      "
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <span class="text-xs text-bosla-charcoal/70">{{
-                      appointment.start | date: 'dd MMMM yyyy' : '' : 'ar'
-                    }}</span>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <svg
-                      class="w-4 h-4 text-bosla-blue"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span class="text-xs text-bosla-charcoal/70" dir="ltr">
-                      {{ appointment.start | date: 'hh:mm a' }} -
-                      {{ appointment.end | date: 'hh:mm a' }}
+                      {{ statusInfo.text }}
                     </span>
                   </div>
+
+                  <div
+                    class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-t border-bosla-charcoal/5 pt-4"
+                  >
+                    <div class="flex items-center gap-1.5">
+                      <svg
+                        class="w-4 h-4 text-bosla-blue"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <span class="text-xs text-bosla-charcoal/70">{{
+                        appointment.start | date: 'dd MMMM yyyy' : '' : 'ar'
+                      }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <svg
+                        class="w-4 h-4 text-bosla-blue"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span class="text-xs text-bosla-charcoal/70" dir="ltr">
+                        {{ appointment.start | date: 'hh:mm a' }} -
+                        {{ appointment.end | date: 'hh:mm a' }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <div class="px-5 pb-4 flex flex-wrap items-center gap-2 border-t border-bosla-charcoal/5 pt-3">
+                @if (
+                  appointment.status === AppointmentStatus.Confirmed &&
+                  appointment.paymentStatus !== PaymentStatus.Paid &&
+                  appointment.paymentStatus !== PaymentStatus.Refunded
+                ) {
+                  <a
+                    [routerLink]="['/appointments', appointment.id, 'pay']"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-lg transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    إتمام الدفع
+                  </a>
+                }
+                <a
+                  [routerLink]="['/appointments', appointment.id, 'track']"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-bosla-blue bg-bosla-blue/5 hover:bg-bosla-blue/10 border border-bosla-blue/20 rounded-lg transition-colors"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  تتبع الحالة
+                </a>
               </div>
             </div>
           }
         </div>
+
+        @if (hasMore()) {
+          <div class="flex justify-center mt-8">
+            <button (click)="showMore()"
+              class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-bosla-blue bg-white border border-bosla-blue/20 rounded-xl hover:bg-bosla-blue/5 hover:shadow-sm transition-all duration-200">
+              عرض المزيد
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        }
       } @else {
         <div
           class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6"
@@ -151,6 +210,8 @@
           <h3 class="text-lg font-bold text-bosla-charcoal font-sans">
             @if (activeTab() === 'upcoming') {
               لا توجد مواعيد قادمة
+            } @else if (activeTab() === 'pending_payment') {
+              لا توجد دفعات معلقة
             } @else {
               لا يوجد سجل مواعيد سابقة
             }
@@ -158,6 +219,8 @@
           <p class="text-sm text-bosla-grey max-w-sm mt-1">
             @if (activeTab() === 'upcoming') {
               ابدأ رحلتك الاستشارية واحجز جلستك الأولى مع أحد المختصين المعتمدين.
+            } @else if (activeTab() === 'pending_payment') {
+              جميع مواعيدك قد تم دفعها. شكراً لك!
             } @else {
               لم يتم تسجيل أي مواعيد سابقة بعد.
             }

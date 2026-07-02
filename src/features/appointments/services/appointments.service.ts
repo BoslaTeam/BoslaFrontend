@@ -113,6 +113,11 @@ export class AppointmentService {
       .pipe(map(() => undefined));
   }
 
+  getSummary(id: string): Observable<ApiResponse<contract.SessionSummaryDto>> {
+    return this.http
+      .get<ApiResponse<contract.SessionSummaryDto>>(API_ENDPOINTS.ai.summary(id));
+  }
+
   getSpecialistAvailability(specialistId: string): Observable<ApiResponse<contract.AvailabilitySlotDto[]>> {
     return this.http
       .get<ApiResponse<contract.AvailabilitySlotDto[]>>(API_ENDPOINTS.specialists.availabilityFor(specialistId));

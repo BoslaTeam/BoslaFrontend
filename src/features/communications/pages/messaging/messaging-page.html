@@ -17,23 +17,47 @@
   </div>
 }
 
-<!-- Main Layout Grid -->
-<div
-  [class]="store.isContextPanelOpen()
-    ? 'grid grid-cols-1 md:grid-cols-[320px_1fr_340px] lg:grid-cols-[320px_1fr_380px] relative w-full flex-1 min-h-0 overflow-hidden bg-bosla-offwhite font-sans'
-    : 'grid grid-cols-1 md:grid-cols-[320px_1fr] relative w-full flex-1 min-h-0 overflow-hidden bg-bosla-offwhite font-sans'"
->
+<!-- Main Layout: flex row -->
+<div class="flex flex-row flex-1 min-h-0 overflow-hidden bg-bosla-offwhite font-sans">
 
-  <!-- Column 1: Conversation List -->
-  <chat-conversation-sidebar />
+  <!-- Left Sidebar (Specialist Card + Upcoming Session + Shared Resources) — animated wrapper -->
+  @if (!store.isMobileView()) {
+    <div
+      class="shrink-0 h-full transition-all duration-280 ease-in-out"
+      [style.width]="showDetailsSidebar() ? '260px' : '0px'"
+      [style.opacity]="showDetailsSidebar() ? '1' : '0'"
+      [style.overflow]="showDetailsSidebar() ? 'visible' : 'hidden'"
+    >
+      <chat-left-sidebar />
+    </div>
+  } @else {
+    <chat-left-sidebar
+      [class.hidden]="store.activeMobilePanel() === 'list'"
+    />
+  }
 
-  <!-- Column 2: Chat Area -->
-  <chat-chat-area />
+  <!-- Chat Area (dominant — flex-1 fills remaining space) -->
+  <chat-chat-area
+    class="flex-1 min-w-0"
+    [isConversationListOpen]="showConversationSidebar()"
+    (toggleConversationList)="toggleConversationSidebar()"
+    [isDetailsOpen]="showDetailsSidebar()"
+    (toggleDetailsPanel)="toggleDetailsSidebar()"
+  />
 
-  <!-- Column 3: Context Panel -->
-  @if (store.isContextPanelOpen()) {
-    <chat-context-panel />
+  <!-- Conversation Sidebar (Desktop / Tablet — animated wrapper) -->
+  @if (!store.isMobileView()) {
+    <div
+      class="shrink-0 h-full transition-all duration-280 ease-in-out"
+      [style.width]="showConversationSidebar() ? '320px' : '0px'"
+      [style.opacity]="showConversationSidebar() ? '1' : '0'"
+      [style.overflow]="showConversationSidebar() ? 'visible' : 'hidden'"
+    >
+      <chat-conversation-sidebar />
+    </div>
+  } @else {
+    <!-- Mobile — sidebar renders directly with its own overlay behavior -->
+    <chat-conversation-sidebar />
   }
 
 </div>
-

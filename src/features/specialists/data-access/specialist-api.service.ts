@@ -28,6 +28,7 @@ import { SpecialistReviewsResponse } from '../contracts/specialist-reviews-respo
 import { AddSkillsRequest } from '../contracts/specialist-skill.contract';
 import { AddExperiencesRequest, ExperienceResponse } from '../contracts/specialist-experience.contract';
 import { AddToolsRequest } from '../contracts/specialist-tool.contract';
+import { UpdateSpecialistRequest, UpdateBookingPolicyRequest, UpdateCancellationPolicyRequest, UpdateExperienceRequest } from '../contracts/specialist-profile-update.contract';
 import { VerificationDetailsResponse } from '../contracts/specialist-verification.contract';
 import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
 
@@ -205,6 +206,40 @@ export class SpecialistsApiService {
   removeSkill(id: string) {
     return this.http.delete(
       API_ENDPOINTS.specialists.skillById(id)
+    );
+  }
+
+  removeExpertise(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.expertiseById(id)
+    );
+  }
+
+  updateMyProfile(request: UpdateSpecialistRequest) {
+    return this.http.put<ApiResponse<SpecialistProfileResponse>>(
+      API_ENDPOINTS.specialists.me,
+      request
+    );
+  }
+
+  updateBookingPolicy(request: UpdateBookingPolicyRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.bookingPolicy,
+      request
+    );
+  }
+
+  updateCancellationPolicy(request: UpdateCancellationPolicyRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.cancellationPolicy,
+      request
+    );
+  }
+
+  updateExperience(id: string, request: UpdateExperienceRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.experienceById(id),
+      request
     );
   }
 
