@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, map, of } from 'rxjs';
 
 import { ApiResponse } from '../models/api-response.model';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -57,7 +57,7 @@ export class AuthService {
     readonly needsSpecialistOnboarding = computed(() => {
         const role = this.userRole();
         const status = this._specialistStatus();
-        return role === UserRole.Specialist && (status === 'Draft' || status === 'Rejected');
+        return role === UserRole.Specialist && (status === 'Draft' || status === 'Rejected' || status === null);
     });
 
     login(payload: LoginPayload): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
@@ -70,14 +70,9 @@ export class AuthService {
             }));
     }
 
-    register(payload: RegisterRequest): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+    register(payload: RegisterRequest): Observable<ApiResponse<{ message: string; email: string }>> {
         return this.http
-            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.register, payload)
-            .pipe(tap((res) => {
-                if (res.data) {
-                    this.setSession(res.data.accessToken, res.data.refreshToken);
-                }
-            }));
+            .post<ApiResponse<{ message: string; email: string }>>(API_ENDPOINTS.auth.register, payload);
     }
 
     googleLogin(payload: any): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
@@ -149,29 +144,35 @@ export class AuthService {
     }
 
     refreshSpecialistStatus(): void {
+        this.fetchSpecialistStatus().subscribe();
+    }
+
+    refreshSpecialistStatusAsync(): Observable<SpecialistStatus> {
+        return this.fetchSpecialistStatus();
+    }
+
+    private fetchSpecialistStatus(): Observable<SpecialistStatus> {
         if (!this.isAuthenticated()) {
             this._specialistStatus.set(null);
-            return;
+            return of(null);
         }
 
-        this.http.get<ApiResponse<{ status: number }>>(API_ENDPOINTS.specialists.verification)
+        return this.http.get<ApiResponse<{ status: number }>>(API_ENDPOINTS.specialists.verification)
             .pipe(
-                catchError((err: HttpErrorResponse) => {
-                    if (err.status === 404) {
-                        return of({ data: { status: -1 } } as ApiResponse<{ status: number }>);
-                    }
-                    this._specialistStatus.set(null);
-                    return of(null as unknown as ApiResponse<{ status: number }>);
-                }),
-            )
-            .subscribe({
-                next: (res) => {
-                    if (!res) return;
+                map((res) => {
                     const mapped = STATUS_MAP[res.data?.status ?? -1];
                     this._specialistStatus.set(mapped ?? null);
-                },
-                error: () => this._specialistStatus.set(null),
-            });
+                    return mapped ?? null;
+                }),
+                catchError((err: HttpErrorResponse) => {
+                    if (err.status === 404) {
+                        this._specialistStatus.set(null);
+                        return of(null);
+                    }
+                    this._specialistStatus.set(null);
+                    return of(null as SpecialistStatus);
+                }),
+            );
     }
 
     clearSession(): void {

@@ -92,7 +92,7 @@ export class SpecialistOnboardingStore {
     this.error.set(null);
 
     return this.repository.start().pipe(
-      tap(() => this.authService.refreshSpecialistStatus()),
+      switchMap(() => this.authService.refreshSpecialistStatusAsync()),
       finalize(() => this.onboardingLoading.set(false)),
     );
   }
@@ -115,7 +115,7 @@ export class SpecialistOnboardingStore {
     this.error.set(null);
 
     return this.repository.submitForReview().pipe(
-      tap(() => this.authService.refreshSpecialistStatus()),
+      switchMap(() => this.authService.refreshSpecialistStatusAsync()),
       finalize(() => this.onboardingLoading.set(false)),
     );
   }
@@ -192,7 +192,7 @@ export class SpecialistOnboardingStore {
       catchError((err: HttpErrorResponse) => {
         if (err.status === 404) {
           return this.repository.start().pipe(
-            tap(() => this.authService.refreshSpecialistStatus()),
+            switchMap(() => this.authService.refreshSpecialistStatusAsync()),
             map(() => null),
           );
         }
