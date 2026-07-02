@@ -28,7 +28,9 @@ export class App {
 
   protected readonly showChat = computed(() => {
     const url = this._router.url;
-    return !url.startsWith('/auth/login') && !url.startsWith('/auth/register');
+    return this._auth.isAuthenticated()
+      && !url.startsWith('/auth/login')
+      && !url.startsWith('/auth/register');
   });
 
   private _audioCtx: AudioContext | null = null;
