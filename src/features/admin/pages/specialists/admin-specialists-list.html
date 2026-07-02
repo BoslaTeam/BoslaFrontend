@@ -84,6 +84,7 @@
             <th>المتخصص</th>
             <th>التخصصات</th>
             <th>الحالة</th>
+            <th class="col-embedding">AI</th>
             <th>التقييم</th>
             <th>الجلسات</th>
             <th>الإجراءات</th>
@@ -121,6 +122,13 @@
                 <span class="status-badge" [class]="getVerificationStatusClass(spec.verificationStatus)">
                   {{ getVerificationStatusLabel(spec.verificationStatus) }}
                 </span>
+              </td>
+              <td class="col-embedding">
+                @if (spec.isEmbedded) {
+                  <span class="embedding-dot done" title="مضمن">✅</span>
+                } @else {
+                  <span class="embedding-dot pending" title="بانتظار التضمين">⏳</span>
+                }
               </td>
               <td>
                 <span class="rating-value">

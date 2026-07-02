@@ -24,7 +24,7 @@
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 1rem;
   margin-bottom: 1.25rem;
 }
@@ -52,6 +52,7 @@
 .stat-icon.total { color: #1B4F72; background: rgba(27, 79, 114, 0.08); }
 .stat-icon.done { color: #16a34a; background: rgba(22, 163, 74, 0.08); }
 .stat-icon.pending { color: #F39C12; background: rgba(243, 156, 18, 0.1); }
+.stat-icon.outdated { color: #e67e22; background: rgba(230, 126, 34, 0.08); }
 
 .stat-body { display: flex; flex-direction: column; gap: 0.125rem; }
 .stat-value { font-size: 1.5rem; font-weight: 700; color: #2C3E50; line-height: 1.2; }
@@ -140,6 +141,16 @@
 .skeleton-block { display: flex; flex-direction: column; gap: 0.75rem; }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 639px) {
   .stats-grid { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .page-header-info h1 { font-size: 1.125rem; }
+  .actions-card { padding: 1rem; }
+  .rebuild-btn { width: 100%; justify-content: center; }
+}
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .stat-card { padding: 1rem; }
+  .stat-value { font-size: 1.25rem; }
 }

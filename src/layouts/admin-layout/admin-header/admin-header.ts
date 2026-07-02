@@ -1,18 +1,26 @@
 import { Component, output, inject, signal, computed, HostListener } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
+import { NotificationService } from '@core/services/notification.service';
+import { NotificationDropdown } from '@layouts/shared/notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-admin-header',
-  imports: [],
+  imports: [NotificationDropdown],
   templateUrl: './admin-header.html',
   styleUrl: './admin-header.css',
 })
 export class AdminHeader {
   private readonly authService = inject(AuthService);
+  readonly notificationService = inject(NotificationService);
 
   readonly toggleSidebar = output<void>();
   readonly dropdownOpen = signal(false);
+  readonly notifOpen = signal(false);
   readonly currentUser = this.authService.currentUser;
+
+  toggleNotif(): void {
+    this.notifOpen.update((v) => !v);
+  }
 
   readonly userInitials = computed(() => {
     const name = this.currentUser()?.fullName ?? '';

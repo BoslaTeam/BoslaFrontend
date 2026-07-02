@@ -101,6 +101,7 @@
       <button class="detail-tab" [class.active]="activeTab() === 'experience'" (click)="setTab('experience')">الخبرات ({{ s.experiences.length }})</button>
       <button class="detail-tab" [class.active]="activeTab() === 'expertise'" (click)="setTab('expertise')">التخصصات والمجالات</button>
       <button class="detail-tab" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">التقييمات ({{ s.totalReviews || 0 }})</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'ai'" (click)="setTab('ai')">AI والتضمين</button>
     </div>
 
     <div class="tab-content">
@@ -286,6 +287,36 @@
             <p>لا توجد تقييمات بعد</p>
           </div>
         }
+      }
+
+      @if (activeTab() === 'ai') {
+        <div class="ai-section">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">حالة التضمين</span>
+              <span class="info-value">
+                @if (s.isEmbedded) {
+                  <span class="ai-status-done">✅ مضمن</span>
+                } @else {
+                  <span class="ai-status-pending">⏳ بانتظار التضمين</span>
+                }
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">آخر تحديث</span>
+              <span class="info-value" [class.empty]="!s.lastEmbeddedAt">{{ s.lastEmbeddedAt ? (s.lastEmbeddedAt | date:'yyyy/MM/dd hh:mm a') : 'لم يتم' }}</span>
+            </div>
+          </div>
+          <div class="ai-section-actions">
+            <button class="rebuild-embedding-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              إعادة تضمين
+            </button>
+            <span class="ai-section-hint">متاح قريبًا — حاليًا يتم التضمين تلقائيًا</span>
+          </div>
+        </div>
       }
 
     </div>

@@ -5,16 +5,21 @@ import {
   inject,
   DestroyRef,
   ChangeDetectionStrategy,
+  signal,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AgoraService } from '@core/services/agora.service';
 import { SessionTimerService } from '@core/services/session-timer.service';
 import { VideoSessionService } from '../../services/video-session.service';
+import { AuthService } from '@core/services/auth.service';
+import { UserRole } from '@core/enums/user-role.enum';
+import { SessionPrepPanel } from '@features/ai/components/session-prep-panel/session-prep-panel';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
+  imports: [SessionPrepPanel],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -28,11 +33,21 @@ export class VideoRoom {
   readonly agoraService = inject(AgoraService);
   readonly sessionTimerService = inject(SessionTimerService);
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly authService = inject(AuthService);
 
   private sessionId: string;
   private isDestroyed = false;
   private _sessionStartedAt: number | null = null;
   private _sessionEndedAt: number | null = null;
+
+  /** Appointment ID fetched from session data — used by SessionPrepPanel */
+  readonly appointmentId = signal<string | null>(null);
+
+  /**
+   * For specialists: show session prep screen before joining.
+   * null = loading/undecided, true = show prep, false = skip (user/non-specialist)
+   */
+  readonly showSessionPrep = signal<boolean>(false);
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -41,11 +56,42 @@ export class VideoRoom {
     }
     this.sessionId = id!;
 
+    // For specialists: load session data to get appointmentId, then show prep panel
+    if (this.authService.userRole() === UserRole.Specialist) {
+      this.loadSessionForPrep();
+    }
+
     this.destroyRef.onDestroy(() => {
       this.isDestroyed = true;
       this.sessionTimerService.stop();
       this.agoraService.disconnect();
     });
+  }
+
+  /** Fetches session metadata to resolve appointmentId for the prep panel */
+  private loadSessionForPrep(): void {
+    this.videoSessionService.getSession(this.sessionId).subscribe({
+      next: (res) => {
+        if (res.data?.appointmentId) {
+          this.appointmentId.set(res.data.appointmentId);
+          this.showSessionPrep.set(true);
+        }
+      },
+      error: () => {
+        // If we can't load session data, fall through to normal join
+        this.showSessionPrep.set(false);
+      },
+    });
+  }
+
+  /** Called when specialist confirms from the prep panel */
+  onPrepEnterSession(): void {
+    this.showSessionPrep.set(false);
+  }
+
+  /** Called when specialist clicks "back" in the prep panel */
+  onPrepBack(): void {
+    this.router.navigate(['..']);
   }
 
   async joinSession(): Promise<void> {

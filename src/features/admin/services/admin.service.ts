@@ -93,7 +93,7 @@ export class AdminService {
       .pipe(map((res) => res.data!));
   }
 
-  verifySpecialist(id: string, payload: { isApproved: boolean; notes?: string }): Observable<boolean> {
+  verifySpecialist(id: string, payload: { isVerified: boolean; notes?: string }): Observable<boolean> {
     return this.http
       .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.verifySpecialist(id), payload)
       .pipe(map((res) => res.data!));

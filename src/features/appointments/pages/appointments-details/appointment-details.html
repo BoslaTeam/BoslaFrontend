@@ -400,6 +400,7 @@
                 </button>
               }
             </div>
+
             <div
               class="bg-bosla-offwhite rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed"
             >
@@ -409,6 +410,38 @@
                 <p class="text-bosla-grey/60 italic">لا توجد ملاحظات إضافية مرفقة مع هذا الموعد.</p>
               }
             </div>
+
+            @if (appointment.status === AppointmentStatus.Completed && store.selectedSummary()) {
+              <div class="border-t border-bosla-charcoal/5 pt-5 mt-6 space-y-4">
+                <h4 class="text-sm font-bold text-bosla-charcoal">ملخص الجلسة</h4>
+                <div class="bg-bosla-blue/5 rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed space-y-3">
+                  <div>
+                    <h5 class="font-bold text-bosla-charcoal mb-1">النقاط الرئيسية</h5>
+                    <p>{{ store.selectedSummary()?.keyTakeaways }}</p>
+                  </div>
+                  @if (store.selectedSummary()?.actionItemsForUser) {
+                    <div>
+                      <h5 class="font-bold text-bosla-charcoal mb-1">الإجراءات المطلوبة منك</h5>
+                      <p>{{ store.selectedSummary()?.actionItemsForUser }}</p>
+                    </div>
+                  }
+                  @if (store.selectedSummary()?.actionItemsForSpec) {
+                    <div>
+                      <h5 class="font-bold text-bosla-charcoal mb-1">متابعة من الخبير</h5>
+                      <p>{{ store.selectedSummary()?.actionItemsForSpec }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else if (appointment.status === AppointmentStatus.Completed && store.isLoadingSummary()) {
+              <div class="border-t border-bosla-charcoal/5 pt-5 mt-6">
+                <h4 class="text-sm font-bold text-bosla-charcoal mb-3">ملخص الجلسة</h4>
+                <div class="flex items-center gap-2 text-sm text-bosla-grey">
+                  <ui-spinner size="sm"></ui-spinner>
+                  <span>جاري تحميل الملخص...</span>
+                </div>
+              </div>
+            }
           </div>
 
           <!-- Reminders Section -->

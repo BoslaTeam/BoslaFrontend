@@ -8,11 +8,12 @@ import { NotificationToast } from '@features/notifications/components/notificati
 import { NotificationsService } from '@features/notifications/services/notifications.service';
 import { NotificationService } from '@core/services/notification.service';
 import { AuthService } from '@core/services/auth.service';
+import { AiChatWidget } from '@features/ai/components/ai-chat-widget/ai-chat-widget';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, UiToast, UiGlobalLoader, NotificationToast],
+  imports: [RouterOutlet, UiToast, UiGlobalLoader, NotificationToast, AiChatWidget],
   templateUrl: './app.html',
 })
 export class App {
