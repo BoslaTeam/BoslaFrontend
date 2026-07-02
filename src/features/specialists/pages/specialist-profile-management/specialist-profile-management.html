@@ -67,6 +67,11 @@
           <form [formGroup]="profileForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ui-input formControlName="hourlyRate" label="سعر الجلسة (USD)" type="number" [required]="true" />
             <ui-input formControlName="experienceYears" label="سنوات الخبرة" type="number" [required]="true" />
+            <ui-input formControlName="title" label="المسمى الوظيفي" placeholder="مثال: مهندس برمجيات" />
+            <ui-textarea formControlName="bio" label="نبذة عني" placeholder="اكتب نبذة مختصرة عن نفسك" [rows]="2" />
+            <ui-select formControlName="gender" label="الجنس" [options]="genderOptions" placeholder="اختر الجنس" />
+            <ui-select formControlName="preferredLanguage" label="اللغة المفضلة" [options]="languageOptions" placeholder="اختر اللغة" />
+            <ui-select formControlName="country" label="الدولة" [options]="countryOptions" placeholder="اختر الدولة" />
             <div class="sm:col-span-2 flex justify-end">
               <ui-button type="button" (btnClick)="onProfileUpdate()" [loading]="saving()">حفظ التعديلات</ui-button>
             </div>
@@ -128,6 +133,64 @@
           <button (click)="addSkillOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
             <i class="fa-solid fa-plus"></i>
             إضافة مهارة
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Expertise ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
+            <i class="fa-solid fa-brain text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">مجالات الخبرة</h2>
+            <p class="text-sm text-slate-500 mt-0.5">مجالات التخصص والخبرة</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (item of myExpertise(); track item.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-600 text-sm font-medium border border-amber-200">
+              {{ item.name }}
+              <button (click)="removeExpertise(item.id)" [disabled]="savingExpertise() === item.id" class="text-amber-400 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingExpertise() === item.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-brain text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">لم يتم إضافة أي مجالات خبرة بعد</span>
+            </div>
+          }
+        </div>
+
+        @if (addExpertiseOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addExpertiseSearch()" (ngModelChange)="addExpertiseSearch.set($event)"
+                placeholder="ابحث عن مجال خبرة..." class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (item of filteredAddExpertise(); track item.id) {
+                <button (click)="addExpertise(item.id)" [disabled]="savingExpertise() === item.id"
+                  class="w-full text-right px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors cursor-pointer">
+                  {{ item.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">لا توجد نتائج</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addExpertiseOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            إضافة مجال خبرة
           </button>
         }
       </section>
