@@ -193,6 +193,20 @@ export interface AdminSpecialistDetailDto {
   reviews: ReviewDto[];
   isEmbedded?: boolean;
   lastEmbeddedAt?: string;
+  documents: SpecialistDocumentDto[];
+  adminNotes?: string;
+}
+
+export interface SpecialistDocumentDto {
+  id: string;
+  type: string;
+  url: string;
+  originalFileName: string;
+}
+
+export interface VerifySpecialistRequest {
+  isVerified: boolean;
+  adminNotes?: string;
 }
 
 // ── Appointments ──
