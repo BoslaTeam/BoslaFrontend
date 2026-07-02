@@ -1,151 +1,144 @@
 <div class="video-room">
   @if (!agoraService.joined()) {
-    <div class="video-room-welcome">
-      @if (isSessionEnded()) {
-        <div class="video-room-ended-msg">انتهت الجلسة.</div>
-      } @else if (isWaitingForSpecialist()) {
-        @if (signalrFailed()) {
-          <div class="video-room-signalr-error">
-            <p class="video-room-signalr-error-text">تعذر الاتصال بخادم الجلسة.</p>
-            <button class="video-room-retry-btn" (click)="retryJoin()">إعادة المحاولة</button>
-          </div>
-        } @else {
-          <div class="video-room-waiting-msg">بانتظار أن يبدأ المتخصص الجلسة</div>
-        }
-      } @else {
-        <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
-          {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
-        </button>
-      }
+  <div class="video-room-welcome">
+    @if (isSessionEnded()) {
+    <div class="video-room-ended-msg">انتهت الجلسة.</div>
+    } @else if (isWaitingForSpecialist()) {
+    @if (signalrFailed()) {
+    <div class="video-room-signalr-error">
+      <p class="video-room-signalr-error-text">تعذر الاتصال بخادم الجلسة.</p>
+      <button class="video-room-retry-btn" (click)="retryJoin()">إعادة المحاولة</button>
     </div>
+    } @else {
+    <div class="video-room-waiting-msg">بانتظار أن يبدأ المتخصص الجلسة</div>
+    }
+    } @else {
+    <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
+      {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
+    </button>
+    }
+  </div>
   }
 
   @if (agoraService.error()) {
-    <div class="video-room-error">
-      {{ agoraService.error() }}
-    </div>
+  <div class="video-room-error">
+    {{ agoraService.error() }}
+  </div>
   }
 
   <div class="video-room-grid">
     <div class="video-room-local-container">
-      <div #localPlayer
-           class="video-room-local"
-           [class.video-room-local--active]="agoraService.joined()"
-           [style.display]="agoraService.cameraEnabled() ? 'flex' : 'none'">
+      <div #localPlayer class="video-room-local" [class.video-room-local--active]="agoraService.joined()"
+        [style.display]="agoraService.cameraEnabled() ? 'flex' : 'none'">
       </div>
       @if (!agoraService.cameraEnabled() && agoraService.joined()) {
-        <div class="video-room-local video-room-local--placeholder">
-          <div class="video-room-placeholder-icon">
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#888" stroke-width="1.5">
-              <path d="M23 7l-7 5 7 5V7z"/>
-              <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888"/>
-              <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2"/>
-            </svg>
-          </div>
-          <span class="video-room-placeholder-text">Camera Off</span>
+      <div class="video-room-local video-room-local--placeholder">
+        <div class="video-room-placeholder-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#888" stroke-width="1.5">
+            <path d="M23 7l-7 5 7 5V7z" />
+            <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888" />
+            <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2" />
+          </svg>
         </div>
+        <span class="video-room-placeholder-text">Camera Off</span>
+      </div>
       }
       <span class="video-room-label">You</span>
     </div>
 
     @for (p of agoraService.remoteParticipants(); track p.uid) {
-      <div class="video-room-remote-container">
-        <div [id]="p.containerId"
-             class="video-room-remote"
-             [class.video-room-remote--no-video]="!p.hasVideo">
-        </div>
-        @if (!p.hasVideo) {
-          <div class="video-room-remote-placeholder">
-            <div class="video-room-placeholder-icon">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#888" stroke-width="1.5">
-                <path d="M23 7l-7 5 7 5V7z"/>
-                <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888"/>
-                <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2"/>
-              </svg>
-            </div>
-            <span class="video-room-placeholder-text">Camera Off</span>
-          </div>
-        }
-        <span class="video-room-label">User {{ p.uid }}</span>
+    <div class="video-room-remote-container">
+      <div [id]="p.containerId" class="video-room-remote" [class.video-room-remote--no-video]="!p.hasVideo">
       </div>
+      @if (!p.hasVideo) {
+      <div class="video-room-remote-placeholder">
+        <div class="video-room-placeholder-icon">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#888" stroke-width="1.5">
+            <path d="M23 7l-7 5 7 5V7z" />
+            <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888" />
+            <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2" />
+          </svg>
+        </div>
+        <span class="video-room-placeholder-text">Camera Off</span>
+      </div>
+      }
+      <span class="video-room-label">User {{ p.uid }}</span>
+    </div>
     }
   </div>
 
   @if (agoraService.joined()) {
-    <app-screen-share-indicator />
-    @if (networkQualityService.warningActive()) {
-      <div class="video-room-nq-warning">
-        جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.
-      </div>
-    }
-    <div class="video-room-devices">
-      <app-camera-selector />
-      <div class="video-room-mic-group">
-        <app-microphone-selector />
-        <app-microphone-level-indicator />
-      </div>
-      <div class="video-room-speaker-group">
-        <app-speaker-selector />
-        <app-speaker-test-button />
-      </div>
+  <app-screen-share-indicator />
+  @if (networkQualityService.warningActive()) {
+  <div class="video-room-nq-warning">
+    جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.
+  </div>
+  }
+  <div class="video-room-devices">
+    <app-camera-selector />
+    <div class="video-room-mic-group">
+      <app-microphone-selector />
+      <app-microphone-level-indicator />
     </div>
-    @if (screenShareService.error()) {
-      <div class="video-room-screenshare-error" role="alert">
-        {{ screenShareService.error() }}
-      </div>
-    }
-    <div class="video-room-controls">
-      <app-connection-status-badge />
-      <app-network-quality-badge />
-      <app-screen-share-button />
-      <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
-
-      <button class="video-room-control-btn"
-              [class.video-room-control-btn--off]="!agoraService.cameraEnabled()"
-              (click)="toggleCamera()"
-              title="{{ agoraService.cameraEnabled() ? 'Turn Camera Off' : 'Turn Camera On' }}">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          @if (agoraService.cameraEnabled()) {
-            <path d="M23 7l-7 5 7 5V7z"/>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-          } @else {
-            <path d="M23 7l-7 5 7 5V7z"/>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-            <line x1="2" y1="2" x2="22" y2="22"/>
-          }
-        </svg>
-      </button>
-
-      <button class="video-room-control-btn"
-              [class.video-room-control-btn--off]="!agoraService.microphoneEnabled()"
-              (click)="toggleMicrophone()"
-              title="{{ agoraService.microphoneEnabled() ? 'Mute Microphone' : 'Unmute Microphone' }}">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          @if (agoraService.microphoneEnabled()) {
-            <rect x="6" y="2" width="12" height="12" rx="6" ry="6"/>
-            <path d="M12 18v4"/>
-            <path d="M8 22h8"/>
-            <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4"/>
-          } @else {
-            <rect x="6" y="2" width="12" height="12" rx="6" ry="6"/>
-            <path d="M12 18v4"/>
-            <path d="M8 22h8"/>
-            <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4"/>
-            <line x1="2" y1="2" x2="22" y2="22"/>
-          }
-        </svg>
-      </button>
-
-      <button class="video-room-control-btn video-room-control-btn--leave"
-              (click)="leaveSession()"
-              title="Leave Session">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22.65 5.65l-2.79-2.79a1 1 0 00-1.41 0L16 5.17"/>
-          <path d="M22.65 18.35l-2.79 2.79a1 1 0 01-1.41 0L16 18.83"/>
-          <path d="M10 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4"/>
-          <line x1="16" y1="12" x2="4" y2="12"/>
-        </svg>
-      </button>
+    <div class="video-room-speaker-group">
+      <app-speaker-selector />
+      <app-speaker-test-button />
     </div>
+  </div>
+  @if (screenShareService.error()) {
+  <div class="video-room-screenshare-error" role="alert">
+    {{ screenShareService.error() }}
+  </div>
+  }
+  <div class="video-room-controls">
+    <app-connection-status-badge />
+    <app-recording-indicator />
+    <app-network-quality-badge />
+    <app-screen-share-button />
+    <app-recording-button [sessionId]="sessionId" />
+    <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
+
+    <button class="video-room-control-btn" [class.video-room-control-btn--off]="!agoraService.cameraEnabled()"
+      (click)="toggleCamera()" title="{{ agoraService.cameraEnabled() ? 'Turn Camera Off' : 'Turn Camera On' }}">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+        @if (agoraService.cameraEnabled()) {
+        <path d="M23 7l-7 5 7 5V7z" />
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+        } @else {
+        <path d="M23 7l-7 5 7 5V7z" />
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+        <line x1="2" y1="2" x2="22" y2="22" />
+        }
+      </svg>
+    </button>
+
+    <button class="video-room-control-btn" [class.video-room-control-btn--off]="!agoraService.microphoneEnabled()"
+      (click)="toggleMicrophone()"
+      title="{{ agoraService.microphoneEnabled() ? 'Mute Microphone' : 'Unmute Microphone' }}">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+        @if (agoraService.microphoneEnabled()) {
+        <rect x="6" y="2" width="12" height="12" rx="6" ry="6" />
+        <path d="M12 18v4" />
+        <path d="M8 22h8" />
+        <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4" />
+        } @else {
+        <rect x="6" y="2" width="12" height="12" rx="6" ry="6" />
+        <path d="M12 18v4" />
+        <path d="M8 22h8" />
+        <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4" />
+        <line x1="2" y1="2" x2="22" y2="22" />
+        }
+      </svg>
+    </button>
+
+    <button class="video-room-control-btn video-room-control-btn--leave" (click)="leaveSession()" title="Leave Session">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22.65 5.65l-2.79-2.79a1 1 0 00-1.41 0L16 5.17" />
+        <path d="M22.65 18.35l-2.79 2.79a1 1 0 01-1.41 0L16 18.83" />
+        <path d="M10 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4" />
+        <line x1="16" y1="12" x2="4" y2="12" />
+      </svg>
+    </button>
+  </div>
   }
 </div>

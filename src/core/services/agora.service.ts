@@ -449,6 +449,12 @@ export class AgoraService {
   }
 
   checkBrowserSupport(): boolean {
-    return AgoraRTC.checkSystemRequirements();
+    const supported = AgoraRTC.checkSystemRequirements();
+    console.log('Agora support:', supported);
+    console.log('Secure Context:', window.isSecureContext);
+    console.log('MediaDevices:', navigator.mediaDevices);
+    console.log('getUserMedia:', navigator.mediaDevices?.getUserMedia);
+    console.log('UserAgent:', navigator.userAgent);
+    return supported;
   }
 }

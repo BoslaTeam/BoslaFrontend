@@ -13,6 +13,16 @@ export interface SessionEndedPayload {
   endedAtUtc: string;
 }
 
+export interface RecordingStartedPayload {
+  sessionId: string;
+  startedAtUtc: string;
+}
+
+export interface RecordingStoppedPayload {
+  sessionId: string;
+  recordingUrl: string;
+}
+
 export type VideoSignalrConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
 @Injectable({ providedIn: 'root' })
@@ -22,10 +32,14 @@ export class VideoSignalrService {
 
   private readonly _sessionStarted = signal<SessionStartedPayload | null>(null);
   private readonly _sessionEnded = signal<SessionEndedPayload | null>(null);
+  private readonly _recordingStarted = signal<RecordingStartedPayload | null>(null);
+  private readonly _recordingStopped = signal<RecordingStoppedPayload | null>(null);
   private readonly _connectionState = signal<VideoSignalrConnectionState>('disconnected');
 
   readonly sessionStarted: Signal<SessionStartedPayload | null> = this._sessionStarted.asReadonly();
   readonly sessionEnded: Signal<SessionEndedPayload | null> = this._sessionEnded.asReadonly();
+  readonly recordingStarted: Signal<RecordingStartedPayload | null> = this._recordingStarted.asReadonly();
+  readonly recordingStopped: Signal<RecordingStoppedPayload | null> = this._recordingStopped.asReadonly();
   readonly connectionState: Signal<VideoSignalrConnectionState> = this._connectionState.asReadonly();
 
   async connect(sessionId: string): Promise<void> {
@@ -75,6 +89,14 @@ export class VideoSignalrService {
       this._sessionEnded.set(payload);
     });
 
+    this.hubConnection.on('RecordingStarted', (payload: RecordingStartedPayload) => {
+      this._recordingStarted.set(payload);
+    });
+
+    this.hubConnection.on('RecordingStopped', (payload: RecordingStoppedPayload) => {
+      this._recordingStopped.set(payload);
+    });
+
     try {
       await this.hubConnection.start();
       this._connectionState.set('connected');
@@ -96,5 +118,7 @@ export class VideoSignalrService {
     this._connectionState.set('disconnected');
     this._sessionStarted.set(null);
     this._sessionEnded.set(null);
+    this._recordingStarted.set(null);
+    this._recordingStopped.set(null);
   }
 }

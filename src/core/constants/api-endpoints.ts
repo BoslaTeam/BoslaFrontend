@@ -65,6 +65,9 @@ export const API_ENDPOINTS = {
     start: (id: string) => `${V}/video-sessions/${id}/start`,
     end: (id: string) => `${V}/video-sessions/${id}/end`,
     webhook: `${V}/webhooks/agora`,
+    recordingStart: (id: string) => `${V}/video-sessions/${id}/recording/start`,
+    recordingStop: (id: string) => `${V}/video-sessions/${id}/recording/stop`,
+    recordingInfo: (id: string) => `${V}/video-sessions/${id}/recording`,
   },
   specialists: {
     start: `${V}/specialists/me/start`,

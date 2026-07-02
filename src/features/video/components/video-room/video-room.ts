@@ -29,11 +29,14 @@ import { SpeakerTestButton } from '../speaker-test-button/speaker-test-button';
 import { VideoScreenShareService } from '../../services/video-screen-share.service';
 import { ScreenShareButton } from '../screen-share-button/screen-share-button';
 import { ScreenShareIndicator } from '../screen-share-indicator/screen-share-indicator';
+import { VideoRecordingTimerService } from '../../services/video-recording-timer.service';
+import { RecordingButton } from '../recording-button/recording-button';
+import { RecordingIndicator } from '../recording-indicator/recording-indicator';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -49,11 +52,12 @@ export class VideoRoom {
   readonly networkQualityService = inject(VideoNetworkQualityService);
   readonly videoDeviceService = inject(VideoDeviceService);
   readonly screenShareService = inject(VideoScreenShareService);
+  readonly recordingTimerService = inject(VideoRecordingTimerService);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
 
-  private sessionId: string;
+  public sessionId: string;
   private isDestroyed = false;
   private _sessionStartedAt: number | null = null;
   private _sessionEndedAt: number | null = null;
@@ -118,6 +122,7 @@ export class VideoRoom {
 
       this._sessionEndedAt = this.toTimestamp(payload.endedAtUtc);
       this.sessionTimerService.stop();
+      this.recordingTimerService.stop();
       this.isSessionEnded.set(true);
       this.isWaitingForSpecialist.set(false);
 
@@ -125,6 +130,18 @@ export class VideoRoom {
         this.networkQualityService.stop();
         this.agoraService.disconnect();
       }
+    });
+
+    effect(() => {
+      const payload = this.videoSignalrService.recordingStarted();
+      if (!payload) return;
+      this.recordingTimerService.start(payload.startedAtUtc);
+    });
+
+    effect(() => {
+      const payload = this.videoSignalrService.recordingStopped();
+      if (!payload) return;
+      this.recordingTimerService.stop();
     });
 
     effect(() => {
@@ -168,6 +185,10 @@ export class VideoRoom {
     if (!session || this.isDestroyed) return;
 
     this._appointmentId = session.appointmentId;
+
+    if (session.recording?.isRecording && session.recording.startedAtUtc) {
+      this.recordingTimerService.start(session.recording.startedAtUtc);
+    }
 
     if (!await this.connectSignalr()) return;
 
@@ -334,9 +355,15 @@ export class VideoRoom {
   private checkBrowserSupport(): boolean {
     const supported = this.agoraService.checkBrowserSupport();
     if (!supported) {
-      this.agoraService.setError(
-        'Your browser does not support video calls. Please use Chrome or Edge.'
-      );
+      if (!window.isSecureContext) {
+        this.agoraService.setError(
+          'Video calls require a secure HTTPS connection.'
+        );
+      } else {
+        this.agoraService.setError(
+          'Your browser does not support the required WebRTC APIs.'
+        );
+      }
     }
     return supported;
   }
