@@ -20,6 +20,7 @@
   <!-- Tabs -->
   <div class="specialists-tabs">
     <button class="tab-btn" [class.active]="selectedTab === 'all'" (click)="setTab('all')">الكل</button>
+    <button class="tab-btn" [class.active]="selectedTab === 'draft'" (click)="setTab('draft')">مسودة</button>
     <button class="tab-btn" [class.active]="selectedTab === 'pending'" (click)="setTab('pending')">معلق</button>
     <button class="tab-btn" [class.active]="selectedTab === 'approved'" (click)="setTab('approved')">مقبول</button>
     <button class="tab-btn" [class.active]="selectedTab === 'rejected'" (click)="setTab('rejected')">مرفوض</button>

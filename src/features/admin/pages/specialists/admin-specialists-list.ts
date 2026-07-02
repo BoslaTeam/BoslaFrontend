@@ -21,7 +21,7 @@ export class AdminSpecialistsList implements OnInit {
   readonly metadata = signal<PaginationMetadata | null>(null);
 
   searchQuery = '';
-  selectedTab: 'all' | 'pending' | 'approved' | 'rejected' = 'all';
+  selectedTab: 'all' | 'draft' | 'pending' | 'approved' | 'rejected' = 'all';
   currentPage = 1;
   pageSize = 10;
 
@@ -30,7 +30,8 @@ export class AdminSpecialistsList implements OnInit {
 
   ngOnInit(): void {
     this.route.fragment.subscribe((fragment) => {
-      if (fragment === 'pending') this.selectedTab = 'pending';
+      if (fragment === 'draft') this.selectedTab = 'draft';
+      else if (fragment === 'pending') this.selectedTab = 'pending';
       else if (fragment === 'approved') this.selectedTab = 'approved';
       else if (fragment === 'rejected') this.selectedTab = 'rejected';
       this.loadSpecialists();
@@ -62,7 +63,7 @@ export class AdminSpecialistsList implements OnInit {
     });
   }
 
-  setTab(tab: 'all' | 'pending' | 'approved' | 'rejected'): void {
+  setTab(tab: 'all' | 'draft' | 'pending' | 'approved' | 'rejected'): void {
     this.selectedTab = tab;
     this.currentPage = 1;
     this.loadSpecialists();
@@ -86,13 +87,13 @@ export class AdminSpecialistsList implements OnInit {
   }
 
   getVerificationStatusLabel(status: string): string {
-    const labels: Record<string, string> = { Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
+    const labels: Record<string, string> = { Draft: 'مسودة', Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
     return labels[status] ?? status;
   }
 
   getVerificationStatusClass(status: string): string {
-    const classes: Record<string, string> = { Pending: 'status-pending', Approved: 'status-approved', Rejected: 'status-rejected' };
-    return classes[status] ?? 'status-pending';
+    const classes: Record<string, string> = { Draft: 'status-draft', Pending: 'status-pending', Approved: 'status-approved', Rejected: 'status-rejected' };
+    return classes[status] ?? 'status-draft';
   }
 
   getUserInitials(name: string): string {

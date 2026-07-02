@@ -153,5 +153,16 @@ export const API_ENDPOINTS = {
     payments: `${V}/admin/payments`,
     paymentDetail: (id: string) => `${V}/admin/payments/${id}`,
     refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
+    withdrawals: `${V}/admin/withdrawals`,
+    withdrawalsPending: `${V}/admin/withdrawals/pending`,
+    withdrawalDetail: (id: string) => `${V}/admin/withdrawals/${id}`,
+    approveWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/approve`,
+    rejectWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/reject`,
+    completeWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/complete`,
+  },
+  withdrawals: {
+    wallet: `${V}/withdrawals/wallet`,
+    request: `${V}/withdrawals/request`,
+    history: `${V}/withdrawals/history`,
   },
 } as const;

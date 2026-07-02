@@ -1,0 +1,126 @@
+<div class="wallet-page">
+  <div class="page-header">
+    <h1>المحفظة المالية</h1>
+    <p class="page-subtitle">إدارة أرباحك وطلبات السحب</p>
+  </div>
+
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  } @else if (wallet(); as w) {
+    <!-- Balance Cards -->
+    <div class="balance-grid">
+      <div class="balance-card total">
+        <div class="balance-label">إجمالي الأرباح</div>
+        <div class="balance-amount">{{ w.totalEarnings | number:'1.2-2' }} ر.س</div>
+      </div>
+      <div class="balance-card available">
+        <div class="balance-label">الرصيد المتاح للسحب</div>
+        <div class="balance-amount">{{ w.availableBalance | number:'1.2-2' }} ر.س</div>
+      </div>
+      <div class="balance-card pending">
+        <div class="balance-label">رصيد قيد الانتظار</div>
+        <div class="balance-amount">{{ w.pendingBalance | number:'1.2-2' }} ر.س</div>
+      </div>
+      <div class="balance-card withdrawn">
+        <div class="balance-label">إجمالي المسحوبات</div>
+        <div class="balance-amount">{{ w.totalWithdrawn | number:'1.2-2' }} ر.س</div>
+      </div>
+    </div>
+
+    <!-- Request Withdrawal Button -->
+    @if (w.availableBalance > 0) {
+      <div class="request-section">
+        <button class="btn btn-primary" (click)="openRequestForm()">طلب سحب جديد</button>
+      </div>
+    }
+
+    <!-- Request Form Modal -->
+    @if (showRequestForm()) {
+      <div class="modal-overlay" (click)="closeRequestForm()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>طلب سحب جديد</h2>
+            <button class="modal-close" (click)="closeRequestForm()">×</button>
+          </div>
+
+          @if (errorMessage()) {
+            <div class="alert alert-error">{{ errorMessage() }}</div>
+          }
+
+          <div class="form-group">
+            <label>المبلغ (ر.س)</label>
+            <input type="number" [(ngModel)]="requestAmount" class="form-control" min="1" [max]="wallet()?.availableBalance ?? 0" placeholder="أدخل المبلغ">
+            <small class="form-hint">الرصيد المتاح: {{ wallet()?.availableBalance | number:'1.2-2' }} ر.س</small>
+          </div>
+
+          <div class="form-group">
+            <label>طريقة الدفع</label>
+            <select [(ngModel)]="requestMethod" class="form-control">
+              <option value="bank">تحويل بنكي</option>
+              <option value="wallet">محفظة إلكترونية</option>
+              <option value="paypal">PayPal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>تفاصيل الدفع (رقم الحساب / المحفظة)</label>
+            <input type="text" [(ngModel)]="requestDetails" class="form-control" placeholder="IBAN أو رقم المحفظة">
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-primary" (click)="submitRequest()" [disabled]="submitting()">
+              {{ submitting() ? 'جاري...' : 'تقديم الطلب' }}
+            </button>
+            <button class="btn btn-secondary" (click)="closeRequestForm()">إلغاء</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Recent Withdrawals -->
+    <div class="section">
+      <h2>آخر السحوبات</h2>
+      @if (w.recentWithdrawals.length === 0) {
+        <div class="empty-state">
+          <p>لا توجد سحوبات سابقة.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>المبلغ</th>
+                <th>طريقة الدفع</th>
+                <th>الحالة</th>
+                <th>تاريخ الطلب</th>
+                <th>تاريخ المعالجة</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of w.recentWithdrawals; track item.id) {
+                <tr>
+                  <td class="amount">{{ item.amount | number:'1.2-2' }} ر.س</td>
+                  <td>{{ getMethodLabel(item.paymentMethod) }}</td>
+                  <td>
+                    <span class="status-badge" [class]="getStatusClass(item.status)">
+                      {{ getStatusLabel(item.status) }}
+                    </span>
+                  </td>
+                  <td>{{ item.requestedAt | date:'yyyy/MM/dd' }}</td>
+                  <td>{{ item.processedAt ? (item.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,5 +1,5 @@
-import { Component, inject, signal, effect, NgZone } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal, effect, NgZone, computed } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { UiToast } from "@shared/ui/toast/toast";
 import { UiGlobalLoader } from "@shared/ui/global-loader/global-loader";
 import { NotificationSignalrService } from '@core/services/notification-signalr.service';
@@ -23,7 +23,15 @@ export class App {
   private _notifHttp = inject(NotificationsService);
   private _notifState = inject(NotificationService);
   private _auth = inject(AuthService);
+  private _router = inject(Router);
   private _zone = inject(NgZone);
+
+  protected readonly showChat = computed(() => {
+    const url = this._router.url;
+    return this._auth.isAuthenticated()
+      && !url.startsWith('/auth/login')
+      && !url.startsWith('/auth/register');
+  });
 
   private _audioCtx: AudioContext | null = null;
 
