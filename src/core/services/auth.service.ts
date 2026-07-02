@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 
 import { ApiResponse } from '../models/api-response.model';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -22,6 +22,15 @@ export interface AuthTokensResponse {
     expiresOnUtc: string;
 }
 
+export type SpecialistStatus = 'Draft' | 'Pending' | 'Approved' | 'Rejected' | null;
+
+const STATUS_MAP: Record<number, Exclude<SpecialistStatus, null>> = {
+    0: 'Draft',
+    1: 'Pending',
+    2: 'Approved',
+    3: 'Rejected',
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly http = inject(HttpClient);
@@ -30,10 +39,12 @@ export class AuthService {
     private readonly injector = inject(Injector);
 
     private readonly _currentUser = signal<CurrentUser | null>(this.restoreUser());
+    private readonly _specialistStatus = signal<SpecialistStatus>(null);
 
     readonly currentUser = this._currentUser.asReadonly();
     readonly isAuthenticated = computed(() => !!this._currentUser());
     readonly roles = computed(() => this._currentUser()?.roles ?? []);
+    readonly specialistStatus = this._specialistStatus.asReadonly();
 
     readonly userRole = computed(() => {
         const roles = this._currentUser()?.roles;
@@ -41,6 +52,12 @@ export class AuthService {
         if (roles.includes(UserRole.Admin)) return UserRole.Admin;
         if (roles.includes(UserRole.Specialist)) return UserRole.Specialist;
         return UserRole.User;
+    });
+
+    readonly needsSpecialistOnboarding = computed(() => {
+        const role = this.userRole();
+        const status = this._specialistStatus();
+        return role === UserRole.Specialist && status === 'Draft';
     });
 
     login(payload: LoginPayload): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
@@ -118,6 +135,8 @@ export class AuthService {
         } else {
             this._currentUser.set(null);
         }
+
+        this.refreshSpecialistStatus();
     }
 
     updateAvatar(avatarUrl: string): void {
@@ -129,11 +148,45 @@ export class AuthService {
         }
     }
 
+    refreshSpecialistStatus(): void {
+        if (!this.isAuthenticated()) {
+            this._specialistStatus.set(null);
+            return;
+        }
+
+        this.http.get<ApiResponse<{ status: number }>>(API_ENDPOINTS.specialists.verification)
+            .pipe(
+                catchError((err: HttpErrorResponse) => {
+                    if (err.status === 404) {
+                        return of({ data: { status: -1 } } as ApiResponse<{ status: number }>);
+                    }
+                    this._specialistStatus.set(null);
+                    return of(null as unknown as ApiResponse<{ status: number }>);
+                }),
+            )
+            .subscribe({
+                next: (res) => {
+                    if (!res) return;
+                    const mapped = STATUS_MAP[res.data?.status ?? -1];
+                    this._specialistStatus.set(mapped ?? null);
+                },
+                error: () => this._specialistStatus.set(null),
+            });
+    }
+
     clearSession(): void {
         this.tokenService.clearTokens();
         this.storage.remove(STORAGE_KEYS.currentUser);
         this._currentUser.set(null);
+        this._specialistStatus.set(null);
         this.injector.get(NavigationService).redirectAfterLogout();
+        this.clearProfileStore();
+    }
+
+    private clearProfileStore(): void {
+        import('@features/profile/stores/profile.store').then(m => {
+            this.injector.get(m.ProfileStore).reset();
+        }).catch(() => {});
     }
 
     hasRole(...roles: UserRole[]): boolean {

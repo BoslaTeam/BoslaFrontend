@@ -45,16 +45,12 @@
     <div class="mb-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
         <div class="text-right">
             <h1 class="text-3xl font-black text-bosla-primary mb-2">
-                👋 مرحباً بك مجدداً، {{ profile()?.name || 'يا اختصاصي' }}
+                👋 مرحباً بك مجدداً، {{ profile()?.name || '' }}
             </h1>
             <p class="text-slate-500 text-lg">
                 إليك نظرة سريعة على أدائك وجلساتك اليوم. لديك <span class="font-bold text-bosla-orange">{{ dashboard()?.upcomingAppointments ?? 0 }}</span> جلسات قادمة.
             </p>
         </div>
-        <a routerLink="/specialist/profile" class="flex items-center gap-2 px-6 py-3 bg-bosla-primary/5 hover:bg-bosla-primary/10 text-bosla-primary font-bold rounded-xl transition-colors border border-bosla-primary/10 whitespace-nowrap">
-            <i class="fa-regular fa-user"></i>
-            الذهاب للملف الشخصي
-        </a>
     </div>
 
     <!-- Stat Cards -->
@@ -80,17 +76,13 @@
         <div class="group rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
             <div class="absolute -left-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-xl group-hover:bg-green-100 transition-colors"></div>
             <div class="relative z-10">
-                <div class="mb-6 flex items-center justify-between">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
-                        <i class="fa-solid fa-wallet text-2xl"></i>
-                    </div>
-                    <span class="flex items-center gap-1 font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg text-sm border border-green-100">
-                        <i class="fa-solid fa-arrow-trend-up text-xs"></i>
-                        {{ dashboard()?.earningsGrowthPercentage ?? 0 }}%
-                    </span>
+            <div class="mb-6 flex items-center justify-between">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+                    <i class="fa-solid fa-wallet text-2xl"></i>
                 </div>
-                <h3 class="text-slate-500 font-medium">أرباح الشهر</h3>
-                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.monthlyEarnings ?? 0 }} <span class="text-lg font-bold text-slate-400">ريال</span></p>
+            </div>
+                <h3 class="text-slate-500 font-medium">إجمالي الأرباح</h3>
+                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ totalEarnings().toFixed(2) }} <span class="text-lg font-bold text-slate-400">جنيه</span></p>
             </div>
         </div>
 
@@ -145,7 +137,7 @@
                     </p>
                 </div>
                 <div class="rounded-xl bg-slate-50 border border-slate-200 px-5 py-2 text-bosla-primary font-bold text-sm">
-                    العام 2026
+                    العام {{ currentYear() }}
                 </div>
             </div>
 
@@ -177,6 +169,12 @@
                         <path [attr.d]="revenueLineChartPath() + ' L 800,250 L 0,250 Z'" fill="url(#areaGradient)" />
                         <!-- Line -->
                         <path [attr.d]="revenueLineChartPath()" fill="none" stroke="url(#lineGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="chart-line-animate" />
+                        <!-- Data point labels -->
+                        @for (pt of revenuePoints(); track $index) {
+                            <text [attr.x]="pt.x" [attr.y]="pt.y - 12" text-anchor="middle" class="text-xs font-bold fill-bosla-primary">
+                                {{ pt.amount }} ج.م
+                            </text>
+                        }
                     </svg>
                 } @else {
                     <div class="w-full h-full flex items-center justify-center text-slate-400 font-medium">
@@ -189,28 +187,15 @@
                     @for (item of dashboard()?.monthlyRevenue; track item.month) {
                         <div class="flex flex-col items-center">
                             <span class="text-xs font-bold text-slate-500">{{ item.month }}</span>
-                            <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ر.س</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ج.م</span>
                         </div>
                     }
-
-       
-
-        </div>
-
-
-        <div class="pt-8 space-y-4 mt-8">
-
-            @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
-
-            <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500">
-
-                لا توجد تقييمات حتى الآن
-
+                </div>
             </div>
+        </div>
+    </div>
 
-            }
-
-           
+    
     <!-- Upcoming Appointments Table & Reviews -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -282,6 +267,14 @@
                     </tbody>
                 </table>
             </div>
+            @if ((dashboard()?.upcomingAppointmentsList?.length ?? 0) > 0) {
+                <div class="mt-4 text-center">
+                    <a routerLink="/specialist/appointments" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors">
+                        عرض الكل
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </a>
+                </div>
+            }
         </div>
 
         <!-- Reviews Sidebar -->
@@ -291,9 +284,9 @@
                     <i class="fa-regular fa-star-half-stroke text-bosla-orange text-xl"></i>
                     أحدث التقييمات
                 </h2>
-                <a routerLink="/specialist/profile" class="text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors">
-                    عرض الكل
-                </a>
+                <button (click)="showAllReviews.set(!showAllReviews())" class="text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors bg-transparent border-none cursor-pointer">
+                    {{ showAllReviews() ? 'عرض أقل' : 'عرض الكل' }}
+                </button>
             </div>
 
             <div class="space-y-4">
@@ -304,19 +297,19 @@
                 </div>
                 }
 
-                @for (review of reviews()?.reviews?.items | slice:0:3; track review.createdOnUtc) {
+                @for (review of (showAllReviews() ? reviews()?.reviews?.items : (reviews()?.reviews?.items ?? []).slice(0, 5)); track $index) {
                 <div class="group rounded-2xl border border-slate-100 bg-slate-50/50 p-5 transition-all duration-300 hover:border-bosla-compass/30 hover:bg-white hover:shadow-md">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-bosla-primary/10 font-black text-bosla-primary">
-                                {{ review.userName.charAt(0) }}
+                                {{ review.reviewerName.charAt(0) }}
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-800 text-sm">
-                                    {{ review.userName }}
+                                    {{ review.reviewerName }}
                                 </h3>
                                 <span class="text-[11px] font-medium text-slate-400 block mt-0.5" dir="ltr">
-                                    {{ review.createdOnUtc| date:'dd MMM yyyy' }}
+                                    {{ review.createdAtUtc| date:'dd MMM yyyy' }}
                                 </span>
                             </div>
                         </div>
@@ -337,6 +330,7 @@
             </div>
         </div>
     </div>
+</div>
 
 <style>
     @keyframes drawLine {

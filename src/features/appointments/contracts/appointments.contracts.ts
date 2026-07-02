@@ -35,7 +35,7 @@ export interface AddReviewRequest {
   comment?: string;
 }
 
-export enum PaymentStatus {
+export enum AppointmentPaymentStatus {
   Unpaid = 0,
   Paid = 1,
   Refunded = 2,
@@ -54,7 +54,7 @@ export interface AppointmentDto {
   specialistTitle?: string;
   specialistImageUrl?: string;
   amount?: number;
-  paymentStatus?: PaymentStatus;
+  paymentStatus?: AppointmentPaymentStatus;
 }
 
 export interface AppointmentStatusHistoryDto {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
-import { PaymentStatus } from '../../contracts/appointments.contracts';
+import { AppointmentPaymentStatus } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
@@ -50,7 +50,7 @@ export class AppointmentDetail implements OnInit {
   readonly userRole = computed(() => this.authService.userRole());
   readonly UserRole = UserRole;
   readonly AppointmentStatus = AppointmentStatus;
-  readonly PaymentStatus = PaymentStatus;
+  readonly AppointmentPaymentStatus = AppointmentPaymentStatus;
 
   readonly canConfirm = computed(() => {
     const u = this.userRole();
@@ -242,9 +242,9 @@ export class AppointmentDetail implements OnInit {
     }
   }
 
-  getPaymentStatusLabel(status: PaymentStatus | undefined): { text: string; classes: string } {
+  getPaymentStatusLabel(status: AppointmentPaymentStatus | undefined): { text: string; classes: string } {
     switch (status) {
-      case PaymentStatus.Unpaid:
+      case AppointmentPaymentStatus.Unpaid:
         return { text: 'غير مدفوع', classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20' };
       case PaymentStatus.Paid:
         return { text: 'مدفوع', classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' };

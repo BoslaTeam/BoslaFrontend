@@ -61,7 +61,8 @@ export class AdminDashboard implements OnInit {
       1: 'مؤكد',
       2: 'مكتمل',
       3: 'ملغي',
-      4: 'مرفوض',
+      4: 'معاد جدولته',
+      5: 'مدفوع',
     };
     return labels[status] ?? 'غير معروف';
   }
@@ -72,7 +73,8 @@ export class AdminDashboard implements OnInit {
       1: 'status-confirmed',
       2: 'status-completed',
       3: 'status-cancelled',
-      4: 'status-rejected',
+      4: 'status-rescheduled',
+      5: 'status-paid',
     };
     return classes[status] ?? 'status-pending';
   }

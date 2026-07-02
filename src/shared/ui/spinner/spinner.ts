@@ -7,7 +7,6 @@ export type SpinnerSize = 'sm' | 'md' | 'lg';
   standalone: true,
   imports: [],
   templateUrl: './spinner.html',
-  styleUrl: './spinner.css',
 })
 export class UiSpinner {
   readonly size = input<SpinnerSize>('md');

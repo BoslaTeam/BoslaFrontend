@@ -57,6 +57,14 @@ export class ProfileStore {
     this.loadSocialLinks();
   }
 
+  reset() {
+    this.profile.set(null);
+    this.educations.set([]);
+    this.socialLinks.set([]);
+    this.loading.set(false);
+    this.error.set(null);
+  }
+
   // ─── Mutations ────────────────────────────────────────
 
   updateProfile(request: UpdateProfileRequest) {

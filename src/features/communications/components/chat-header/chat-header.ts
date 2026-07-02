@@ -1,5 +1,6 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, input, output } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
+import { PresenceStore } from '../../store/presence.store';
 
 @Component({
   selector: 'chat-chat-header',
@@ -13,8 +14,20 @@ import { ChatStore } from '../../store/chat.store';
 })
 export class ChatHeader {
   readonly store = inject(ChatStore);
+  private readonly presenceStore = inject(PresenceStore);
+
+  readonly isOpen = input(false);
+  readonly togglePanel = output<void>();
+
+  readonly isDetailsOpen = input(false);
+  readonly toggleDetailsPanel = output<void>();
 
   readonly participant = computed(() => this.store.activeConversation()?.participant ?? null);
+
+  readonly isOnline = computed(() => {
+    const p = this.participant();
+    return p ? this.presenceStore.isOnline(p.id) : false;
+  });
 
   readonly initials = computed(() => {
     const name = this.participant()?.name ?? '';
@@ -24,48 +37,15 @@ export class ChatHeader {
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   });
 
-  readonly statusText = computed(() => {
-    const p = this.participant();
-    if (!p) return '';
-    if (p.isOnline) return 'Online';
-    if (p.lastSeenAt) {
-      const d = new Date(p.lastSeenAt);
-      const diffMin = Math.floor((Date.now() - d.getTime()) / 60000);
-      if (diffMin < 60) return `Last seen ${diffMin}m ago`;
-      const diffHr = Math.floor(diffMin / 60);
-      if (diffHr < 24) return `Last seen ${diffHr}h ago`;
-      return `Last seen ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-    }
-    return 'Offline';
-  });
-
-  readonly roleBadgeClass = computed(() => {
-    const role = this.participant()?.role;
-    const map: Record<string, string> = {
-      specialist: 'bg-bosla-primary/10 text-bosla-primary border border-bosla-primary/15',
-      consultant: 'bg-bosla-blue/10 text-bosla-blue border border-bosla-blue/15',
-      business: 'bg-bosla-orange/10 text-bosla-orange border border-bosla-orange/20',
-      user: 'bg-bosla-grey/15 text-bosla-charcoal/70 border border-bosla-grey/20',
-    };
-    return map[role ?? ''] ?? 'bg-bosla-grey/15 text-bosla-charcoal/70 border border-bosla-grey/20';
-  });
-
-  readonly roleLabel = computed(() => {
-    const role = this.participant()?.role;
-    const map: Record<string, string> = {
-      specialist: 'Specialist',
-      consultant: 'Consultant',
-      business: 'Business',
-      user: 'User',
-    };
-    return map[role ?? ''] ?? 'User';
-  });
-
   goBack() {
     this.store.goBackToList();
   }
 
-  toggleContext() {
-    this.store.toggleContextPanel();
+  onTogglePanel() {
+    this.togglePanel.emit();
+  }
+
+  onToggleDetailsPanel() {
+    this.toggleDetailsPanel.emit();
   }
 }

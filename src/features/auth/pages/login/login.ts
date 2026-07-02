@@ -6,6 +6,7 @@ import { NavigationService } from '../../../../core/navigation/navigation.servic
 import { HttpErrorResponse } from '@angular/common/http';
 import { AUTH_CONFIG } from '../../../../core/config/auth.config';
 import { UserRole } from '../../../../core/enums/user-role.enum';
+import { environment } from '../../../../environments/environment';
 
 declare var google: any;
 
@@ -29,7 +30,7 @@ export class Login implements AfterViewInit {
   readonly isLoading = signal(false);
   errorMessage = '';
 
-  private googleClientId = '818109149867-jlbj83dcs95rknac2g38asnefamefj5o.apps.googleusercontent.com';
+  private googleClientId = environment.googleClientId;
 
   ngAfterViewInit() {
     this.initializeGoogleSignIn();
@@ -84,11 +85,8 @@ export class Login implements AfterViewInit {
     this.errorMessage = '';
 
     const { email, password } = this.loginForm.value;
-    console.log('[Login] Sending request to:', `/api/v1/auth/login`);
-
     this.authService.login({ email: email!, password: password! }).subscribe({
       next: (res) => {
-        console.log('[Login] Response:', res);
         if (res.success) {
           this.navigationService.redirectAfterLogin();
         } else if (res.message) {

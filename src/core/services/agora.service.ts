@@ -62,7 +62,6 @@ export class AgoraService {
     }
     this.client = AgoraRTC.createClient(AGORA_CONFIG);
     this.registerRemoteEventHandlers();
-    console.log('[Agora] Client Created');
   }
 
   async join(appId: string, channel: string, token: string, uid: number): Promise<void> {
@@ -76,7 +75,6 @@ export class AgoraService {
     try {
       await this.client.join(appId, channel, token, uid);
       this._connectionState.set('connected');
-      console.log('[Agora] Joined Channel', channel);
     } catch (err) {
       const message = this.mapJoinError(err);
       this._error.set(message);
@@ -89,7 +87,6 @@ export class AgoraService {
   async createTracks(): Promise<void> {
     try {
       this.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-      console.log('[Agora] Created Microphone Track');
     } catch (err) {
       const message = this.mapDeviceError(err, 'microphone');
       this._error.set(message);
@@ -98,7 +95,6 @@ export class AgoraService {
 
     try {
       this.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
-      console.log('[Agora] Created Camera Track');
     } catch (err) {
       const message = this.mapDeviceError(err, 'camera');
       this._error.set(message);
@@ -117,8 +113,6 @@ export class AgoraService {
 
     try {
       await this.client.publish([this.localAudioTrack, this.localVideoTrack]);
-      console.log('[Agora] Published Audio');
-      console.log('[Agora] Published Video');
       this._joined.set(true);
       this._joining.set(false);
     } catch (err) {
@@ -167,8 +161,6 @@ export class AgoraService {
       if (videoTrack) {
         this.remoteVideoTracks.set(uid, videoTrack);
         const containerId = `remote-video-${uid}`;
-        console.log('[Agora] Remote user joined');
-        console.log('[Agora] Remote video subscribed');
 
         this._remoteParticipants.update(list => {
           const existing = list.find(p => p.uid === uid);
@@ -200,7 +192,6 @@ export class AgoraService {
         } catch (err) {
           console.error('[Agora] Remote audio play failed', uid, err);
         }
-        console.log('[Agora] Remote audio subscribed');
 
         this._remoteParticipants.update(list => {
           const existing = list.find(p => p.uid === uid);
@@ -235,7 +226,6 @@ export class AgoraService {
 
   private handleUserLeft(user: IAgoraRTCRemoteUser): void {
     const uid = user.uid as number;
-    console.log('[Agora] Remote user left');
     this.remoteVideoTracks.delete(uid);
     this.remoteAudioTracks.delete(uid);
     this._remoteParticipants.update(list => list.filter(p => p.uid !== uid));
@@ -267,7 +257,6 @@ export class AgoraService {
     if (this.client) {
       try {
         await this.client.leave();
-        console.log('[Agora] Left Channel');
       } catch (err) {
         console.warn('[Agora] Leave error during cleanup', err);
       }
@@ -289,8 +278,6 @@ export class AgoraService {
     this._microphoneEnabled.set(true);
     this._error.set(null);
     this._remoteParticipants.set([]);
-
-    console.log('[Agora] Cleanup Completed');
   }
 
   // ── Camera controls ──
@@ -315,7 +302,6 @@ export class AgoraService {
     try {
       await this.localVideoTrack.setEnabled(target);
       this._cameraEnabled.set(target);
-      console.log('[Agora] Camera', target ? 'enabled' : 'disabled');
     } catch (err) {
       this._error.set(this.mapDeviceError(err, 'camera'));
       console.error('[Agora] Camera toggle failed', err);
@@ -346,7 +332,6 @@ export class AgoraService {
     try {
       await this.localAudioTrack.setEnabled(target);
       this._microphoneEnabled.set(target);
-      console.log('[Agora] Microphone', target ? 'enabled' : 'disabled');
     } catch (err) {
       this._error.set(this.mapDeviceError(err, 'microphone'));
       console.error('[Agora] Microphone toggle failed', err);

@@ -1,0 +1,136 @@
+<div class="user-form-page">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    العودة للتفاصيل
+  </button>
+
+  @if (notFound()) {
+    <div class="form-card">
+      <p class="loading-hint">المتخصص غير موجود</p>
+    </div>
+  } @else if (isLoadingSpecialist()) {
+    <div class="form-card">
+      <p class="loading-hint">جاري التحميل...</p>
+    </div>
+  } @else {
+    <div class="form-card">
+      <div class="form-header">
+        <h2>تعديل بيانات المتخصص</h2>
+        <p>قم بتحديث بيانات المتخصص أدناه.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
+        <!-- Basic Info -->
+        <div class="form-section-title">المعلومات الأساسية</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>الاسم الكامل *</label>
+            <input type="text" formControlName="fullName" placeholder="الاسم الكامل" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>رقم الهاتف</label>
+            <input type="text" formControlName="phoneNumber" placeholder="رقم الهاتف" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>البلد</label>
+            <input type="text" formControlName="country" placeholder="البلد" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>الجنس</label>
+            <select formControlName="gender" class="form-input">
+              <option value="">اختر</option>
+              <option value="Male">ذكر</option>
+              <option value="Female">أنثى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>اللقب المهني</label>
+            <input type="text" formControlName="title" placeholder="مثال: استشاري نفسي" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>اللغة المفضلة</label>
+            <input type="text" formControlName="preferredLanguage" placeholder="مثال: العربية" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>نبذة تعريفية</label>
+          <textarea formControlName="bio" placeholder="نبذة عن المتخصص" class="form-input form-textarea" rows="3"></textarea>
+        </div>
+
+        <!-- Professional Info -->
+        <div class="form-section-title">المعلومات المهنية</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>سنوات الخبرة</label>
+            <input type="number" formControlName="experienceYears" placeholder="0" class="form-input" min="0">
+          </div>
+          <div class="form-group">
+            <label>مستوى الخبرة</label>
+            <select formControlName="experienceLevel" class="form-input">
+              <option value="">اختر</option>
+              <option value="Entry">مبتدئ</option>
+              <option value="Mid">متوسط</option>
+              <option value="Senior">متقدم</option>
+              <option value="Lead">خبير</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>السعر للساعة</label>
+            <input type="number" formControlName="hourlyRate" placeholder="0" class="form-input" min="0">
+          </div>
+          <div class="form-group">
+            <label>سياسة الحجز</label>
+            <input type="text" formControlName="bookingPolicy" placeholder="سياسة الحجز" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>حالة التحقق</label>
+            <select formControlName="verificationStatus" class="form-input">
+              <option value="Pending">معلق</option>
+              <option value="Approved">مقبول</option>
+              <option value="Rejected">مرفوض</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Expertise -->
+        <div class="form-section-title">مجالات الخبرة</div>
+        @if (isLoadingLookups()) {
+          <p class="loading-hint">جاري التحميل...</p>
+        } @else {
+          <div class="chips-grid">
+            @for (item of expertiseList(); track item.id) {
+              <button type="button" class="chip-btn" [class.chip-selected]="isSelected('expertiseIds', item.id)" (click)="toggleSelection('expertiseIds', item.id)">
+                {{ item.name }}
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Industries -->
+        <div class="form-section-title">الصناعات</div>
+        @if (isLoadingLookups()) {
+          <p class="loading-hint">جاري التحميل...</p>
+        } @else {
+          <div class="chips-grid">
+            @for (item of industryList(); track item.id) {
+              <button type="button" class="chip-btn" [class.chip-selected]="isSelected('industryIds', item.id)" (click)="toggleSelection('industryIds', item.id)">
+                {{ item.name }}
+              </button>
+            }
+          </div>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">إلغاء</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
+            حفظ التغييرات
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

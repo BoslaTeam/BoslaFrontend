@@ -145,7 +145,6 @@ export class AppointmentsStore {
 
     return groups.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
   });
-
   loadMyAppointments(): void {
     this.updateState({ isLoading: true, error: null });
     this.appointmentService.getMyAppointments()
@@ -302,11 +301,25 @@ export class AppointmentsStore {
       .pipe(finalize(() => this.updateState({ isActionLoading: false })))
       .subscribe({
         next: () => {
-          this.toast.success('تم تأكيد الموعد وإتمام الدفع بنجاح.');
+          this.toast.success('تم تأكيد الموعد بنجاح.');
           this.updateState({ bookingStep: 'done' });
           this.refreshAfterAction(id);
         },
         error: (err) => this.handleError(err, 'فشل في تأكيد الموعد.')
+      });
+  }
+
+  confirmPayment(id: string, paymentIntentId: string): void {
+    this.updateState({ isActionLoading: true });
+    this.appointmentService.confirmPayment(id, paymentIntentId)
+      .pipe(finalize(() => this.updateState({ isActionLoading: false })))
+      .subscribe({
+        next: () => {
+          this.toast.success('تم تأكيد الدفع وإتمام الحجز بنجاح.');
+          this.updateState({ bookingStep: 'done' });
+          this.refreshAfterAction(id);
+        },
+        error: (err) => this.handleError(err, 'فشل في تأكيد الدفع.')
       });
   }
 

@@ -12,6 +12,13 @@ import { catchError, of } from 'rxjs';
 import { AppointmentService } from '../../../appointments/services/appointments.service';
 import { AppointmentDto } from '../../../appointments/contracts/appointments.contracts';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import {
+  formatArabicDate,
+  formatArabicTime,
+  formatArabicDuration,
+  formatArabicCountdown,
+  localizeAppointmentStatus,
+} from '@shared/utils/format.util';
 
 interface UpcomingSessionData {
   topic: string;
@@ -21,6 +28,10 @@ interface UpcomingSessionData {
   endTime: string;
   durationMin: number;
   status: AppointmentStatus;
+  monthAbbr: string;
+  dayNum: string;
+  isToday: boolean;
+  isTomorrow: boolean;
 }
 
 @Component({
@@ -60,6 +71,8 @@ export class UpcomingSessionCard implements OnDestroy {
       });
   }
 
+  readonly AppointmentStatus = AppointmentStatus;
+
   readonly sessionData = computed<UpcomingSessionData | null>(() => {
     const apt = this.appointment();
     if (!apt) return null;
@@ -67,82 +80,83 @@ export class UpcomingSessionCard implements OnDestroy {
     const start = new Date(apt.start);
     const end = new Date(apt.end);
 
+    const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    const tomorrowDate = new Date(todayDate);
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+
     return {
       topic: apt.sessionTopic ?? '',
       notes: apt.notes ?? '',
-      dateLabel: start.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      }),
-      startTime: start.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
-      endTime: end.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
+      dateLabel: formatArabicDate(start),
+      startTime: formatArabicTime(start),
+      endTime: formatArabicTime(end),
       durationMin: Math.round((end.getTime() - start.getTime()) / 60000),
       status: apt.status as AppointmentStatus,
+      monthAbbr: new Intl.DateTimeFormat('ar-SA', { month: 'short' }).format(start),
+      dayNum: new Intl.DateTimeFormat('ar-SA', { day: 'numeric' }).format(start),
+      isToday: startDate.getTime() === todayDate.getTime(),
+      isTomorrow: startDate.getTime() === tomorrowDate.getTime(),
     };
   });
 
-  readonly statusLabel = computed(() => {
+  readonly localizedStatus = computed(() => {
     const s = this.sessionData()?.status;
-    const map: Record<number, string> = {
-      [AppointmentStatus.Pending]: 'Pending',
-      [AppointmentStatus.Confirmed]: 'Confirmed',
-      [AppointmentStatus.Completed]: 'Completed',
-      [AppointmentStatus.Cancelled]: 'Cancelled',
-      [AppointmentStatus.Rescheduled]: 'Rescheduled',
-    };
-    return s !== undefined ? (map[s] ?? 'Unknown') : '';
+    return s !== undefined ? localizeAppointmentStatus(s) : '';
   });
 
-  readonly statusClass = computed(() => {
-    const s = this.sessionData()?.status;
-    const map: Record<number, string> = {
-      [AppointmentStatus.Pending]: 'chat-apt-status-pending',
-      [AppointmentStatus.Confirmed]: 'chat-apt-status-confirmed',
-      [AppointmentStatus.Completed]: 'chat-apt-status-completed',
-      [AppointmentStatus.Cancelled]: 'chat-apt-status-cancelled',
-      [AppointmentStatus.Rescheduled]: 'chat-apt-status-rescheduled',
-    };
-    return s !== undefined ? (map[s] ?? '') : '';
+  readonly durationLabel = computed(() => {
+    const d = this.sessionData()?.durationMin;
+    return d !== undefined ? formatArabicDuration(d) : '';
   });
 
-  readonly countdown = computed(() => {
+  readonly countdownLabel = computed(() => {
     const apt = this.appointment();
     if (!apt) return '';
+    return formatArabicCountdown(new Date(apt.start));
+  });
 
+  readonly isPastOrCancelled = computed(() => {
+    const apt = this.appointment();
+    if (!apt) return true;
+
+    if (
+      apt.status === AppointmentStatus.Completed ||
+      apt.status === AppointmentStatus.Cancelled
+    ) {
+      return true;
+    }
+
+    const end = new Date(apt.end).getTime();
+    if (end < Date.now()) {
+      return true;
+    }
+
+    return false;
+  });
+
+  readonly isActiveSession = computed(() => {
+    const apt = this.appointment();
+    if (!apt) return false;
+
+    const now = Date.now();
     const start = new Date(apt.start).getTime();
-    const now = new Date().getTime();
-    const diffMs = start - now;
+    const end = new Date(apt.end).getTime();
 
-    if (diffMs <= 0) {
-      return '';
-    }
+    return now >= start && now < end;
+  });
 
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) {
-      return 'Starts in < 1m';
-    }
+  readonly shouldDisplay = computed(() => {
+    if (this.loading()) return true;
+    const apt = this.appointment();
+    if (!apt) return false;
+    return !this.isPastOrCancelled();
+  });
 
-    const diffHours = Math.floor(diffMins / 60);
-    const mins = diffMins % 60;
-    const hours = diffHours % 24;
-    const days = Math.floor(diffHours / 24);
-
-    if (days > 0) {
-      return `Starts in ${days}d ${hours}h`;
-    }
-    if (hours > 0) {
-      return `Starts in ${hours}h ${mins}m`;
-    }
-    return `Starts in ${mins}m`;
+  readonly sectionTitle = computed(() => {
+    if (this.isActiveSession()) return 'الجلسة الحالية';
+    return 'الجلسة القادمة';
   });
 
   retry(): void {

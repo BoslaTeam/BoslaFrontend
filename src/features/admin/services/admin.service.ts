@@ -10,12 +10,14 @@ import {
   AdminUserDto,
   AdminUserDetailDto,
   AdminSpecialistListItemDto,
-  PendingSpecialistDto,
   AdminSpecialistDetailDto,
   AdminAppointmentDto,
   AdminAppointmentDetailDto,
+  AdminPaymentDto,
+  AdminPaymentDetailDto,
   AuditLogDto,
   EmbeddingsStatusDto,
+  CreateSpecialistRequest,
 } from '../contracts/admin.contracts';
 
 @Injectable({ providedIn: 'root' })
@@ -85,13 +87,6 @@ export class AdminService {
     );
   }
 
-  getPendingSpecialists(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<PendingSpecialistDto>>> {
-    return this.http.get<ApiResponse<PaginatedResponse<PendingSpecialistDto>>>(
-      API_ENDPOINTS.admin.pendingSpecialists,
-      { params: this.buildPaginationParams(params) }
-    );
-  }
-
   getSpecialistDetail(id: string): Observable<AdminSpecialistDetailDto> {
     return this.http
       .get<ApiResponse<AdminSpecialistDetailDto>>(API_ENDPOINTS.admin.specialistDetail(id))
@@ -105,6 +100,26 @@ export class AdminService {
   }
 
   // ── Lookups (Expertise, Skills, Tools) ──
+
+  getIndustryList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.industries)
+      .pipe(map((res) => res.data!));
+  }
+
+  createIndustry(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.industries, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateIndustry(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteIndustry(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id))
+      .pipe(map((res) => res.success));
+  }
 
   getExpertiseList(): Observable<{ id: string; name: string }[]> {
     return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.expertise)
@@ -202,9 +217,45 @@ export class AdminService {
       .pipe(map((res) => res.success));
   }
 
+  // ── Payments ──
+
+  getPayments(params: PaginationRequest & { status?: string }): Observable<ApiResponse<PaginatedResponse<AdminPaymentDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+
+    return this.http.get<ApiResponse<PaginatedResponse<AdminPaymentDto>>>(
+      API_ENDPOINTS.admin.payments,
+      { params: httpParams }
+    );
+  }
+
+  getPaymentDetail(id: string): Observable<AdminPaymentDetailDto> {
+    return this.http
+      .get<ApiResponse<AdminPaymentDetailDto>>(API_ENDPOINTS.admin.paymentDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  refundPayment(id: string, reason?: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.refundPayment(id), { reason })
+      .pipe(map((res) => res.success));
+  }
+
   updateSpecialistStatus(id: string, status: string): Observable<boolean> {
     return this.http
       .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.specialistStatus(id), { status })
+      .pipe(map((res) => res.success));
+  }
+
+  createSpecialist(payload: CreateSpecialistRequest): Observable<string> {
+    return this.http
+      .post<ApiResponse<string>>(API_ENDPOINTS.admin.createSpecialist, payload)
+      .pipe(map((res) => res.data!));
+  }
+
+  updateSpecialist(id: string, payload: any): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.updateSpecialist(id), payload)
       .pipe(map((res) => res.success));
   }
 
@@ -216,10 +267,27 @@ export class AdminService {
 
   // ── Audit Logs ──
 
-  getAuditLogs(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+  getAuditLogById(id: string): Observable<AuditLogDto> {
+    return this.http
+      .get<ApiResponse<AuditLogDto>>(API_ENDPOINTS.admin.auditLogById(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  getAuditLogs(params: PaginationRequest & {
+    action?: string;
+    entityType?: string;
+    from?: string;
+    to?: string;
+  }): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.action) httpParams = httpParams.set('action', params.action);
+    if (params.entityType) httpParams = httpParams.set('entityType', params.entityType);
+    if (params.from) httpParams = httpParams.set('from', params.from);
+    if (params.to) httpParams = httpParams.set('to', params.to);
+
     return this.http.get<ApiResponse<PaginatedResponse<AuditLogDto>>>(
       API_ENDPOINTS.admin.auditLogs,
-      { params: this.buildPaginationParams(params) }
+      { params: httpParams }
     );
   }
 

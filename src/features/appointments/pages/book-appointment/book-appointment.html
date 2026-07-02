@@ -47,7 +47,7 @@
                   </div>
                   <div class="mt-4 pt-4 border-t border-bosla-charcoal/5 w-full text-center">
                     <span class="text-2xl font-bold text-bosla-primary">{{ specialist.hourlyRate }}</span>
-                    <span class="text-sm text-bosla-grey mr-1">ر.س / ساعة</span>
+                    <span class="text-sm text-bosla-grey mr-1">ج.م / ساعة</span>
                   </div>
                 </div>
               </div>
@@ -187,7 +187,7 @@
                 </div>
                 @if (store.specialistInfo(); as s) {
                   <span class="text-sm text-bosla-charcoal/60">
-                    <span class="font-bold text-bosla-primary text-lg">{{ s.hourlyRate }}</span> ر.س/ساعة
+                    <span class="font-bold text-bosla-primary text-lg">{{ s.hourlyRate }}</span> ج.م/ساعة
                   </span>
                 }
               </div>
@@ -244,18 +244,32 @@
                 </div>
                 <div class="flex justify-between items-center py-1">
                   <span class="text-sm text-bosla-charcoal/60">رسوم الجلسة</span>
-                  <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ر.س</span>
+                  <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ج.م</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-t border-bosla-charcoal/5 mt-2 pt-2">
+                  <span class="text-sm font-bold text-bosla-charcoal">الإجمالي</span>
+                  <span class="text-lg font-bold text-bosla-primary">{{ s.hourlyRate }} ج.م</span>
                 </div>
               </div>
             }
 
             <div class="flex flex-col gap-3">
-              <ui-button (click)="goToAppointments()" size="md" variant="secondary" class="w-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-                الذهاب إلى الحجوزات
-              </ui-button>
+              @if (!showStripe()) {
+                <ui-button (click)="processPayment()" [loading]="initiatingPayment()" size="lg" variant="primary" class="w-full">
+                  {{ initiatingPayment() ? 'جاري التحميل...' : 'إتمام الدفع الآن' }}
+                </ui-button>
+                <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+                  الدفع لاحقاً
+                </ui-button>
+              } @else {
+                <app-stripe-payment-form
+                  [clientSecret]="stripeClientSecret()!"
+                  [appointmentId]="store.bookingAppointmentId()!"
+                  [amount]="(store.specialistInfo()?.hourlyRate ?? 0)"
+                  currency="usd"
+                  (paymentSuccess)="onPaymentSuccess($event)"
+                  (paymentError)="onPaymentError($event)" />
+              }
             </div>
           </div>
         </div>

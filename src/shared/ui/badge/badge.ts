@@ -7,7 +7,6 @@ export type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info'
   standalone: true,
   imports: [],
   templateUrl: './badge.html',
-  styleUrl: './badge.css',
 })
 export class Badge {
   readonly variant = input<BadgeVariant>('default');

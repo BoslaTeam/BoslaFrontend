@@ -1,0 +1,332 @@
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans">
+
+  <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    <span class="text-bosla-primary font-bold">الملف الشخصي</span>
+  </header>
+
+  @if (loading()) {
+    <div class="flex justify-center py-32">
+      <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  } @else {
+    <div class="max-w-4xl mx-auto space-y-8">
+
+      <!-- ==================== Profile Overview ==================== -->
+      <section class="rounded-3xl bg-white border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+        <div class="bg-gradient-to-l from-bosla-primary/5 via-bosla-blue/5 to-transparent p-6 md:p-8">
+          <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div class="shrink-0">
+              @if (profile()?.profileImageUrl) {
+                <img [src]="profile()?.profileImageUrl" alt="" class="w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover border-4 border-white shadow-lg" />
+              } @else {
+                <div class="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-bosla-primary to-bosla-blue text-white flex items-center justify-center text-4xl font-black border-4 border-white shadow-lg">
+                  {{ profile()?.name?.charAt(0) }}
+                </div>
+              }
+            </div>
+            <div class="flex-1 text-center md:text-right space-y-3">
+              <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-800">{{ profile()?.name }}</h1>
+                <p class="text-base text-slate-500 mt-1">{{ profile()?.title || 'لا يوجد مسمى وظيفي' }}</p>
+              </div>
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-bosla-primary/10 text-bosla-primary text-sm font-medium border border-bosla-primary/20">
+                  <i class="fa-solid fa-layer-group text-xs"></i>
+                  {{ levelLabel() }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-green-50 text-green-600 text-sm font-medium border border-green-200">
+                  <i class="fa-solid fa-dollar-sign text-xs"></i>
+                  {{ profile()?.hourlyRate }} USD / جلسة
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 text-blue-600 text-sm font-medium border border-blue-200">
+                  <i class="fa-solid fa-briefcase text-xs"></i>
+                  {{ profile()?.experienceYears }} سنة خبرة
+                </span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm pt-2">
+                <div class="flex items-center gap-2 text-slate-600">
+                  <i class="fa-regular fa-envelope text-slate-400 w-4"></i>
+                  <span dir="ltr">{{ profile()?.email }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-600">
+                  <i class="fa-regular fa-flag text-slate-400 w-4"></i>
+                  <span>{{ profile()?.country }}</span>
+                </div>
+              </div>
+              @if (profile()?.bio) {
+                <p class="text-sm text-slate-600 leading-relaxed pt-2 border-t border-slate-100 max-w-2xl">{{ profile()?.bio }}</p>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 p-6 md:p-8">
+          <h3 class="text-sm font-bold text-slate-700 mb-4">تعديل البيانات الأساسية</h3>
+          <form [formGroup]="profileForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ui-input formControlName="hourlyRate" label="سعر الجلسة (USD)" type="number" [required]="true" />
+            <ui-input formControlName="experienceYears" label="سنوات الخبرة" type="number" [required]="true" />
+            <div class="sm:col-span-2 flex justify-end">
+              <ui-button type="button" (btnClick)="onProfileUpdate()" [loading]="saving()">حفظ التعديلات</ui-button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== Skills ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+            <i class="fa-solid fa-code text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">المهارات</h2>
+            <p class="text-sm text-slate-500 mt-0.5">المهارات المهنية التي تمتلكها</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (skill of mySkills(); track skill.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bosla-primary/10 text-bosla-primary text-sm font-medium border border-bosla-primary/20">
+              {{ skill.name }}
+              <button (click)="removeSkill(skill.id)" [disabled]="savingSkill() === skill.id" class="text-bosla-primary/60 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingSkill() === skill.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-code text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">لم يتم إضافة أي مهارات بعد</span>
+            </div>
+          }
+        </div>
+
+        @if (addSkillOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addSkillSearch()" (ngModelChange)="addSkillSearch.set($event)"
+                placeholder="ابحث عن مهارة..." class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (skill of filteredAddSkills(); track skill.id) {
+                <button (click)="addSkill(skill.id)" [disabled]="savingSkill() === skill.id"
+                  class="w-full text-right px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-bosla-primary/5 hover:text-bosla-primary transition-colors cursor-pointer">
+                  {{ skill.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">لا توجد نتائج</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addSkillOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            إضافة مهارة
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Tools ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 border border-purple-100">
+            <i class="fa-solid fa-screwdriver-wrench text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">الأدوات</h2>
+            <p class="text-sm text-slate-500 mt-0.5">الأدوات التي تستخدمها في عملك</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (tool of myTools(); track tool.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 text-purple-600 text-sm font-medium border border-purple-200">
+              {{ tool.name }}
+              <button (click)="removeTool(tool.id)" [disabled]="savingTool() === tool.id" class="text-purple-400 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingTool() === tool.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-screwdriver-wrench text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">لم يتم إضافة أي أدوات بعد</span>
+            </div>
+          }
+        </div>
+
+        @if (addToolOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addToolSearch()" (ngModelChange)="addToolSearch.set($event)"
+                placeholder="ابحث عن أداة..." class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (tool of filteredAddTools(); track tool.id) {
+                <button (click)="addTool(tool.id)" [disabled]="savingTool() === tool.id"
+                  class="w-full text-right px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-bosla-primary/5 hover:text-bosla-primary transition-colors cursor-pointer">
+                  {{ tool.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">لا توجد نتائج</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addToolOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            إضافة أداة
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Experience ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
+            <i class="fa-solid fa-briefcase text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">الخبرات السابقة</h2>
+            <p class="text-sm text-slate-500 mt-0.5">الخبرات المهنية السابقة</p>
+          </div>
+        </div>
+
+        <form [formGroup]="experienceForm">
+          <div formArrayName="items" class="space-y-4">
+            @for (item of experienceItems.controls; track $index) {
+              <div [formGroupName]="$index" class="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-bold text-slate-700">خبرة #{{ $index + 1 }}</span>
+                  <button type="button" (click)="removeExperience($index)" class="text-red-500 hover:text-red-700 text-sm cursor-pointer font-medium">
+                    <i class="fa-solid fa-trash-can ml-1"></i>
+                    حذف
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ui-input formControlName="jobTitle" label="المسمى الوظيفي" placeholder="مثال: مهندس برمجيات" [required]="true" [errorMessage]="getFieldError($index, 'jobTitle')" />
+                  <ui-input formControlName="companyName" label="اسم الشركة" placeholder="مثال: شركة تقنية" [required]="true" [errorMessage]="getFieldError($index, 'companyName')" />
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ui-input formControlName="fromDate" label="تاريخ البداية" type="date" [required]="true" [errorMessage]="getFieldError($index, 'fromDate')" />
+                  <ui-input formControlName="toDate" label="تاريخ النهاية" type="date" />
+                </div>
+                @if (getDateError($index)) {
+                  <p class="text-[13px] font-sans text-bosla-error flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation text-xs"></i>
+                    {{ getDateError($index) }}
+                  </p>
+                }
+
+                <ui-textarea formControlName="description" label="الوصف" placeholder="صف مهامك وإنجازاتك" [rows]="2" />
+
+                <div class="flex justify-end gap-3 pt-2">
+                  <ui-button type="button" (btnClick)="saveExperience($index)" [loading]="saving()">
+                    <i class="fa-solid fa-floppy-disk ml-1"></i>
+                    حفظ
+                  </ui-button>
+                </div>
+              </div>
+            }
+          </div>
+        </form>
+
+        @if (experienceItems.length === 0) {
+          <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center mb-4">
+            <i class="fa-regular fa-briefcase text-3xl text-slate-300 mb-3 block"></i>
+            <span class="text-slate-500 font-medium">لم يتم إضافة أي خبرات بعد</span>
+          </div>
+        }
+
+        <button (click)="addExperience()" class="mt-4 w-full py-3 border-2 border-dashed border-slate-300 rounded-2xl text-slate-500 hover:border-bosla-blue hover:text-bosla-blue transition-colors cursor-pointer font-sans font-medium text-sm">
+          <i class="fa-solid fa-plus ml-1"></i>
+          إضافة خبرة
+        </button>
+      </section>
+
+      <!-- ==================== Booking Policy ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-bosla-blue/10 text-bosla-blue border border-bosla-blue/10">
+            <i class="fa-solid fa-calendar-check text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">سياسة الحجز</h2>
+            <p class="text-sm text-slate-500 mt-0.5">الحد الأقصى للجلسات ومدة الإشعار المسبق</p>
+          </div>
+        </div>
+
+        <form [formGroup]="bookingForm" (ngSubmit)="onBookingSubmit()" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ui-input formControlName="minBookingNoticeHours" label="الحد الأدنى للإشعار (ساعات)" type="number" [required]="true" />
+            <ui-input formControlName="maxSessionsPerDay" label="الحد الأقصى للحجوزات اليومية" type="number" [required]="true" />
+            <ui-input formControlName="maxSessionsPerWeek" label="الحد الأقصى للحجوزات الأسبوعية" type="number" [required]="true" />
+          </div>
+
+          <ui-textarea formControlName="bookingPolicy" label="نص سياسة الحجز" placeholder="اكتب سياسة الحجز الخاصة بك" [rows]="3" [required]="true" />
+
+          <div class="flex justify-end pt-2">
+            <ui-button type="submit" [loading]="saving()" variant="primary">
+              <i class="fa-solid fa-floppy-disk ml-1"></i>
+              حفظ
+            </ui-button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ==================== Cancellation Policy ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-bosla-orange/10 text-bosla-orange border border-bosla-orange/10">
+            <i class="fa-solid fa-ban text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">سياسة الإلغاء</h2>
+            <p class="text-sm text-slate-500 mt-0.5">إعدادات إلغاء الحجوزات</p>
+          </div>
+        </div>
+
+        <form [formGroup]="cancellationForm" (ngSubmit)="onCancellationSubmit()" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ui-input formControlName="cancellationNoticeHours" label="مهلة الإلغاء (ساعات)" type="number" [required]="true" />
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-700">السماح بالإلغاء</label>
+              <div class="flex items-center gap-6 h-11">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" formControlName="allowCancellation" [value]="true" class="accent-bosla-primary" />
+                  <span class="text-sm text-slate-700">نعم</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" formControlName="allowCancellation" [value]="false" class="accent-bosla-primary" />
+                  <span class="text-sm text-slate-700">لا</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <ui-textarea formControlName="cancellationPolicy" label="نص سياسة الإلغاء" placeholder="اكتب سياسة الإلغاء الخاصة بك" [rows]="3" />
+
+          <div class="flex justify-end pt-2">
+            <ui-button type="submit" [loading]="saving()" variant="primary">
+              <i class="fa-solid fa-floppy-disk ml-1"></i>
+              حفظ
+            </ui-button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+  }
+</div>
