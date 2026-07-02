@@ -1,6 +1,6 @@
-import { Component, OnInit, AfterViewInit, inject, computed, effect, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject, computed, effect, ChangeDetectorRef, ElementRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
@@ -22,9 +22,16 @@ export interface TrackingStep {
 })
 export class AppointmentTracking implements OnInit, AfterViewInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly el = inject(ElementRef);
+
+  readonly newConversationId = signal<string | null>(null);
+
+  readonly hasConversation = computed(() => {
+    return this.newConversationId() ?? this.store.selectedItem()?.conversationId ?? null;
+  });
 
   private readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -51,10 +58,10 @@ export class AppointmentTracking implements OnInit, AfterViewInit {
     ];
 
     const isDone: boolean[] = [
-      status !== AppointmentStatus.Pending,                                             // step 0: past pending?
-      status === AppointmentStatus.Confirmed || status === AppointmentStatus.Completed, // step 1: specialist confirmed?
-      paymentStatus === PaymentStatus.Paid || status === AppointmentStatus.Completed,   // step 2: payment done?
-      status === AppointmentStatus.Completed,                                          // step 3: session completed?
+      status !== AppointmentStatus.Pending,                                                                  // step 0: past pending?
+      status === AppointmentStatus.Confirmed || status === AppointmentStatus.Paid || status === AppointmentStatus.Completed, // step 1: specialist approved?
+      paymentStatus === PaymentStatus.Paid || status === AppointmentStatus.Paid || status === AppointmentStatus.Completed,   // step 2: payment done?
+      status === AppointmentStatus.Completed,                                                                 // step 3: session completed?
     ];
 
     const doneCount = isDone.filter(Boolean).length;
@@ -84,6 +91,20 @@ export class AppointmentTracking implements OnInit, AfterViewInit {
       this.store.isLoading();
       this.cdr.detectChanges();
     });
+    effect(() => {
+      const convId = this.store.lastCreatedConversationId();
+      if (convId) {
+        this.newConversationId.set(convId);
+        this.store.lastCreatedConversationId.set(null);
+      }
+    });
+  }
+
+  goToConversation(): void {
+    const convId = this.hasConversation();
+    if (convId) {
+      this.router.navigate(['/chat', convId]);
+    }
   }
 
   ngOnInit(): void {

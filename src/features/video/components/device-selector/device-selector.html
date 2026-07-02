@@ -1,0 +1,19 @@
+<div class="device-selector">
+  <label class="device-selector-label" [attr.aria-label]="label()">
+    @if (icon()) {
+      <span class="device-selector-icon" [innerHTML]="icon()"></span>
+    }
+    <span class="device-selector-text">{{ label() }}</span>
+  </label>
+  <select
+    class="device-selector-dropdown"
+    [value]="selectedDeviceId() ?? ''"
+    [disabled]="disabled() || !hasDevices()"
+    (change)="onChange($event)"
+    [attr.aria-label]="label()"
+  >
+    @for (device of devices(); track device.deviceId) {
+      <option [value]="device.deviceId">{{ device.label }}</option>
+    }
+  </select>
+</div>

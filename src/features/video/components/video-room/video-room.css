@@ -1,62 +1,239 @@
-.video-room {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #1a1a2e;
-  color: #fff;
-  position: relative;
+/* ================================================================
+   BOSLA MEET — Premium Video Room
+   Design System · Light Mode · 8px Grid
+   ================================================================ */
+
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:host {
+  /* Colors */
+  --vr-bg:           #F7F9FA;
+  --vr-surface:      #ffffff;
+  --vr-surface-2:    #f0f4f8;
+  --vr-surface-3:    #e8ecf0;
+  --vr-primary:      #1B4F72;
+  --vr-blue:         #2E86AB;
+  --vr-orange:       #F39C12;
+  --vr-text:         #2C3E50;
+  --vr-text-2:       #4a5568;
+  --vr-muted:        #95A5A6;
+  --vr-error:        #ba1a1a;
+  --vr-success:      #16a34a;
+  --vr-video-bg:     #111827;
+  --vr-video-tile:   #1c2232;
+
+  /* Shadows */
+  --vr-shadow-xs:    0 1px 3px rgba(0, 0, 0, 0.06);
+  --vr-shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.08);
+  --vr-shadow-md:    0 4px 16px rgba(0, 0, 0, 0.10);
+  --vr-shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.12);
+  --vr-shadow-xl:    0 12px 40px rgba(0, 0, 0, 0.14);
+  --vr-shadow-2xl:   0 20px 60px rgba(0, 0, 0, 0.18);
+
+  /* Border Radii */
+  --vr-radius-sm:    8px;
+  --vr-radius-md:    12px;
+  --vr-radius-lg:    16px;
+  --vr-radius-xl:    20px;
+  --vr-radius-pill:  9999px;
+
+  /* Spacing (8px grid) */
+  --vr-s1: 8px;
+  --vr-s2: 16px;
+  --vr-s3: 24px;
+  --vr-s4: 32px;
+  --vr-s5: 40px;
+  --vr-s6: 48px;
+  --vr-s8: 64px;
+  --vr-s10: 80px;
+
+  /* Transitions */
+  --vr-transition: 0.15s ease;
+  --vr-transition-md: 0.2s ease;
 }
 
-.video-room-welcome {
+/* ================================================================
+   PAGE STRUCTURE
+   ================================================================ */
+
+.vr-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--vr-bg);
+  font-family: 'Inter', 'Cairo', sans-serif;
+  color: var(--vr-text);
+}
+
+/* ================================================================
+   TOP NAVIGATION HEADER
+   ================================================================ */
+
+.vr-header {
+  height: 72px;
+  flex-shrink: 0;
+  background: var(--vr-surface);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.vr-header-inner {
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--vr-s3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vr-s2);
+}
+
+/* Brand */
+.vr-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.vr-header-logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--vr-primary);
+  border-radius: var(--vr-radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.vr-header-logo-text {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--vr-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Header Center - Status badges */
+.vr-header-center {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.video-room-join-btn {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  background: #4f6ef7;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+/* Header End - Timer & actions */
+.vr-header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--vr-s2);
+  flex-shrink: 0;
 }
 
-.video-room-join-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.video-room-error {
-  color: #ff5252;
-  font-size: 0.875rem;
+.vr-header-timer {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--vr-text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  background: var(--vr-surface-2);
+  padding: 6px 14px;
+  border-radius: var(--vr-radius-pill);
+  min-width: 72px;
   text-align: center;
-  padding: 0.5rem;
 }
 
-.video-room-grid {
+/* ================================================================
+   MAIN CONTENT AREA
+   ================================================================ */
+
+.vr-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--vr-s3) var(--vr-s3) 0;
+  box-sizing: border-box;
+  gap: var(--vr-s2);
+}
+
+/* ── Error Banner ── */
+.vr-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--vr-s1);
+  padding: 12px var(--vr-s2);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--vr-radius-md);
+  color: var(--vr-error);
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: vr-fade-in var(--vr-transition-md);
+}
+
+.vr-error-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--vr-error);
+}
+
+/* ================================================================
+   VIDEO STAGE
+   ================================================================ */
+
+.vr-stage {
+  position: relative;
+  background: var(--vr-video-bg);
+  border-radius: var(--vr-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--vr-shadow-xl);
+  /* Height calculation: viewport - header(72) - top-padding(24) - toolbar-area(80) - info+gap(~100) */
+  /* Global nav offset (pt-22 = 88px on .vr-page) + main-pad(24) + toolbar-area(72) + info(88) + gaps(32) ≈ 304px */
+  height: calc(100svh - 304px);
+  min-height: 320px;
+  max-height: 680px;
+}
+
+/* ── Video Grid ── */
+.vr-video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 0.5rem;
-  padding: 0.5rem;
-  flex: 1;
-  align-content: start;
+  gap: 4px;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
-.video-room-local-container,
-.video-room-remote-container {
+/* ── Single participant: full stage ── */
+.vr-video-grid:has(.vr-video-tile:only-child) {
+  grid-template-columns: 1fr;
+}
+
+/* ── Video Tile ── */
+.vr-video-tile {
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--vr-radius-lg);
   overflow: hidden;
-  background: #16213e;
-  aspect-ratio: 16 / 9;
-  min-height: 200px;
+  background: var(--vr-video-tile);
+  min-height: 180px;
+  transition: box-shadow var(--vr-transition);
 }
 
-.video-room-local,
-.video-room-remote {
+.vr-video-tile--local {
+  /* Subtle primary accent outline for local tile */
+}
+
+/* ── Video Feed Container ── */
+.vr-video-feed {
   width: 100%;
   height: 100%;
   display: flex;
@@ -64,107 +241,1177 @@
   justify-content: center;
 }
 
-.video-room-remote--no-video {
-  background: #16213e;
-}
-
-.video-room-local--active {
-  border: 2px solid #4caf50;
-}
-
-.video-room-local--placeholder,
-.video-room-remote-placeholder {
+/* ── Camera-Off Placeholder ── */
+.vr-video-placeholder {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  background: #16213e;
-  border-radius: 10px;
-  z-index: 1;
+  gap: var(--vr-s2);
+  background: var(--vr-video-tile);
 }
 
-.video-room-placeholder-icon {
+.vr-placeholder-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.06);
 }
 
-.video-room-placeholder-text {
-  font-size: 0.875rem;
-  color: #888;
+.vr-placeholder-text {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.video-room-label {
+/* ── Participant Label ── */
+.vr-video-label {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  font-size: 0.75rem;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 8px;
-  border-radius: 4px;
+  bottom: 12px;
+  left: 12px;
+  pointer-events: none;
   z-index: 2;
 }
 
-/* ── Session Timer ── */
-
-.video-room-timer {
-  font-size: 0.875rem;
-  color: #ccc;
-  font-variant-numeric: tabular-nums;
-  min-width: 3.5rem;
-  text-align: center;
+.vr-video-label-text {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: white;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 10px;
+  border-radius: var(--vr-radius-pill);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  letter-spacing: 0.01em;
 }
 
-/* ── Call Controls Bar ── */
+.vr-video-tile--local .vr-video-label-text {
+  background: rgba(27, 79, 114, 0.7);
+}
 
-.video-room-controls {
+/* ── Network Quality Warning Toast (above stage, inside) ── */
+.vr-nq-warning {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--vr-radius-pill);
+  color: #fbbf24;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  animation: vr-fade-in var(--vr-transition-md);
+  pointer-events: none;
+}
+
+/* ── Pre-Join Overlay ── */
+.vr-prejoin-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: #0f3460;
-  border-top: 1px solid #1a3a6b;
+  padding: var(--vr-s3);
+  z-index: 5;
+  background: rgba(17, 24, 39, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.vr-state-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--vr-radius-xl);
+  padding: var(--vr-s4) var(--vr-s5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--vr-s2);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: vr-scale-in var(--vr-transition-md);
+}
+
+.vr-state-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--vr-s1);
+}
+
+.vr-state-card--join .vr-state-icon-wrap {
+  background: rgba(27, 79, 114, 0.25);
+  color: #93c5fd;
+}
+
+.vr-state-card--waiting .vr-state-icon-wrap {
+  background: rgba(243, 156, 18, 0.2);
+  color: #fbbf24;
+}
+
+.vr-state-card--ended .vr-state-icon-wrap {
+  background: rgba(186, 26, 26, 0.2);
+  color: #fca5a5;
+}
+
+.vr-state-card--error .vr-state-icon-wrap {
+  background: rgba(186, 26, 26, 0.2);
+  color: #fca5a5;
+}
+
+.vr-state-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+}
+
+.vr-state-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* ── Waiting Dots ── */
+.vr-waiting-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.vr-waiting-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(243, 156, 18, 0.6);
+}
+
+.vr-waiting-dot:nth-child(1) { animation: vr-bounce 1.3s ease-in-out 0s infinite; }
+.vr-waiting-dot:nth-child(2) { animation: vr-bounce 1.3s ease-in-out 0.2s infinite; }
+.vr-waiting-dot:nth-child(3) { animation: vr-bounce 1.3s ease-in-out 0.4s infinite; }
+
+/* ── Primary Join Button ── */
+.vr-join-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 36px;
+  background: var(--vr-primary);
+  color: white;
+  border: none;
+  border-radius: var(--vr-radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--vr-transition);
+  letter-spacing: 0.01em;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.vr-join-btn:hover:not(:disabled) {
+  background: #153f5c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(27, 79, 114, 0.45);
+}
+
+.vr-join-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.vr-join-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Retry Button ── */
+.vr-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--vr-radius-pill);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--vr-transition);
+}
+
+.vr-retry-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+}
+
+/* ── Screen Share Error ── */
+.vr-screenshare-error {
+  padding: 10px var(--vr-s2);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--vr-radius-md);
+  color: var(--vr-error);
+  font-size: 0.875rem;
+  text-align: center;
+  font-weight: 500;
+  animation: vr-fade-in var(--vr-transition-md);
+}
+
+/* ================================================================
+   MEETING TOOLBAR (Floating Pill)
+   ================================================================ */
+
+.vr-toolbar-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   flex-shrink: 0;
 }
 
-.video-room-control-btn {
+.vr-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-pill);
+  box-shadow: var(--vr-shadow-2xl);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+/* Toolbar Icon Buttons (52×52 circles) */
+.vr-tb-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   border: none;
-  background: #1a3a6b;
-  color: #fff;
+  background: var(--vr-surface-2);
+  color: var(--vr-text);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all var(--vr-transition);
+  flex-shrink: 0;
+  position: relative;
+  outline: none;
 }
 
-.video-room-control-btn:hover {
-  background: #2a4a8b;
+.vr-tb-btn:hover:not(:disabled) {
+  background: var(--vr-surface-3);
+  transform: scale(1.05);
 }
 
-.video-room-control-btn--off {
-  background: #d32f2f;
+.vr-tb-btn:focus-visible {
+  outline: 3px solid var(--vr-blue);
+  outline-offset: 2px;
 }
 
-.video-room-control-btn--off:hover {
-  background: #e53935;
+.vr-tb-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-.video-room-control-btn--leave {
-  background: #d32f2f;
-  border-radius: 12px;
+/* Mic / Camera OFF state → red tint */
+.vr-tb-btn--off {
+  background: #fef2f2;
+  color: var(--vr-error);
+}
+
+.vr-tb-btn--off:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+/* Leave button */
+.vr-tb-btn--leave {
+  background: var(--vr-error);
+  color: white;
+  border-radius: 14px;
   width: 56px;
-  height: 48px;
 }
 
-.video-room-control-btn--leave:hover {
-  background: #e53935;
+.vr-tb-btn--leave:hover:not(:disabled) {
+  background: #9b1313;
+  transform: scale(1.05);
 }
+
+/* Active state (screen share, etc.) */
+.vr-tb-btn--active {
+  background: rgba(46, 134, 171, 0.12);
+  color: var(--vr-blue);
+}
+
+.vr-tb-btn--active:hover:not(:disabled) {
+  background: rgba(46, 134, 171, 0.2);
+}
+
+/* Toolbar divider */
+.vr-toolbar-divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* Timer in toolbar */
+.vr-toolbar-timer {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+.vr-timer-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--vr-text-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ================================================================
+   MEETING INFO CARDS ROW
+   ================================================================ */
+
+.vr-info-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--vr-s1);
+  flex-wrap: wrap;
+}
+
+.vr-info-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px var(--vr-s2);
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-md);
+  box-shadow: var(--vr-shadow-xs);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  flex: 1;
+  min-width: 120px;
+  transition: box-shadow var(--vr-transition);
+}
+
+.vr-info-card:hover {
+  box-shadow: var(--vr-shadow-sm);
+}
+
+.vr-info-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--vr-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--vr-surface-2);
+  color: var(--vr-muted);
+}
+
+.vr-info-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.vr-info-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--vr-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+/* ================================================================
+   DEVICE SETTINGS SECTION
+   ================================================================ */
+
+.vr-devices-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vr-s2);
+  padding-bottom: var(--vr-s3);
+}
+
+.vr-devices-header {
+  display: flex;
+  align-items: center;
+  gap: var(--vr-s1);
+}
+
+.vr-devices-header-icon {
+  display: flex;
+  align-items: center;
+  color: var(--vr-muted);
+}
+
+.vr-devices-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--vr-text);
+  margin: 0;
+}
+
+.vr-devices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--vr-s2);
+}
+
+/* ── Device Card ── */
+.vr-device-card {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-lg);
+  padding: var(--vr-s2);
+  box-shadow: var(--vr-shadow-xs);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: var(--vr-s2);
+  transition: box-shadow var(--vr-transition);
+}
+
+.vr-device-card:hover {
+  box-shadow: var(--vr-shadow-sm);
+}
+
+.vr-device-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vr-device-card-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--vr-radius-sm);
+  background: var(--vr-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vr-primary);
+  flex-shrink: 0;
+}
+
+.vr-device-card-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--vr-text);
+}
+
+.vr-device-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vr-s1);
+}
+
+/* ================================================================
+   FOOTER (Completely Separated)
+   ================================================================ */
+
+.vr-footer {
+  margin-top: var(--vr-s10);
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  padding: var(--vr-s3);
+  background: var(--vr-surface);
+}
+
+.vr-footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vr-s2);
+}
+
+.vr-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vr-footer-logo {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--vr-primary);
+}
+
+.vr-footer-tagline {
+  font-size: 0.8125rem;
+  color: var(--vr-muted);
+}
+
+.vr-footer-copy {
+  font-size: 0.8125rem;
+  color: var(--vr-muted);
+}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+
+@keyframes vr-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes vr-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes vr-bounce {
+  0%, 100% { transform: translateY(0);    opacity: 0.4; }
+  50%       { transform: translateY(-7px); opacity: 1;   }
+}
+
+/* ================================================================
+   LAYOUT VISIBILITY UTILITIES
+   vr-desktop-only: visible on ≥768px, hidden on mobile
+   vr-mobile-only:  visible on <768px, hidden on desktop
+   ================================================================ */
+
+.vr-desktop-only {
+  /* Shown by default (desktop-first for these sections) */
+  display: flex;
+}
+
+.vr-mobile-only {
+  /* Hidden on desktop */
+  display: none;
+}
+
+/* ================================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   ================================================================ */
+
+/* ================================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   ================================================================ */
+
+/* ================================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   Only touch what overflows: device grid drops to 2 columns.
+   Desktop layout otherwise intact.
+   ================================================================ */
+
+@media (max-width: 1024px) {
+  .vr-devices-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vr-stage {
+    height: calc(100svh - 304px);
+    max-height: 520px;
+  }
+}
+
+
+/* ================================================================
+   DEDICATED MOBILE LAYOUT (≤ 767px)
+   Completely separate visual presentation.
+   Desktop rules above are unaffected.
+   ================================================================ */
+
+@media (max-width: 767px) {
+
+  /* ── Prevent horizontal page scroll ── */
+  .vr-page {
+    overflow-x: clip;
+  }
+
+  /* ── Main: tighter gutters ── */
+  .vr-main {
+    padding: 12px 12px 32px;
+    gap: 12px;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* ── Show / hide desktop vs mobile sections ── */
+  .vr-desktop-only {
+    display: none;
+  }
+  .vr-mobile-only {
+    display: flex;
+  }
+
+  /* ── VIDEO STAGE: 50% of viewport height, centered ──
+     Goal: 45–55% of the first visible screen.
+     clamp() ensures minimum usability on short screens.
+     border-radius 20px as required. */
+  .vr-stage {
+    height: clamp(200px, 50svh, 360px);
+    width: 100%;
+    aspect-ratio: unset;           /* height drives, not 16:9 width */
+    min-height: unset;
+    max-height: unset;
+    border-radius: 20px;
+    align-self: center;
+  }
+
+  /* Single-column video grid inside stage */
+  .vr-video-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+  }
+
+  /* Smaller placeholder avatar inside compact stage */
+  .vr-placeholder-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* ── TOOLBAR: full-width bar, 48×48 buttons, space-between ──
+     The toolbar pill expands to full container width.
+     justify-content:space-between distributes buttons evenly
+     across ANY screen width — mathematically impossible to overflow. */
+  .vr-toolbar-wrapper {
+    justify-content: stretch;
+    padding: 0;
+    overflow: visible;
+    width: 100%;
+  }
+
+  .vr-toolbar {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 8px 12px;
+    gap: 0;
+    border-radius: 16px;
+  }
+
+  /* All toolbar buttons: 48×48 px, no scale on touch */
+  .vr-tb-btn {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    touch-action: manipulation;
+  }
+  .vr-tb-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .vr-tb-btn--leave {
+    width: 48px;
+    border-radius: 14px;
+  }
+
+  /* Hide decorative dividers in the toolbar on mobile */
+  .vr-toolbar-divider {
+    display: none;
+  }
+
+  /* Timer: compact, tabular numbers */
+  .vr-toolbar-timer {
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+  .vr-timer-value {
+    font-size: 0.8125rem;
+    min-width: 46px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── MOBILE STATUS CARD (vrm-status-card) ──
+     Single horizontal card containing all 3 status items.
+     Three equal-width columns separated by thin dividers. */
+  .vrm-status-card {
+    display: flex;
+    align-items: center;
+    background: var(--vr-surface);
+    border-radius: var(--vr-radius-md);
+    box-shadow: var(--vr-shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .vrm-status-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 6px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .vrm-status-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--vr-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .vrm-status-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.07);
+    flex-shrink: 0;
+  }
+
+  /* ── MOBILE DEVICE ACCORDION (vrm-accordion) ──
+     Collapsed by default. Expands via Angular @if.
+     Clean card container with rounded corners. */
+  .vrm-accordion {
+    display: flex;
+    flex-direction: column;
+    background: var(--vr-surface);
+    border-radius: var(--vr-radius-md);
+    box-shadow: var(--vr-shadow-sm);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Accordion header button */
+  .vrm-accordion-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    min-height: 52px;  /* ≥44px touch target */
+    text-align: start;
+    transition: background-color var(--vr-transition);
+  }
+  .vrm-accordion-trigger:hover {
+    background: var(--vr-surface-2);
+  }
+  .vrm-accordion-trigger:focus-visible {
+    outline: 3px solid var(--vr-blue);
+    outline-offset: -3px;
+  }
+
+  .vrm-accordion-trigger-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .vrm-accordion-icon-wrap {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--vr-radius-sm);
+    background: var(--vr-surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vr-primary);
+    flex-shrink: 0;
+  }
+
+  .vrm-accordion-label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--vr-text);
+  }
+
+  /* Chevron rotates when open */
+  .vrm-accordion-chevron {
+    color: var(--vr-muted);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .vrm-accordion-chevron--open {
+    transform: rotate(180deg);
+  }
+
+  /* Accordion body */
+  .vrm-accordion-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    animation: vrm-expand 0.18s ease;
+  }
+
+  /* Each device row inside the accordion */
+  .vrm-device-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .vrm-device-row:last-child {
+    border-bottom: none;
+  }
+
+  .vrm-device-row-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .vrm-device-row-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--vr-surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vr-primary);
+    flex-shrink: 0;
+  }
+
+  .vrm-device-row-label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--vr-text);
+  }
+
+  @keyframes vrm-expand {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Generous footer spacing before footer content ── */
+  .vr-footer {
+    margin-top: var(--vr-s8);
+  }
+  .vr-footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--vr-s1);
+  }
+
+  /* ── Pre-join state cards: compact on mobile ── */
+  .vr-state-card {
+    padding: 28px 20px;
+    max-width: 340px;
+  }
+
+}
+
+/* ================================================================
+   MOBILE FINE-TUNING (≤ 480px)
+   Small adjustments for 320–480px screens.
+   ================================================================ */
+
+@media (max-width: 480px) {
+  .vr-main {
+    padding: 10px 10px 24px;
+    gap: 10px;
+  }
+
+  /* Stage: slightly shorter on very small screens */
+  .vr-stage {
+    height: clamp(180px, 48svh, 320px);
+  }
+
+  /* Status card: reduce item padding */
+  .vrm-status-item {
+    padding: 10px 4px;
+  }
+
+  /* Accordion: tighter padding */
+  .vrm-accordion-trigger {
+    padding: 12px 14px;
+  }
+  .vrm-device-row {
+    padding: 12px 14px;
+  }
+
+  /* Pre-join card */
+  .vr-state-card {
+    padding: 24px 16px;
+  }
+  .vr-state-icon-wrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* Join button: full width on tiny screens */
+  .vr-join-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ================================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ================================================================ */
+
+@media (max-width: 768px) {
+  /* ── Page & Layout ── */
+  .vr-page {
+    /* Prevent any child from causing horizontal page scroll */
+    overflow-x: clip;
+  }
+
+  .vr-main {
+    /* Reduce from 24px → 16px on all sides */
+    padding: var(--vr-s2) var(--vr-s2) 0;
+    gap: 12px;
+    /* Guarantee content never exceeds the viewport width */
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  /* Header adjustments (for when it is re-enabled) */
+  .vr-header-inner { padding: 0 var(--vr-s2); }
+  .vr-header-logo-text { display: none; }
+
+  /* ── Video Stage ──
+     Use intrinsic aspect-ratio instead of calc(100svh - X).
+     16:9 gives natural height from available width.
+     max-height caps it so it never takes over more than
+     ~45% of a typical phone viewport (≈ 280px on 390px wide). */
+  .vr-stage {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: 180px;
+    max-height: min(56.25vw, 280px); /* 56.25vw = 16:9 at full width */
+    border-radius: var(--vr-radius-lg);
+  }
+
+  /* Single column video grid on mobile */
+  .vr-video-grid {
+    grid-template-columns: 1fr;
+    /* Reduce inner gap on small stage */
+    gap: 2px;
+    padding: 2px;
+  }
+
+  /* Smaller avatar placeholder on small stage */
+  .vr-placeholder-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* ── Toolbar ──
+     Keep all buttons at exactly 44px (WCAG minimum touch target).
+     Toolbar wrapper gains overflow-x:auto so the pill can scroll
+     within itself on 320px screens — the page itself stays locked. */
+  .vr-toolbar-wrapper {
+    /* Allow horizontal scroll within the wrapper only */
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;          /* Firefox */
+    padding: 0 var(--vr-s2) var(--vr-s2);
+    justify-content: flex-start;
+  }
+  .vr-toolbar-wrapper::-webkit-scrollbar { display: none; }
+
+  .vr-toolbar {
+    /* Keep as inline-flex pill but let it scroll inside wrapper */
+    flex-shrink: 0;
+    gap: 3px;
+    padding: 6px;
+  }
+
+  /* All direct toolbar circle buttons → 44×44px */
+  .vr-tb-btn {
+    width: 44px;
+    height: 44px;
+    /* Disable scale hover on touch — avoids layout jank */
+    touch-action: manipulation;
+  }
+  .vr-tb-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  /* Leave: keep rect shape but same 44px */
+  .vr-tb-btn--leave {
+    width: 44px;
+    border-radius: 11px;
+  }
+
+  /* Compact timer */
+  .vr-toolbar-timer { padding: 0 6px; }
+  .vr-timer-value {
+    font-size: 0.8125rem;
+    min-width: 48px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Info Cards Row ──
+     3 equal columns — one per card, compact padding */
+  .vr-info-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .vr-info-card {
+    padding: 10px 10px;
+    gap: 8px;
+    min-width: 0; /* allow cards to shrink below 120px */
+  }
+
+  .vr-info-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .vr-info-label {
+    font-size: 0.625rem; /* 10px */
+  }
+
+  /* ── Device Settings ──
+     Single column, reduced padding */
+  .vr-devices-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vr-device-card {
+    padding: var(--vr-s2);
+  }
+
+  .vr-devices-section {
+    padding-bottom: var(--vr-s2);
+  }
+
+  /* ── Footer ── */
+  .vr-footer { margin-top: var(--vr-s4); }
+  .vr-footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--vr-s1);
+  }
+}
+
+/* ================================================================
+   RESPONSIVE — SMALL MOBILE (≤ 480px)
+   ================================================================ */
+
+@media (max-width: 480px) {
+  .vr-main {
+    padding: 12px 12px 0;
+    gap: 10px;
+  }
+
+  /* Hide toolbar dividers to reclaim horizontal space */
+  .vr-toolbar-divider { display: none; }
+
+  /* Timer: minimal footprint */
+  .vr-toolbar-timer { padding: 0 4px; }
+  .vr-timer-value {
+    font-size: 0.75rem;
+    min-width: 42px;
+  }
+
+  /* Info cards: 2-column grid (Connection + Recording in row 1, Network below) */
+  .vr-info-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  /* Pre-join state card: tighter padding */
+  .vr-state-card {
+    padding: var(--vr-s3) var(--vr-s2);
+  }
+  .vr-state-icon-wrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* Device cards: tightest padding */
+  .vr-device-card {
+    padding: 12px;
+  }
+}
+
+/* ================================================================
+   RESPONSIVE — VERY SMALL (≤ 360px)
+   ================================================================ */
+
+@media (max-width: 360px) {
+  .vr-main {
+    padding: 10px 10px 0;
+    gap: 8px;
+  }
+
+  /* Stage: cap height a bit tighter on 320px screens */
+  .vr-stage {
+    max-height: min(56.25vw, 240px);
+    min-height: 160px;
+  }
+
+  /* On 320px, info row stacks to 1 column */
+  .vr-info-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Join button fills width for easier tap */
+  .vr-join-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
+
+  .vr-state-card {
+    padding: 20px 16px;
+  }
+}
+

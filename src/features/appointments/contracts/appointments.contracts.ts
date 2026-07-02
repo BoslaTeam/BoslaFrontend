@@ -55,6 +55,7 @@ export interface AppointmentDto {
   specialistImageUrl?: string;
   amount?: number;
   paymentStatus?: PaymentStatus;
+  conversationId?: string;
 }
 
 export interface AppointmentStatusHistoryDto {

@@ -36,6 +36,8 @@ export class AppointmentList implements OnInit, OnDestroy {
   readonly activeTab = signal<AppointmentTab>('upcoming');
   private sub?: Subscription;
 
+  readonly displayLimit = signal(6);
+
   readonly filteredAppointments = computed(() => {
     const allAppointments = this.store.items();
     const now = new Date();
@@ -52,6 +54,7 @@ export class AppointmentList implements OnInit, OnDestroy {
         (app) =>
           app.status === AppointmentStatus.Pending ||
           app.status === AppointmentStatus.Confirmed ||
+          app.status === AppointmentStatus.Rescheduled ||
           new Date(app.start) >= now,
       );
     } else {
@@ -63,6 +66,19 @@ export class AppointmentList implements OnInit, OnDestroy {
       );
     }
   });
+
+  readonly displayedAppointments = computed(() =>
+    this.filteredAppointments().slice(0, this.displayLimit()),
+  );
+
+  readonly hasMore = computed(() =>
+    this.filteredAppointments().length > this.displayLimit(),
+  );
+
+  showMore(): void {
+    this.displayLimit.update((l) => l + 6);
+    this.cdr.detectChanges();
+  }
 
   readonly pendingPaymentCount = computed(() => {
     return this.store.items().filter(

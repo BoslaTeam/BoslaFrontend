@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { AppointmentsStore } from '@features/appointments/store/appointments.store';
 import { AppointmentService } from '@features/appointments/services/appointments.service';
 import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
@@ -29,6 +30,7 @@ interface SpecialistAppointment {
   status: ApptStatus;
   amount: number;
   isPaid: boolean;
+  conversationId?: string;
 }
 
 function toStatus(raw: unknown): ApptStatus {
@@ -61,11 +63,11 @@ function clientNumber(userId: string): string {
 
 const STATUS_LABELS: Record<ApptStatus, string> = {
   [ApptStatus.Pending]: 'قيد الانتظار',
-  [ApptStatus.Confirmed]: 'مؤكد',
+  [ApptStatus.Confirmed]: 'بانتظار الدفع',
   [ApptStatus.Completed]: 'مكتمل',
   [ApptStatus.Cancelled]: 'ملغي',
   [ApptStatus.Rejected]: 'مرفوض',
-  [ApptStatus.Paid]: 'مدفوع',
+  [ApptStatus.Paid]: 'مؤكد ومدفوع',
 };
 
 const STATUS_CLASSES: Record<ApptStatus, string> = {
@@ -96,6 +98,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
   private appointmentService = inject(AppointmentService);
+  readonly store = inject(AppointmentsStore);
 
   // Core state
   readonly activeTab = signal<ApptStatus | 'all'>('all');
@@ -383,16 +386,18 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
       status: toStatus(item.status),
       amount: item.sessionPrice ?? item.amount ?? 0,
       isPaid: item.isPaid ?? false,
+      conversationId: item.conversationId ?? undefined,
     };
   }
 
   confirmAppointment(id: string): void {
-    this.http.put<ApiResponse<any>>(API_ENDPOINTS.appointments.confirm(id), {}).subscribe({
-      next: () => {
-        this.toast.success('تم تأكيد الموعد');
-        this.loadAppointments();
-      },
-      error: () => this.toast.danger('فشل تأكيد الموعد'),
+    this.store.confirmAppointment(id, (convId) => {
+      if (convId) {
+        this.appointments.update(list =>
+          list.map(apt => apt.id === id ? { ...apt, conversationId: convId } : apt)
+        );
+      }
+      this.loadAppointments();
     });
   }
 
