@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '@environments/environment';
 import { AppNotification, NotificationService } from './notification.service';
+import { TokenService } from './token.service';
 
 interface SignalRNotificationDto {
   id: string;
@@ -18,6 +19,7 @@ interface SignalRNotificationDto {
 export class NotificationSignalrService {
   private hubConnection: signalR.HubConnection | null = null;
   private notificationService = inject(NotificationService);
+  private tokenService = inject(TokenService);
 
   readonly connectionState = signal<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
 
@@ -31,7 +33,7 @@ export class NotificationSignalrService {
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        accessTokenFactory: () => localStorage.getItem('bosla_access_token') ?? '',
+        accessTokenFactory: () => this.tokenService.getAccessToken() ?? '',
       })
       .withAutomaticReconnect()
       .build();

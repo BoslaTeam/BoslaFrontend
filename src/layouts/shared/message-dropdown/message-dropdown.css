@@ -1,8 +1,14 @@
+:host {
+  display: contents;
+}
+
 .msg-dropdown {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
+  left: auto;
   width: 360px;
+  max-width: calc(100vw - 32px);
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
@@ -10,7 +16,21 @@
   z-index: 100;
   overflow: hidden;
   animation: msg-dropdown-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  transform-origin: top left;
+  transform-origin: top right;
+}
+
+@media (max-width: 480px) {
+  .msg-dropdown {
+    position: fixed;
+    top: 76px;
+    right: 16px;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 96px);
+  }
+  .msg-dropdown-body {
+    max-height: calc(100vh - 200px);
+  }
 }
 
 @keyframes msg-dropdown-in {

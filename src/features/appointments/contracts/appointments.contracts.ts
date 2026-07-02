@@ -92,6 +92,21 @@ export interface SpecialistFullDetail extends SpecialistBrief {
   country: string | null;
 }
 
+export interface SessionSummaryDto {
+  id: string;
+  appointmentId: string;
+  transcriptId?: string;
+  keyTakeaways: string;
+  actionItemsForUser: string;
+  actionItemsForSpec: string;
+  llmProvider: string;
+  status: number;
+  createdAtUtc: string;
+  createdBy?: string;
+  lastModifiedUtc?: string;
+  lastModifiedBy?: string;
+}
+
 export interface AvailabilitySlotDto {
   id: string;
   start: string;

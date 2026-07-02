@@ -14,6 +14,7 @@ import {
   SpecialistBrief,
   SpecialistFullDetail,
   AvailabilitySlotDto,
+  SessionSummaryDto,
 } from '../contracts/appointments.contracts';
 import { ToastService } from '@core/services/toast.service';
 import { finalize, forkJoin, switchMap, of, catchError } from 'rxjs';
@@ -28,9 +29,11 @@ export interface AppointmentsState {
   selectedItem: AppointmentDto | null;
   selectedItemHistory: AppointmentStatusHistoryDto[];
   selectedItemReminders: ReminderDto[];
+  selectedSummary: SessionSummaryDto | null;
   isLoading: boolean;
   isActionLoading: boolean;
   isLoadingSpecialist: boolean;
+  isLoadingSummary: boolean;
   error: string | null;
   specialistInfo: SpecialistBrief | null;
   selectedSpecialistDetail: SpecialistFullDetail | null;
@@ -55,9 +58,11 @@ export class AppointmentsStore {
     selectedItem: null,
     selectedItemHistory: [],
     selectedItemReminders: [],
+    selectedSummary: null,
     isLoading: false,
     isActionLoading: false,
     isLoadingSpecialist: false,
+    isLoadingSummary: false,
     error: null,
     specialistInfo: null,
     selectedSpecialistDetail: null,
@@ -72,9 +77,11 @@ export class AppointmentsStore {
   readonly selectedItem = computed(() => this._state().selectedItem);
   readonly selectedItemHistory = computed(() => this._state().selectedItemHistory);
   readonly selectedItemReminders = computed(() => this._state().selectedItemReminders);
+  readonly selectedSummary = computed(() => this._state().selectedSummary);
   readonly isLoading = computed(() => this._state().isLoading);
   readonly isActionLoading = computed(() => this._state().isActionLoading);
   readonly isLoadingSpecialist = computed(() => this._state().isLoadingSpecialist);
+  readonly isLoadingSummary = computed(() => this._state().isLoadingSummary);
   readonly error = computed(() => this._state().error);
   readonly specialistInfo = computed(() => this._state().specialistInfo);
   readonly selectedSpecialistDetail = computed(() => this._state().selectedSpecialistDetail);
@@ -192,6 +199,7 @@ export class AppointmentsStore {
           }
           this.loadStatusHistory(id);
           this.loadReminders(id);
+          this.loadSummary(id);
         },
         error: (err) => this.handleError(err, 'فشل في تحميل تفاصيل الموعد.')
       });
@@ -471,6 +479,14 @@ export class AppointmentsStore {
     this.appointmentService.getReminders(id).subscribe({
       next: (selectedItemReminders) => this.updateState({ selectedItemReminders }),
       error: (err) => console.error('Reminders load failed:', err)
+    });
+  }
+
+  loadSummary(id: string): void {
+    this.updateState({ isLoadingSummary: true, selectedSummary: null });
+    this.appointmentService.getSummary(id).subscribe({
+      next: (res) => this.updateState({ selectedSummary: res.data, isLoadingSummary: false }),
+      error: () => this.updateState({ isLoadingSummary: false })
     });
   }
 
