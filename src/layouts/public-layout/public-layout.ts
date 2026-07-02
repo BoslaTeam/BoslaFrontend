@@ -7,7 +7,7 @@ import { AiChatWidget } from '@features/ai/components/ai-chat-widget/ai-chat-wid
 
 @Component({
   selector: 'app-public-layout',
-  imports: [RouterOutlet, AppHeader, PublicFooter, AiChatWidget],
+  imports: [RouterOutlet, AppHeader, PublicFooter],
   templateUrl: './public-layout.html'
 })
 export class PublicLayout {

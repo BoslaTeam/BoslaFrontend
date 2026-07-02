@@ -6,6 +6,28 @@ export interface AgoraTokenResponse {
   expiresAt: string;
 }
 
+export interface RecordingInfoDto {
+  status: string | null;
+  startedAtUtc: string | null;
+  completedAtUtc: string | null;
+  isRecording: boolean;
+  canStartRecording: boolean;
+  canStopRecording: boolean;
+  currentRecordingId: string | null;
+  url: string | null;
+}
+
+export interface StartRecordingResponse {
+  sessionId: string;
+  recordingId: string;
+  startedAtUtc: string;
+}
+
+export interface StopRecordingResponse {
+  sessionId: string;
+  recording: RecordingInfoDto;
+}
+
 export interface VideoSessionDto {
   id: string;
   appointmentId: string;
@@ -14,6 +36,7 @@ export interface VideoSessionDto {
   startedAt?: string | null;
   endedAt?: string | null;
   participants: VideoSessionParticipant[];
+  recording?: RecordingInfoDto | null;
 }
 
 export interface VideoSessionParticipant {

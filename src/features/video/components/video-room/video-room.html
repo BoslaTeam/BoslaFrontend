@@ -1,123 +1,553 @@
-<div class="video-room">
-  <!-- Session Prep Panel (shown to Specialists before joining) -->
-  @if (showSessionPrep() && appointmentId()) {
-    <session-prep-panel
-      [appointmentId]="appointmentId()!"
-      (enterSession)="onPrepEnterSession()"
-      (back)="onPrepBack()"
-    />
-  }
+<div class="vr-page pt-22">
 
-  @if (!agoraService.joined()) {
+  <!-- ══════════════════════════════════════════════════════════
+       TOP NAVIGATION HEADER (commented out — global nav used)
+       ════════════════════════════════════════════════════════ -->
+  <!-- <header class="vr-header" role="banner">...</header> -->
 
-    <div class="video-room-welcome">
-      <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
-        {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
-      </button>
+  <!-- ══════════════════════════════════════════════════════════
+       MAIN CONTENT
+       ════════════════════════════════════════════════════════ -->
+  <main class="vr-main" role="main" aria-label="Meeting room">
+
+    <!-- Error Banner -->
+    @if (agoraService.error()) {
+    <div class="vr-error-banner" role="alert" aria-live="assertive">
+      <span class="vr-error-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </span>
+      <span>{{ agoraService.error() }}</span>
     </div>
-  }
+    }
 
-  @if (agoraService.error()) {
-    <div class="video-room-error">
-      {{ agoraService.error() }}
-    </div>
-  }
+    <!-- ──────────────────────────────────────────────────────
+         VIDEO STAGE — shared between desktop and mobile.
+         CSS controls sizing at each breakpoint.
+         ────────────────────────────────────────────────────── -->
+    <section class="vr-stage" aria-label="Video stage">
 
-  <div class="video-room-grid">
-    <div class="video-room-local-container">
-      <div #localPlayer
-           class="video-room-local"
-           [class.video-room-local--active]="agoraService.joined()"
-           [style.display]="agoraService.cameraEnabled() ? 'flex' : 'none'">
+      <!-- Network Quality Warning Toast (floating inside stage) -->
+      @if (agoraService.joined() && networkQualityService.warningActive()) {
+      <div class="vr-nq-warning" role="alert" aria-live="polite">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+          aria-hidden="true">
+          <path d="M12 9v4M12 17h.01" />
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+        </svg>
+        <span>جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.</span>
       </div>
-      @if (!agoraService.cameraEnabled() && agoraService.joined()) {
-        <div class="video-room-local video-room-local--placeholder">
-          <div class="video-room-placeholder-icon">
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#888" stroke-width="1.5">
-              <path d="M23 7l-7 5 7 5V7z"/>
-              <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888"/>
-              <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2"/>
-            </svg>
-          </div>
-          <span class="video-room-placeholder-text">Camera Off</span>
-        </div>
       }
-      <span class="video-room-label">You</span>
-    </div>
 
-    @for (p of agoraService.remoteParticipants(); track p.uid) {
-      <div class="video-room-remote-container">
-        <div [id]="p.containerId"
-             class="video-room-remote"
-             [class.video-room-remote--no-video]="!p.hasVideo">
-        </div>
-        @if (!p.hasVideo) {
-          <div class="video-room-remote-placeholder">
-            <div class="video-room-placeholder-icon">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#888" stroke-width="1.5">
-                <path d="M23 7l-7 5 7 5V7z"/>
-                <rect x="1" y="5" width="15" height="14" rx="2" stroke="#888"/>
-                <line x1="2" y1="2" x2="22" y2="22" stroke="#888" stroke-width="2"/>
+      <!-- Screen Share Indicator -->
+      @if (agoraService.joined()) {
+      <app-screen-share-indicator />
+      }
+
+      <!-- VIDEO GRID -->
+      <div class="vr-video-grid">
+
+        <!-- Local Video Tile -->
+        <div class="vr-video-tile vr-video-tile--local">
+          <div #localPlayer class="vr-video-feed" [style.display]="agoraService.cameraEnabled() ? 'flex' : 'none'"
+            aria-label="Your video"></div>
+
+          @if (!agoraService.cameraEnabled()) {
+          <div class="vr-video-placeholder" aria-label="Your camera is off">
+            <div class="vr-placeholder-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
-            <span class="video-room-placeholder-text">Camera Off</span>
+            <span class="vr-placeholder-text">Camera Off</span>
           </div>
+          }
+
+          <div class="vr-video-label" aria-hidden="true">
+            <span class="vr-video-label-text">أنت</span>
+          </div>
+        </div>
+
+        <!-- Remote Participant Tiles -->
+        @for (p of agoraService.remoteParticipants(); track p.uid) {
+        <div class="vr-video-tile">
+          <div [id]="p.containerId" class="vr-video-feed" [attr.aria-label]="'Participant ' + p.uid + ' video'"></div>
+
+          @if (!p.hasVideo) {
+          <div class="vr-video-placeholder" [attr.aria-label]="'Participant ' + p.uid + ' camera is off'">
+            <div class="vr-placeholder-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <span class="vr-placeholder-text">Camera Off</span>
+          </div>
+          }
+
+          <div class="vr-video-label" aria-hidden="true">
+            <span class="vr-video-label-text">{{ p.uid }}</span>
+          </div>
+        </div>
         }
-        <span class="video-room-label">User {{ p.uid }}</span>
+
       </div>
-    }
-  </div>
+      <!-- /vr-video-grid -->
 
-  @if (agoraService.joined()) {
-    <div class="video-room-controls">
-      <span class="video-room-timer">{{ sessionTimerService.formattedElapsed() }}</span>
+      <!-- Pre-Join State Overlay -->
+      @if (!agoraService.joined()) {
+      <div class="vr-prejoin-overlay" role="region" aria-label="Join session">
 
-      <button class="video-room-control-btn"
-              [class.video-room-control-btn--off]="!agoraService.cameraEnabled()"
-              (click)="toggleCamera()"
-              title="{{ agoraService.cameraEnabled() ? 'Turn Camera Off' : 'Turn Camera On' }}">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          @if (agoraService.cameraEnabled()) {
-            <path d="M23 7l-7 5 7 5V7z"/>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-          } @else {
-            <path d="M23 7l-7 5 7 5V7z"/>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-            <line x1="2" y1="2" x2="22" y2="22"/>
-          }
-        </svg>
-      </button>
+        @if (isSessionEnded()) {
+        <div class="vr-state-card vr-state-card--ended" role="status">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="16 8 8 16" />
+              <polyline points="8 8 16 16" />
+            </svg>
+          </div>
+          <h2 class="vr-state-title">انتهت الجلسة</h2>
+          <p class="vr-state-subtitle">لقد انتهت هذه الجلسة. شكراً لاستخدامك بصلة.</p>
+        </div>
 
-      <button class="video-room-control-btn"
-              [class.video-room-control-btn--off]="!agoraService.microphoneEnabled()"
-              (click)="toggleMicrophone()"
-              title="{{ agoraService.microphoneEnabled() ? 'Mute Microphone' : 'Unmute Microphone' }}">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          @if (agoraService.microphoneEnabled()) {
-            <rect x="6" y="2" width="12" height="12" rx="6" ry="6"/>
-            <path d="M12 18v4"/>
-            <path d="M8 22h8"/>
-            <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4"/>
-          } @else {
-            <rect x="6" y="2" width="12" height="12" rx="6" ry="6"/>
-            <path d="M12 18v4"/>
-            <path d="M8 22h8"/>
-            <path d="M16 10c0 2.21-1.79 4-4 4s-4-1.79-4-4"/>
-            <line x1="2" y1="2" x2="22" y2="22"/>
-          }
-        </svg>
-      </button>
+        } @else if (isWaitingForSpecialist()) {
 
-      <button class="video-room-control-btn video-room-control-btn--leave"
-              (click)="leaveSession()"
-              title="Leave Session">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22.65 5.65l-2.79-2.79a1 1 0 00-1.41 0L16 5.17"/>
-          <path d="M22.65 18.35l-2.79 2.79a1 1 0 01-1.41 0L16 18.83"/>
-          <path d="M10 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4"/>
-          <line x1="16" y1="12" x2="4" y2="12"/>
-        </svg>
-      </button>
+        @if (signalrFailed()) {
+        <div class="vr-state-card vr-state-card--error" role="alert">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 0110.19-4.43" />
+              <path d="M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88" />
+              <path d="M8.53 16.11a6 6 0 016.95 0" />
+              <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h2 class="vr-state-title">تعذر الاتصال</h2>
+          <p class="vr-state-subtitle">تعذر الاتصال بخادم الجلسة. يرجى التحقق من اتصالك بالإنترنت.</p>
+          <button class="vr-retry-btn" (click)="retryJoin()" type="button" aria-label="Retry connection">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+            </svg>
+            إعادة المحاولة
+          </button>
+        </div>
+        } @else {
+        <div class="vr-state-card vr-state-card--waiting" role="status" aria-live="polite">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <h2 class="vr-state-title">في انتظار المتخصص</h2>
+          <p class="vr-state-subtitle">سيتم الانضمام إلى الجلسة تلقائياً عند بدء المتخصص.</p>
+          <div class="vr-waiting-dots" aria-hidden="true">
+            <span class="vr-waiting-dot"></span>
+            <span class="vr-waiting-dot"></span>
+            <span class="vr-waiting-dot"></span>
+          </div>
+        </div>
+        }
+
+        } @else {
+        <div class="vr-state-card vr-state-card--join">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M23 7l-7 5 7 5V7z" />
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            </svg>
+          </div>
+          <h2 class="vr-state-title">جاهز للانضمام؟</h2>
+          <p class="vr-state-subtitle">انقر على الزر أدناه للانضمام إلى جلسة الاستشارة.</p>
+          <button id="btn-join-session" class="vr-join-btn" (click)="handleJoinClick()"
+            [disabled]="agoraService.joining()" type="button"
+            [attr.aria-label]="agoraService.joining() ? 'Joining session...' : 'Join session'">
+            @if (agoraService.joining()) {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path
+                d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            جارٍ الانضمام...
+            } @else {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M23 7l-7 5 7 5V7z" />
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            </svg>
+            انضمام للجلسة
+            }
+          </button>
+        </div>
+        }
+
+      </div>
+      }
+
+    </section>
+    <!-- /vr-stage -->
+
+    <!-- Screen Share Error -->
+    @if (agoraService.joined() && screenShareService.error()) {
+    <div class="vr-screenshare-error" role="alert" aria-live="polite">
+      {{ screenShareService.error() }}
     </div>
-  }
+    }
+
+    <!-- ══════════════════════════════════════════════════════════
+         IN-SESSION CONTROLS
+         ════════════════════════════════════════════════════════ -->
+    @if (agoraService.joined()) {
+
+    <!-- ─────────────────────────────────────────────────────
+           TOOLBAR — CSS adapts this between desktop and mobile.
+           Desktop: floating pill.  Mobile: full-width bar.
+           ───────────────────────────────────────────────────── -->
+    <div class="vr-toolbar-wrapper">
+      <div class="vr-toolbar" role="toolbar" aria-label="Meeting controls">
+
+        <!-- Leave -->
+        <button id="btn-leave-session" class="vr-tb-btn vr-tb-btn--leave" (click)="leaveSession()" type="button"
+          aria-label="Leave session" title="Leave Session">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
+            <polyline points="17 8 21 12 17 16" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+
+        <!-- Desktop-only divider -->
+        <div class="vr-toolbar-divider" aria-hidden="true"></div>
+
+        <!-- Microphone -->
+        <button id="btn-toggle-mic" class="vr-tb-btn" [class.vr-tb-btn--off]="!agoraService.microphoneEnabled()"
+          (click)="toggleMicrophone()" type="button"
+          [attr.aria-label]="agoraService.microphoneEnabled() ? 'Mute microphone' : 'Unmute microphone'"
+          [attr.aria-pressed]="!agoraService.microphoneEnabled()">
+          @if (agoraService.microphoneEnabled()) {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="11" rx="3" />
+            <path d="M5 10a7 7 0 0014 0" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+            <line x1="8" y1="23" x2="16" y2="23" />
+          </svg>
+          } @else {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <line x1="2" y1="2" x2="22" y2="22" />
+            <path d="M18.89 13.23A7.12 7.12 0 0019 12" />
+            <path d="M5 10a7 7 0 0012.87 3.13" />
+            <rect x="9" y="2" width="6" height="11" rx="3" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+            <line x1="8" y1="23" x2="16" y2="23" />
+          </svg>
+          }
+        </button>
+
+        <!-- Camera -->
+        <button id="btn-toggle-camera" class="vr-tb-btn" [class.vr-tb-btn--off]="!agoraService.cameraEnabled()"
+          (click)="toggleCamera()" type="button"
+          [attr.aria-label]="agoraService.cameraEnabled() ? 'Turn camera off' : 'Turn camera on'"
+          [attr.aria-pressed]="!agoraService.cameraEnabled()">
+          @if (agoraService.cameraEnabled()) {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <polygon points="23 7 16 12 23 17 23 7" />
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+          </svg>
+          } @else {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <line x1="2" y1="2" x2="22" y2="22" />
+            <path d="M16 16H3a2 2 0 01-2-2V7a2 2 0 012-2h3" />
+            <path d="M20.66 16.66A2 2 0 0022 15V9.34" />
+            <path d="M16 3.27L23 7v10" />
+          </svg>
+          }
+        </button>
+
+        <!-- Screen Share -->
+        <app-screen-share-button />
+
+        <!-- Recording (specialist only) -->
+        <app-recording-button [sessionId]="sessionId" />
+
+        <!-- Desktop-only divider -->
+        <div class="vr-toolbar-divider" aria-hidden="true"></div>
+
+        <!-- Timer -->
+        <div class="vr-toolbar-timer" role="timer" aria-label="Session duration">
+          <span class="vr-timer-value">{{ sessionTimerService.formattedElapsed() }}</span>
+        </div>
+
+      </div>
+    </div>
+    <!-- /vr-toolbar-wrapper -->
+
+
+    <!-- ═══════════════════════════════════════════════════════
+           DESKTOP LAYOUT — Info cards row + device settings grid
+           Hidden on mobile via .vr-desktop-only
+           ═══════════════════════════════════════════════════════ -->
+
+    <!-- Desktop: 3 separate info cards -->
+    <div class="vr-info-row vr-desktop-only" role="region" aria-label="Meeting status">
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12.55a11 11 0 0114.08 0" />
+            <path d="M1.42 9a16 16 0 0121.16 0" />
+            <path d="M8.53 16.11a6 6 0 016.95 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">الاتصال</span>
+          <app-connection-status-badge />
+        </div>
+      </div>
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">التسجيل</span>
+          <app-recording-indicator />
+        </div>
+      </div>
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <rect x="2" y="16" width="3" height="5" rx="1" opacity="1" />
+            <rect x="7" y="12" width="3" height="9" rx="1" opacity="0.7" />
+            <rect x="12" y="8" width="3" height="13" rx="1" opacity="0.5" />
+            <rect x="17" y="4" width="3" height="17" rx="1" opacity="0.3" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">الشبكة</span>
+          <app-network-quality-badge />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Desktop: device settings grid (3 cards) -->
+    <div class="vr-devices-section vr-desktop-only" role="region" aria-label="Device settings">
+
+      <div class="vr-devices-header">
+        <span class="vr-devices-header-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
+          </svg>
+        </span>
+        <h2 class="vr-devices-title">إعدادات الجهاز</h2>
+      </div>
+
+      <div class="vr-devices-grid">
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">الكاميرا</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-camera-selector />
+          </div>
+        </div>
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="2" width="6" height="11" rx="3" />
+                <path d="M5 10a7 7 0 0014 0" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">الميكروفون</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-microphone-selector />
+            <app-microphone-level-indicator />
+          </div>
+        </div>
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 010 14.14" />
+                <path d="M15.54 8.46a5 5 0 010 7.07" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">السماعة</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-speaker-selector />
+            <app-speaker-test-button />
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /vr-devices-section desktop -->
+
+
+    <!-- ═══════════════════════════════════════════════════════
+           MOBILE LAYOUT — single status card + device accordion
+           Hidden on desktop via .vr-mobile-only
+           ═══════════════════════════════════════════════════════ -->
+
+    <!-- Mobile: ONE unified horizontal status card -->
+    <div class="vrm-status-card vr-mobile-only" role="region" aria-label="Meeting status">
+
+      <!-- Connection -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">الاتصال</span>
+        <app-connection-status-badge />
+      </div>
+
+      <div class="vrm-status-divider" aria-hidden="true"></div>
+
+      <!-- Recording -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">التسجيل</span>
+        <app-recording-indicator />
+      </div>
+
+      <div class="vrm-status-divider" aria-hidden="true"></div>
+
+      <!-- Network -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">الشبكة</span>
+        <app-network-quality-badge />
+      </div>
+
+    </div>
+
+    <!-- Mobile: Device Settings Accordion -->
+    <div class="vrm-accordion vr-mobile-only" role="region" aria-label="Device settings">
+
+      <!-- Accordion Trigger -->
+      <button class="vrm-accordion-trigger" (click)="toggleDeviceSettings()" type="button"
+        [attr.aria-expanded]="deviceSettingsOpen()" aria-controls="vrm-device-panel" id="vrm-device-trigger">
+        <span class="vrm-accordion-trigger-content">
+          <span class="vrm-accordion-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
+            </svg>
+          </span>
+          <span class="vrm-accordion-label">إعدادات الجهاز</span>
+        </span>
+        <svg class="vrm-accordion-chevron" [class.vrm-accordion-chevron--open]="deviceSettingsOpen()"
+          viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      <!-- Accordion Content -->
+      @if (deviceSettingsOpen()) {
+      <div class="vrm-accordion-content" id="vrm-device-panel" role="group" aria-labelledby="vrm-device-trigger">
+
+        <!-- Camera -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">الكاميرا</span>
+          </div>
+          <app-camera-selector />
+        </div>
+
+        <!-- Microphone -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="2" width="6" height="11" rx="3" />
+                <path d="M5 10a7 7 0 0014 0" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">الميكروفون</span>
+          </div>
+          <app-microphone-selector />
+          <app-microphone-level-indicator />
+        </div>
+
+        <!-- Speaker -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 010 14.14" />
+                <path d="M15.54 8.46a5 5 0 010 7.07" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">السماعة</span>
+          </div>
+          <app-speaker-selector />
+          <app-speaker-test-button />
+        </div>
+
+      </div>
+      }
+      <!-- /vrm-accordion-content -->
+
+    </div>
+    <!-- /vrm-accordion -->
+
+    }
+    <!-- /@if joined -->
+
+  </main>
+  <!-- /vr-main -->
+
+  <!-- ══════════════════════════════════════════════════════════
+       FOOTER (Commented out — uncomment when needed)
+       ════════════════════════════════════════════════════════ -->
+  <!-- <footer class="vr-footer" role="contentinfo">
+    <div class="vr-footer-inner">
+      <div class="vr-footer-brand">
+        <span class="vr-footer-logo">بصلة</span>
+        <span class="vr-footer-tagline">· منصة الاستشارات الاحترافية</span>
+      </div>
+      <span class="vr-footer-copy">© {{ currentYear }} Bosla. جميع الحقوق محفوظة.</span>
+    </div>
+  </footer> -->
+
 </div>
