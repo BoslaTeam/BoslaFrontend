@@ -8,7 +8,7 @@ import { AiChatWidget } from '@features/ai/components/ai-chat-widget/ai-chat-wid
 
 @Component({
   selector: 'app-specialist-layout',
-  imports: [RouterOutlet, AppHeader, SpecialistSidebar, AiChatWidget],
+  imports: [RouterOutlet, AppHeader, SpecialistSidebar],
   templateUrl: './specialist-layout.html',
 })
 export class SpecialistLayout {
