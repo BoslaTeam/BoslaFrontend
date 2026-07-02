@@ -1,0 +1,117 @@
+<div class="max-w-xl mx-auto">
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-primary/10 text-bosla-primary mb-4">
+      <i class="fa-solid fa-id-card text-lg"></i>
+    </div>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">المستندات</h3>
+    <p class="text-bosla-grey">خطوتك الأولى نحو الانضمام لبوصلة — حمّل مستنداتك للتحقق من هويتك</p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="mb-6 bg-bosla-error/5 border-r-4 border-bosla-error p-4 rounded-l-lg flex items-start gap-3">
+      <i class="fa-solid fa-circle-exclamation text-bosla-error mt-0.5"></i>
+      <p class="text-sm text-bosla-error font-medium">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  <div class="space-y-6">
+
+    <!-- Identity Documents -->
+    <div class="border border-bosla-charcoal/10 rounded-2xl p-5 space-y-4 bg-bosla-offwhite">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-bosla-blue"></i>
+          <h4 class="text-sm font-bold text-bosla-charcoal">الهوية الشخصية</h4>
+        </div>
+      </div>
+
+      @if (identityDocs().length > 0) {
+        <div class="space-y-2">
+          @for (doc of identityDocs(); track doc.id) {
+            <div class="flex items-center justify-between bg-white border border-bosla-charcoal/10 rounded-xl px-4 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <i class="fa-regular fa-file text-bosla-blue shrink-0"></i>
+                <span class="text-sm font-sans text-bosla-charcoal truncate">{{ doc.originalFileName }}</span>
+              </div>
+              <button type="button" (click)="deleteDocument(doc)" [disabled]="isDeleting()[doc.id]"
+                class="text-bosla-error/60 hover:text-bosla-error transition-colors cursor-pointer p-1 shrink-0">
+                @if (isDeleting()[doc.id]) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-trash-can"></i>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-bosla-grey text-center py-4">لم يتم رفع أي مستند هوية بعد</p>
+      }
+
+      <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
+        <i class="fa-solid fa-upload"></i>
+        @if (isUploading()) {
+          جاري الرفع...
+        } @else {
+          رفع مستند هوية
+        }
+        <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 1)" [disabled]="isUploading()" />
+      </label>
+    </div>
+
+    <!-- Certificates -->
+    <div class="border border-bosla-charcoal/10 rounded-2xl p-5 space-y-4 bg-bosla-offwhite">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-certificate text-bosla-blue"></i>
+          <h4 class="text-sm font-bold text-bosla-charcoal">الشهادات</h4>
+        </div>
+      </div>
+
+      @if (certificateDocs().length > 0) {
+        <div class="space-y-2">
+          @for (doc of certificateDocs(); track doc.id) {
+            <div class="flex items-center justify-between bg-white border border-bosla-charcoal/10 rounded-xl px-4 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <i class="fa-regular fa-file text-bosla-blue shrink-0"></i>
+                <span class="text-sm font-sans text-bosla-charcoal truncate">{{ doc.originalFileName }}</span>
+              </div>
+              <button type="button" (click)="deleteDocument(doc)" [disabled]="isDeleting()[doc.id]"
+                class="text-bosla-error/60 hover:text-bosla-error transition-colors cursor-pointer p-1 shrink-0">
+                @if (isDeleting()[doc.id]) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-trash-can"></i>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-bosla-grey text-center py-4">لم يتم رفع أي شهادة بعد</p>
+      }
+
+      <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
+        <i class="fa-solid fa-upload"></i>
+        @if (isUploading()) {
+          جاري الرفع...
+        } @else {
+          رفع شهادة
+        }
+        <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 2)" [disabled]="isUploading()" />
+      </label>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex justify-between pt-4">
+      <ui-button variant="ghost" (btnClick)="back.emit()">
+        <i class="fa-solid fa-chevron-right"></i>
+        السابق
+      </ui-button>
+      <ui-button (btnClick)="onNext()">
+        حفظ ومتابعة
+        <i class="fa-solid fa-arrow-left"></i>
+      </ui-button>
+    </div>
+  </div>
+</div>

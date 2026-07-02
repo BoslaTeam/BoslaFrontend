@@ -9,6 +9,7 @@ export class OnboardingStepper {
   readonly currentStep = input.required<number>();
   readonly totalSteps = input.required<number>();
   readonly titles = input<string[]>([]);
+  readonly icons = input<string[]>([]);
 
   readonly progressPercent = computed(() =>
     ((this.currentStep() + 1) / this.totalSteps()) * 100
@@ -21,6 +22,7 @@ export class OnboardingStepper {
       isCompleted: i < this.currentStep(),
       isPending: i > this.currentStep(),
       title: this.titles()[i] || `خطوة ${i + 1}`,
+      icon: this.icons()[i] || '',
     }))
   );
 }

@@ -144,14 +144,19 @@
               <div class="flex flex-wrap gap-2">
                 @for (name of weekdayNames; track $index) {
                   <button type="button" (click)="toggleDay($index)"
-                    class="px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all cursor-pointer"
+                    [disabled]="!availableWeekdays()[$index]"
+                    class="px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all"
+                    [class.cursor-pointer]="availableWeekdays()[$index]"
+                    [class.cursor-not-allowed]="!availableWeekdays()[$index]"
+                    [class.opacity-30]="!availableWeekdays()[$index]"
                     [class.bg-bosla-primary]="formDays()[$index]"
                     [class.text-white]="formDays()[$index]"
                     [class.border-bosla-primary]="formDays()[$index]"
-                    [class.bg-white]="!formDays()[$index]"
+                    [class.bg-white]="!formDays()[$index] && availableWeekdays()[$index]"
+                    [class.bg-slate-100]="!formDays()[$index] && !availableWeekdays()[$index]"
                     [class.text-slate-600]="!formDays()[$index]"
                     [class.border-slate-200]="!formDays()[$index]"
-                    [class.hover:border-bosla-primary/50]="!formDays()[$index]">
+                    [class.hover:border-bosla-primary/50]="!formDays()[$index] && availableWeekdays()[$index]">
                     {{ name }}
                   </button>
                 }
@@ -206,6 +211,7 @@
                 <label class="block text-sm font-bold text-slate-700">تاريخ البداية</label>
                 <input type="date" [ngModel]="formStartDate()"
                   (ngModelChange)="formStartDate.set($event); formError.set('')"
+                  [min]="todayStr"
                   class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" />
               </div>
               <div class="space-y-1.5">
@@ -215,6 +221,7 @@
                 </label>
                 <input type="date" [ngModel]="formEndDate()"
                   (ngModelChange)="formEndDate.set($event)"
+                  [min]="formStartDate() || todayStr"
                   class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" />
               </div>
             </div>
@@ -314,9 +321,7 @@
                     <td class="px-6 py-4">
                       <div class="flex gap-1 flex-wrap">
                         @for (d of sch.days; track d) {
-                          <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">
-                            {{ weekdayNames[d] }}
-                          </span>
+                          <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames[d] }}</span>
                         }
                       </div>
                     </td>
@@ -466,6 +471,13 @@
                 </button>
               }
             </div>
+            <select [ngModel]="slotScheduleFilter()"
+              (ngModelChange)="slotScheduleFilter.set($event)"
+              class="h-9 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer max-w-64">
+              @for (opt of scheduleFilterOptions(); track opt.id) {
+                <option [ngValue]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
             <div class="relative flex-1 max-w-xs">
               <i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
               <input type="text" placeholder="بحث..." [ngModel]="searchQuery()"
@@ -499,63 +511,63 @@
               <h3 class="text-base font-black text-bosla-primary">{{ group.dateLabel }}</h3>
               <span class="text-xs text-slate-400 font-medium mr-auto">{{ group.slots.length }}</span>
             </div>
-            <div class="divide-y divide-slate-50">
+            <div class="flex flex-wrap gap-3 p-4 md:p-6">
               @for (slot of group.slots; track slot.id) {
-                <div class="px-6 py-3.5 flex items-center gap-4 hover:bg-bosla-offwhite/50 transition-colors">
-                  <div class="flex items-center gap-3 min-w-[140px]">
-                    <div class="w-10 h-10 rounded-xl bg-bosla-offwhite flex items-center justify-center text-slate-400 border border-slate-100">
-                      <i class="fa-regular fa-clock"></i>
-                    </div>
-                    <div>
-                      <p class="text-sm font-bold text-slate-800" dir="ltr">{{ formatTime(slot.start) }} - {{ formatTime(slot.end) }}</p>
-                      <p class="text-[11px] text-slate-400">{{ formatDuration(slot.end.getTime() - slot.start.getTime()) }}</p>
-                    </div>
+                <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors"
+                  [class.bg-emerald-50]="slot.status === 'available'"
+                  [class.border-emerald-200]="slot.status === 'available'"
+                  [class.bg-blue-50]="slot.status === 'booked'"
+                  [class.border-blue-200]="slot.status === 'booked'"
+                  [class.bg-slate-100]="slot.status === 'ended'"
+                  [class.border-slate-200]="slot.status === 'ended'"
+                  [class.bg-red-50]="slot.status === 'cancelled'"
+                  [class.border-red-100]="slot.status === 'cancelled'">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-[11px] text-slate-400"></i>
+                    <span class="text-sm font-bold text-slate-800" dir="ltr">{{ formatTime(slot.start) }} - {{ formatTime(slot.end) }}</span>
                   </div>
+                  <span class="text-[10px] text-slate-400">({{ formatDuration(slot.end.getTime() - slot.start.getTime()) }})</span>
 
-                  <div class="flex-1 flex items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border"
-                      [class.bg-emerald-50]="slot.status === 'available'"
-                      [class.text-emerald-700]="slot.status === 'available'"
-                      [class.border-emerald-200]="slot.status === 'available'"
-                      [class.bg-blue-50]="slot.status === 'booked'"
-                      [class.text-blue-700]="slot.status === 'booked'"
-                      [class.border-blue-200]="slot.status === 'booked'"
-                      [class.bg-slate-100]="slot.status === 'ended'"
-                      [class.text-slate-500]="slot.status === 'ended'"
-                      [class.border-slate-200]="slot.status === 'ended'"
-                      [class.bg-red-50]="slot.status === 'cancelled'"
-                      [class.text-red-400]="slot.status === 'cancelled'"
-                      [class.border-red-100]="slot.status === 'cancelled'">
-                      <i class="fa-solid fa-circle text-[6px]"
-                        [class.text-emerald-500]="slot.status === 'available'"
-                        [class.text-blue-500]="slot.status === 'booked'"
-                        [class.text-slate-400]="slot.status === 'ended'"
-                        [class.text-red-300]="slot.status === 'cancelled'"></i>
-                      {{ STATUS_META[slot.status].label }}
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0"
+                    [class.bg-emerald-100]="slot.status === 'available'"
+                    [class.text-emerald-700]="slot.status === 'available'"
+                    [class.border-emerald-300]="slot.status === 'available'"
+                    [class.bg-blue-100]="slot.status === 'booked'"
+                    [class.text-blue-700]="slot.status === 'booked'"
+                    [class.border-blue-300]="slot.status === 'booked'"
+                    [class.bg-slate-200]="slot.status === 'ended'"
+                    [class.text-slate-500]="slot.status === 'ended'"
+                    [class.border-slate-300]="slot.status === 'ended'"
+                    [class.bg-red-100]="slot.status === 'cancelled'"
+                    [class.text-red-400]="slot.status === 'cancelled'"
+                    [class.border-red-200]="slot.status === 'cancelled'">
+                    <i class="fa-solid fa-circle text-[5px]"
+                      [class.text-emerald-500]="slot.status === 'available'"
+                      [class.text-blue-500]="slot.status === 'booked'"
+                      [class.text-slate-400]="slot.status === 'ended'"
+                      [class.text-red-300]="slot.status === 'cancelled'"></i>
+                    {{ STATUS_META[slot.status].label }}
+                  </span>
+
+                  @if (slot.source === 'schedule') {
+                    <span class="text-[10px] text-slate-400 bg-bosla-offwhite px-2 py-0.5 rounded border border-slate-100">
+                      <i class="fa-solid fa-clock"></i> جدول
                     </span>
-                    @if (slot.source === 'schedule') {
-                      <span class="text-[10px] text-slate-400 bg-bosla-offwhite px-2 py-0.5 rounded border border-slate-100">
-                        <i class="fa-solid fa-clock"></i> جدول
-                      </span>
-                    }
-                  </div>
-
-                  @if (slot.status === 'booked' && slot.clientName) {
-                    <div class="hidden sm:flex items-center gap-2 text-sm text-slate-600 min-w-[120px]">
-                      <i class="fa-solid fa-user text-slate-300 text-xs"></i>
-                      <span>{{ slot.clientName }}</span>
-                    </div>
                   }
 
-                  <div class="flex items-center gap-2">
-                    @if (slot.status === 'available' && slot.source === 'manual') {
-                      <button (click)="requestDeleteSlot(slot)"
-                        class="w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer border border-red-100"
-                        title="حذف الموعد">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                      </button>
-                    }
-                  </div>
+                  @if (slot.status === 'booked' && slot.clientName) {
+                    <span class="text-xs text-slate-600 border-r border-slate-200 pr-2 mr-1 hidden sm:inline">
+                      <i class="fa-solid fa-user text-slate-300 text-[10px] ml-1"></i>{{ slot.clientName }}
+                    </span>
+                  }
+
+                  @if (slot.status === 'available') {
+                    <button (click)="requestDeleteSlot(slot)"
+                      class="w-6 h-6 rounded-lg bg-red-100 text-red-400 hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer border border-red-200"
+                      title="حذف الموعد">
+                      <i class="fa-solid fa-trash-can text-[10px]"></i>
+                    </button>
+                  }
                 </div>
               }
             </div>

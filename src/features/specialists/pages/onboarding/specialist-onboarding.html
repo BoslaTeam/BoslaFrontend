@@ -1,23 +1,39 @@
-<div class="min-h-[calc(100vh-80px)] bg-slate-50 flex items-start justify-center p-4 md:p-8" dir="rtl">
-  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-10 mt-20">
-    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()" [titles]="stepTitles" />
+<div class="min-h-[calc(100vh-80px)] bg-bosla-offwhite flex items-start justify-center p-4 md:p-8" dir="rtl">
+  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-lg border border-bosla-charcoal/5 p-8 md:p-10 mt-20">
+    <!-- Brand Header -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center gap-2 bg-bosla-primary/5 text-bosla-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-2">
+        <i class="fa-regular fa-compass"></i>
+        انضم إلى بوصلة
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold text-bosla-primary">ابدأ رحلتك كخبير</h1>
+      <p class="text-bosla-grey mt-1">أنشئ ملفك التعريفي في خطوات بسيطة — أنت على بعد دقائق من انطلاقة جديدة</p>
+    </div>
+
+    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()" [titles]="stepTitles" [icons]="stepIcons" />
 
     <div class="mt-8">
       @switch (onboardingStore.currentStep()) {
       @case (0) {
-      <basic-info-step (completed)="onboardingStore.nextStep()" />
+      <documents-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
       }
       @case (1) {
-      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
-      }
-      @case (2) {
-      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
-      }
-      @case (3) {
       <experience-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
       }
+      @case (2) {
+      <basic-info-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (3) {
+      <skills-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
       @case (4) {
+      <tools-step (completed)="onboardingStore.nextStep()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (5) {
       <availability-step (completed)="onAvailabilityCompleted()" (back)="onboardingStore.previousStep()" />
+      }
+      @case (6) {
+      <submit-step (back)="onboardingStore.previousStep()" />
       }
       }
     </div>

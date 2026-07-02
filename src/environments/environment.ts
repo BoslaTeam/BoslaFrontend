@@ -5,6 +5,5 @@ export const environment = {
   agoraAppId: '',
   hubBaseUrl: 'https://192.168.1.5:7275',
   stripePublishableKey: 'pk_test_51TkOLj05d5HmC2JPeXjUoGecsh3nv5vqPOqbCK5cDPcyM5VEzuoOxHfjAenQ7iKJiBhQsXH3RrwouMnfJ9wkWK4700ia1UKSfl',
-  // apiBaseUrl: 'https://192.168.1.5:7275/api/v1'
   apiBaseUrl: 'https://192.168.1.5:7275/api/v1'
 };
