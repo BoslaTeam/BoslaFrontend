@@ -20,7 +20,7 @@ export class AdminSpecialistDetail implements OnInit {
   readonly specialist = signal<AdminSpecialistDetailDto | null>(null);
   readonly isLoading = signal(true);
   readonly hasError = signal(false);
-  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews'>('info');
+  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'ai'>('info');
   readonly isVerifying = signal(false);
   readonly isUpdatingStatus = signal(false);
 
@@ -44,13 +44,13 @@ export class AdminSpecialistDetail implements OnInit {
     });
   }
 
-  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews'): void {
+  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'ai'): void {
     this.activeTab.set(tab);
   }
 
   verify(isApproved: boolean): void {
     this.isVerifying.set(true);
-    this.adminService.verifySpecialist(this.id(), { isApproved }).subscribe({
+    this.adminService.verifySpecialist(this.id(), { isVerified: isApproved }).subscribe({
       next: () => this.loadSpecialist(),
       error: () => this.isVerifying.set(false),
       complete: () => this.isVerifying.set(false),

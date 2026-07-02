@@ -1,5 +1,15 @@
 <div class="video-room">
+  <!-- Session Prep Panel (shown to Specialists before joining) -->
+  @if (showSessionPrep() && appointmentId()) {
+    <session-prep-panel
+      [appointmentId]="appointmentId()!"
+      (enterSession)="onPrepEnterSession()"
+      (back)="onPrepBack()"
+    />
+  }
+
   @if (!agoraService.joined()) {
+
     <div class="video-room-welcome">
       <button class="video-room-join-btn" (click)="handleJoinClick()" [disabled]="agoraService.joining()">
         {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}

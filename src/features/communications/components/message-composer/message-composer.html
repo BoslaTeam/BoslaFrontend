@@ -1,4 +1,12 @@
-<div class="p-3 bg-white border-t border-bosla-primary/10 shrink-0 font-sans" role="region" aria-label="Message input">
+<div class="p-3 bg-white border-t border-bosla-primary/10 shrink-0 font-sans relative" role="region" aria-label="Message input">
+  <!-- AI Smart Reply panel (only visible for Specialists) -->
+  @if (isSpecialist() && store.activeConversationId()) {
+    <ai-smart-reply
+      [conversationId]="store.activeConversationId()!"
+      (replySelected)="fillFromReply($event)"
+    />
+  }
+
   <div class="border border-bosla-primary/15 rounded-2xl bg-white shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2 p-1.5 focus-within:border-bosla-blue focus-within:ring-4 focus-within:ring-bosla-blue/5 transition-all">
 
     <!-- Textarea -->

@@ -80,7 +80,7 @@ export class AdminSpecialistsList implements OnInit {
   }
 
   verifySpecialist(id: string, isApproved: boolean): void {
-    this.adminService.verifySpecialist(id, { isApproved }).subscribe({
+    this.adminService.verifySpecialist(id, { isVerified: isApproved }).subscribe({
       next: () => this.loadSpecialists(),
     });
   }

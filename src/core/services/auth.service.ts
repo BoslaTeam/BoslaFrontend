@@ -90,9 +90,10 @@ export class AuthService {
     }
 
     refreshToken(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+        const accessToken = this.tokenService.getAccessToken();
         const refreshToken = this.tokenService.getRefreshToken();
         return this.http
-            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.refresh, { refreshToken })
+            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.refresh, { accessToken, refreshToken })
             .pipe(tap((res) => {
                 if (res.data) {
                     this.setSession(res.data.accessToken, res.data.refreshToken);
