@@ -1,0 +1,147 @@
+<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+  <div class="max-w-3xl mx-auto px-4 pt-28 pb-12">
+    <a
+      [routerLink]="['/appointments']"
+      class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group"
+    >
+      <svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      العودة إلى الحجوزات
+    </a>
+
+    @if (store.isLoading()) {
+      <div class="flex flex-col items-center justify-center py-24">
+        <ui-spinner size="lg"></ui-spinner>
+        <p class="text-sm text-bosla-grey mt-4">جاري تحميل حالة الموعد...</p>
+      </div>
+    } @else if (store.selectedItem(); as appointment) {
+      <!-- Header -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6 mb-6">
+        <div class="flex items-center gap-4">
+          <div dir="ltr">
+            <p class="text-xs text-bosla-grey font-medium mb-1">موعد</p>
+            <p class="text-sm font-bold text-bosla-charcoal">{{ appointment.start | date:'EEEE, dd MMMM yyyy' :'' :'ar' }}</p>
+            <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">{{ appointment.start | date:'hh:mm a' }} - {{ appointment.end | date:'hh:mm a' }}</p>
+          </div>
+          <div class="mr-auto">
+            <p class="text-xs text-bosla-grey mb-1">{{ appointment.sessionTopic || 'جلسة استشارية' }}</p>
+            @if (appointment.specialistName) {
+              <p class="text-sm font-semibold text-bosla-charcoal">{{ appointment.specialistName }}</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Flow -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8">
+        @if (isCancelled()) {
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-bold text-rose-600">تم إلغاء هذا الموعد</h2>
+            @if (cancelReason()) {
+              <p class="text-sm text-bosla-grey mt-2">السبب: {{ cancelReason() }}</p>
+            }
+          </div>
+        }
+
+        <div class="relative">
+          <!-- Vertical line -->
+          <div class="absolute right-[23px] top-0 bottom-0 w-0.5 bg-bosla-charcoal/10"></div>
+
+          @for (step of trackingSteps(); track step.key) {
+            <div
+              class="relative flex items-start gap-5 pb-10 last:pb-0"
+              [attr.data-step]="step.status === 'current' ? 'current' : null"
+            >
+              <!-- Circle -->
+              <div
+                class="relative z-10 w-[48px] h-[48px] rounded-full flex items-center justify-center shrink-0 border-2 transition-all duration-500"
+                [class]="getStepBg(step) + ' ' + getStepBorder(step)"
+              >
+                @if (step.status === 'completed') {
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                } @else {
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="step.icon" />
+                  </svg>
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0 pt-2">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold" [class]="getStepLabelClass(step)">
+                    {{ step.label }}
+                  </p>
+                  <span
+                    class="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                    [class]="
+                      step.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                      step.status === 'current' ? 'bg-bosla-blue/10 text-bosla-blue' :
+                      'bg-bosla-charcoal/5 text-bosla-grey'
+                    "
+                  >
+                    {{ getStepSubtext(step) }}
+                  </span>
+                </div>
+                @if (step.date) {
+                  <p class="text-xs text-bosla-grey mt-1" dir="ltr">
+                    {{ step.date | date:'dd/MM/yyyy - hh:mm a' }}
+                  </p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="flex items-center justify-center gap-3 mt-6">
+        @if (
+          (appointment.status === AppointmentStatus.Confirmed || appointment.status === AppointmentStatus.Pending) &&
+          appointment.paymentStatus !== PaymentStatus.Paid &&
+          appointment.paymentStatus !== PaymentStatus.Refunded
+        ) {
+          <a
+            [routerLink]="['/appointments', appointment.id, 'pay']"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-xl transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            إتمام الدفع
+          </a>
+        }
+        <a
+          [routerLink]="['/appointments', appointment.id]"
+          class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-bosla-blue bg-bosla-blue/5 hover:bg-bosla-blue/10 border border-bosla-blue/20 rounded-xl transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          عرض تفاصيل الموعد
+        </a>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6">
+        <div class="w-16 h-16 bg-bosla-grey/10 text-bosla-grey rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-bosla-charcoal">لم يتم العثور على الموعد</h3>
+        <p class="text-sm text-bosla-grey max-w-sm mt-1">الموعد الذي تبحث عنه غير موجود أو تم حذفه.</p>
+        <a [routerLink]="['/appointments']" class="mt-6 inline-flex items-center gap-2 text-sm text-bosla-blue hover:text-bosla-primary transition-colors">
+          العودة إلى الحجوزات
+        </a>
+      </div>
+    }
+  </div>
+</div>
