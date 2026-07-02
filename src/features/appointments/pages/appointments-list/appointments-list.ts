@@ -43,7 +43,7 @@ export class AppointmentList implements OnInit, OnDestroy {
     if (this.activeTab() === 'pending_payment') {
       return allAppointments.filter(
         (app) =>
-          app.status === AppointmentStatus.Confirmed &&
+          (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
           app.paymentStatus !== PaymentStatus.Paid &&
           app.paymentStatus !== PaymentStatus.Refunded,
       );
@@ -67,7 +67,7 @@ export class AppointmentList implements OnInit, OnDestroy {
   readonly pendingPaymentCount = computed(() => {
     return this.store.items().filter(
       (app) =>
-        app.status === AppointmentStatus.Confirmed &&
+        (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
         app.paymentStatus !== PaymentStatus.Paid &&
         app.paymentStatus !== PaymentStatus.Refunded,
     ).length;

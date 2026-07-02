@@ -152,12 +152,12 @@
 
               <div class="px-5 pb-4 flex flex-wrap items-center gap-2 border-t border-bosla-charcoal/5 pt-3">
                 @if (
-                  appointment.status === AppointmentStatus.Confirmed &&
+                  (appointment.status === AppointmentStatus.Confirmed || appointment.status === AppointmentStatus.Pending) &&
                   appointment.paymentStatus !== PaymentStatus.Paid &&
                   appointment.paymentStatus !== PaymentStatus.Refunded
                 ) {
                   <a
-                    [routerLink]="['/appointments', appointment.id]"
+                    [routerLink]="['/appointments', appointment.id, 'pay']"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-lg transition-colors"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -6,22 +6,17 @@ import { AppointmentsStore } from '../../store/appointments.store';
 import { CreateAppointmentRequest } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
-import { ToastService } from '@core/services/toast.service';
-import { PaymentService } from '@features/payments/services/payment.service';
-import { StripePaymentForm } from '@features/payments/components/stripe-payment-form/stripe-payment-form';
 
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, UiButton, UiSpinner, StripePaymentForm],
+  imports: [CommonModule, RouterLink, FormsModule, UiButton, UiSpinner],
   templateUrl: './book-appointment.html'
 })
 export class BookAppointment implements OnInit {
   public store = inject(AppointmentsStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly toast = inject(ToastService);
-  private readonly paymentService = inject(PaymentService);
 
   readonly specialistId = signal('');
   readonly sessionTopic = signal('');
@@ -30,9 +25,6 @@ export class BookAppointment implements OnInit {
   readonly selectedDate = signal<string | null>(null);
 
   specialistNotFound = signal(false);
-  showStripe = signal(false);
-  initiatingPayment = signal(false);
-  stripeClientSecret = signal<string | undefined>(undefined);
 
   readonly selectedSlotInfo = computed(() => {
     const slotId = this.selectedSlotId();
@@ -80,38 +72,6 @@ export class BookAppointment implements OnInit {
     };
 
     this.store.createAppointment(request);
-  }
-
-  processPayment(): void {
-    const id = this.store.bookingAppointmentId();
-    if (!id) return;
-    this.initiatingPayment.set(true);
-    this.paymentService.initiate(id).subscribe({
-      next: (res) => {
-        this.initiatingPayment.set(false);
-        if (res.data?.clientSecret) {
-          this.stripeClientSecret.set(res.data.clientSecret);
-          this.showStripe.set(true);
-        } else {
-          this.store.confirmAppointment(id);
-        }
-      },
-      error: () => {
-        this.initiatingPayment.set(false);
-        this.toast.danger('فشل في بدء عملية الدفع. يرجى المحاولة لاحقاً.');
-      }
-    });
-  }
-
-  onPaymentSuccess(paymentIntentId: string) {
-    const id = this.store.bookingAppointmentId();
-    if (id) {
-      this.store.confirmPayment(id, paymentIntentId);
-    }
-  }
-
-  onPaymentError(error: string) {
-    this.showStripe.set(false);
   }
 
   goToAppointments(): void {

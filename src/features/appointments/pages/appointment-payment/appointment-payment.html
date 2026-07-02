@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+  <div class="max-w-lg mx-auto px-4 pt-28 pb-12">
+
+    @if (paymentDone()) {
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
+        <div class="relative w-20 h-20 mx-auto mb-5">
+          <div class="absolute inset-0 bg-emerald-500/10 rounded-full animate-ping"></div>
+          <div class="relative w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+        <h2 class="text-xl font-bold text-bosla-charcoal mb-2">تم الدفع بنجاح!</h2>
+        <p class="text-sm text-bosla-grey mb-6">تم تأكيد الدفع وإتمام الحجز. يمكنك متابعة حالتك من صفحة المواعيد.</p>
+        <div class="flex flex-col gap-3">
+          <ui-button (click)="goToDetails()" size="lg" variant="primary" class="w-full">
+            عرض تفاصيل الموعد
+          </ui-button>
+          <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">
+            العودة إلى المواعيد
+          </ui-button>
+        </div>
+      </div>
+    } @else if (store.isLoading()) {
+      <div class="flex flex-col items-center justify-center py-24">
+        <ui-spinner size="lg"></ui-spinner>
+        <p class="text-sm text-bosla-grey mt-4">جاري تحميل بيانات الموعد...</p>
+      </div>
+    } @else if (store.selectedItem(); as appointment) {
+      <!-- Header -->
+      <a [routerLink]="['/appointments', appointment.id]"
+        class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group">
+        <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        العودة إلى تفاصيل الموعد
+      </a>
+
+      <!-- Appointment Summary -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6 mb-6">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-bosla-blue/10 shrink-0">
+            @if (appointment.specialistImageUrl) {
+              <img [src]="appointment.specialistImageUrl" [alt]="appointment.specialistName" class="w-full h-full object-cover" />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center text-bosla-blue font-bold">
+                {{ (appointment.specialistName || 'م').charAt(0) }}
+              </div>
+            }
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-bosla-charcoal">{{ appointment.specialistName || 'مختص' }}</h2>
+            <p class="text-xs text-bosla-grey mt-0.5">{{ appointment.sessionTopic || 'جلسة استشارية' }}</p>
+          </div>
+        </div>
+
+        <div class="bg-bosla-offwhite rounded-xl p-4 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-bosla-grey">التاريخ</span>
+            <span class="text-sm font-semibold text-bosla-charcoal" dir="ltr">{{ appointment.start | date:'EEEE, dd MMMM yyyy' :'' :'ar' }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-bosla-grey">الوقت</span>
+            <span class="text-sm font-semibold text-bosla-charcoal" dir="ltr">{{ appointment.start | date:'hh:mm a' }} - {{ appointment.end | date:'hh:mm a' }}</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-bosla-charcoal/5">
+            <span class="text-sm font-bold text-bosla-charcoal">المبلغ</span>
+            <span class="text-lg font-bold text-bosla-primary">{{ appointment.amount || 0 }} ج.م</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Section -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
+        @if (!showStripe()) {
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-bold text-bosla-charcoal mb-2">إتمام الدفع</h2>
+            <p class="text-sm text-bosla-grey mb-6">سيتم تحويلك إلى بوابة الدفع الآمنة لإتمام عملية الدفع</p>
+            <div class="flex flex-col gap-3">
+              <ui-button (click)="processPayment()" [loading]="isInitiating()" size="lg" variant="primary" class="w-full">
+                {{ isInitiating() ? 'جاري تجهيز الدفع...' : 'إتمام الدفع الآن' }}
+              </ui-button>
+              <ui-button (click)="goToDetails()" size="md" variant="ghost" class="w-full">
+                الدفع لاحقاً
+              </ui-button>
+            </div>
+          </div>
+        } @else if (stripeClientSecret(); as clientSecret) {
+          <h3 class="text-sm font-bold text-bosla-charcoal mb-4 text-center">أدخل بيانات بطاقتك</h3>
+          <app-stripe-payment-form
+            [clientSecret]="clientSecret"
+            [appointmentId]="appointment.id"
+            [amount]="appointment.amount || 0"
+            currency="usd"
+            (paymentSuccess)="onPaymentSuccess($event)"
+            (paymentError)="onPaymentError($event)" />
+        }
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6">
+        <div class="w-16 h-16 bg-bosla-grey/10 text-bosla-grey rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-bosla-charcoal">لم يتم العثور على الموعد</h3>
+        <p class="text-sm text-bosla-grey max-w-sm mt-1">الموعد الذي تبحث عنه غير موجود أو تم حذفه.</p>
+        <a [routerLink]="['/appointments']" class="mt-6 inline-flex items-center gap-2 text-sm text-bosla-blue hover:text-bosla-primary transition-colors">
+          العودة إلى المواعيد
+        </a>
+      </div>
+    }
+  </div>
+</div>

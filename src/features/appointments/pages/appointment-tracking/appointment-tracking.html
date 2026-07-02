@@ -105,12 +105,12 @@
       <!-- Quick actions -->
       <div class="flex items-center justify-center gap-3 mt-6">
         @if (
-          appointment.status === AppointmentStatus.Confirmed &&
+          (appointment.status === AppointmentStatus.Confirmed || appointment.status === AppointmentStatus.Pending) &&
           appointment.paymentStatus !== PaymentStatus.Paid &&
           appointment.paymentStatus !== PaymentStatus.Refunded
         ) {
           <a
-            [routerLink]="['/appointments', appointment.id]"
+            [routerLink]="['/appointments', appointment.id, 'pay']"
             class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-xl transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

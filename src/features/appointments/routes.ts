@@ -36,6 +36,14 @@ export const APPOINTMENTS_ROUTES: Routes = [
           ),
         title: 'تتبع حالة الموعد | بوصلة',
       },
+      {
+        path: ':id/pay',
+        loadComponent: () =>
+          import('./pages/appointment-payment/appointment-payment').then(
+            (m) => m.AppointmentPayment,
+          ),
+        title: 'إتمام الدفع | بوصلة',
+      },
     ],
   },
 ];

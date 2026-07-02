@@ -10,7 +10,7 @@ export interface PaymentResponseDto {
   platformFeeAmount: number;
   specialistAmount: number;
   taxAmount: number;
-  clientSecret?: string;
+  clientSecret: string | null;
   successUrl?: string;
   cancelUrl?: string;
 }

@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
-import { AppointmentPaymentStatus } from '../../contracts/appointments.contracts';
+import { PaymentStatus } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
-
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
@@ -21,7 +20,7 @@ export class AppointmentDetail implements OnInit {
   readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  private readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
+  readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
   readonly showCancelModal = signal(false);
   readonly cancelReason = signal('');
@@ -50,7 +49,7 @@ export class AppointmentDetail implements OnInit {
   readonly userRole = computed(() => this.authService.userRole());
   readonly UserRole = UserRole;
   readonly AppointmentStatus = AppointmentStatus;
-  readonly AppointmentPaymentStatus = AppointmentPaymentStatus;
+  readonly PaymentStatus = PaymentStatus;
 
   readonly canConfirm = computed(() => {
     const u = this.userRole();
@@ -68,7 +67,8 @@ export class AppointmentDetail implements OnInit {
     const u = this.userRole();
     const s = this.store.selectedItem();
     if (u !== UserRole.User) return false;
-    if (s?.status !== AppointmentStatus.Confirmed) return false;
+    const canPayInStatus = s?.status === AppointmentStatus.Confirmed || s?.status === AppointmentStatus.Pending;
+    if (!canPayInStatus) return false;
     if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded) return false;
     return true;
   });
@@ -242,9 +242,9 @@ export class AppointmentDetail implements OnInit {
     }
   }
 
-  getPaymentStatusLabel(status: AppointmentPaymentStatus | undefined): { text: string; classes: string } {
+  getPaymentStatusLabel(status: PaymentStatus | undefined): { text: string; classes: string } {
     switch (status) {
-      case AppointmentPaymentStatus.Unpaid:
+      case PaymentStatus.Unpaid:
         return { text: 'غير مدفوع', classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20' };
       case PaymentStatus.Paid:
         return { text: 'مدفوع', classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' };
