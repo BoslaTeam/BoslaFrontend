@@ -73,7 +73,10 @@ export class NotificationDropdown implements OnInit {
     e.stopPropagation();
     this.close.emit();
     this.httpService.markAsRead(notif.id).subscribe({ error: () => {} });
-    if (notif.appointmentId) {
+    if (!notif.appointmentId) return;
+    if (notif.type === NotificationType.Message) {
+      this.router.navigate(['/communications', notif.appointmentId]);
+    } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }
   }

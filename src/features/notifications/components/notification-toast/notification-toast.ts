@@ -1,6 +1,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService, AppNotification } from '@core/services/notification.service';
+import { NotificationType } from '@core/enums/notification-type.enum';
 
 interface ToastItem {
   id: string;
@@ -8,6 +9,7 @@ interface ToastItem {
   message: string;
   visible: boolean;
   appointmentId?: string;
+  type: number;
 }
 
 @Component({
@@ -34,7 +36,7 @@ export class NotificationToast {
   }
 
   private showToast(n: AppNotification): void {
-    const item: ToastItem = { id: n.id, title: n.title, message: n.message, visible: true, appointmentId: n.appointmentId };
+    const item: ToastItem = { id: n.id, title: n.title, message: n.message, visible: true, appointmentId: n.appointmentId, type: n.type };
     this.toasts.update(list => [...list, item]);
 
     const timer = setTimeout(() => this.dismiss(n.id), 5000);
@@ -52,7 +54,10 @@ export class NotificationToast {
 
   onClickToast(item: ToastItem): void {
     this.dismiss(item.id);
-    if (item.appointmentId) {
+    if (!item.appointmentId) return;
+    if (item.type === NotificationType.Message) {
+      this.router.navigate(['/communications', item.appointmentId]);
+    } else {
       this.router.navigate(['/appointments', item.appointmentId, 'pay']);
     }
   }

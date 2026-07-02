@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationsService } from '../../services/notifications.service';
 import { NotificationService, AppNotification } from '@core/services/notification.service';
+import { NotificationType } from '@core/enums/notification-type.enum';
 
 @Component({
   selector: 'app-notifications-list',
@@ -56,7 +57,10 @@ export class NotificationsList implements OnInit {
 
   markAsRead(notif: AppNotification) {
     this.notificationsService.markAsRead(notif.id).subscribe();
-    if (notif.appointmentId) {
+    if (!notif.appointmentId) return;
+    if (notif.type === NotificationType.Message) {
+      this.router.navigate(['/communications', notif.appointmentId]);
+    } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }
   }
