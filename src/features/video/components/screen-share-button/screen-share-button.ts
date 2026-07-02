@@ -77,6 +77,13 @@ const STOP_ICON = `<svg viewBox="0 0 24 24" width="18" height="18" fill="current
     .screen-share-btn-label {
       display: none;
     }
+    /* Mobile: shrink to 44px to match other toolbar buttons */
+    @media (max-width: 768px) {
+      .screen-share-btn {
+        width: 44px;
+        height: 44px;
+      }
+    }
   `],
 })
 export class ScreenShareButton {

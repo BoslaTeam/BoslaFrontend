@@ -168,6 +168,13 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       from { opacity: 0; transform: scale(0.94); }
       to   { opacity: 1; transform: scale(1); }
     }
+    /* Mobile: shrink to 44px to match other toolbar buttons */
+    @media (max-width: 768px) {
+      .rec-btn {
+        width: 44px;
+        height: 44px;
+      }
+    }
   `],
 })
 export class RecordingButton {

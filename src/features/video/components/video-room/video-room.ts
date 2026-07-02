@@ -70,6 +70,10 @@ export class VideoRoom {
   readonly signalrFailed = signal(false);
   readonly currentYear = new Date().getFullYear();
 
+  /** Mobile accordion: device settings panel open/closed state */
+  readonly deviceSettingsOpen = signal(false);
+  toggleDeviceSettings() { this.deviceSettingsOpen.update(v => !v); }
+
   /** Effect: swap local preview between screen and camera tracks */
   private readonly _screenShareEffect = effect(() => {
     const state = this.screenShareService.state();
