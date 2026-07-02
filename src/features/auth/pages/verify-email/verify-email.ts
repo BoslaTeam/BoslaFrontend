@@ -32,7 +32,15 @@ export class VerifyEmail implements OnInit {
         },
         error: (err) => {
           this.isSuccess = false;
-          this.message = err.error?.title || 'Verification failed. The link might be expired or invalid.';
+          const body = err.error;
+          if (body?.title) {
+            this.message = body.title;
+          } else if (body?.errors) {
+            const msgs = Object.values(body.errors).flat() as string[];
+            this.message = msgs.join(' • ');
+          } else {
+            this.message = 'Verification failed. The link might be expired or invalid.';
+          }
           this.isVerifying = false;
           this.cdr.markForCheck();
         }

@@ -61,7 +61,9 @@ export class Login implements AfterViewInit {
       this.authService.googleLogin({ idToken: response.credential }).subscribe({
         next: (res) => {
           if (res.success) {
-            this.navigationService.redirectAfterLogin();
+            this.authService.refreshSpecialistStatusAsync().subscribe(() => {
+              this.navigationService.redirectAfterLogin();
+            });
           } else {
             this.errorMessage = res.message || 'Google Login failed.';
           }
@@ -85,15 +87,17 @@ export class Login implements AfterViewInit {
     this.errorMessage = '';
 
     const { email, password } = this.loginForm.value;
-    this.authService.login({ email: email!, password: password! }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.navigationService.redirectAfterLogin();
-        } else if (res.message) {
-          this.errorMessage = res.message;
-        }
-        this.isLoading.set(false);
-      },
+      this.authService.login({ email: email!, password: password! }).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.authService.refreshSpecialistStatusAsync().subscribe(() => {
+              this.navigationService.redirectAfterLogin();
+            });
+          } else if (res.message) {
+            this.errorMessage = res.message;
+          }
+          this.isLoading.set(false);
+        },
       error: (err: any) => {
         console.error('[Login] Error:', err);
         if (err.status === 0) {

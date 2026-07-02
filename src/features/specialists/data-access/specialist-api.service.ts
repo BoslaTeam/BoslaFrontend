@@ -310,6 +310,12 @@ export class SpecialistsApiService {
     );
   }
 
+  getMyExpertise() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.expertise
+    );
+  }
+
   getMyTools() {
     return this.http.get<ApiResponse<LookupResponse[]>>(
       API_ENDPOINTS.specialists.tools
