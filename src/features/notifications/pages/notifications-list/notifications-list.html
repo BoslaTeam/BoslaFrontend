@@ -84,7 +84,7 @@
       @if (!isLoading() && filteredNotifications().length > 0) {
       <div class="space-y-3">
         @for (notif of filteredNotifications(); track notif.id) {
-        <div (click)="markAsRead(notif.id)"
+        <div (click)="markAsRead(notif)"
           class="flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all"
           [class.bg-gradient-to-r]="!notif.isRead"
           [class.from-bosla-primary/[0.03]]="!notif.isRead"

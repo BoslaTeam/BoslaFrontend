@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { NotificationsService } from '../../services/notifications.service';
 import { NotificationService } from '@core/services/notification.service';
 
@@ -12,6 +13,7 @@ import { NotificationService } from '@core/services/notification.service';
 export class NotificationsList implements OnInit {
   private notificationsService = inject(NotificationsService);
   private notificationState = inject(NotificationService);
+  private router = inject(Router);
 
   notifications = this.notificationState.notifications;
   unreadCount = this.notificationState.unreadCount;
@@ -52,8 +54,11 @@ export class NotificationsList implements OnInit {
     });
   }
 
-  markAsRead(id: string) {
-    this.notificationsService.markAsRead(id).subscribe();
+  markAsRead(notif: AppNotification) {
+    this.notificationsService.markAsRead(notif.id).subscribe();
+    if (notif.appointmentId) {
+      this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
+    }
   }
 
   markAllAsRead() {
