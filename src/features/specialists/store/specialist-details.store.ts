@@ -13,6 +13,13 @@ import { ReviewItem } from '@shared/ui/review-card/review-card';
 import { formatTimeAgo } from '@shared/utils/time-ago.util';
 import { formatAvailabilityDate, formatAvailabilityTime } from '@shared/utils/date-format.util';
 
+const EXPIERENCE_LEVEL_LABELS: Record<number, string> = {
+  0: 'مبتدئ',
+  1: 'متوسط',
+  2: 'متقدم',
+  3: 'خبير',
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,13 +35,7 @@ export class SpecialistDetailsStore {
 
   readonly experienceLevelLabel = computed(() => {
     const level = this.specialist()?.experienceLevel;
-    const labels: Record<number, string> = {
-      0: 'مبتدئ',
-      1: 'متوسط',
-      2: 'متقدم',
-      3: 'خبير',
-    };
-    return labels[level ?? 0] || '';
+    return EXPIERENCE_LEVEL_LABELS[level ?? 0] || '';
   });
 
   readonly ratingDistribution = computed<RatingDistribution[]>(() => {
@@ -70,6 +71,16 @@ export class SpecialistDetailsStore {
       rating: r.rating,
       comment: r.comment,
     }));
+  });
+
+  readonly experiences = computed(() => {
+    return this.specialist()?.experiences ?? [];
+  });
+
+  readonly canCancel = computed(() => {
+    const s = this.specialist();
+    if (!s) return false;
+    return s.allowCancellation && s.cancellationDeadlineHours > 0;
   });
 
   readonly availabilitySlots = computed(() => {

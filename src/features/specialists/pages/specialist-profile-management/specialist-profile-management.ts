@@ -12,6 +12,8 @@ import { ToastService } from '@core/services/toast.service';
 import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
 import { UiTextarea } from '@shared/ui/textarea/textarea';
+import { Select as UiSelect } from '@shared/ui/select/select';
+import { SelectOption } from '@shared/types/select-option.type';
 
 const LEVEL_LABELS = ['مبتدئ', 'متوسط', 'متقدم', 'خبير'];
 
@@ -27,7 +29,7 @@ function dateRangeValidator(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-specialist-profile-management',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea, UiSelect],
   templateUrl: './specialist-profile-management.html',
 })
 export class SpecialistProfileManagement implements OnInit {
@@ -45,9 +47,11 @@ export class SpecialistProfileManagement implements OnInit {
 
   readonly mySkills = signal<LookupResponse[]>([]);
   readonly myTools = signal<LookupResponse[]>([]);
+  readonly myExpertise = signal<LookupResponse[]>([]);
   readonly myExperience = signal<ExperienceResponse[]>([]);
   readonly allSkills = signal<LookupResponse[]>([]);
   readonly allTools = signal<LookupResponse[]>([]);
+  readonly allExpertise = signal<LookupResponse[]>([]);
 
   readonly bookingForm = this.fb.nonNullable.group({
     bookingPolicy: ['', Validators.required],
@@ -65,6 +69,11 @@ export class SpecialistProfileManagement implements OnInit {
   readonly profileForm = this.fb.nonNullable.group({
     hourlyRate: [0, [Validators.required, Validators.min(1)]],
     experienceYears: [0, [Validators.required, Validators.min(0)]],
+    title: [''],
+    bio: [''],
+    gender: [''],
+    preferredLanguage: [''],
+    country: [''],
   });
 
   readonly experienceForm = this.fb.nonNullable.group({
@@ -88,16 +97,56 @@ export class SpecialistProfileManagement implements OnInit {
 
   readonly addSkillSearch = signal('');
   readonly addToolSearch = signal('');
+  readonly addExpertiseSearch = signal('');
   readonly addSkillOpen = signal(false);
   readonly addToolOpen = signal(false);
+  readonly addExpertiseOpen = signal(false);
   readonly savingSkill = signal<string | null>(null);
   readonly savingTool = signal<string | null>(null);
+  readonly savingExpertise = signal<string | null>(null);
   readonly editingExperienceId = signal<string | null>(null);
 
   readonly filteredAddSkills = computed(() => {
     const q = this.addSkillSearch().toLowerCase();
     const currentIds = new Set(this.mySkills().map(s => s.id));
     return this.allSkills().filter(s => !currentIds.has(s.id) && s.name.toLowerCase().includes(q));
+  });
+
+  readonly genderOptions: SelectOption[] = [
+    { value: 'ذكر', label: 'ذكر' },
+    { value: 'أنثى', label: 'أنثى' },
+  ];
+
+  readonly languageOptions: SelectOption[] = [
+    { value: 'العربية', label: 'العربية' },
+    { value: 'English', label: 'English' },
+  ];
+
+  readonly countryOptions: SelectOption[] = [
+    { value: 'مصر', label: 'مصر' },
+    { value: 'السعودية', label: 'السعودية' },
+    { value: 'الإمارات', label: 'الإمارات' },
+    { value: 'قطر', label: 'قطر' },
+    { value: 'الكويت', label: 'الكويت' },
+    { value: 'البحرين', label: 'البحرين' },
+    { value: 'عمان', label: 'عُمان' },
+    { value: 'الأردن', label: 'الأردن' },
+    { value: 'العراق', label: 'العراق' },
+    { value: 'سوريا', label: 'سوريا' },
+    { value: 'لبنان', label: 'لبنان' },
+    { value: 'فلسطين', label: 'فلسطين' },
+    { value: 'تونس', label: 'تونس' },
+    { value: 'الجزائر', label: 'الجزائر' },
+    { value: 'المغرب', label: 'المغرب' },
+    { value: 'ليبيا', label: 'ليبيا' },
+    { value: 'السودان', label: 'السودان' },
+    { value: 'اليمن', label: 'اليمن' },
+  ];
+
+  readonly filteredAddExpertise = computed(() => {
+    const q = this.addExpertiseSearch().toLowerCase();
+    const currentIds = new Set(this.myExpertise().map(e => e.id));
+    return this.allExpertise().filter(e => !currentIds.has(e.id) && e.name.toLowerCase().includes(q));
   });
 
   readonly filteredAddTools = computed(() => {
@@ -120,6 +169,11 @@ export class SpecialistProfileManagement implements OnInit {
         this.profileForm.patchValue({
           hourlyRate: p.hourlyRate,
           experienceYears: p.experienceYears,
+          title: p.title || '',
+          bio: p.bio || '',
+          gender: p.gender || '',
+          preferredLanguage: p.preferredLanguage || '',
+          country: p.country || '',
         });
         this.bookingForm.patchValue({
           bookingPolicy: p.bookingPolicy || '',
@@ -139,6 +193,9 @@ export class SpecialistProfileManagement implements OnInit {
     this.specialistsApi.getMySkills().subscribe({
       next: (res) => this.mySkills.set(res.data),
     });
+    this.specialistsApi.getMyExpertise().subscribe({
+      next: (res) => this.myExpertise.set(res.data),
+    });
     this.specialistsApi.getMyTools().subscribe({
       next: (res) => this.myTools.set(res.data),
     });
@@ -155,6 +212,9 @@ export class SpecialistProfileManagement implements OnInit {
     });
     this.specialistsApi.getTools().subscribe({
       next: (res) => this.allTools.set(res.data),
+    });
+    this.specialistsApi.getExpertise().subscribe({
+      next: (res) => this.allExpertise.set(res.data),
     });
   }
 
@@ -226,6 +286,35 @@ export class SpecialistProfileManagement implements OnInit {
         this.toast.success('تم إضافة الأداة');
       },
       error: (err) => this.toast.danger(err.error?.title || 'فشل في إضافة الأداة'),
+    });
+  }
+
+  addExpertise(expertiseId: string): void {
+    this.savingExpertise.set(expertiseId);
+    this.specialistsApi.addExpertise(expertiseId).pipe(
+      finalize(() => this.savingExpertise.set(null)),
+    ).subscribe({
+      next: () => {
+        const item = this.allExpertise().find(e => e.id === expertiseId);
+        if (item) this.myExpertise.update(list => [...list, item]);
+        this.addExpertiseOpen.set(false);
+        this.addExpertiseSearch.set('');
+        this.toast.success('تم إضافة مجال الخبرة');
+      },
+      error: (err) => this.toast.danger(err.error?.title || 'فشل في إضافة مجال الخبرة'),
+    });
+  }
+
+  removeExpertise(expertiseId: string): void {
+    this.savingExpertise.set(expertiseId);
+    this.specialistsApi.removeExpertise(expertiseId).pipe(
+      finalize(() => this.savingExpertise.set(null)),
+    ).subscribe({
+      next: () => {
+        this.myExpertise.update(list => list.filter(e => e.id !== expertiseId));
+        this.toast.success('تم حذف مجال الخبرة');
+      },
+      error: (err) => this.toast.danger(err.error?.title || 'فشل في حذف مجال الخبرة'),
     });
   }
 
@@ -348,17 +437,32 @@ export class SpecialistProfileManagement implements OnInit {
     const p = this.profile()!;
     const years = this.profileForm.value.experienceYears ?? p.experienceYears;
     const level = SpecialistProfileManagement.computeExperienceLevel(years);
+    const fv = this.profileForm.value;
     const request: UpdateSpecialistRequest = {
       experienceYears: years,
       experienceLevel: level,
-      hourlyRate: this.profileForm.value.hourlyRate ?? p.hourlyRate,
+      hourlyRate: fv.hourlyRate ?? p.hourlyRate,
       introVideoUrl: p.introVideoUrl ?? null,
       bookingPolicy: p.bookingPolicy ?? null,
+      title: fv.title || null,
+      bio: fv.bio || null,
+      gender: fv.gender || null,
+      preferredLanguage: fv.preferredLanguage || null,
+      country: fv.country || null,
     };
     this.specialistsApi.updateMyProfile(request)
       .pipe(finalize(() => this.saving.set(false))).subscribe({
         next: () => {
-          this.profile.update(prev => prev ? { ...prev, hourlyRate: request.hourlyRate, experienceYears: years } : prev);
+          this.profile.update(prev => prev ? {
+            ...prev,
+            hourlyRate: request.hourlyRate,
+            experienceYears: years,
+            title: request.title || prev.title,
+            bio: request.bio || prev.bio,
+            gender: request.gender || prev.gender,
+            preferredLanguage: request.preferredLanguage || prev.preferredLanguage,
+            country: request.country || prev.country,
+          } : prev);
           this.experienceLevel.set(level);
           this.toast.success('تم تحديث البيانات');
         },

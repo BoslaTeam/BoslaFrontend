@@ -4,6 +4,11 @@ export interface UpdateSpecialistRequest {
   hourlyRate: number;
   introVideoUrl: string | null;
   bookingPolicy: string | null;
+  title: string | null;
+  bio: string | null;
+  gender: string | null;
+  preferredLanguage: string | null;
+  country: string | null;
 }
 
 export interface UpdateBookingPolicyRequest {
