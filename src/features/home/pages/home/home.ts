@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, DestroyRef, NgZone } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LookupService } from '@core/services/lookup.service';
 import { SpecialistService } from '@features/specialists/services/specialist.service';
+import { AiSearchService } from '@features/ai/services/ai-search.service';
 import { LookupItemDto } from '@core/contracts/lookup.contracts';
 import { SpecialistListItemDto } from '@features/specialists/contracts/specialist.contracts';
 import { CommonModule } from '@angular/common';
@@ -18,12 +19,15 @@ import { UiDomainIcon } from '@shared/ui/domain-icon/domain-icon';
 export class Home implements OnInit, AfterViewInit {
   private lookupService = inject(LookupService);
   private specialistService = inject(SpecialistService);
+  private aiSearchService = inject(AiSearchService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+  private ngZone = inject(NgZone);
 
   expertiseList: LookupItemDto[] = [];
   featuredSpecialists: SpecialistListItemDto[] = [];
+  recommendedSpecialists: SpecialistListItemDto[] = [];
   searchQuery = '';
 
   // Typewriter
@@ -51,6 +55,14 @@ export class Home implements OnInit, AfterViewInit {
         this.cdr.markForCheck();
       },
       error: (err) => console.error('Failed to load expertise', err)
+    });
+
+    this.aiSearchService.getRecommendations(6).subscribe({
+      next: (res) => {
+        this.recommendedSpecialists = res;
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Failed to load AI recommendations', err),
     });
 
     this.specialistService.getSpecialists({ pageNumber: 1, pageSize: 6 }).subscribe({
@@ -90,22 +102,23 @@ export class Home implements OnInit, AfterViewInit {
         this.typewriterText = word.substring(0, this.charIndex++);
       }
 
+      this.cdr.markForCheck();
+
       if (!this.isDeleting && this.charIndex > word.length) {
         this.isDeleting = true;
-        setTimeout(tick, 2000);
+        this.ngZone.runOutsideAngular(() => setTimeout(tick, 2000));
         return;
       }
       if (this.isDeleting && this.charIndex < 0) {
         this.isDeleting = false;
         this.typewriterIndex = (this.typewriterIndex + 1) % this.typewriterWords.length;
-        setTimeout(tick, 400);
+        this.ngZone.runOutsideAngular(() => setTimeout(tick, 400));
         return;
       }
 
-      this.cdr.markForCheck();
-      setTimeout(tick, this.isDeleting ? 40 : 80);
+      this.ngZone.runOutsideAngular(() => setTimeout(tick, this.isDeleting ? 40 : 80));
     };
-    tick();
+    this.ngZone.runOutsideAngular(tick);
   }
 
   /* ── Intersection Observer ── */
@@ -161,4 +174,5 @@ export class Home implements OnInit, AfterViewInit {
       this.router.navigate(['/specialists'], { queryParams: { query: this.searchQuery } });
     }
   }
+
 }

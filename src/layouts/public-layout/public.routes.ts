@@ -13,6 +13,10 @@ export const PUBLIC_ROUTES: Routes = [
         loadChildren: () => import('@features/home/routes').then(m => m.HOME_ROUTES),
       },
       {
+        path: 'ai',
+        loadChildren: () => import('@features/ai/routes').then(m => m.AI_ROUTES),
+      },
+      {
         path: 'specialists',
         loadChildren: () => import('@features/specialists/routes').then(m => m.SPECIALISTS_ROUTES),
       },

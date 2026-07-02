@@ -17,7 +17,9 @@ import { AuthService } from '@core/services/auth.service';
 import { AppointmentService } from '../../services/appointments.service';
 import { Subscription } from 'rxjs';
 
-export type AppointmentTab = 'upcoming' | 'past';
+import { PaymentStatus } from '../../contracts/appointments.contracts';
+
+export type AppointmentTab = 'upcoming' | 'past' | 'pending_payment';
 
 @Component({
   selector: 'app-appointment-list',
@@ -34,15 +36,25 @@ export class AppointmentList implements OnInit, OnDestroy {
   readonly activeTab = signal<AppointmentTab>('upcoming');
   private sub?: Subscription;
 
+  readonly displayLimit = signal(6);
+
   readonly filteredAppointments = computed(() => {
     const allAppointments = this.store.items();
     const now = new Date();
 
-    if (this.activeTab() === 'upcoming') {
+    if (this.activeTab() === 'pending_payment') {
+      return allAppointments.filter(
+        (app) =>
+          (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
+          app.paymentStatus !== PaymentStatus.Paid &&
+          app.paymentStatus !== PaymentStatus.Refunded,
+      );
+    } else if (this.activeTab() === 'upcoming') {
       return allAppointments.filter(
         (app) =>
           app.status === AppointmentStatus.Pending ||
           app.status === AppointmentStatus.Confirmed ||
+          app.status === AppointmentStatus.Rescheduled ||
           new Date(app.start) >= now,
       );
     } else {
@@ -55,7 +67,31 @@ export class AppointmentList implements OnInit, OnDestroy {
     }
   });
 
+  readonly displayedAppointments = computed(() =>
+    this.filteredAppointments().slice(0, this.displayLimit()),
+  );
+
+  readonly hasMore = computed(() =>
+    this.filteredAppointments().length > this.displayLimit(),
+  );
+
+  showMore(): void {
+    this.displayLimit.update((l) => l + 6);
+    this.cdr.detectChanges();
+  }
+
+  readonly pendingPaymentCount = computed(() => {
+    return this.store.items().filter(
+      (app) =>
+        (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
+        app.paymentStatus !== PaymentStatus.Paid &&
+        app.paymentStatus !== PaymentStatus.Refunded,
+    ).length;
+  });
+
   readonly userRole = computed(() => this.authService.userRole());
+  readonly AppointmentStatus = AppointmentStatus;
+  readonly PaymentStatus = PaymentStatus;
 
   ngOnInit(): void {
     this.store.loadMyAppointments();

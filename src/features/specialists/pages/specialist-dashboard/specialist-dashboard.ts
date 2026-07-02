@@ -1,18 +1,21 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { SpecialistApiService } from '../../data-access/specialist-api.service';
 import { SpecialistProfileResponse } from '../../contracts/specialist-profile-response';
 import { SpecialistReviewsResponse } from '../../contracts/specialist-reviews-response';
 import { DatePipe } from '@angular/common';
 import { computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SpecialistAiService } from '@features/ai/services/specialist-ai.service';
+import { DashboardInsightsDto } from '@features/ai/contracts/specialist-ai.contracts';
 
 @Component({
   selector: 'app-specialist-dashboard',
   imports: [DatePipe, RouterLink],
   templateUrl: './specialist-dashboard.html',
 })
-export class SpecialistDashboard implements OnInit {
+export class SpecialistDashboard implements OnInit, OnDestroy {
   private specialistApi = inject(SpecialistApiService);
+  private specialistAiService = inject(SpecialistAiService);
   reviews = signal<SpecialistReviewsResponse | null>(null);
   profile = signal<SpecialistProfileResponse | null>(null);
   searchTerm = signal('');
@@ -26,12 +29,39 @@ export class SpecialistDashboard implements OnInit {
     return revenue.reduce((sum: number, item: any) => sum + (item.amount || 0), 0);
   });
 
+  /** AI Dashboard Insights */
+  aiInsights = signal<DashboardInsightsDto | null>(null);
+  aiInsightsLoading = signal(false);
+  private aiRefreshInterval: ReturnType<typeof setInterval> | null = null;
+
   ngOnInit(): void {
     this.loadProfile();
     this.loadDashboard();
     this.loadReviews();
+    this.loadAiInsights();
+    // Auto-refresh AI insights every 5 minutes
+    this.aiRefreshInterval = setInterval(() => this.loadAiInsights(), 5 * 60 * 1000);
   }
 
+  ngOnDestroy(): void {
+    if (this.aiRefreshInterval) {
+      clearInterval(this.aiRefreshInterval);
+    }
+  }
+
+
+  loadAiInsights(): void {
+    this.aiInsightsLoading.set(true);
+    this.specialistAiService.getDashboardInsights().subscribe({
+      next: (insights) => {
+        this.aiInsights.set(insights);
+        this.aiInsightsLoading.set(false);
+      },
+      error: () => {
+        this.aiInsightsLoading.set(false);
+      },
+    });
+  }
 
   private loadProfile(): void {
     this.specialistApi.getMyProfile().subscribe({

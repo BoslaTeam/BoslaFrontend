@@ -1,0 +1,93 @@
+<div class="withdrawal-detail-page">
+  <div class="page-header">
+    <a routerLink="/admin/withdrawals" class="back-link">← العودة للسحوبات</a>
+    <h1>تفاصيل طلب السحب</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  } @else if (withdrawal(); as w) {
+    <div class="detail-grid">
+      <div class="detail-card">
+        <h3>معلومات الطلب</h3>
+        <div class="detail-row">
+          <span class="detail-label">المتخصص</span>
+          <span class="detail-value">{{ w.specialistName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">المبلغ</span>
+          <span class="detail-value amount">{{ w.amount | number:'1.2-2' }} ر.س</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">طريقة الدفع</span>
+          <span class="detail-value">{{ getMethodLabel(w.paymentMethod) }}</span>
+        </div>
+        @if (w.paymentDetails) {
+          <div class="detail-row">
+            <span class="detail-label">تفاصيل الدفع</span>
+            <span class="detail-value">{{ w.paymentDetails }}</span>
+          </div>
+        }
+        <div class="detail-row">
+          <span class="detail-label">الحالة</span>
+          <span class="status-badge" [class]="getStatusClass(w.status)">
+            {{ getStatusLabel(w.status) }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">تاريخ الطلب</span>
+          <span class="detail-value">{{ w.requestedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+        </div>
+        @if (w.processedAt) {
+          <div class="detail-row">
+            <span class="detail-label">تاريخ المعالجة</span>
+            <span class="detail-value">{{ w.processedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (w.status === 'Pending') {
+        <div class="detail-card action-card">
+          <h3>إجراء</h3>
+          <div class="form-group">
+            <label>ملاحظات الإدارة</label>
+            <textarea
+              [(ngModel)]="adminNotes"
+              placeholder="أضف ملاحظات (اختياري)..."
+              rows="4"
+              class="form-control">
+            </textarea>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary" (click)="approve()" [disabled]="actionLoading()">
+              {{ actionLoading() ? 'جاري...' : 'موافقة' }}
+            </button>
+            <button class="btn btn-danger" (click)="reject()" [disabled]="actionLoading()">
+              {{ actionLoading() ? 'جاري...' : 'رفض' }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (w.status === 'Processing') {
+        <div class="detail-card action-card">
+          <h3>إجراء</h3>
+          <p class="help-text">بعد تأكيد تحويل المبلغ، قم بتحديث الحالة إلى مكتمل.</p>
+          <button class="btn btn-primary" (click)="markCompleted()" [disabled]="actionLoading()">
+            {{ actionLoading() ? 'جاري...' : 'تأكيد الاكتمال' }}
+          </button>
+        </div>
+      }
+
+      @if (w.adminNotes) {
+        <div class="detail-card">
+          <h3>ملاحظات الإدارة</h3>
+          <p class="notes-text">{{ w.adminNotes }}</p>
+        </div>
+      }
+    </div>
+  }
+</div>

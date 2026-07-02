@@ -465,3 +465,8 @@
     min-width: 800px;
   }
 }
+
+/* Embedding column */
+.col-embedding { text-align: center; }
+.embedding-dot { font-size: 1rem; }
+@media (max-width: 640px) { .col-embedding { display: none; } }
