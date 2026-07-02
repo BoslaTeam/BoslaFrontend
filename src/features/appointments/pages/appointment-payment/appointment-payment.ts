@@ -44,8 +44,7 @@ export class AppointmentPayment implements OnInit {
           this.stripeClientSecret.set(res.data.clientSecret);
           this.showStripe.set(true);
         } else {
-          this.toast.success('تم إرسال طلب الحجز، يمكنك الدفع لاحقاً من صفحة المواعيد.');
-          this.router.navigate(['/appointments', this.appointmentId]);
+          this.toast.danger('فشل في الحصول على بيانات الدفع. الـ clientSecret فارغ - راجع الباك اند.');
         }
       },
       error: (err) => {
