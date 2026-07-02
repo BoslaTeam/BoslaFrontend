@@ -56,7 +56,7 @@
     } @else {
       @if (filteredAppointments().length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          @for (appointment of filteredAppointments(); track appointment.id) {
+          @for (appointment of displayedAppointments(); track appointment.id) {
                 <div
               class="group block bg-white rounded-2xl border border-bosla-charcoal/5 hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
             >
@@ -152,7 +152,7 @@
 
               <div class="px-5 pb-4 flex flex-wrap items-center gap-2 border-t border-bosla-charcoal/5 pt-3">
                 @if (
-                  (appointment.status === AppointmentStatus.Confirmed || appointment.status === AppointmentStatus.Pending) &&
+                  appointment.status === AppointmentStatus.Confirmed &&
                   appointment.paymentStatus !== PaymentStatus.Paid &&
                   appointment.paymentStatus !== PaymentStatus.Refunded
                 ) {
@@ -179,6 +179,18 @@
             </div>
           }
         </div>
+
+        @if (hasMore()) {
+          <div class="flex justify-center mt-8">
+            <button (click)="showMore()"
+              class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-bosla-blue bg-white border border-bosla-blue/20 rounded-xl hover:bg-bosla-blue/5 hover:shadow-sm transition-all duration-200">
+              عرض المزيد
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        }
       } @else {
         <div
           class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6"
