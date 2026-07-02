@@ -138,6 +138,7 @@ export class AuthService {
         }
 
         this.refreshSpecialistStatus();
+        this.syncProfileAvatar();
     }
 
     updateAvatar(avatarUrl: string): void {
@@ -147,6 +148,17 @@ export class AuthService {
             this._currentUser.set(updatedUser);
             this.storage.setJson(STORAGE_KEYS.currentUser, updatedUser);
         }
+    }
+
+    syncProfileAvatar(): void {
+        if (!this.isAuthenticated()) return;
+        this.http.get<ApiResponse<{ profilePictureUrl?: string }>>(API_ENDPOINTS.users.me)
+            .pipe(catchError(() => of(null)))
+            .subscribe(res => {
+                if (res?.data?.profilePictureUrl) {
+                    this.updateAvatar(res.data.profilePictureUrl);
+                }
+            });
     }
 
     refreshSpecialistStatus(): void {

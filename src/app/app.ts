@@ -41,6 +41,7 @@ export class App {
         this._signalr.init();
         this._notifHttp.getNotifications().subscribe({ error: () => {} });
         this._auth.refreshSpecialistStatus();
+        this._auth.syncProfileAvatar();
       }
     });
 
