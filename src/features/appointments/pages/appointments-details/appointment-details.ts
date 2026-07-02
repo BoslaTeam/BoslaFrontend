@@ -1,4 +1,12 @@
-import { Component, OnInit, inject, signal, computed, effect, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  computed,
+  effect,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
@@ -67,7 +75,10 @@ export class AppointmentDetail implements OnInit {
   readonly canComplete = computed(() => {
     const u = this.userRole();
     const s = this.store.selectedItem()?.status;
-    return (u === UserRole.Specialist || u === UserRole.Admin) && (s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid);
+    return (
+      (u === UserRole.Specialist || u === UserRole.Admin) &&
+      (s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid)
+    );
   });
 
   readonly canPay = computed(() => {
@@ -75,7 +86,8 @@ export class AppointmentDetail implements OnInit {
     const s = this.store.selectedItem();
     if (u !== UserRole.User) return false;
     if (s?.status !== AppointmentStatus.Confirmed) return false;
-    if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded) return false;
+    if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded)
+      return false;
     return true;
   });
 
@@ -197,14 +209,18 @@ export class AppointmentDetail implements OnInit {
 
   onReviewSubmit(): void {
     if (this.reviewRating() === 0) return;
-    this.store.addReview(this.appointmentId, {
-      rating: this.reviewRating(),
-      comment: this.reviewComment().trim() || undefined,
-    }, () => {
-      this.showReviewModal.set(false);
-      this.reviewRating.set(0);
-      this.reviewComment.set('');
-    });
+    this.store.addReview(
+      this.appointmentId,
+      {
+        rating: this.reviewRating(),
+        comment: this.reviewComment().trim() || undefined,
+      },
+      () => {
+        this.showReviewModal.set(false);
+        this.reviewRating.set(0);
+        this.reviewComment.set('');
+      },
+    );
   }
 
   onAddReminder(): void {
@@ -223,24 +239,37 @@ export class AppointmentDetail implements OnInit {
 
   getStatusGradient(status: AppointmentStatus | undefined): string {
     switch (status) {
-      case AppointmentStatus.Pending: return 'linear-gradient(135deg, #F39C12, #E67E22)';
-      case AppointmentStatus.Confirmed: return 'linear-gradient(135deg, #1B4F72, #2E86AB)';
-      case AppointmentStatus.Paid: return 'linear-gradient(135deg, #059669, #10B981)';
-      case AppointmentStatus.Completed: return 'linear-gradient(135deg, #059669, #10B981)';
-      case AppointmentStatus.Cancelled: return 'linear-gradient(135deg, #DC2626, #EF4444)';
-      case AppointmentStatus.Rescheduled: return 'linear-gradient(135deg, #7C3AED, #8B5CF6)';
-      default: return 'linear-gradient(135deg, #64748B, #94A3B8)';
+      case AppointmentStatus.Pending:
+        return 'linear-gradient(135deg, #F39C12, #E67E22)';
+      case AppointmentStatus.Confirmed:
+        return 'linear-gradient(135deg, #1B4F72, #2E86AB)';
+      case AppointmentStatus.Paid:
+        return 'linear-gradient(135deg, #059669, #10B981)';
+      case AppointmentStatus.Completed:
+        return 'linear-gradient(135deg, #059669, #10B981)';
+      case AppointmentStatus.Cancelled:
+        return 'linear-gradient(135deg, #DC2626, #EF4444)';
+      case AppointmentStatus.Rescheduled:
+        return 'linear-gradient(135deg, #7C3AED, #8B5CF6)';
+      default:
+        return 'linear-gradient(135deg, #64748B, #94A3B8)';
     }
   }
 
   getStatusIcon(status: AppointmentStatus | undefined): string {
     switch (status) {
-      case AppointmentStatus.Pending: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Confirmed: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Paid: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Completed: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Cancelled: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
-      default: return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Pending:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Confirmed:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Paid:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Completed:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+      case AppointmentStatus.Cancelled:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+      default:
+        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
     }
   }
 
@@ -278,7 +307,10 @@ export class AppointmentDetail implements OnInit {
       case PaymentStatus.Unpaid:
         return { text: 'غير مدفوع', classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20' };
       case PaymentStatus.Paid:
-        return { text: 'مدفوع', classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' };
+        return {
+          text: 'مدفوع',
+          classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+        };
       case PaymentStatus.Refunded:
         return { text: 'مسترجع', classes: 'bg-blue-500/10 text-blue-600 border-blue-500/20' };
       default:
@@ -288,37 +320,58 @@ export class AppointmentDetail implements OnInit {
 
   getStatusColor(status: AppointmentStatus | undefined): string {
     switch (status) {
-      case AppointmentStatus.Pending: return 'text-amber-500';
-      case AppointmentStatus.Confirmed: return 'text-emerald-500';
-      case AppointmentStatus.Paid: return 'text-emerald-500';
-      case AppointmentStatus.Completed: return 'text-bosla-blue';
-      case AppointmentStatus.Cancelled: return 'text-rose-500';
-      case AppointmentStatus.Rescheduled: return 'text-purple-500';
-      default: return 'text-gray-500';
+      case AppointmentStatus.Pending:
+        return 'text-amber-500';
+      case AppointmentStatus.Confirmed:
+        return 'text-emerald-500';
+      case AppointmentStatus.Paid:
+        return 'text-emerald-500';
+      case AppointmentStatus.Completed:
+        return 'text-bosla-blue';
+      case AppointmentStatus.Cancelled:
+        return 'text-rose-500';
+      case AppointmentStatus.Rescheduled:
+        return 'text-purple-500';
+      default:
+        return 'text-gray-500';
     }
   }
 
   getStatusDotColor(status: AppointmentStatus | undefined): string {
     switch (status) {
-      case AppointmentStatus.Pending: return 'bg-amber-500';
-      case AppointmentStatus.Confirmed: return 'bg-emerald-500';
-      case AppointmentStatus.Paid: return 'bg-emerald-500';
-      case AppointmentStatus.Completed: return 'bg-bosla-blue';
-      case AppointmentStatus.Cancelled: return 'bg-rose-500';
-      case AppointmentStatus.Rescheduled: return 'bg-purple-500';
-      default: return 'bg-gray-500';
+      case AppointmentStatus.Pending:
+        return 'bg-amber-500';
+      case AppointmentStatus.Confirmed:
+        return 'bg-emerald-500';
+      case AppointmentStatus.Paid:
+        return 'bg-emerald-500';
+      case AppointmentStatus.Completed:
+        return 'bg-bosla-blue';
+      case AppointmentStatus.Cancelled:
+        return 'bg-rose-500';
+      case AppointmentStatus.Rescheduled:
+        return 'bg-purple-500';
+      default:
+        return 'bg-gray-500';
     }
   }
 
   getStatusTimelineLabel(status: AppointmentStatus | undefined): string {
     switch (status) {
-      case AppointmentStatus.Pending: return 'تم إنشاء طلب الموعد';
-      case AppointmentStatus.Confirmed: return 'تم قبول الموعد من قبل المختص';
-      case AppointmentStatus.Paid: return 'تم تأكيد الموعد بعد الدفع';
-      case AppointmentStatus.Completed: return 'تم إتمام الجلسة';
-      case AppointmentStatus.Cancelled: return 'تم إلغاء الموعد';
-      case AppointmentStatus.Rescheduled: return 'تم إعادة جدولة الموعد';
-      default: return 'تم تغيير الحالة';
+      case AppointmentStatus.Pending:
+        return 'تم إنشاء طلب الموعد';
+      case AppointmentStatus.Confirmed:
+        return 'تم قبول الموعد من قبل المختص';
+      case AppointmentStatus.Paid:
+        return 'تم تأكيد الموعد بعد الدفع';
+      case AppointmentStatus.Completed:
+        return 'تم إتمام الجلسة';
+      case AppointmentStatus.Cancelled:
+        return 'تم إلغاء الموعد';
+      case AppointmentStatus.Rescheduled:
+        return 'تم إعادة جدولة الموعد';
+      default:
+        return 'تم تغيير الحالة';
     }
   }
 }
