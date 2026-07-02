@@ -56,7 +56,7 @@ export class NotificationToast {
     this.dismiss(item.id);
     if (!item.appointmentId) return;
     if (item.type === NotificationType.Message) {
-      this.router.navigate(['/communications', item.appointmentId]);
+      this.router.navigate(['/chat', item.appointmentId]);
     } else {
       this.router.navigate(['/appointments', item.appointmentId, 'pay']);
     }

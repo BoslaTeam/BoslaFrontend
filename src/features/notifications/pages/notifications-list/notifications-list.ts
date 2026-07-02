@@ -59,7 +59,7 @@ export class NotificationsList implements OnInit {
     this.notificationsService.markAsRead(notif.id).subscribe();
     if (!notif.appointmentId) return;
     if (notif.type === NotificationType.Message) {
-      this.router.navigate(['/communications', notif.appointmentId]);
+      this.router.navigate(['/chat', notif.appointmentId]);
     } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }

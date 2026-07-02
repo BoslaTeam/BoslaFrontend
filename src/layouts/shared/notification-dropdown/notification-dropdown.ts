@@ -75,7 +75,7 @@ export class NotificationDropdown implements OnInit {
     this.httpService.markAsRead(notif.id).subscribe({ error: () => {} });
     if (!notif.appointmentId) return;
     if (notif.type === NotificationType.Message) {
-      this.router.navigate(['/communications', notif.appointmentId]);
+      this.router.navigate(['/chat', notif.appointmentId]);
     } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }
