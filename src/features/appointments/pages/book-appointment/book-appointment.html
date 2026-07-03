@@ -1,265 +1,575 @@
-<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
-  <div class="max-w-4xl mx-auto px-4 pt-28 pb-12">
+<div class="min-h-screen" dir="rtl" style="background: linear-gradient(135deg, #F7F9FA 0%, #ffffff 40%, #f0f4f8 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
 
+    <!-- Back Button -->
     <a [routerLink]="['/appointments']"
-      class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group">
+      class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-bosla-blue transition-all duration-200 mb-8 group">
       <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
       </svg>
       العودة إلى المواعيد
     </a>
 
+    <!-- Specialist Not Found -->
     @if (specialistNotFound()) {
-      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-12 text-center">
-        <div class="w-16 h-16 mx-auto bg-bosla-error/10 text-bosla-error rounded-full flex items-center justify-center mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
+      <div class="max-w-lg mx-auto">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-12 text-center">
+          <div class="w-20 h-20 mx-auto bg-gradient-to-br from-rose-50 to-rose-100 rounded-3xl flex items-center justify-center mb-5">
+            <svg class="w-10 h-10 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">لم يتم تحديد مختص</h2>
+          <p class="text-sm text-gray-500 mb-8">يجب اختيار مختص أولاً قبل حجز موعد. يمكنك تصفح المختصين من صفحة المتخصصين.</p>
+          <ui-button variant="primary" size="md" [routerLink]="['/specialists']">تصفح المختصين</ui-button>
         </div>
-        <h2 class="text-xl font-bold text-bosla-charcoal mb-2">لم يتم تحديد مختص</h2>
-        <p class="text-sm text-bosla-grey mb-6">يجب اختيار مختص أولاً قبل حجز موعد. يمكنك تصفح المختصين من صفحة المتخصصين.</p>
-        <ui-button variant="primary" size="md" [routerLink]="['/specialists']">تصفح المختصين</ui-button>
       </div>
     } @else {
 
       @if (store.bookingStep() === 'form') {
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
 
-          <div class="lg:col-span-2 space-y-6">
+          <!-- ═══════════════════════════════════════════════════════════════ -->
+          <!-- LEFT COLUMN — Booking Flow (~65%)                            -->
+          <!-- ═══════════════════════════════════════════════════════════════ -->
+          <div class="lg:col-span-7 space-y-8">
 
-            @if (store.specialistInfo(); as specialist) {
-              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-                <div class="flex flex-col items-center text-center">
-                  <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md mb-4">
-                    <img [src]="specialist.imageUrl || 'assets/icons/favicon.ico'"
-                      [alt]="specialist.name"
-                      class="w-full h-full object-cover" />
+            <!-- ── Stepper ── -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-gray-100/80 p-6">
+              <div class="flex items-center">
+
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center gap-2 cursor-pointer" (click)="selectedDate.set(null); selectedSlotId.set(null)" style="flex:0 0 auto">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300"
+                    [class]="currentStep() >= 1
+                      ? 'bg-gradient-to-br from-bosla-primary to-bosla-blue text-white shadow-md shadow-bosla-primary/20'
+                      : 'bg-gray-100 text-gray-400'">
+                    @if (currentStep() > 1) {
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    } @else { 1 }
                   </div>
-                  <h2 class="text-lg font-bold text-bosla-charcoal">{{ specialist.name }}</h2>
-                  <p class="text-sm text-bosla-grey mt-1">{{ specialist.title || 'مختص معتمد' }}</p>
-                  <div class="flex items-center gap-3 mt-3 text-sm">
-                    <span class="flex items-center gap-1 text-amber-500">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                      {{ specialist.rating.toFixed(1) }}
-                    </span>
-                    <span class="text-bosla-grey">({{ specialist.reviewsCount }} تقييم)</span>
+                  <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
+                    [class]="currentStep() >= 1 ? 'text-bosla-primary' : 'text-gray-400'">
+                    اختر اليوم
+                  </span>
+                </div>
+
+                <!-- Line 1–2 -->
+                <div class="flex-1 mx-3">
+                  <div class="h-0.5 rounded-full transition-all duration-500"
+                    [class]="currentStep() > 1 ? 'bg-gradient-to-r from-bosla-primary to-bosla-blue/40' : 'bg-gray-100'"></div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center gap-2 cursor-pointer"
+                  [class]="!selectedDate() ? 'cursor-not-allowed opacity-60' : ''"
+                  (click)="selectedDate() && selectedSlotId.set(null)"
+                  style="flex:0 0 auto">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300"
+                    [class]="currentStep() >= 2
+                      ? 'bg-gradient-to-br from-bosla-primary to-bosla-blue text-white shadow-md shadow-bosla-primary/20'
+                      : 'bg-gray-100 text-gray-400'">
+                    @if (currentStep() > 2) {
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    } @else { 2 }
                   </div>
-                  <div class="mt-4 pt-4 border-t border-bosla-charcoal/5 w-full text-center">
-                    <span class="text-2xl font-bold text-bosla-primary">{{ specialist.hourlyRate }}</span>
-                    <span class="text-sm text-bosla-grey mr-1">ج.م / ساعة</span>
+                  <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
+                    [class]="currentStep() >= 2 ? 'text-bosla-primary' : 'text-gray-400'">
+                    اختر الوقت
+                  </span>
+                </div>
+
+                <!-- Line 2–3 -->
+                <div class="flex-1 mx-3">
+                  <div class="h-0.5 rounded-full transition-all duration-500"
+                    [class]="currentStep() > 2 ? 'bg-gradient-to-r from-bosla-primary to-bosla-blue/40' : 'bg-gray-100'"></div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center gap-2 cursor-pointer"
+                  [class]="!selectedSlotId() ? 'cursor-not-allowed opacity-60' : ''"
+                  style="flex:0 0 auto">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300"
+                    [class]="currentStep() >= 3
+                      ? 'bg-gradient-to-br from-bosla-primary to-bosla-blue text-white shadow-md shadow-bosla-primary/20'
+                      : 'bg-gray-100 text-gray-400'">
+                    3
+                  </div>
+                  <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
+                    [class]="currentStep() >= 3 ? 'text-bosla-primary' : 'text-gray-400'">
+                    مراجعة
+                  </span>
+                </div>
+
+                <!-- Line 3–4 -->
+                <div class="flex-1 mr-3">
+                  <div class="h-0.5 rounded-full bg-gray-100"></div>
+                </div>
+
+                <!-- Step 4 (always dimmed until confirm) -->
+                <div class="flex flex-col items-center gap-2" style="flex:0 0 auto">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold bg-gray-100 text-gray-400">
+                    4
+                  </div>
+                  <span class="text-[11px] font-bold text-gray-400 whitespace-nowrap">
+                    تأكيد
+                  </span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ── Step Content: Only the current step ── -->
+            @if (currentStep() === 1) {
+              <!-- ═══ Step 1: Date Selection ═══ -->
+              <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-6 sm:p-8 ring-2 ring-bosla-blue/10 shadow-md animate-fadeIn">
+
+                <div class="flex items-start justify-between mb-7">
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">1</span>
+                      <h2 class="text-xl font-bold text-bosla-charcoal">اختر اليوم المناسب</h2>
+                    </div>
+                    <p class="text-sm text-gray-500 mr-10">اختر تاريخاً مناسباً من المواعيد المتاحة للمختص</p>
                   </div>
                 </div>
-              </div>
-            } @else {
-              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 flex items-center justify-center">
-                <ui-spinner size="md"></ui-spinner>
+
+                @if (store.isActionLoading() && store.availabilitySlots().length === 0) {
+                  <div class="flex gap-4 overflow-x-auto pb-2">
+                    @for (_ of [1,2,3,4,5]; track _) {
+                      <div class="shrink-0 w-[120px] h-[140px] bg-gray-100 rounded-2xl animate-pulse"></div>
+                    }
+                  </div>
+                } @else if (store.formattedAvailabilitySlots().length === 0) {
+                  <div class="text-center py-14">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-bosla-blue/5 to-bosla-primary/5 rounded-3xl flex items-center justify-center mb-5">
+                      <svg class="w-10 h-10 text-bosla-blue/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-bosla-charcoal mb-1">لا توجد مواعيد متاحة</h3>
+                    <p class="text-sm text-gray-400">لم يقم المختص بإضافة مواعيد متاحة بعد، يرجى المحاولة لاحقاً</p>
+                  </div>
+                } @else {
+                  <div class="flex gap-4 overflow-x-auto pb-2" style="scrollbar-width:thin;scrollbar-color:#e5e7eb transparent">
+                    @for (group of store.formattedAvailabilitySlots(); track group.dateStr) {
+                      <button (click)="selectedDate.set(group.dateStr); selectedSlotId.set(null)"
+                        class="relative shrink-0 w-[120px] p-5 rounded-2xl border-2 transition-all duration-300 text-center outline-none"
+                        [class]="selectedDate() === group.dateStr
+                          ? 'bg-gradient-to-b from-bosla-primary to-bosla-blue border-bosla-primary text-white shadow-xl shadow-bosla-primary/25 scale-105'
+                          : group.availableCount === 0
+                            ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                            : 'bg-white border-gray-100 text-bosla-charcoal hover:border-bosla-blue/30 hover:shadow-lg hover:-translate-y-1 cursor-pointer'">
+
+                        <span class="text-3xl font-black leading-none block"
+                          [class]="selectedDate() === group.dateStr ? 'text-white' : 'text-bosla-primary'">
+                          {{ group.dayNumber }}
+                        </span>
+                        <span class="text-xs font-bold mt-1.5 block"
+                          [class]="selectedDate() === group.dateStr ? 'text-white/90' : 'text-bosla-charcoal'">
+                          {{ group.dayName }}
+                        </span>
+                        <span class="text-[10px] mt-0.5 block"
+                          [class]="selectedDate() === group.dateStr ? 'text-white/60' : 'text-gray-400'">
+                          {{ group.monthName }}
+                        </span>
+
+                        @if (group.availableCount > 0) {
+                          <span class="mt-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-block"
+                            [class]="selectedDate() === group.dateStr
+                              ? 'bg-white/20 text-white'
+                              : 'bg-emerald-50 text-emerald-600'">
+                            {{ group.availableCount }} موعد
+                          </span>
+                        } @else {
+                          <span class="mt-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-block bg-rose-50 text-rose-400">
+                            محجوز
+                          </span>
+                        }
+
+                        @if (selectedDate() === group.dateStr) {
+                          <div class="absolute -top-2.5 -left-2.5 w-7 h-7 bg-white rounded-xl shadow-lg flex items-center justify-center animate-fadeIn">
+                            <svg class="w-4 h-4 text-bosla-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        }
+                      </button>
+                    }
+                  </div>
+                }
               </div>
             }
 
-            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-              <h3 class="text-sm font-bold text-bosla-charcoal mb-4">تفاصيل الجلسة</h3>
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">موضوع الجلسة (اختياري)</label>
-                  <input type="text" [value]="sessionTopic()" (input)="sessionTopic.set($any($event.target).value)"
-                    placeholder="مثال: استشارة تسويقية، تطوير أعمال"
-                    class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal transition-colors" />
+            @if (currentStep() === 2) {
+              <!-- ═══ Step 2: Time Selection ═══ -->
+              @if (selectedGroup(); as group) {
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-6 sm:p-8 ring-2 ring-bosla-blue/10 shadow-md animate-fadeIn">
+
+                  <div class="flex items-start justify-between mb-7">
+                    <div>
+                      <div class="flex items-center gap-3 mb-1">
+                        <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">2</span>
+                        <h2 class="text-xl font-bold text-bosla-charcoal">اختر الوقت المناسب</h2>
+                      </div>
+                      <p class="text-sm text-gray-500 mr-10">{{ group.displayDate }}</p>
+                    </div>
+                    @if (selectedSlotId()) {
+                      <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full whitespace-nowrap">
+                        تم الاختيار ✓
+                      </span>
+                    }
+                  </div>
+
+                  @if (group.slots.length > 0) {
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      @for (slot of group.slots; track slot.id) {
+                        <button (click)="!slot.isBooked && selectSlot(slot.id, group.dateStr)"
+                          [disabled]="slot.isBooked"
+                          class="relative py-4 px-4 rounded-2xl text-sm font-semibold border-2 transition-all duration-200 text-center outline-none"
+                          [class]="slot.isBooked
+                            ? 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
+                            : selectedSlotId() === slot.id
+                              ? 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white border-bosla-primary shadow-lg shadow-bosla-primary/15 scale-[1.02]'
+                              : 'bg-white border-gray-100 text-bosla-charcoal hover:border-bosla-blue/30 hover:shadow-md hover:-translate-y-0.5 cursor-pointer active:scale-[0.98]'">
+
+                          @if (slot.isBooked) {
+                            <span class="flex items-center justify-center gap-1.5">
+                              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                              <span class="line-through text-gray-300">{{ slot.timeStr }}</span>
+                            </span>
+                            <span class="block text-[10px] text-gray-300 mt-1.5 font-medium">غير متاح</span>
+                          } @else {
+                            <span class="flex items-center justify-center gap-1.5">
+                              @if (selectedSlotId() === slot.id) {
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                              }
+                              <span>{{ slot.timeStr }}</span>
+                            </span>
+                            <span class="block text-[10px] mt-1.5 font-medium"
+                              [class]="selectedSlotId() === slot.id ? 'text-white/70' : 'text-emerald-500'">
+                              متاح
+                            </span>
+                          }
+                        </button>
+                      }
+                    </div>
+                  } @else {
+                    <div class="text-center py-12 bg-gray-50/50 rounded-2xl">
+                      <p class="text-sm text-gray-400">لا توجد مواعيد متاحة لهذا اليوم</p>
+                    </div>
+                  }
                 </div>
-                <div>
-                  <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-2">ملاحظات للمختص (اختياري)</label>
-                  <textarea [value]="notes()" (input)="notes.set($any($event.target).value)"
-                    placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها..."
-                    class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue text-bosla-charcoal resize-none transition-colors"></textarea>
+              }
+            }
+
+            @if (currentStep() === 3) {
+              <!-- ═══ Step 3: Review & Confirm ═══ -->
+              @if (selectedSlotInfo(); as slot) {
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-6 sm:p-8 ring-2 ring-emerald-500/10 shadow-md animate-fadeIn">
+
+                  <div class="flex items-center gap-3 mb-7">
+                    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">3</span>
+                    <div>
+                      <h2 class="text-xl font-bold text-bosla-charcoal">مراجعة الحجز</h2>
+                      <p class="text-sm text-gray-500 mt-0.5">تأكد من المعلومات قبل تأكيد الحجز</p>
+                    </div>
+                  </div>
+
+                  <!-- Booking Summary -->
+                  <div class="bg-gradient-to-br from-bosla-primary/[0.04] to-bosla-blue/[0.04] rounded-2xl border border-bosla-blue/10 p-5 sm:p-6 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+
+                      <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-bosla-blue shrink-0">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">اليوم</p>
+                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ slot.displayDate }}</p>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-bosla-blue shrink-0">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">الوقت</p>
+                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ slot.timeStr }}</p>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-bosla-blue shrink-0">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">المدة</p>
+                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ durationMinutes() }} دقيقة</p>
+                        </div>
+                      </div>
+
+                      @if (store.specialistInfo(); as s) {
+                        <div class="flex items-center gap-3.5">
+                          <div class="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-bosla-blue shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">السعر</p>
+                            <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ s.hourlyRate }} ج.م</p>
+                          </div>
+                        </div>
+                      }
+
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button (click)="onSubmit()"
+                    [disabled]="!selectedSlotId() || !specialistId() || store.isActionLoading()"
+                    class="w-full py-4 px-6 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 outline-none"
+                    [class]="!selectedSlotId() || !specialistId() || store.isActionLoading()
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-xl hover:shadow-bosla-primary/20 hover:-translate-y-0.5 cursor-pointer active:scale-[0.98]'">
+                    @if (store.isActionLoading()) {
+                      <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      <span>جاري الحجز...</span>
+                    } @else {
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>تأكيد الحجز</span>
+                    }
+                  </button>
                 </div>
-              </div>
-            </div>
+              }
+            }
 
           </div>
 
-          <div class="lg:col-span-3 space-y-4">
+          <!-- ═══════════════════════════════════════════════════════════════ -->
+          <!-- RIGHT COLUMN — Specialist Profile (~35%)                     -->
+          <!-- ═══════════════════════════════════════════════════════════════ -->
+          <div class="lg:col-span-5">
+            <div class="lg:sticky lg:top-28 space-y-6">
 
-            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-              <h3 class="text-sm font-bold text-bosla-charcoal mb-1">اختر اليوم المناسب</h3>
-              <p class="text-xs text-bosla-grey mb-5">اختر تاريخاً ثم اختر الوقت المتاح</p>
+              <!-- ── Specialist Profile Card ── -->
+              @if (store.specialistInfo(); as specialist) {
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-5">
 
-              @if (store.isActionLoading() && store.availabilitySlots().length === 0) {
-                <div class="flex items-center justify-center py-12">
-                  <ui-spinner size="md"></ui-spinner>
-                </div>
-              } @else if (store.formattedAvailabilitySlots().length === 0) {
-                <div class="text-center py-12">
-                  <div class="w-14 h-14 mx-auto bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-3">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <p class="text-sm text-bosla-charcoal/60">لا توجد أوقات متاحة حالياً</p>
-                  <p class="text-xs text-bosla-grey mt-1">يرجى المحاولة في وقت لاحق</p>
-                </div>
-              } @else {
-                <!-- Date Chips -->
-                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin" dir="ltr">
-                  @for (group of store.formattedAvailabilitySlots(); track group.dateStr) {
-                    <button (click)="selectedDate.set(group.dateStr); selectedSlotId.set(null)"
-                      [class]="(selectedDate() === group.dateStr
-                        ? 'bg-bosla-primary text-white shadow-md ring-2 ring-bosla-primary/20'
-                        : 'bg-bosla-offwhite text-bosla-charcoal hover:border-bosla-blue hover:bg-bosla-blue/5') +
-                        ' flex flex-col items-center gap-0.5 px-4 py-3 rounded-xl border border-bosla-charcoal/10 min-w-[80px] transition-all duration-200 shrink-0'">
-                      <span class="text-lg font-bold leading-tight">{{ group.dayNumber }}</span>
-                      <span class="text-[11px] font-medium leading-tight">{{ group.dayName }}</span>
-                      <span class="text-[10px] text-bosla-grey leading-tight">{{ group.monthName }}</span>
-                      @if (group.availableCount > 0) {
-                        <span class="mt-1 text-[10px] font-medium"
-                          [class.text-white]="selectedDate() === group.dateStr"
-                          [class.text-emerald-600]="selectedDate() !== group.dateStr">
-                          {{ group.availableCount }} موعد
-                        </span>
-                      } @else {
-                        <span class="mt-1 text-[10px] text-rose-400 font-medium">محجوز بالكامل</span>
-                      }
-                    </button>
-                  }
-                </div>
-
-                <!-- Slots for selected date -->
-                @if (selectedGroup(); as group) {
-                  <div class="mt-6 pt-5 border-t border-bosla-charcoal/5">
-                    <div class="flex items-center justify-between mb-4">
-                      <h4 class="text-sm font-bold text-bosla-charcoal">{{ group.displayDate }}</h4>
-                      <span class="text-xs text-bosla-grey">{{ group.slots.length }} مواعيد</span>
+                  <div class="flex items-start gap-4">
+                    <!-- Photo -->
+                    <div class="shrink-0 w-16 h-16 rounded-xl overflow-hidden ring-2 ring-white shadow-md">
+                      <img [src]="specialist.imageUrl || 'assets/icons/favicon.ico'"
+                        [alt]="specialist.name"
+                        class="w-full h-full object-cover" />
                     </div>
 
-                    @if (group.slots.length > 0) {
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                        @for (slot of group.slots; track slot.id) {
-                          <button (click)="!slot.isBooked && selectSlot(slot.id, group.dateStr)"
-                            [disabled]="slot.isBooked"
-                            [class]="(slot.isBooked
-                              ? 'bg-rose-50 text-rose-300 border-rose-200 cursor-not-allowed opacity-70'
-                              : selectedSlotId() === slot.id
-                                ? 'bg-bosla-primary text-white border-bosla-primary shadow-md'
-                                : 'bg-bosla-offwhite text-bosla-charcoal border-bosla-charcoal/10 hover:border-bosla-blue hover:bg-bosla-blue/5 cursor-pointer') +
-                              ' relative px-3 py-3 rounded-xl text-sm font-medium border transition-all duration-200'">
-                            @if (slot.isBooked) {
-                              <span class="absolute top-1.5 left-1.5">
-                                <svg class="w-3.5 h-3.5 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                              </span>
-                            }
-                            <span [class.line-through]="slot.isBooked" [class.text-rose-300]="slot.isBooked">
-                              {{ slot.timeStr }}
-                            </span>
-                            @if (slot.isBooked) {
-                              <span class="block text-[10px] text-rose-400 font-semibold mt-0.5">غير متاح</span>
-                            }
-                          </button>
-                        }
+                    <!-- Info -->
+                    <div class="flex-1 min-w-0">
+                      <h2 class="text-base font-bold text-bosla-charcoal truncate">{{ specialist.name }}</h2>
+                      <p class="text-xs text-gray-500 mt-0.5 truncate">{{ specialist.title || 'مختص معتمد' }}</p>
+
+                      <!-- Rating inline -->
+                      <div class="flex items-center gap-1 mt-2">
+                        <div class="flex gap-0.5">
+                          @for (star of [1,2,3,4,5]; track star) {
+                            <svg class="w-3.5 h-3.5" [class]="star <= Math.round(specialist.rating) ? 'text-amber-400' : 'text-gray-200'" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          }
+                        </div>
+                        <span class="text-xs font-bold text-bosla-charcoal">{{ specialist.rating.toFixed(1) }}</span>
+                        <span class="text-[11px] text-gray-400">({{ specialist.reviewsCount }})</span>
                       </div>
-                    }
+                    </div>
+
+                    <!-- Price -->
+                    <div class="shrink-0 text-left">
+                      <p class="text-xl font-black text-bosla-primary">{{ specialist.hourlyRate }}</p>
+                      <p class="text-[10px] text-gray-500 mt-0.5 font-medium whitespace-nowrap">ج.م / ساعة</p>
+                    </div>
                   </div>
-                } @else if (selectedDate()) {
-                  <div class="mt-6 text-center py-8 bg-bosla-offwhite rounded-xl">
-                    <p class="text-sm text-bosla-grey">لم نتمكن من العثور على المواعيد لهذا التاريخ</p>
+
+                  <!-- Actions row -->
+                  <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                    <a [routerLink]="['/specialists', specialistId()]"
+                      class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200">
+                      عرض الملف الشخصي
+                      <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                    <span class="flex items-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-medium bg-gray-50 text-gray-500">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      60 دقيقة
+                    </span>
                   </div>
-                }
+                </div>
+              } @else {
+                <!-- Skeleton Loading -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-8">
+                  <div class="w-28 h-28 mx-auto rounded-2xl bg-gray-100 animate-pulse mb-5"></div>
+                  <div class="w-36 h-5 mx-auto bg-gray-100 rounded-lg animate-pulse mb-2"></div>
+                  <div class="w-24 h-4 mx-auto bg-gray-100 rounded-lg animate-pulse mb-4"></div>
+                  <div class="w-28 h-4 mx-auto bg-gray-100 rounded-lg animate-pulse mb-5"></div>
+                  <div class="w-20 h-8 mx-auto bg-gray-100 rounded-lg animate-pulse"></div>
+                </div>
               }
 
-              @if (selectedSlotInfo(); as slot) {
-                <div class="mt-5 p-4 bg-gradient-to-r from-bosla-blue/5 to-bosla-primary/5 border border-bosla-blue/20 rounded-xl">
-                  <div class="flex items-center gap-2 text-bosla-blue">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <!-- ── Session Details Card ── -->
+              <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-6 sm:p-8">
+                <h3 class="text-base font-bold text-bosla-charcoal mb-6 flex items-center gap-2.5">
+                  <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-bosla-blue/10 to-bosla-primary/10 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span class="text-sm font-semibold">الموعد المختار:</span>
-                  </div>
-                  <p class="text-sm text-bosla-charcoal/70 mt-1 mr-7">{{ slot.displayDate }} - {{ slot.timeStr }}</p>
-                </div>
-              }
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-bold text-bosla-charcoal">ملخص الحجز</h3>
-                  <p class="text-xs text-bosla-grey mt-1">مراجعة الطلب قبل الإرسال</p>
-                </div>
-                @if (store.specialistInfo(); as s) {
-                  <span class="text-sm text-bosla-charcoal/60">
-                    <span class="font-bold text-bosla-primary text-lg">{{ s.hourlyRate }}</span> ج.م/ساعة
                   </span>
-                }
+                  تفاصيل الجلسة
+                </h3>
+
+                <div class="space-y-5">
+                  <!-- Session Topic -->
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1.5 mr-1">موضوع الجلسة <span class="text-gray-300 font-normal">(اختياري)</span></label>
+                    <div class="relative">
+                      <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        </svg>
+                      </span>
+                      <input type="text" [value]="sessionTopic()" (input)="sessionTopic.set($any($event.target).value)"
+                        placeholder="مثال: استشارة تسويقية، تطوير أعمال"
+                        class="w-full pr-11 pl-4 py-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bosla-blue focus:bg-white focus:ring-2 focus:ring-bosla-blue/10 text-bosla-charcoal placeholder:text-gray-300 transition-all duration-200" />
+                    </div>
+                  </div>
+
+                  <!-- Notes -->
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1.5 mr-1">ملاحظات للمختص <span class="text-gray-300 font-normal">(اختياري)</span></label>
+                    <div class="relative">
+                      <span class="absolute right-3.5 top-3.5 text-gray-400">
+                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </span>
+                      <textarea [value]="notes()" (input)="notes.set($any($event.target).value)"
+                        placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها..."
+                        class="w-full pr-11 pl-4 py-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bosla-blue focus:bg-white focus:ring-2 focus:ring-bosla-blue/10 text-bosla-charcoal placeholder:text-gray-300 resize-none h-24 transition-all duration-200"></textarea>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="mt-4 pt-4 border-t border-bosla-charcoal/5">
-                <button (click)="onSubmit()"
-                  [disabled]="!selectedSlotId() || !specialistId()"
-                  [class]="(!selectedSlotId() || !specialistId()
-                    ? 'bg-bosla-grey/30 text-bosla-grey cursor-not-allowed'
-                    : 'bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer') +
-                    ' w-full py-3.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2'">
-                  @if (store.isActionLoading()) {
-                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                  }
-                  {{ store.isActionLoading() ? 'جاري الحجز...' : 'تأكيد الحجز' }}
-                </button>
-              </div>
             </div>
-
           </div>
 
         </div>
 
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+      <!-- POST-SUBMIT STATES (pending_approval / payment / done)        -->
+      <!-- ═══════════════════════════════════════════════════════════════ -->
       } @else {
 
         <div class="max-w-lg mx-auto">
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8 text-center">
-            <div class="relative w-20 h-20 mx-auto mb-5">
-              <div class="absolute inset-0 bg-bosla-orange/10 rounded-full animate-ping"></div>
-              <div class="relative w-20 h-20 bg-bosla-orange/10 text-bosla-orange rounded-full flex items-center justify-center">
-                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
+          <div class="bg-white rounded-3xl shadow-sm border border-gray-100/80 p-8 sm:p-10 text-center">
+
+            <!-- Animated Icon -->
+            <div class="relative w-24 h-24 mx-auto mb-6">
+              @if (store.bookingStep() === 'payment') {
+                <div class="absolute inset-0 bg-bosla-blue/10 rounded-3xl animate-ping opacity-50"></div>
+                <div class="relative w-24 h-24 bg-gradient-to-br from-bosla-blue/10 to-bosla-primary/10 rounded-3xl flex items-center justify-center">
+                  <svg class="w-11 h-11 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+              } @else {
+                <div class="absolute inset-0 bg-amber-400/10 rounded-3xl animate-ping opacity-50"></div>
+                <div class="relative w-24 h-24 bg-gradient-to-br from-amber-400/10 to-orange-400/10 rounded-3xl flex items-center justify-center">
+                  <svg class="w-11 h-11 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+              }
             </div>
 
-            <h2 class="text-xl font-bold text-bosla-charcoal mb-2">في انتظار موافقة المختص</h2>
-            <p class="text-sm text-bosla-grey mb-1">تم إرسال طلب الحجز إلى المختص بنجاح</p>
-            <p class="text-xs text-bosla-grey mb-6">سيتم إشعارك فور الموافقة على الطلب لتتمكن من إتمام الدفع</p>
+            <!-- Status Title -->
+            <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">
+              @if (store.bookingStep() === 'payment') {
+                انتظر، تمت الموافقة!
+              } @else {
+                في انتظار موافقة المختص
+              }
+            </h2>
+            <p class="text-sm text-gray-500 mb-2">
+              @if (store.bookingStep() === 'payment') {
+                تمت الموافقة على طلب الحجز من قبل المختص
+              } @else {
+                تم إرسال طلب الحجز إلى المختص بنجاح
+              }
+            </p>
+            <p class="text-xs text-gray-400 mb-8">
+              @if (store.bookingStep() === 'payment') {
+                قم بإتمام الدفع الآن لتأكيد موعدك
+              } @else {
+                سيتم إشعارك فور الموافقة على الطلب لتتمكن من إتمام الدفع
+              }
+            </p>
 
+            <!-- Appointment Summary -->
             @if (store.specialistInfo(); as s) {
-              <div class="bg-bosla-offwhite rounded-xl p-4 mb-6 text-right">
-                <div class="flex items-center gap-3 mb-3 pb-3 border-b border-bosla-charcoal/5">
-                  <div class="w-10 h-10 rounded-full overflow-hidden bg-bosla-blue/10 shrink-0">
+              <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 p-5 mb-8 text-right">
+                <div class="flex items-center gap-3.5 mb-4 pb-4 border-b border-gray-100">
+                  <div class="w-12 h-12 rounded-xl overflow-hidden bg-bosla-blue/10 shrink-0 ring-2 ring-white shadow-sm">
                     <img [src]="s.imageUrl || 'assets/icons/favicon.ico'" [alt]="s.name" class="w-full h-full object-cover" />
                   </div>
-                  <div class="text-right">
-                    <p class="text-sm font-semibold text-bosla-charcoal">{{ s.name }}</p>
-                    <p class="text-xs text-bosla-grey">{{ s.title || 'مختص معتمد' }}</p>
+                  <div>
+                    <p class="text-sm font-bold text-bosla-charcoal">{{ s.name }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ s.title || 'مختص معتمد' }}</p>
                   </div>
                 </div>
-                <div class="flex justify-between items-center py-1">
-                  <span class="text-sm text-bosla-charcoal/60">رسوم الجلسة</span>
-                  <span class="text-sm font-semibold text-bosla-charcoal">{{ s.hourlyRate }} ج.م</span>
+                <div class="flex justify-between items-center py-1.5">
+                  <span class="text-sm text-gray-500">رسوم الجلسة</span>
+                  <span class="text-sm font-bold text-bosla-charcoal">{{ s.hourlyRate }} ج.م</span>
                 </div>
-                <div class="flex justify-between items-center py-1 border-t border-bosla-charcoal/5 mt-2 pt-2">
+                <div class="flex justify-between items-center py-1.5 border-t border-gray-100 mt-2 pt-3">
                   <span class="text-sm font-bold text-bosla-charcoal">الإجمالي</span>
-                  <span class="text-lg font-bold text-bosla-primary">{{ s.hourlyRate }} ج.م</span>
+                  <span class="text-lg font-black text-bosla-primary">{{ s.hourlyRate }} ج.م</span>
                 </div>
               </div>
             }
 
+            <!-- Actions -->
             <div class="flex flex-col gap-3">
               @if (store.bookingStep() === 'payment') {
                 <a
                   [routerLink]="['/appointments', store.bookingAppointmentId(), 'pay']"
-                  class="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-bosla-primary to-bosla-blue text-white font-bold text-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                  class="inline-flex items-center justify-center gap-2.5 w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-bosla-primary to-bosla-blue text-white font-bold text-sm transition-all duration-300 hover:shadow-xl hover:shadow-bosla-primary/20 hover:-translate-y-0.5"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   إتمام الدفع الآن

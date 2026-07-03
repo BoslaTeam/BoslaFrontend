@@ -31,33 +31,6 @@
 
   <!-- Main Content -->
   @if (!isLoading() && !error()) {
-    <!-- Stats Summary -->
-    <div class="mb-8 grid grid-cols-2 md:grid-cols-5 gap-4">
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-bosla-primary">{{ stats().total }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">الكل</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-amber-600">{{ stats().pending }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">قيد الانتظار</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-blue-600">{{ stats().confirmed }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">مؤكد</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-emerald-600">{{ stats().paid }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">مدفوع</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-green-600">{{ stats().completed }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">مكتمل</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-        <p class="text-2xl font-black text-red-600">{{ stats().cancelled }}</p>
-        <p class="text-xs font-medium text-slate-500 mt-1">ملغي</p>
-      </div>
-    </div>
 
     <!-- Search + Filters -->
     <div class="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -88,7 +61,7 @@
     <!-- Tabs -->
     <div class="mb-6 flex flex-wrap gap-2">
       <button (click)="setTab('all')"
-        class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border"
+        class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border inline-flex items-center gap-2"
         [class.bg-bosla-primary]="activeTab() === 'all'"
         [class.text-white]="activeTab() === 'all'"
         [class.border-bosla-primary]="activeTab() === 'all'"
@@ -98,10 +71,14 @@
         [class.border-slate-200]="activeTab() !== 'all'"
         [class.hover:bg-slate-50]="activeTab() !== 'all'">
         الكل
+        <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+          [class]="activeTab() === 'all' ? 'bg-white/25 text-white' : 'bg-slate-200/70 text-slate-600'">
+          {{ countFor('all') }}
+        </span>
       </button>
       @for (st of [ApptStatus.Pending, ApptStatus.Confirmed, ApptStatus.Paid, ApptStatus.Completed, ApptStatus.Cancelled]; track st) {
         <button (click)="setStatusTab(st)"
-          class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all border inline-flex items-center gap-2"
           [class.bg-bosla-primary]="activeTab() === st"
           [class.text-white]="activeTab() === st"
           [class.border-bosla-primary]="activeTab() === st"
@@ -111,6 +88,10 @@
           [class.border-slate-200]="activeTab() !== st"
           [class.hover:bg-slate-50]="activeTab() !== st">
           {{ statusLabel(st) }}
+          <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+            [class]="activeTab() === st ? 'bg-white/25 text-white' : 'bg-slate-200/70 text-slate-600'">
+            {{ countFor(st) }}
+          </span>
         </button>
       }
     </div>

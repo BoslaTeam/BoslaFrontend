@@ -6,6 +6,7 @@ export interface CreateAppointmentRequest {
   end: string | Date;
   sessionTopic?: string;
   notes?: string;
+  slotId?: string;
 }
 
 export interface CancelAppointmentRequest {

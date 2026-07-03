@@ -534,4 +534,10 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   statusLabel(s: ApptStatus): string { return STATUS_LABELS[s] ?? 'غير معروف'; }
   statusClass(s: ApptStatus): string { return STATUS_CLASSES[s] ?? 'bg-slate-50 text-slate-600 border-slate-200'; }
   statusDot(s: ApptStatus): string { return STATUS_DOTS[s] ?? 'bg-slate-400'; }
+
+  countFor(status: ApptStatus | 'all'): number {
+    const all = this.appointments();
+    if (status === 'all') return all.length;
+    return all.filter(a => a.status === status).length;
+  }
 }
