@@ -26,6 +26,7 @@ export class Home implements OnInit, AfterViewInit {
   private ngZone = inject(NgZone);
 
   expertiseList: LookupItemDto[] = [];
+  displayedExpertise: LookupItemDto[] = [];
   featuredSpecialists: SpecialistListItemDto[] = [];
   recommendedSpecialists: SpecialistListItemDto[] = [];
   searchQuery = '';
@@ -52,6 +53,7 @@ export class Home implements OnInit, AfterViewInit {
     this.lookupService.getExpertise().subscribe({
       next: (res) => {
         this.expertiseList = res;
+        this.displayedExpertise = res.slice(0, 8);
         this.cdr.markForCheck();
       },
       error: (err) => console.error('Failed to load expertise', err)

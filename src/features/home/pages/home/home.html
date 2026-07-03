@@ -155,7 +155,7 @@ DOMAINS SECTION — تم إعادة التصميم بالكامل - تصميم �
         <span class="font-bold text-lg">جاري تحميل المجالات...</span>
       </div>
       } @else {
-      @for (item of expertiseList; track $index; let i = $index) {
+      @for (item of displayedExpertise; track $index; let i = $index) {
       <a [routerLink]="['/specialists']" [queryParams]="{expertise:item.id}"
         class="group relative bg-white rounded-[2rem] p-8 flex flex-col items-center justify-center text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-[0_20px_50px_rgba(27,79,114,0.12)] hover:-translate-y-3 transition-all duration-500 overflow-hidden"
         style="transition-delay:{{ 0.05 * i }}s;">

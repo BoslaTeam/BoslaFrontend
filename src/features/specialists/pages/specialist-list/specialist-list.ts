@@ -23,8 +23,14 @@ export class SpecialistListPage implements OnInit {
 
     this.route.queryParamMap.subscribe(params => {
       const query = params.get('query');
+      const expertise = params.get('expertise');
 
-      if (query) {
+      if (expertise) {
+        this.store.updateFilters({
+          expertiseId: expertise,
+          pageNumber: 1,
+        });
+      } else if (query) {
         this.store.updateFilters({
           searchTerm: query,
           pageNumber: 1,
