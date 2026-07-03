@@ -8,6 +8,7 @@ import { SpecialistProfileResponse } from '../../contracts/specialist-profile-re
 import { UpdateSpecialistRequest } from '../../contracts/specialist-profile-update.contract';
 import { LookupResponse } from '../../contracts/lookup.contract';
 import { ExperienceResponse } from '../../contracts/specialist-experience.contract';
+import { SpecialistDocumentResponse, SpecialistDocumentType } from '../../contracts/specialist-document.contract';
 import { ToastService } from '@core/services/toast.service';
 import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
@@ -49,6 +50,7 @@ export class SpecialistProfileManagement implements OnInit {
   readonly myTools = signal<LookupResponse[]>([]);
   readonly myExpertise = signal<LookupResponse[]>([]);
   readonly myExperience = signal<ExperienceResponse[]>([]);
+  readonly certificates = signal<SpecialistDocumentResponse[]>([]);
   readonly allSkills = signal<LookupResponse[]>([]);
   readonly allTools = signal<LookupResponse[]>([]);
   readonly allExpertise = signal<LookupResponse[]>([]);
@@ -105,6 +107,9 @@ export class SpecialistProfileManagement implements OnInit {
   readonly savingTool = signal<string | null>(null);
   readonly savingExpertise = signal<string | null>(null);
   readonly editingExperienceId = signal<string | null>(null);
+  readonly isUploadingCertificate = signal(false);
+  readonly isDeletingCertificate = signal<Record<string, boolean>>({});
+  readonly certificateError = signal('');
 
   readonly filteredAddSkills = computed(() => {
     const q = this.addSkillSearch().toLowerCase();
@@ -215,6 +220,9 @@ export class SpecialistProfileManagement implements OnInit {
     });
     this.specialistsApi.getExpertise().subscribe({
       next: (res) => this.allExpertise.set(res.data),
+    });
+    this.specialistsApi.getDocuments().subscribe({
+      next: (res) => this.certificates.set(res.data.filter(d => d.type === SpecialistDocumentType.Certificate)),
     });
   }
 
@@ -401,6 +409,10 @@ export class SpecialistProfileManagement implements OnInit {
     });
   }
 
+  isImage(url: string): boolean {
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  }
+
   cancelExperienceEdit(): void {
     this.editingExperienceId.set(null);
     this.loadExperience();
@@ -468,6 +480,52 @@ export class SpecialistProfileManagement implements OnInit {
         },
         error: (err: any) => this.toast.danger(err.error?.title || 'فشل تحديث البيانات'),
       });
+  }
+
+  onCertificateSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.isUploadingCertificate.set(true);
+    this.certificateError.set('');
+
+    this.specialistsApi.uploadDocument(file, SpecialistDocumentType.Certificate).subscribe({
+      next: (res: any) => {
+        this.isUploadingCertificate.set(false);
+        input.value = '';
+        this.loadCertificates();
+        this.toast.success('تم رفع الشهادة بنجاح');
+      },
+      error: (err) => {
+        this.isUploadingCertificate.set(false);
+        this.certificateError.set(err.error?.title ?? 'فشل في رفع الشهادة');
+        input.value = '';
+      },
+    });
+  }
+
+  deleteCertificate(doc: SpecialistDocumentResponse) {
+    this.isDeletingCertificate.update(d => ({ ...d, [doc.id]: true }));
+    this.certificateError.set('');
+
+    this.specialistsApi.deleteDocument(doc.id).subscribe({
+      next: () => {
+        this.isDeletingCertificate.update(d => ({ ...d, [doc.id]: false }));
+        this.certificates.update(list => list.filter(c => c.id !== doc.id));
+        this.toast.success('تم حذف الشهادة');
+      },
+      error: (err) => {
+        this.isDeletingCertificate.update(d => ({ ...d, [doc.id]: false }));
+        this.certificateError.set(err.error?.title ?? 'فشل في حذف الشهادة');
+      },
+    });
+  }
+
+  private loadCertificates(): void {
+    this.specialistsApi.getDocuments().subscribe({
+      next: (res) => this.certificates.set(res.data.filter(d => d.type === SpecialistDocumentType.Certificate)),
+    });
   }
 
   private loadExperience(): void {

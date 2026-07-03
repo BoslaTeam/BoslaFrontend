@@ -1,6 +1,6 @@
 import { Component, signal, computed, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -99,6 +99,8 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private toast = inject(ToastService);
   private appointmentService = inject(AppointmentService);
   readonly store = inject(AppointmentsStore);
+
+  private router = inject(Router);
 
   // Core state
   readonly activeTab = signal<ApptStatus | 'all'>('all');
@@ -320,11 +322,20 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
 
   joinSession(id: string): void {
     if (this.inProgressSessions()[id]) return;
-    const joinedAt = Date.now();
-    this.inProgressSessions.update(m => ({ ...m, [id]: { joinedAt } }));
-    this.stopCountdown(id);
-    this.startMeetingTimer(id, joinedAt);
-    this.toast.info('تم بدء الجلسة');
+    this.toast.info('جاري تجهيز الجلسة...');
+    this.http.post<ApiResponse<{ sessionId: string }>>(API_ENDPOINTS.video.generateToken, { appointmentId: id }).subscribe({
+      next: (res) => {
+        const sessionId = res.data?.sessionId;
+        if (sessionId) {
+          this.router.navigate(['/specialist/video', sessionId]);
+        } else {
+          this.toast.danger('فشل الحصول على معرف الجلسة');
+        }
+      },
+      error: () => {
+        this.toast.danger('فشل تجهيز الجلسة');
+      },
+    });
   }
 
   private startMeetingTimer(id: string, joinedAt: number): void {
