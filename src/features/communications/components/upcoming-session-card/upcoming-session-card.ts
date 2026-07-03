@@ -8,10 +8,15 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { AppointmentService } from '../../../appointments/services/appointments.service';
 import { AppointmentDto } from '../../../appointments/contracts/appointments.contracts';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { ApiResponse } from '@core/models/api-response.model';
+import { AgoraTokenResponse } from '../../../video/models/video-session.model';
 import {
   formatArabicDate,
   formatArabicTime,
@@ -42,6 +47,8 @@ interface UpcomingSessionData {
 })
 export class UpcomingSessionCard implements OnDestroy {
   private readonly appointmentService = inject(AppointmentService);
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private pollSubscription?: ReturnType<typeof setInterval>;
 
   readonly appointmentId = input.required<string>();
@@ -162,6 +169,19 @@ export class UpcomingSessionCard implements OnDestroy {
   retry(): void {
     const id = this.appointmentId();
     if (id) this.fetchAppointment(id);
+  }
+
+  joinSession(): void {
+    const id = this.appointmentId();
+    if (!id) return;
+    this.http.post<ApiResponse<AgoraTokenResponse>>(API_ENDPOINTS.video.generateToken, { appointmentId: id }).subscribe({
+      next: (res) => {
+        const sessionId = res.data?.sessionId;
+        if (sessionId) {
+          this.router.navigate(['/video', sessionId]);
+        }
+      },
+    });
   }
 
   constructor() {
