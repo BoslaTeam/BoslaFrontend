@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { AppointmentsStore } from '@features/appointments/store/appointments.store';
 import { AppointmentService } from '@features/appointments/services/appointments.service';
 import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
