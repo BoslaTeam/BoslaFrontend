@@ -1,138 +1,168 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  inject,
-  signal,
-  computed,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { UiButton } from '@shared/ui/button/button';
-import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
-import { AppointmentService } from '../../services/appointments.service';
-import { Subscription } from 'rxjs';
 
-import { PaymentStatus } from '../../contracts/appointments.contracts';
+import { PaymentStatus, AppointmentDto } from '../../contracts/appointments.contracts';
 
-export type AppointmentTab = 'upcoming' | 'past' | 'pending_payment';
+export type AppointmentTab = 'all' | 'pending' | 'awaiting_payment' | 'paid' | 'completed' | 'cancelled';
+export type SortOrder = 'asc' | 'desc';
+
+interface TabDef {
+  key: AppointmentTab;
+  label: string;
+}
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiButton, UiSpinner],
+  imports: [CommonModule, RouterLink, UiButton],
   templateUrl: './appointments-list.html',
 })
-export class AppointmentList implements OnInit, OnDestroy {
+export class AppointmentList {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
-  private readonly appointmentService = inject(AppointmentService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
-  readonly activeTab = signal<AppointmentTab>('upcoming');
-  private sub?: Subscription;
+  readonly activeTab = signal<AppointmentTab>('all');
+  readonly searchQuery = signal('');
+  readonly sortOrder = signal<SortOrder>('asc');
 
-  readonly displayLimit = signal(6);
+  readonly tabs: TabDef[] = [
+    { key: 'all', label: 'الكل' },
+    { key: 'pending', label: 'قيد الانتظار' },
+    { key: 'awaiting_payment', label: 'بانتظار الدفع' },
+    { key: 'paid', label: 'مؤكد ومدفوع' },
+    { key: 'completed', label: 'مكتمل' },
+    { key: 'cancelled', label: 'ملغي' },
+  ];
 
-  readonly filteredAppointments = computed(() => {
-    const allAppointments = this.store.items();
-    const now = new Date();
+  readonly pendingPaymentCount = computed(() =>
+    this.store.items().filter(
+      (app) => app.status === AppointmentStatus.Confirmed && app.paymentStatus !== PaymentStatus.Paid,
+    ).length,
+  );
 
-    if (this.activeTab() === 'pending_payment') {
-      return allAppointments.filter(
-        (app) =>
-          (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
-          app.paymentStatus !== PaymentStatus.Paid &&
-          app.paymentStatus !== PaymentStatus.Refunded,
-      );
-    } else if (this.activeTab() === 'upcoming') {
-      return allAppointments.filter(
-        (app) =>
-          app.status === AppointmentStatus.Pending ||
-          app.status === AppointmentStatus.Confirmed ||
-          app.status === AppointmentStatus.Rescheduled ||
-          new Date(app.start) >= now,
-      );
-    } else {
-      return allAppointments.filter(
-        (app) =>
-          app.status === AppointmentStatus.Completed ||
-          app.status === AppointmentStatus.Cancelled ||
-          new Date(app.end) < now,
-      );
+  readonly tabCounts = computed(() => {
+    const all = this.store.items();
+    return {
+      all: all.length,
+      pending: all.filter(a => a.status === AppointmentStatus.Pending).length,
+      awaiting_payment: all.filter(a => a.status === AppointmentStatus.Confirmed && a.paymentStatus !== PaymentStatus.Paid).length,
+      paid: all.filter(a => a.status === AppointmentStatus.Paid).length,
+      completed: all.filter(a => a.status === AppointmentStatus.Completed).length,
+      cancelled: all.filter(a => a.status === AppointmentStatus.Cancelled).length,
+    };
+  });
+
+  getFilteredAppointments(): AppointmentDto[] {
+    const all = this.store.items();
+    const query = this.searchQuery().trim();
+    const tab = this.activeTab();
+
+    let filtered = all;
+
+    if (tab === 'pending') {
+      filtered = all.filter(a => a.status === AppointmentStatus.Pending);
+    } else if (tab === 'awaiting_payment') {
+      filtered = all.filter(a => a.status === AppointmentStatus.Confirmed && a.paymentStatus !== PaymentStatus.Paid);
+    } else if (tab === 'paid') {
+      filtered = all.filter(a => a.status === AppointmentStatus.Paid);
+    } else if (tab === 'completed') {
+      filtered = all.filter(a => a.status === AppointmentStatus.Completed);
+    } else if (tab === 'cancelled') {
+      filtered = all.filter(a => a.status === AppointmentStatus.Cancelled);
     }
-  });
 
-  readonly displayedAppointments = computed(() =>
-    this.filteredAppointments().slice(0, this.displayLimit()),
-  );
+    if (query) {
+      filtered = filtered.filter(a => {
+        const topic = (a.sessionTopic || 'جلسة استشارية');
+        const name = (a.specialistName || '');
+        return topic.includes(query) || name.includes(query) || a.id.toLowerCase().includes(query);
+      });
+    }
 
-  readonly hasMore = computed(() =>
-    this.filteredAppointments().length > this.displayLimit(),
-  );
-
-  showMore(): void {
-    this.displayLimit.update((l) => l + 6);
-    this.cdr.detectChanges();
+    const order = this.sortOrder();
+    return [...filtered].sort((a, b) => {
+      const diff = new Date(a.start).getTime() - new Date(b.start).getTime();
+      return order === 'asc' ? diff : -diff;
+    });
   }
-
-  readonly pendingPaymentCount = computed(() => {
-    return this.store.items().filter(
-      (app) =>
-        (app.status === AppointmentStatus.Confirmed || app.status === AppointmentStatus.Pending) &&
-        app.paymentStatus !== PaymentStatus.Paid &&
-        app.paymentStatus !== PaymentStatus.Refunded,
-    ).length;
-  });
 
   readonly userRole = computed(() => this.authService.userRole());
   readonly AppointmentStatus = AppointmentStatus;
   readonly PaymentStatus = PaymentStatus;
 
-  ngOnInit(): void {
+  constructor() {
     this.store.loadMyAppointments();
+  }
 
-    this.sub = this.appointmentService.getMyAppointments().subscribe({
-      next: () => {
-        setTimeout(() => {
-          this.cdr.markForCheck();
-          this.cdr.detectChanges();
-        }, 50);
-      },
-    });
+  onSearchInput(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 
   setTab(tab: AppointmentTab): void {
     this.activeTab.set(tab);
-    this.cdr.detectChanges();
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  setSort(order: string): void {
+    if (order === 'asc' || order === 'desc') {
+      this.sortOrder.set(order);
+    }
   }
 
-  getStatusDetails(status: AppointmentStatus): { text: string; classes: string } {
+  readonly dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+  getDayName(dateStr: string): string {
+    return this.dayNames[new Date(dateStr).getDay()] || '';
+  }
+
+  getStatusMeta(status: AppointmentStatus): { text: string; dot: string; bg: string; label: string } {
     switch (status) {
       case AppointmentStatus.Pending:
         return {
           text: 'قيد الانتظار',
-          classes: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+          dot: 'bg-amber-400',
+          bg: 'bg-amber-50 text-amber-700 border-amber-200',
+          label: 'قيد الانتظار',
         };
       case AppointmentStatus.Confirmed:
         return {
-          text: 'مؤكد',
-          classes: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+          text: 'بانتظار الدفع',
+          dot: 'bg-emerald-400',
+          bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          label: 'بانتظار الدفع',
+        };
+      case AppointmentStatus.Paid:
+        return {
+          text: 'مؤكد ومدفوع',
+          dot: 'bg-blue-500',
+          bg: 'bg-blue-50 text-blue-700 border-blue-200',
+          label: 'مؤكد ومدفوع',
         };
       case AppointmentStatus.Completed:
-        return { text: 'مكتمل', classes: 'bg-bosla-blue/10 text-bosla-blue border-bosla-blue/20' };
+        return {
+          text: 'مكتمل',
+          dot: 'bg-indigo-400',
+          bg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+          label: 'مكتمل',
+        };
       case AppointmentStatus.Cancelled:
-        return { text: 'ملغي', classes: 'bg-rose-500/10 text-rose-500 border-rose-500/20' };
+        return {
+          text: 'ملغي',
+          dot: 'bg-rose-400',
+          bg: 'bg-rose-50 text-rose-700 border-rose-200',
+          label: 'ملغي',
+        };
       default:
-        return { text: 'غير معروف', classes: 'bg-gray-500/10 text-gray-500' };
+        return {
+          text: 'غير معروف',
+          dot: 'bg-gray-400',
+          bg: 'bg-gray-50 text-gray-700 border-gray-200',
+          label: 'غير معروف',
+        };
     }
   }
 }

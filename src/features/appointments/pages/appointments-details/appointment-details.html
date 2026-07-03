@@ -9,738 +9,505 @@
         <p class="text-sm text-bosla-grey mt-6">جاري تحميل تفاصيل الموعد...</p>
       </div>
     } @else if (store.selectedItem(); as appointment) {
-      <!-- Hero Status Banner -->
-      <div
-        class="relative overflow-hidden rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-6"
-        [style.background]="getStatusGradient(appointment.status)"
-      >
-        <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5"></div>
-        <div class="absolute -bottom-10 -left-10 w-56 h-56 rounded-full bg-white/5"></div>
-        <div class="absolute top-1/2 right-1/3 w-20 h-20 rounded-full bg-white/5"></div>
-
-        <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <a
-                [routerLink]="['/appointments']"
-                class="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors group"
-              >
-                <svg
-                  class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-                العودة إلى الحجوزات
-              </a>
-              <a
-                [routerLink]="['/appointments', appointment.id, 'track']"
-                class="inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                تتبع الحالة
-              </a>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3 mb-4">
-            @let statusInfo = getStatusLabel(appointment.status);
-            <span
-              [class]="
-                'text-xs font-medium px-3 py-1.5 rounded-full border bg-white/15 border-white/25 backdrop-blur-sm ' +
-                statusInfo.classes
-              "
-            >
-              {{ statusInfo.text }}
-            </span>
-            @if (appointment.paymentStatus !== undefined) {
-              @let payStatus = getPaymentStatusLabel(appointment.paymentStatus);
-              <span
-                [class]="
-                  'text-xs font-medium px-3 py-1.5 rounded-full border bg-white/15 border-white/25 backdrop-blur-sm ' +
-                  payStatus.classes
-                "
-              >
-                {{ payStatus.text }}
-              </span>
-            }
-          </div>
-
-          <h1 class="text-2xl sm:text-3xl font-bold mb-3">
-            {{ appointment.sessionTopic || 'جلسة استشارية عامة' }}
-          </h1>
-
-          <div class="flex flex-wrap items-center gap-5 text-sm text-white/80">
-            <span class="flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span dir="ltr">{{
-                appointment.start | date: 'EEEE, dd MMMM yyyy' : '' : 'ar'
-              }}</span>
-            </span>
-            <span class="flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span dir="ltr"
-                >{{ appointment.start | date: 'hh:mm a' }} -
-                {{ appointment.end | date: 'hh:mm a' }}</span
-              >
-            </span>
-            @if (appointment.amount) {
-              <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {{ appointment.amount }} ج.م
-              </span>
-            }
-          </div>
-        </div>
+      <div class="flex items-center justify-between mb-6">
+        <a
+          [routerLink]="['/appointments']"
+          class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-charcoal transition-colors group"
+        >
+          <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          العودة إلى الحجوزات
+        </a>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-4 mb-6">
-        <div class="flex flex-wrap items-center gap-2">
-          @if (canPay()) {
-            <a
-              [routerLink]="['/appointments', appointment.id, 'pay']"
-              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-bosla-primary to-bosla-blue rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              إتمام الدفع
-            </a>
-          }
-          @if (canConfirm()) {
-            <ui-button
-              (click)="onConfirm()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="primary"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              تأكيد الموعد
-            </ui-button>
-          }
-          @if (hasConversation()) {
-            <ui-button
-              (click)="goToConversation()"
-              size="sm"
-              variant="secondary"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              انتقل إلى المحادثة
-            </ui-button>
-          }
-          @if (canComplete()) {
-            <ui-button
-              (click)="onComplete()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="primary"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              إنهاء الجلسة
-            </ui-button>
-          }
-          @if (canReschedule()) {
-            <ui-button (click)="showRescheduleModal.set(true)" size="sm" variant="secondary">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              إعادة جدولة
-            </ui-button>
-          }
-          @if (canAddReminder()) {
-            <ui-button (click)="showReminderModal.set(true)" size="sm" variant="secondary">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
-              تذكير
-            </ui-button>
-          }
-          @if (canAddReview()) {
-            <ui-button (click)="showReviewModal.set(true)" size="sm" variant="secondary">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                />
-              </svg>
-              تقييم
-            </ui-button>
-          }
-          @if (canEditNotes()) {
-            <ui-button (click)="openNotesModal()" size="sm" variant="ghost">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              تعديل الملاحظات
-            </ui-button>
-          }
-          @if (canCancel() && userRole() === UserRole.User) {
-            <ui-button
-              (click)="showCancelModal.set(true)"
-              size="sm"
-              variant="danger"
-              [outline]="true"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              إلغاء
-            </ui-button>
-          }
-          @if (canReject()) {
-            <ui-button
-              (click)="showRejectModal.set(true)"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="danger"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              رفض الموعد
-            </ui-button>
-          }
-          @if (
-            canCancel() && (userRole() === UserRole.Specialist || userRole() === UserRole.Admin)
-          ) {
-            <ui-button
-              (click)="showCancelModal.set(true)"
-              size="sm"
-              variant="danger"
-              [outline]="true"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              إلغاء
-            </ui-button>
-          }
-        </div>
-      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
+        <div class="space-y-4">
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Appointment Details -->
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-            <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2 mb-5">
-              <svg
-                class="w-4 h-4 text-bosla-blue"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              تفاصيل الموعد
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div class="flex items-start gap-3 p-3 bg-bosla-offwhite rounded-xl">
-                <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-lg shrink-0">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 class="text-xs text-bosla-grey font-semibold">التاريخ</h4>
-                  <p class="text-sm font-semibold text-bosla-charcoal mt-0.5" dir="ltr">
-                    {{ appointment.start | date: 'EEEE, dd MMMM yyyy' : '' : 'ar' }}
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3 p-3 bg-bosla-offwhite rounded-xl">
-                <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-lg shrink-0">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 class="text-xs text-bosla-grey font-semibold">التوقيت</h4>
-                  <p class="text-sm font-semibold text-bosla-charcoal mt-0.5" dir="ltr">
-                    {{ appointment.start | date: 'hh:mm a' }} -
-                    {{ appointment.end | date: 'hh:mm a' }}
-                  </p>
-                </div>
-              </div>
-              @if (appointment.amount) {
-                <div class="flex items-start gap-3 p-3 bg-bosla-offwhite rounded-xl">
-                  <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-lg shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 class="text-xs text-bosla-grey font-semibold">المبلغ</h4>
-                    <p class="text-sm font-semibold text-bosla-charcoal mt-1">
-                      {{ appointment.amount }} ج.م
-                    </p>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
 
-          <!-- Notes Section -->
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-            <div class="flex items-center justify-between mb-3">
+          <!-- Session Info -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
+            <button (click)="toggleSection('session-info')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
-                <svg
-                  class="w-4 h-4 text-bosla-blue"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+                <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                ملاحظات الطلب
+                معلومات الجلسة
               </h3>
-              @if (canEditNotes()) {
-                <button
-                  (click)="openNotesModal()"
-                  class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                  تعديل
-                </button>
-              }
-            </div>
-
-            <div
-              class="bg-bosla-offwhite rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed"
-            >
-              @if (appointment.notes) {
-                <p>{{ appointment.notes }}</p>
-              } @else {
-                <p class="text-bosla-grey/60 italic">لا توجد ملاحظات إضافية مرفقة مع هذا الموعد.</p>
-              }
-            </div>
-
-            @if (appointment.status === AppointmentStatus.Completed && store.selectedSummary()) {
-              <div class="border-t border-bosla-charcoal/5 pt-5 mt-6 space-y-4">
-                <h4 class="text-sm font-bold text-bosla-charcoal">ملخص الجلسة</h4>
-                <div class="bg-bosla-blue/5 rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed space-y-3">
-                  <div>
-                    <h5 class="font-bold text-bosla-charcoal mb-1">النقاط الرئيسية</h5>
-                    <p>{{ store.selectedSummary()?.keyTakeaways }}</p>
+              <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('session-info')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            @if (expandedSections().has('session-info')) {
+              <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4 space-y-4">
+                <div>
+                  <h4 class="text-xs text-bosla-grey font-semibold mb-1">موضوع الجلسة</h4>
+                  <p class="text-sm font-semibold text-bosla-charcoal">{{ appointment.sessionTopic || 'جلسة استشارية عامة' }}</p>
+                </div>
+                @if (appointment.status === AppointmentStatus.Completed && store.selectedSummary()) {
+                  <div class="bg-bosla-blue/5 rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed space-y-3">
+                    <h4 class="font-bold text-bosla-charcoal">ملخص الجلسة</h4>
+                    <div>
+                      <h5 class="font-bold text-bosla-charcoal mb-1">النقاط الرئيسية</h5>
+                      <p>{{ store.selectedSummary()?.keyTakeaways }}</p>
+                    </div>
+                    @if (store.selectedSummary()?.actionItemsForUser) {
+                      <div>
+                        <h5 class="font-bold text-bosla-charcoal mb-1">الإجراءات المطلوبة منك</h5>
+                        <p>{{ store.selectedSummary()?.actionItemsForUser }}</p>
+                      </div>
+                    }
+                    @if (store.selectedSummary()?.actionItemsForSpec) {
+                      <div>
+                        <h5 class="font-bold text-bosla-charcoal mb-1">متابعة من الخبير</h5>
+                        <p>{{ store.selectedSummary()?.actionItemsForSpec }}</p>
+                      </div>
+                    }
                   </div>
-                  @if (store.selectedSummary()?.actionItemsForUser) {
-                    <div>
-                      <h5 class="font-bold text-bosla-charcoal mb-1">الإجراءات المطلوبة منك</h5>
-                      <p>{{ store.selectedSummary()?.actionItemsForUser }}</p>
-                    </div>
-                  }
-                  @if (store.selectedSummary()?.actionItemsForSpec) {
-                    <div>
-                      <h5 class="font-bold text-bosla-charcoal mb-1">متابعة من الخبير</h5>
-                      <p>{{ store.selectedSummary()?.actionItemsForSpec }}</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            } @else if (appointment.status === AppointmentStatus.Completed && store.isLoadingSummary()) {
-              <div class="border-t border-bosla-charcoal/5 pt-5 mt-6">
-                <h4 class="text-sm font-bold text-bosla-charcoal mb-3">ملخص الجلسة</h4>
-                <div class="flex items-center gap-2 text-sm text-bosla-grey">
-                  <ui-spinner size="sm"></ui-spinner>
-                  <span>جاري تحميل الملخص...</span>
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Reminders Section -->
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
-                <svg
-                  class="w-4 h-4 text-bosla-blue"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-                التذكيرات
-              </h3>
-              @if (canAddReminder()) {
-                <button
-                  (click)="showReminderModal.set(true)"
-                  class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                  إضافة تذكير
-                </button>
-              }
-            </div>
-
-            @if (store.selectedItemReminders().length > 0) {
-              <div class="space-y-3">
-                @for (reminder of store.selectedItemReminders(); track reminder.id) {
-                  <div
-                    class="flex items-start justify-between gap-3 p-3.5 bg-bosla-offwhite rounded-xl border border-bosla-charcoal/5 group hover:border-bosla-blue/20 transition-colors"
-                  >
-                    <div class="flex items-start gap-3 min-w-0">
-                      <div class="p-1.5 bg-amber-50 text-amber-500 rounded-lg shrink-0 mt-0.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                          />
-                        </svg>
-                      </div>
-                      <div class="min-w-0">
-                        <p class="text-sm font-medium text-bosla-charcoal truncate">
-                          {{ reminder.message }}
-                        </p>
-                        <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">
-                          {{ reminder.reminderTime | date: 'dd/MM/yyyy - hh:mm a' }}
-                        </p>
-                        @if (reminder.isSent) {
-                          <span
-                            class="inline-block mt-1 text-[10px] font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full"
-                            >تم الإرسال</span
-                          >
-                        }
-                      </div>
-                    </div>
-                    <button
-                      (click)="onDeleteReminder(reminder.id)"
-                      class="shrink-0 p-1.5 text-bosla-grey/40 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
+                } @else if (appointment.status === AppointmentStatus.Completed && store.isLoadingSummary()) {
+                  <div class="flex items-center gap-2 text-sm text-bosla-grey p-3 bg-bosla-offwhite rounded-xl">
+                    <ui-spinner size="sm"></ui-spinner>
+                    <span>جاري تحميل الملخص...</span>
                   </div>
                 }
               </div>
-            } @else {
-              <div class="text-center py-8 bg-bosla-offwhite rounded-xl">
-                <div
-                  class="w-12 h-12 mx-auto bg-bosla-grey/10 text-bosla-grey/50 rounded-full flex items-center justify-center mb-3"
-                >
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
+            }
+          </div>
+
+          <!-- Notes -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
+            <button (click)="toggleSection('notes')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+              <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
+                <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                الملاحظات
+                @if (canEditNotes()) {
+                  <span class="text-xs font-normal text-bosla-grey mr-1">(اختيارياً)</span>
+                }
+              </h3>
+              <div class="flex items-center gap-2">
+                @if (canEditNotes()) {
+                  <button
+                    (click)="openNotesModal(); $event.stopPropagation()"
+                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    تعديل
+                  </button>
+                }
+                <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('notes')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+            @if (expandedSections().has('notes')) {
+              <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4">
+                <div class="bg-bosla-offwhite rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed">
+                  @if (appointment.notes) {
+                    <p>{{ appointment.notes }}</p>
+                  } @else {
+                    <p class="text-bosla-grey/60 italic">لا توجد ملاحظات إضافية مرفقة مع هذا الموعد.</p>
+                  }
                 </div>
-                <p class="text-sm text-bosla-grey">لا توجد تذكيرات</p>
+              </div>
+            }
+          </div>
+
+          <!-- Reminders -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
+            <button (click)="toggleSection('reminders')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+              <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
+                <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                التذكيرات
+                @if (store.selectedItemReminders().length > 0) {
+                  <span class="text-xs bg-bosla-blue/10 text-bosla-blue px-2 py-0.5 rounded-full">{{ store.selectedItemReminders().length }}</span>
+                }
+              </h3>
+              <div class="flex items-center gap-2">
+                @if (canAddReminder()) {
+                  <button
+                    (click)="showReminderModal.set(true); $event.stopPropagation()"
+                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    إضافة
+                  </button>
+                }
+                <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('reminders')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+            @if (expandedSections().has('reminders')) {
+              <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4">
+                @if (store.selectedItemReminders().length > 0) {
+                  <div class="space-y-3">
+                    @for (reminder of store.selectedItemReminders(); track reminder.id) {
+                      <div class="flex items-start justify-between gap-3 p-3.5 bg-bosla-offwhite rounded-xl border border-bosla-charcoal/5 group hover:border-bosla-blue/20 transition-colors">
+                        <div class="flex items-start gap-3 min-w-0">
+                          <div class="p-1.5 bg-amber-50 text-amber-500 rounded-lg shrink-0 mt-0.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                          </div>
+                          <div class="min-w-0">
+                            <p class="text-sm font-medium text-bosla-charcoal truncate">{{ reminder.message }}</p>
+                            <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">{{ reminder.reminderTime | date: 'dd/MM/yyyy - hh:mm a' }}</p>
+                            @if (reminder.isSent) {
+                              <span class="inline-block mt-1 text-[10px] font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">تم الإرسال</span>
+                            }
+                          </div>
+                        </div>
+                        <button
+                          (click)="onDeleteReminder(reminder.id)"
+                          class="shrink-0 p-1.5 text-bosla-grey/40 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="text-center py-8 bg-bosla-offwhite rounded-xl">
+                    <div class="w-12 h-12 mx-auto bg-bosla-grey/10 text-bosla-grey/50 rounded-full flex items-center justify-center mb-3">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                    </div>
+                    <p class="text-sm text-bosla-grey">لا توجد تذكيرات</p>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Status Timeline -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
+            <button (click)="toggleSection('timeline')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+              <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
+                <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                سجل الحالة
+                @if (store.selectedItemHistory().length > 0) {
+                  <span class="text-xs bg-bosla-blue/10 text-bosla-blue px-2 py-0.5 rounded-full">{{ store.selectedItemHistory().length }}</span>
+                }
+              </h3>
+              <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('timeline')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            @if (expandedSections().has('timeline')) {
+              <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4">
+                @if (store.selectedItemHistory().length > 0) {
+                  <div class="relative">
+                    @for (history of store.selectedItemHistory(); track $index; let last = $last) {
+                      <div class="relative flex items-start gap-3 pb-5 cursor-pointer group" (click)="toggleTimelineItem($index)">
+                        <div class="flex flex-col items-center">
+                          <div [class]="'w-8 h-8 rounded-full flex items-center justify-center ring-4 ring-white shrink-0 ' + getStatusDotColor(history.newStatus)">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                              <path [attr.d]="getTimelineEventIcon(history.newStatus)" />
+                            </svg>
+                          </div>
+                          @if (!last) {
+                            <div class="w-0.5 flex-1 bg-bosla-charcoal/10 mt-1 min-h-[8px]"></div>
+                          }
+                        </div>
+                        <div class="flex-1 min-w-0 pt-1">
+                          <div class="flex items-center justify-between gap-2">
+                            <p class="text-sm font-semibold text-bosla-charcoal group-hover:text-bosla-blue transition-colors">
+                              {{ getStatusTimelineLabel(history.newStatus) }}
+                            </p>
+                            <svg class="w-3.5 h-3.5 text-bosla-grey/40 shrink-0 transition-all duration-200" [class.rotate-180]="expandedTimelineItems().has($index)" [class.text-bosla-blue]="expandedTimelineItems().has($index)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                          <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">{{ history.changedAt | date: 'EEEE, dd MMMM yyyy - hh:mm a' : '' : 'ar' }}</p>
+                          @if (expandedTimelineItems().has($index)) {
+                            <div class="mt-3 p-3.5 bg-bosla-offwhite rounded-xl border border-bosla-charcoal/5 space-y-3 text-xs">
+                              <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-bosla-grey shrink-0">من:</span>
+                                <span class="text-bosla-charcoal/70">{{ getStatusTimelineLabel(history.oldStatus) }}</span>
+                                <svg class="w-3.5 h-3.5 text-bosla-grey/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                                <span class="text-bosla-charcoal font-semibold">{{ getStatusTimelineLabel(history.newStatus) }}</span>
+                              </div>
+                              <div class="flex items-center gap-2">
+                                <span class="text-bosla-grey shrink-0">تم بواسطة:</span>
+                                <span class="font-medium text-bosla-charcoal">{{ getChangedByLabel(history.changedBy) }}</span>
+                              </div>
+                              @if (history.reason) {
+                                <div class="pt-3 border-t border-bosla-charcoal/5">
+                                  <p class="text-bosla-charcoal/70 leading-relaxed italic">{{ history.reason }}</p>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="text-center py-8">
+                    <div class="w-12 h-12 mx-auto bg-bosla-grey/10 text-bosla-grey/50 rounded-full flex items-center justify-center mb-3">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                    <p class="text-sm text-bosla-grey">لا يوجد سجل حركات متوفر بعد.</p>
+                  </div>
+                }
               </div>
             }
           </div>
         </div>
 
-        <div class="space-y-6">
+        <!-- Sidebar -->
+        <div class="space-y-4 lg:sticky lg:top-28">
+          <!-- Summary Card -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-5">
+            <h2 class="text-base font-bold text-bosla-charcoal mb-3 leading-relaxed">
+              {{ appointment.sessionTopic || 'جلسة استشارية عامة' }}
+            </h2>
+            <div class="mb-4">
+              @let statusInfo = getStatusLabel(appointment.status);
+              <span [class]="'text-xs font-medium px-3 py-1.5 rounded-full border ' + statusInfo.classes">
+                {{ statusInfo.text }}
+              </span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-bosla-grey">التاريخ</span>
+                <span class="text-bosla-charcoal font-medium" dir="ltr">{{ appointment.start | date: 'EEEE, dd MMMM yyyy' : '' : 'ar' }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-bosla-grey">الوقت</span>
+                <span class="text-bosla-charcoal font-medium" dir="ltr">{{ appointment.start | date: 'hh:mm a' }} - {{ appointment.end | date: 'hh:mm a' }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-bosla-grey">المدة</span>
+                <span class="text-bosla-charcoal font-medium">{{ duration() }}</span>
+              </div>
+              @if (appointment.sessionPrice) {
+                <div class="flex items-center justify-between text-sm pt-3 border-t border-bosla-charcoal/5">
+                  <span class="text-bosla-grey">التكلفة</span>
+                  <span class="text-bosla-charcoal font-bold text-base">{{ appointment.sessionPrice }} ج.م</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Action Panel -->
+          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-5 space-y-3">
+            @if (canPay() || hasConversation()) {
+              <div class="flex items-stretch gap-2">
+                @if (canPay()) {
+                  <a
+                    [routerLink]="['/appointments', appointment.id, 'pay']"
+                    class="flex-1 flex items-center justify-center gap-2.5 h-10 text-sm font-bold text-white bg-amber-400 hover:bg-amber-500 rounded-xl transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    إتمام الدفع
+                  </a>
+                }
+                @if (hasConversation()) {
+                  <button
+                    (click)="goToConversation()"
+                    class="group relative w-10 h-10 flex items-center justify-center rounded-xl border border-bosla-charcoal/15 text-bosla-charcoal/60 hover:text-bosla-blue hover:border-bosla-blue/30 hover:bg-bosla-blue/5 transition-colors shrink-0"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">المحادثة</span>
+                  </button>
+                }
+              </div>
+            }
+            @if (canConfirm() || canComplete() || canReschedule() || canAddReminder() || canAddReview() || canEditNotes() || canCancel() || canReject()) {
+              <div class="flex items-center gap-1.5 flex-wrap">
+                @if (canConfirm()) {
+                  <button
+                    (click)="onConfirm()"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تأكيد الموعد</span>
+                  </button>
+                }
+                @if (canComplete()) {
+                  <button
+                    (click)="onComplete()"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إنهاء الجلسة</span>
+                  </button>
+                }
+                @if (canAddReview()) {
+                  <button
+                    (click)="showReviewModal.set(true)"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-amber-500 hover:bg-amber-50 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تقييم</span>
+                  </button>
+                }
+                @if (canEditNotes()) {
+                  <button
+                    (click)="openNotesModal()"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تعديل الملاحظات</span>
+                  </button>
+                }
+                @if (canReject()) {
+                  <button
+                    (click)="showRejectModal.set(true)"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">رفض الموعد</span>
+                  </button>
+                }
+                <button
+                  (click)="openNotesModal()"
+                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                >
+                  <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تحديث الملاحظات</span>
+                </button>
+                @if (canAddReminder()) {
+                  <button
+                    (click)="showReminderModal.set(true)"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تذكير</span>
+                  </button>
+                }
+                @if (canReschedule()) {
+                  <button
+                    (click)="showRescheduleModal.set(true)"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إعادة جدولة</span>
+                  </button>
+                }
+                <a
+                  [routerLink]="['/appointments', appointment.id, 'track']"
+                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                >
+                  <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تتبع الحالة</span>
+                </a>
+                @if (canCancel()) {
+                  <button
+                    (click)="showCancelModal.set(true)"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                  >
+                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إلغاء</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+          
+          <!-- Specialist Card -->
           @if (store.isLoadingSpecialist()) {
-            <div
-              class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6 flex justify-center"
-            >
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6 flex justify-center">
               <ui-spinner size="md"></ui-spinner>
             </div>
           } @else if (store.selectedSpecialistDetail(); as specialist) {
-            <!-- Specialist Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-              <div class="flex flex-col items-center text-center">
-                <div class="relative mb-4">
-                  <div
-                    class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md"
-                  >
-                    <img
-                      [src]="specialist.imageUrl || 'assets/icons/favicon.ico'"
-                      [alt]="specialist.name"
-                      class="w-full h-full object-cover"
-                    />
+            <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-5">
+              <div class="flex items-center gap-3">
+                <div class="relative shrink-0">
+                  <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <img [src]="specialist.imageUrl || 'assets/icons/favicon.ico'" [alt]="specialist.name" class="w-full h-full object-cover" />
                   </div>
                   @if (specialist.isOnline) {
-                    <span
-                      class="absolute bottom-1 left-1 w-4 h-4 rounded-full bg-emerald-500 border-3 border-white"
-                    ></span>
+                    <span class="absolute -bottom-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white"></span>
                   }
                 </div>
-
-                <h2 class="text-lg font-bold text-bosla-charcoal">{{ specialist.name }}</h2>
-                @if (specialist.title) {
-                  <p class="text-sm text-bosla-grey mt-0.5">{{ specialist.title }}</p>
-                }
-
-                <div class="flex items-center gap-3 mt-3 text-sm">
-                  <span class="flex items-center gap-1 text-amber-500">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-                    {{ specialist.rating.toFixed(1) }}
-                  </span>
-                  <span class="text-bosla-grey">({{ specialist.reviewsCount }} تقييم)</span>
-                  @if (specialist.country) {
-                    <span class="text-bosla-grey">|</span>
-                    <span class="text-bosla-grey">{{ specialist.country }}</span>
+                <div class="min-w-0 flex-1">
+                  <h4 class="text-sm font-bold text-bosla-charcoal truncate">{{ specialist.name }}</h4>
+                  @if (specialist.title) {
+                    <p class="text-xs text-bosla-grey truncate">{{ specialist.title }}</p>
                   }
-                </div>
-
-                <div class="mt-4 pt-4 border-t border-bosla-charcoal/5 w-full text-center">
-                  <span class="text-2xl font-bold text-bosla-primary">{{
-                    specialist.hourlyRate
-                  }}</span>
-                  <span class="text-sm text-bosla-grey mr-1">ج.م / ساعة</span>
-                </div>
-              </div>
-            </div>
-
-            @if (specialist.bio) {
-              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-                <h3 class="text-sm font-bold text-bosla-charcoal mb-3">نبذة عن المختص</h3>
-                <p class="text-sm text-bosla-charcoal/70 leading-relaxed line-clamp-4">
-                  {{ specialist.bio }}
-                </p>
-              </div>
-            }
-
-            @if (specialist.skills.length > 0) {
-              <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-                <h3 class="text-sm font-bold text-bosla-charcoal mb-3">المهارات</h3>
-                <div class="flex flex-wrap gap-2">
-                  @for (skill of specialist.skills; track skill.id) {
-                    <span
-                      class="px-2.5 py-1 rounded-lg text-xs font-medium bg-bosla-blue/10 text-bosla-blue border border-bosla-blue/20"
-                    >
-                      {{ skill.name }}
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="flex items-center gap-0.5 text-amber-500 text-xs">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      {{ specialist.rating.toFixed(1) }}
                     </span>
-                  }
+                    <span class="text-[10px] text-bosla-grey">({{ specialist.reviewsCount }})</span>
+                  </div>
                 </div>
               </div>
-            }
-          }
-
-          <!-- Status Timeline -->
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6">
-            <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2 mb-5">
-              <svg
-                class="w-4 h-4 text-bosla-blue"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-              سجل الحالة
-            </h3>
-            <div class="relative space-y-0">
-              @for (history of store.selectedItemHistory(); track history.id; let last = $last) {
-                <div class="relative flex items-start gap-4 pb-6">
-                  <div class="flex flex-col items-center">
-                    <div
-                      [class]="
-                        'w-3 h-3 rounded-full ring-4 ring-white ' +
-                        getStatusDotColor(history.newStatus)
-                      "
-                    ></div>
-                    @if (!last) {
-                      <div class="w-0.5 flex-1 bg-bosla-charcoal/10 mt-1"></div>
-                    }
-                  </div>
-                  <div class="flex-1 min-w-0 pt-0.5">
-                    <div class="flex items-center gap-2">
-                      <p class="text-sm font-semibold text-bosla-charcoal">
-                        {{ getStatusTimelineLabel(history.newStatus) }}
-                      </p>
-                    </div>
-                    <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">
-                      {{ history.changedAt | date: 'dd/MM/yyyy - hh:mm a' }}
-                    </p>
-                    @if (history.reason) {
-                      <p
-                        class="text-xs text-rose-500 bg-rose-500/5 rounded-lg p-2 mt-2 border border-rose-500/10"
-                      >
-                        السبب: {{ history.reason }}
-                      </p>
-                    }
-                  </div>
-                </div>
-              } @empty {
-                <div class="text-center py-6">
-                  <div
-                    class="w-12 h-12 mx-auto bg-bosla-grey/10 text-bosla-grey/50 rounded-full flex items-center justify-center mb-3"
-                  >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                  <p class="text-sm text-bosla-grey">لا يوجد سجل حركات متوفر بعد.</p>
-                </div>
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-bosla-charcoal/5">
+                <span class="text-sm font-bold text-bosla-primary">{{ specialist.hourlyRate }} <span class="text-xs text-bosla-grey font-normal">ج.م/ساعة</span></span>
+                <a [routerLink]="['/specialists', specialist.id]" class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium">
+                  عرض الملف
+                </a>
+              </div>
+              @if (specialist.bio) {
+                <p class="text-xs text-bosla-charcoal/60 mt-3 leading-relaxed line-clamp-2">{{ specialist.bio }}</p>
               }
             </div>
-          </div>
+          }
+
         </div>
       </div>
     }
 
     <!-- Cancel Modal -->
     @if (showCancelModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl animate-fadeIn"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl animate-fadeIn">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-rose-50 text-rose-500 rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
             <div>
               <h3 class="text-lg font-bold text-bosla-charcoal">إلغاء الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">
-                يرجى كتابة سبب الإلغاء، سيتم إشعار الطرف الآخر فوراً.
-              </p>
+              <p class="text-xs text-bosla-grey mt-0.5">يرجى كتابة سبب الإلغاء، سيتم إشعار الطرف الآخر فوراً.</p>
             </div>
           </div>
           <textarea
@@ -750,17 +517,8 @@
             class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showCancelModal.set(false)" size="sm" variant="ghost"
-              >تراجع</ui-button
-            >
-            <ui-button
-              (click)="onCancelSubmit()"
-              [disabled]="!cancelReason().trim()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="danger"
-              >تأكيد الإلغاء</ui-button
-            >
+            <ui-button (click)="showCancelModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
+            <ui-button (click)="onCancelSubmit()" [disabled]="!cancelReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">تأكيد الإلغاء</ui-button>
           </div>
         </div>
       </div>
@@ -768,28 +526,17 @@
 
     <!-- Reject Modal -->
     @if (showRejectModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-rose-50 text-rose-500 rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
             <div>
               <h3 class="text-lg font-bold text-bosla-charcoal">رفض طلب الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">
-                يرجى كتابة سبب الرفض، سيتم إشعار المستخدم فوراً.
-              </p>
+              <p class="text-xs text-bosla-grey mt-0.5">يرجى كتابة سبب الرفض، سيتم إشعار المستخدم فوراً.</p>
             </div>
           </div>
           <textarea
@@ -799,17 +546,8 @@
             class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showRejectModal.set(false)" size="sm" variant="ghost"
-              >تراجع</ui-button
-            >
-            <ui-button
-              (click)="onRejectSubmit()"
-              [disabled]="!rejectReason().trim()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="danger"
-              >تأكيد الرفض</ui-button
-            >
+            <ui-button (click)="showRejectModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
+            <ui-button (click)="onRejectSubmit()" [disabled]="!rejectReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">تأكيد الرفض</ui-button>
           </div>
         </div>
       </div>
@@ -817,21 +555,12 @@
 
     <!-- Review Modal -->
     @if (showReviewModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-amber-50 text-amber-500 rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               </svg>
             </div>
             <div>
@@ -858,27 +587,18 @@
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    />
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </button>
               }
             </div>
             <p class="text-sm text-bosla-grey mt-2">
-              @if (reviewRating() === 1) {
-                سيئ
-              } @else if (reviewRating() === 2) {
-                مقبول
-              } @else if (reviewRating() === 3) {
-                جيد
-              } @else if (reviewRating() === 4) {
-                جيد جداً
-              } @else if (reviewRating() === 5) {
-                ممتاز
-              } @else {
-                اختر تقييمك
-              }
+              @if (reviewRating() === 1) { سيئ }
+              @else if (reviewRating() === 2) { مقبول }
+              @else if (reviewRating() === 3) { جيد }
+              @else if (reviewRating() === 4) { جيد جداً }
+              @else if (reviewRating() === 5) { ممتاز }
+              @else { اختر تقييمك }
             </p>
           </div>
 
@@ -890,20 +610,8 @@
           ></textarea>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button
-              (click)="showReviewModal.set(false); reviewRating.set(0); reviewComment.set('')"
-              size="sm"
-              variant="ghost"
-              >إلغاء</ui-button
-            >
-            <ui-button
-              (click)="onReviewSubmit()"
-              [disabled]="reviewRating() === 0"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="primary"
-              >إرسال التقييم</ui-button
-            >
+            <ui-button (click)="showReviewModal.set(false); reviewRating.set(0); reviewComment.set('')" size="sm" variant="ghost">إلغاء</ui-button>
+            <ui-button (click)="onReviewSubmit()" [disabled]="reviewRating() === 0" [loading]="store.isActionLoading()" size="sm" variant="primary">إرسال التقييم</ui-button>
           </div>
         </div>
       </div>
@@ -911,21 +619,12 @@
 
     <!-- Reminder Modal -->
     @if (showReminderModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-amber-50 text-amber-500 rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
             </div>
             <div>
@@ -936,61 +635,22 @@
 
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                >تاريخ التذكير</label
-              >
-              <input
-                type="date"
-                [value]="reminderDate()"
-                (input)="reminderDate.set($any($event.target).value)"
-                [attr.min]="tomorrow()"
-                class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-              />
+              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">تاريخ التذكير</label>
+              <input type="date" [value]="reminderDate()" (input)="reminderDate.set($any($event.target).value)" [attr.min]="tomorrow()" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                >وقت التذكير</label
-              >
-              <input
-                type="time"
-                [value]="reminderTime()"
-                (input)="reminderTime.set($any($event.target).value)"
-                class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-              />
+              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت التذكير</label>
+              <input type="time" [value]="reminderTime()" (input)="reminderTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                >رسالة التذكير</label
-              >
-              <input
-                type="text"
-                [value]="reminderMessage()"
-                (input)="reminderMessage.set($any($event.target).value)"
-                placeholder="مثال: موعدك مع المختص بعد ساعة"
-                class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-              />
+              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">رسالة التذكير</label>
+              <input type="text" [value]="reminderMessage()" (input)="reminderMessage.set($any($event.target).value)" placeholder="مثال: موعدك مع المختص بعد ساعة" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
             </div>
           </div>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button
-              (click)="
-                showReminderModal.set(false);
-                reminderMessage.set('');
-                reminderDate.set('');
-                reminderTime.set('')
-              "
-              size="sm"
-              variant="ghost"
-              >إلغاء</ui-button
-            >
-            <ui-button
-              (click)="onAddReminder()"
-              [disabled]="!reminderDate() || !reminderTime() || !reminderMessage().trim()"
-              size="sm"
-              variant="primary"
-              >إضافة التذكير</ui-button
-            >
+            <ui-button (click)="showReminderModal.set(false); reminderMessage.set(''); reminderDate.set(''); reminderTime.set('')" size="sm" variant="ghost">إلغاء</ui-button>
+            <ui-button (click)="onAddReminder()" [disabled]="!reminderDate() || !reminderTime() || !reminderMessage().trim()" size="sm" variant="primary">إضافة التذكير</ui-button>
           </div>
         </div>
       </div>
@@ -998,21 +658,12 @@
 
     <!-- Reschedule Modal -->
     @if (showRescheduleModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </div>
             <div>
@@ -1023,55 +674,24 @@
 
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                >التاريخ الجديد</label
-              >
-              <input
-                type="date"
-                [value]="rescheduleDate()"
-                (input)="rescheduleDate.set($any($event.target).value)"
-                [attr.min]="tomorrow()"
-                class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-              />
+              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">التاريخ الجديد</label>
+              <input type="date" [value]="rescheduleDate()" (input)="rescheduleDate.set($any($event.target).value)" [attr.min]="tomorrow()" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                  >وقت البداية</label
-                >
-                <input
-                  type="time"
-                  [value]="rescheduleStartTime()"
-                  (input)="rescheduleStartTime.set($any($event.target).value)"
-                  class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-                />
+                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت البداية</label>
+                <input type="time" [value]="rescheduleStartTime()" (input)="rescheduleStartTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5"
-                  >وقت النهاية</label
-                >
-                <input
-                  type="time"
-                  [value]="rescheduleEndTime()"
-                  (input)="rescheduleEndTime.set($any($event.target).value)"
-                  class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors"
-                />
+                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت النهاية</label>
+                <input type="time" [value]="rescheduleEndTime()" (input)="rescheduleEndTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
               </div>
             </div>
           </div>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showRescheduleModal.set(false)" size="sm" variant="ghost"
-              >تراجع</ui-button
-            >
-            <ui-button
-              (click)="onRescheduleSubmit()"
-              [disabled]="!rescheduleDate() || !rescheduleStartTime() || !rescheduleEndTime()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="primary"
-              >تأكيد إعادة الجدولة</ui-button
-            >
+            <ui-button (click)="showRescheduleModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
+            <ui-button (click)="onRescheduleSubmit()" [disabled]="!rescheduleDate() || !rescheduleStartTime() || !rescheduleEndTime()" [loading]="store.isActionLoading()" size="sm" variant="primary">تأكيد إعادة الجدولة</ui-button>
           </div>
         </div>
       </div>
@@ -1079,21 +699,12 @@
 
     <!-- Notes Modal -->
     @if (showNotesModal()) {
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl"
-        >
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
+        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-4">
             <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </div>
             <div>
@@ -1110,16 +721,8 @@
           ></textarea>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showNotesModal.set(false)" size="sm" variant="ghost"
-              >تراجع</ui-button
-            >
-            <ui-button
-              (click)="onNotesSubmit()"
-              [loading]="store.isActionLoading()"
-              size="sm"
-              variant="primary"
-              >حفظ التعديلات</ui-button
-            >
+            <ui-button (click)="showNotesModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
+            <ui-button (click)="onNotesSubmit()" [loading]="store.isActionLoading()" size="sm" variant="primary">حفظ التعديلات</ui-button>
           </div>
         </div>
       </div>
