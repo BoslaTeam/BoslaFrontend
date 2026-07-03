@@ -117,3 +117,7 @@
   background: linear-gradient(to bottom, #1B4F72, #F39C12);
   border-radius: 4px 0 0 4px;
 }
+
+.ntf-toast-clickable {
+  cursor: pointer;
+}

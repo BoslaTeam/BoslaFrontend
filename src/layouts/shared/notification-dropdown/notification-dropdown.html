@@ -19,7 +19,7 @@
     }
 
     @for (notif of latest; track notif.id) {
-    <div class="ntf-dropdown-item" [class.ntf-dropdown-item-unread]="!notif.isRead" (click)="markAsRead(notif.id, $event)">
+    <div class="ntf-dropdown-item" [class.ntf-dropdown-item-unread]="!notif.isRead" [class.ntf-dropdown-item-clickable]="!!notif.appointmentId" (click)="markAsRead(notif, $event)">
       <div class="ntf-dropdown-icon" [class]="'ntf-dropdown-icon-' + iconType(notif.type)">
         @switch (notif.type) {
           @case (notificationType.SpecialistVerification) {
