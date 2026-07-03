@@ -1,7 +1,5 @@
 <section
-  [class]="(store.activeMobilePanel() === 'chat')
-    ? 'absolute inset-0 w-full z-10 md:relative md:w-auto flex flex-col h-full bg-bosla-offwhite min-w-0 overflow-hidden transition-transform duration-300 translate-x-0 max-md:pt-20 '
-    : 'absolute inset-0 w-full z-10 md:relative md:w-auto flex flex-col h-full bg-bosla-offwhite min-w-0 overflow-hidden transition-transform duration-300 translate-x-full md:translate-x-0'"
+  class="flex flex-col flex-1 h-full min-h-0 min-w-0 overflow-hidden bg-transparent"
   aria-label="Chat area">
   @if (store.activeConversation()) {
   <chat-chat-header [isOpen]="isConversationListOpen()" (togglePanel)="toggleConversationList.emit()"
@@ -12,16 +10,21 @@
   <chat-message-composer />
   } @else {
   <!-- Empty — no conversation selected -->
-  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center gap-4 bg-white md:bg-bosla-offwhite">
-    <div
-      class="w-20 h-20 rounded-3xl bg-bosla-primary/5 flex items-center justify-center text-bosla-blue shadow-sm border border-bosla-primary/5">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
+  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center gap-5 bg-transparent">
+    <div class="relative w-32 h-32 flex items-center justify-center">
+      <!-- Glow effect -->
+      <div class="absolute inset-0 bg-[#F39C12]/20 rounded-full blur-[40px] animate-pulse"></div>
+      
+      <div class="relative z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-[#1B4F72] to-[#2E86AB] flex items-center justify-center text-white shadow-[0_10px_30px_rgba(27,79,114,0.3)] border-4 border-white/50 backdrop-blur-md">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      </div>
     </div>
-    <h3 class="text-lg font-bold text-bosla-charcoal font-sans">حدد محادثة</h3>
-    <p class="text-xs text-bosla-grey/90 leading-relaxed max-w-70">اختر محادثة من القائمة لبدء المراسلة، أو ابحث عن
-      متخصص لحجز جلسة.</p>
+    <div class="max-w-md">
+      <h3 class="text-2xl font-black text-[#1B4F72] font-sans mb-2 tracking-tight">ابدأ المحادثة</h3>
+      <p class="text-sm text-slate-500 leading-relaxed">اختر محادثة من القائمة لبدء المراسلة، أو ابحث عن متخصص لحجز جلسة استشارية جديدة بكل سهولة.</p>
+    </div>
   </div>
   }
 </section>

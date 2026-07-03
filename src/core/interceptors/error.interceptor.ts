@@ -24,7 +24,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 403 && !isApiCall && !req.url.includes('/auth/')) {
         router.navigateByUrl(AUTH_CONFIG.unauthorizedRoute);
       } else if (!SILENT_STATUSES.includes(error.status)) {
-        toast.danger(apiError.title);
+        // toast.danger(apiError.title);
       }
 
       return throwError(() => apiError);

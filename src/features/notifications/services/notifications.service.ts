@@ -18,6 +18,8 @@ function toAppNotification(dto: NotificationDto): AppNotification {
     message: dto.message,
     isRead: dto.isRead,
     createdAtUtc: created,
+    appointmentId: dto.appointmentId,
+    appointmentStatus: dto.appointmentStatus,
   };
 }
 

@@ -4,6 +4,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
+        <h1 class="text-4xl font-black bg-gradient-to-l from-[#F39C12] to-[#e67e22] text-transparent bg-clip-text font-sans drop-shadow-sm tracking-tight mb-2">المواعيد</h1>
+        <p class="text-sm font-semibold text-slate-500">تابع وجدول جلساتك الاستشارية بكل سهولة</p>
         <h1 class="text-2xl sm:text-3xl font-bold text-bosla-charcoal tracking-tight">المواعيد</h1>
         <p class="text-sm text-bosla-grey mt-1">تابع وجدول جميع جلساتك الاستشارية</p>
       </div>
@@ -109,6 +111,19 @@
                       <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-sm font-bold">
                         {{ (appointment.specialistName || 'م').charAt(0) }}
                       </div>
+                      <div>
+                        <h3
+                          class="text-base font-black text-[#1B4F72] group-hover:text-[#F39C12] transition-colors leading-tight font-sans tracking-tight"
+                        >
+                          {{ appointment.sessionTopic || 'جلسة استشارية' }}
+                        </h3>
+                        @if (appointment.specialistName) {
+                          <p class="text-xs font-semibold text-slate-500 mt-1">
+                            {{ appointment.specialistName }}
+                          </p>
+                        }
+                      </div>
+                    </div>
                     }
                   </div>
                   <div class="min-w-0">
@@ -126,6 +141,15 @@
                   </div>
                 </div>
 
+                    @let statusInfo = getStatusDetails(appointment.status);
+                    <span
+                      [class]="
+                        'text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm shrink-0 ' +
+                        statusInfo.classes
+                      "
+                    >
+                      {{ statusInfo.text }}
+                    </span>
                 <!-- Date & Time -->
                 <div class="col-span-3 flex items-center gap-2.5 mb-2 lg:mb-0">
                   <div class="w-8 h-8 rounded-lg bg-bosla-blue/5 flex items-center justify-center shrink-0">
@@ -187,6 +211,18 @@
           }
         </div>
       } @else {
+        <div
+          class="flex flex-col items-center justify-center text-center py-24 bg-white/50 backdrop-blur-md rounded-3xl border border-white px-6 shadow-[0_5px_30px_rgba(27,79,114,0.02)]"
+        >
+          <div class="relative w-32 h-32 flex items-center justify-center mb-6">
+            <!-- Glow effect -->
+            <div class="absolute inset-0 bg-[#F39C12]/20 rounded-full blur-[40px] animate-pulse"></div>
+
+            <div class="relative z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-[#1B4F72] to-[#2E86AB] flex items-center justify-center text-white shadow-[0_10px_30px_rgba(27,79,114,0.3)] border-4 border-white/50 backdrop-blur-md">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-bosla-charcoal/5 shadow-sm px-6">
           <div class="w-16 h-16 rounded-full bg-gradient-to-br from-bosla-blue/10 to-bosla-primary/10 flex items-center justify-center mb-5">
@@ -217,6 +253,7 @@
             } @else if (activeTab() === 'pending') {
               عندما يقوم مستخدم بحجز موعد، سيظهر هنا بانتظار موافقتك.
             } @else {
+              لم يتم تسجيل أي مواعيد سابقة بعد في سجلك.
               لا يوجد أي مواعيد في هذا القسم حالياً.
             }
           </p>

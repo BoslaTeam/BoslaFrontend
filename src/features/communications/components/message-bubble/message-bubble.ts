@@ -10,6 +10,9 @@ import { ChatStore } from '../../store/chat.store';
   templateUrl: './message-bubble.html',
   styleUrl: '../../chat.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'block w-full'
+  }
 })
 export class MessageBubble {
   private readonly store = inject(ChatStore);

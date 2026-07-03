@@ -1,5 +1,5 @@
 import { Component, inject, input, output, HostListener, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { NotificationService, AppNotification } from '@core/services/notification.service';
 import { NotificationsService } from '@features/notifications/services/notifications.service';
 import { NavigationService } from '@core/navigation/navigation.service';
@@ -21,6 +21,7 @@ export class NotificationDropdown implements OnInit {
   private notificationService = inject(NotificationService);
   private httpService = inject(NotificationsService);
   private navigationService = inject(NavigationService);
+  private router = inject(Router);
 
   readonly notifications = this.notificationService.notifications;
   readonly unreadCount = this.notificationService.unreadCount;
@@ -68,8 +69,15 @@ export class NotificationDropdown implements OnInit {
     }
   }
 
-  markAsRead(id: string, e: MouseEvent) {
+  markAsRead(notif: AppNotification, e: MouseEvent) {
     e.stopPropagation();
-    this.httpService.markAsRead(id).subscribe({ error: () => {} });
+    this.close.emit();
+    this.httpService.markAsRead(notif.id).subscribe({ error: () => {} });
+    if (!notif.appointmentId) return;
+    if (notif.type === NotificationType.Message) {
+      this.router.navigate(['/chat', notif.appointmentId]);
+    } else {
+      this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
+    }
   }
 }

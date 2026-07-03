@@ -1,4 +1,5 @@
 import { LookupResponse } from './lookup.contract';
+import { ExperienceResponse } from './specialist-experience.contract';
 
 export interface SpecialistDetailsResponse {
     id: string;
@@ -18,8 +19,21 @@ export interface SpecialistDetailsResponse {
     verificationStatus: number;
     tools: LookupResponse[];
     skills: LookupResponse[];
+    expertise: string[];
     industries: LookupResponse[];
     rating: number;
     reviewsCount: number;
     isOnline: boolean;
+
+    bookingPolicy: string | null;
+    minBookingNoticeHours: number;
+    maxSessionsPerDay: number;
+    maxSessionsPerWeek: number;
+
+    cancellationDeadlineHours: number;
+    cancellationFeePercent: number;
+    allowCancellation: boolean;
+    cancellationPolicy: string | null;
+
+    experiences: ExperienceResponse[];
 }

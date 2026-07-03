@@ -116,6 +116,7 @@ export const API_ENDPOINTS = {
     summaryRegenerate: (id: string) => `${V}/ai/summaries/${id}/regenerate`,
     recommendations: `${V}/ai/recommendations`,
     chat: `${V}/ai/chat`,
+    smartReplies: `${V}/ai/smart-replies`,
     specialist: {
       smartReplies: `${V}/ai/specialist/smart-replies`,
       sessionPrep: (appointmentId: string) => `${V}/ai/specialist/session-prep/${appointmentId}`,

@@ -304,9 +304,6 @@ export class SpecialistAvailability implements OnInit {
             case AppointmentStatus.Confirmed:
               status = 'booked';
               break;
-            case AppointmentStatus.Cancelled:
-              status = 'cancelled';
-              break;
             default:
               status = 'available';
               break;
@@ -345,21 +342,18 @@ export class SpecialistAvailability implements OnInit {
       } else if (!matchingAppt) {
         status = 'available';
       } else {
-        switch (matchingAppt.status) {
-          case AppointmentStatus.Confirmed:
-            status = 'booked';
-            break;
-          case AppointmentStatus.Cancelled:
-            status = 'cancelled';
-            break;
-          default:
-            status = 'available';
-            break;
+          switch (matchingAppt.status) {
+            case AppointmentStatus.Confirmed:
+              status = 'booked';
+              break;
+            default:
+              status = 'available';
+              break;
+          }
         }
-      }
 
-      result.push({
-        id: raw.id,
+        result.push({
+          id: raw.id,
         start: raw.start,
         end: raw.end,
         status,

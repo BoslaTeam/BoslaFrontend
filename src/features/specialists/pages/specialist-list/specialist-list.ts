@@ -12,6 +12,7 @@ import { SpecialistsFiltersComponent } from '@features/specialists/components/sp
   imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState],
   standalone: true,
   templateUrl: './specialist-list.html',
+  styleUrls: ['./specialist-list.css']
 })
 export class SpecialistListPage implements OnInit {
   readonly store = inject(SpecialistListStore);

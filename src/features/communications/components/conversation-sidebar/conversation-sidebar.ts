@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './conversation-sidebar.html',
   styleUrl: '../../chat.css',
   host: {
-    class: 'block h-full min-h-0'
+    class: 'flex flex-col h-full min-h-0'
   }
 })
 export class ConversationSidebar {

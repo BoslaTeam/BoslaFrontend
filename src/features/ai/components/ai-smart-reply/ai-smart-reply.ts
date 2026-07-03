@@ -14,6 +14,9 @@ import { UserRole } from '@core/enums/user-role.enum';
   selector: 'ai-smart-reply',
   standalone: true,
   templateUrl: './ai-smart-reply.html',
+  host: {
+    style: 'display: contents;'
+  }
 })
 export class AiSmartReply {
   /** The active conversation ID */

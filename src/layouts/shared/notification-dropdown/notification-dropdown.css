@@ -109,6 +109,10 @@
   background: rgba(27, 79, 114, 0.04);
 }
 
+.ntf-dropdown-item-clickable {
+  cursor: pointer;
+}
+
 .ntf-dropdown-icon {
   width: 36px;
   height: 36px;

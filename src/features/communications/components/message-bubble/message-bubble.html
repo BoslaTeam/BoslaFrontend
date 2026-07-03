@@ -1,31 +1,31 @@
 <div
   [class]="message().isOwn
-    ? 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-end flex-row-reverse font-sans'
-    : 'flex items-end gap-2.5 max-w-[80%] md:max-w-[70%] self-start font-sans'"
+    ? 'flex flex-row items-end gap-3 w-full font-sans'
+    : 'flex flex-row-reverse items-end gap-3 w-full font-sans'"
 >
   <!-- Incoming avatar -->
   @if (!message().isOwn) {
     @if (showAvatar()) {
-      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-bosla-primary to-bosla-blue text-white text-[10px] font-bold flex items-center justify-center shrink-0 select-none shadow-sm" aria-hidden="true">
+      <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#1B4F72] to-[#2E86AB] text-white text-[11px] font-black flex items-center justify-center shrink-0 select-none shadow-md" aria-hidden="true">
         {{ initials() }}
       </div>
     } @else {
-      <div class="w-8 h-8 shrink-0" aria-hidden="true"></div>
+      <div class="w-9 h-9 shrink-0" aria-hidden="true"></div>
     }
   }
 
   <!-- Bubble -->
   <div
     [class]="message().isOwn
-      ? 'group px-4 py-2.5 text-xs leading-relaxed bg-bosla-primary text-white rounded-2xl rounded-br-sm shadow-sm relative transition-all duration-200'
-      : 'group px-4 py-2.5 text-xs leading-relaxed bg-white text-bosla-charcoal border border-bosla-primary/10 rounded-2xl rounded-bl-sm shadow-sm relative transition-all duration-200'"
+      ? 'group px-5 py-3.5 text-sm leading-relaxed bg-gradient-to-bl from-[#1B4F72] via-[#1f5c85] to-[#2E86AB] text-white rounded-3xl rounded-br-md shadow-[0_5px_15px_rgba(27,79,114,0.2)] relative transition-all duration-300 max-w-[80%] md:max-w-[70%]'
+      : 'group px-5 py-3.5 text-sm leading-relaxed bg-white/90 backdrop-blur-sm text-[#1B4F72] font-semibold border border-white rounded-3xl rounded-bl-md shadow-[0_5px_20px_rgba(27,79,114,0.05)] relative transition-all duration-300 max-w-[80%] md:max-w-[70%]'"
     [attr.aria-label]="(message().isOwn ? 'You: ' : '') + content()"
   >
     @if (canManage() && !isEditing()) {
-      <div class="absolute -top-2 -left-2 z-10">
+      <div class="absolute -top-3 -left-3 z-10">
         <button
           type="button"
-          class="w-7 h-7 rounded-full bg-white text-bosla-charcoal border border-bosla-primary/10 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-bosla-offwhite transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-8 h-8 rounded-full bg-white text-[#1B4F72] border border-slate-100 shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Message actions"
           [disabled]="isSaving() || isDeleting()"
           (click)="toggleMenu()"
@@ -36,11 +36,12 @@
         </button>
 
         @if (isMenuOpen()) {
-          <div class="absolute left-0 mt-1 w-28 rounded-xl bg-white text-bosla-charcoal border border-bosla-primary/10 shadow-lg overflow-hidden animate-fade-in">
-            <button type="button" class="w-full px-3 py-2 text-left text-xs font-semibold hover:bg-bosla-primary/5 transition-colors cursor-pointer" (click)="startEdit()">
+          <div class="absolute left-0 mt-2 w-32 rounded-2xl bg-white/90 backdrop-blur-md text-[#1B4F72] border border-white shadow-[0_10px_30px_rgba(27,79,114,0.1)] overflow-hidden animate-fade-in z-20">
+            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer" (click)="startEdit()">
               تعديل
             </button>
-            <button type="button" class="w-full px-3 py-2 text-left text-xs font-semibold text-bosla-error hover:bg-bosla-error/5 transition-colors cursor-pointer" (click)="openDeleteConfirm()">
+            <div class="h-px bg-slate-100 mx-2"></div>
+            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer" (click)="openDeleteConfirm()">
               حذف
             </button>
           </div>
@@ -49,9 +50,9 @@
     }
 
     @if (isEditing()) {
-      <div class="min-w-[220px] space-y-2 animate-fade-in">
+      <div class="min-w-[240px] space-y-3 animate-fade-in">
         <textarea
-          class="w-full min-h-20 resize-none rounded-xl border border-white/30 bg-white/95 px-3 py-2 text-xs leading-relaxed text-bosla-charcoal outline-none focus:border-bosla-blue focus:ring-2 focus:ring-bosla-blue/20 disabled:opacity-70"
+          class="w-full min-h-[5rem] resize-none rounded-2xl border border-white/50 bg-white/10 px-4 py-3 text-sm leading-relaxed text-white outline-none focus:border-white focus:bg-white/20 transition-all disabled:opacity-70"
           [value]="editText()"
           [disabled]="isSaving()"
           aria-label="Edit message"
@@ -59,13 +60,13 @@
         ></textarea>
 
         @if (!editText().trim()) {
-          <p class="text-[10px] text-white/85">الرسالة لا يمكن أن تكون فارغة.</p>
+          <p class="text-[11px] font-bold text-red-200">الرسالة لا يمكن أن تكون فارغة.</p>
         }
 
-        <div class="flex items-center justify-end gap-2">
+        <div class="flex items-center justify-end gap-3">
           <button
             type="button"
-            class="px-3 py-1.5 rounded-lg bg-white/10 text-white text-[11px] font-semibold hover:bg-white/20 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            class="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             [disabled]="isSaving()"
             (click)="cancelEdit()"
           >
@@ -73,37 +74,37 @@
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-bosla-primary text-[11px] font-bold hover:bg-bosla-offwhite transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-white text-[#1B4F72] text-xs font-black hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             [disabled]="isSaveDisabled()"
             (click)="saveEdit()"
           >
             @if (isSaving()) {
-              <span class="w-3 h-3 rounded-full border-2 border-bosla-primary/25 border-t-bosla-primary animate-spin" aria-hidden="true"></span>
+              <span class="w-4 h-4 rounded-full border-2 border-[#1B4F72]/30 border-t-[#1B4F72] animate-spin" aria-hidden="true"></span>
             }
             حفظ
           </button>
         </div>
       </div>
     } @else {
-      <p [class]="message().isDeleted ? 'whitespace-pre-wrap font-sans italic opacity-75' : 'whitespace-pre-wrap font-sans'">{{ content() }}</p>
+      <p [class]="message().isDeleted ? 'whitespace-pre-wrap font-sans italic opacity-70' : 'whitespace-pre-wrap font-sans'">{{ content() }}</p>
     }
 
     <!-- Meta time + status -->
-    <div class="flex items-center justify-end gap-1 mt-1.5 shrink-0 select-none">
-      <span [class]="message().isOwn ? 'text-[9px] text-white/75 font-sans' : 'text-[9px] text-bosla-grey/85 font-sans'">{{ formattedTime() }}</span>
+    <div class="flex items-center justify-end gap-1.5 mt-2 shrink-0 select-none">
+      <span [class]="message().isOwn ? 'text-[10px] text-white/70 font-bold font-sans' : 'text-[10px] text-slate-400 font-bold font-sans'">{{ formattedTime() }}</span>
       @if (message().isOwn) {
         @if (statusIcon() === 'clock') {
-          <svg class="w-2.5 h-2.5 text-white/70 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg class="w-3 h-3 text-white/70 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
         }
         @else if (statusIcon() === 'check') {
-          <svg class="w-2.5 h-2.5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <svg class="w-3 h-3 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         }
         @else {
-          <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <svg class="w-3 h-3 text-[#F39C12] drop-shadow-[0_0_5px_rgba(243,156,18,0.6)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
             <polyline points="18 6 7 17 2 12"/>
             <polyline points="22 6 11 17 6 12"/>
           </svg>
@@ -114,15 +115,20 @@
 </div>
 
 @if (showDeleteConfirm()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-bosla-charcoal/40 px-4 backdrop-blur-xs animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="delete-message-title">
-    <div class="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl border border-bosla-primary/10 transition-all duration-200">
-      <h3 id="delete-message-title" class="text-sm font-bold text-bosla-charcoal font-sans">حذف الرسالة؟</h3>
-      <p class="mt-2 text-xs leading-relaxed text-bosla-grey font-sans">سيتم استبدال نص الرسالة بـ "تم حذف هذه الرسالة".</p>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#1B4F72]/60 px-4 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="delete-message-title">
+    <div class="w-full max-w-sm rounded-[2rem] bg-white p-7 shadow-2xl border border-white/50 transition-all duration-300">
+      <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-5 mx-auto">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+        </svg>
+      </div>
+      <h3 id="delete-message-title" class="text-lg font-black text-[#1B4F72] text-center font-sans tracking-tight mb-2">حذف الرسالة؟</h3>
+      <p class="text-sm leading-relaxed text-slate-500 text-center font-sans">سيتم استبدال نص الرسالة بـ "تم حذف هذه الرسالة". هل أنت متأكد؟</p>
 
-      <div class="mt-5 flex items-center justify-end gap-2">
+      <div class="mt-8 flex items-center justify-center gap-3">
         <button
           type="button"
-          class="px-4 py-2 rounded-xl text-xs font-semibold text-bosla-charcoal hover:bg-bosla-offwhite transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          class="px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           [disabled]="isDeleting()"
           (click)="closeDeleteConfirm()"
         >
@@ -130,12 +136,12 @@
         </button>
         <button
           type="button"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-bosla-error text-white text-xs font-bold hover:bg-bosla-error/90 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-black hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           [disabled]="isDeleting()"
           (click)="confirmDelete()"
         >
           @if (isDeleting()) {
-            <span class="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true"></span>
+            <span class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true"></span>
           }
           حذف
         </button>

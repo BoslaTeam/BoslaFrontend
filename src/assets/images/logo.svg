@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 460" width="400" height="460">
+  <!-- Letter B - same shape as original, color changed to #2E86AB (Compass Blue) -->
+  <g transform="translate(90, 30)">
+    <!-- B shape using path - matches original bold B outline style -->
+    <path d="
+      M 20 10
+      L 20 310
+      L 130 310
+      C 185 310 220 275 220 230
+      C 220 200 205 178 180 165
+      C 200 152 212 130 212 105
+      C 212 55 178 10 125 10
+      Z
+      M 70 55
+      L 118 55
+      C 148 55 165 72 165 100
+      C 165 128 148 145 118 145
+      L 70 145
+      Z
+      M 70 185
+      L 125 185
+      C 160 185 170 205 170 228
+      C 170 255 155 268 125 268
+      L 70 268
+      Z
+    " fill="#2E86AB"/>
+
+    <!-- Orange diagonal needle/arrow - same as original -->
+    <polygon points="95,240 165,80 195,110 125,270" fill="#F39C12" opacity="0.95"/>
+    <polygon points="165,80 195,110 185,95" fill="#E67E00"/>
+  </g>
+
+  <!-- BOSLA text - color changed to orange #F39C12 -->
+  <text
+    x="200"
+    y="410"
+    font-family="Inter, Arial, sans-serif"
+    font-size="72"
+    font-weight="700"
+    fill="#F39C12"
+    text-anchor="middle"
+    letter-spacing="4"
+  >BOSLA</text>
+</svg>

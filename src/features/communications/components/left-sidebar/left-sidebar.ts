@@ -40,7 +40,7 @@ export class LeftSidebar {
   openProfile() {
     const p = this.participant();
     if (p?.id) {
-      this.router.navigate(['/specialist', p.id]);
+      this.router.navigate(['/specialists', p.id]);
     }
   }
 }
