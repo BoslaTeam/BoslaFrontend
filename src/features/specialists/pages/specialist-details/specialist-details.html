@@ -16,7 +16,7 @@
     @else if (store.specialist(); as specialist) {
     <!-- ===== Header ===== -->
     <div class="bg-white border border-slate-100 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
-      <div class="bg-gradient-to-l from-bosla-primary/5 via-bosla-blue/5 to-transparent pt-12 pb-6 px-6 flex flex-col items-center text-center">
+      <div class="bg-linear-to-l from-bosla-primary/5 via-bosla-blue/5 to-transparent pt-12 pb-6 px-6 flex flex-col items-center text-center">
         <div class="relative mb-4">
           <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
             <img [src]="specialist.imageUrl.trim() || 'assets/icons/favicon.ico'" [alt]="specialist.name"
@@ -186,7 +186,7 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <!-- Session Price -->
-              <div class="relative bg-gradient-to-br from-emerald-50 to-white rounded-2xl p-5 border border-emerald-100 text-center overflow-hidden">
+              <div class="relative bg-linear-to-br from-emerald-50 to-white rounded-2xl p-5 border border-emerald-100 text-center overflow-hidden">
                 <div class="absolute -top-4 -right-4 w-16 h-16 bg-emerald-100/50 rounded-full blur-xl"></div>
                 <div class="w-10 h-10 mx-auto rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 mb-3 relative">
                   <i class="fa-solid fa-dollar-sign text-lg"></i>
@@ -196,7 +196,7 @@
               </div>
 
               <!-- Experience Years -->
-              <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-5 border border-slate-100 text-center">
+              <div class="bg-linear-to-br from-slate-50 to-white rounded-2xl p-5 border border-slate-100 text-center">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary mb-3">
                   <i class="fa-solid fa-calendar-check"></i>
                 </div>
@@ -205,7 +205,7 @@
               </div>
 
               <!-- Experience Level -->
-              <div class="bg-gradient-to-br from-amber-50 to-white rounded-2xl p-5 border border-amber-100 text-center">
+              <div class="bg-linear-to-br from-amber-50 to-white rounded-2xl p-5 border border-amber-100 text-center">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 mb-3">
                   <i class="fa-solid fa-layer-group"></i>
                 </div>
@@ -215,7 +215,7 @@
 
               <!-- Language -->
               @if (specialist.preferredLanguage) {
-              <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl p-5 border border-purple-100 text-center">
+              <div class="bg-linear-to-br from-purple-50 to-white rounded-2xl p-5 border border-purple-100 text-center">
                 <div class="w-10 h-10 mx-auto rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 mb-3">
                   <i class="fa-solid fa-language"></i>
                 </div>
@@ -249,7 +249,7 @@
               @for (exp of store.experiences(); track exp.id) {
               <div class="relative pr-8 pb-6 last:pb-0 group">
                 <div class="absolute right-0 top-1.5 w-3 h-3 rounded-full bg-amber-400 border-2 border-white shadow-sm"></div>
-                <div class="absolute right-[5px] top-5 bottom-0 w-0.5 bg-amber-200 group-last:hidden"></div>
+                <div class="absolute right-1.25 top-5 bottom-0 w-0.5 bg-amber-200 group-last:hidden"></div>
                 <div class="bg-white rounded-xl border border-slate-100 p-4 hover:border-amber-200 hover:shadow-sm transition-all">
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0 flex-1">
@@ -265,6 +265,42 @@
                   }
                 </div>
               </div>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- ===== Certificates ===== -->
+          @if (store.certificates().length) {
+          <div class="mb-10">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+                <i class="fa-solid fa-certificate text-xl"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-black text-slate-800">الشهادات</h2>
+                <p class="text-sm text-slate-500 mt-0.5">الشهادات والوثائق المعتمدة</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              @for (cert of store.certificates(); track cert.id) {
+              <a [href]="cert.url" target="_blank" rel="noopener noreferrer"
+                class="group relative block rounded-2xl overflow-hidden border border-slate-200 bg-white hover:shadow-lg hover:border-green-200 transition-all">
+                @if (isImage(cert.url)) {
+                <div class="aspect-4/3 overflow-hidden bg-slate-50">
+                  <img [src]="cert.url" [alt]="cert.originalFileName"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                } @else {
+                <div class="aspect-4/3 flex items-center justify-center bg-slate-50">
+                  <i class="fa-solid fa-file-pdf text-4xl text-red-400"></i>
+                </div>
+                }
+                <div class="p-2.5 text-center">
+                  <p class="text-xs font-medium text-slate-600 truncate">{{ cert.originalFileName }}</p>
+                </div>
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-2xl"></div>
+              </a>
               }
             </div>
           </div>

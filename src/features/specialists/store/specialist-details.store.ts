@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 import { SpecialistDetails } from '../models/specialist-details.model';
 import { Review } from '../models/review.model';
 import { Availability } from '../models/availability.model';
+import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
 
 import { SpecialistDetailsRepository } from '../data-access/specialist-details.repository';
 
@@ -29,6 +30,7 @@ export class SpecialistDetailsStore {
   readonly specialist = signal<SpecialistDetails | null>(null);
   readonly reviews = signal<Review[]>([]);
   readonly availability = signal<Availability[]>([]);
+  readonly certificates = signal<SpecialistDocumentResponse[]>([]);
 
   readonly detailsLoading = signal(false);
   readonly error = signal<string | null>(null);
@@ -101,6 +103,7 @@ export class SpecialistDetailsStore {
       specialist: this.repository.getSpecialistById(id),
       reviews: this.repository.getReviews(id),
       availability: this.repository.getAvailability(id),
+      certificates: this.repository.getCertificates(id),
     })
       .pipe(finalize(() => this.detailsLoading.set(false)))
       .subscribe({
@@ -108,6 +111,7 @@ export class SpecialistDetailsStore {
           this.specialist.set(data.specialist);
           this.reviews.set(data.reviews);
           this.availability.set(data.availability);
+          this.certificates.set(data.certificates);
         },
         error: (err) => {
           this.error.set(err.message || 'Failed to load specialist details');
