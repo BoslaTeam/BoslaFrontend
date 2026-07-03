@@ -4,12 +4,11 @@ import { SpecialistsFilters } from '@features/specialists/contracts/specialist-f
 import { SpecialistListStore } from '@features/specialists/store/specialist-list.store';
 import { UiPagination } from "@shared/ui/pagination/pagination";
 import { SpecialistsGridComponent } from "@features/specialists/components/specialists-grid/specialists-grid";
-import { UiEmptyState } from "@shared/ui/empty-state/empty-state";
 import { SpecialistsFiltersComponent } from '@features/specialists/components/specialist-filters/specialist-filters';
 
 @Component({
   selector: 'app-specialist-list-page',
-  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState],
+  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent],
   standalone: true,
   templateUrl: './specialist-list.html',
   styleUrls: ['./specialist-list.css']
