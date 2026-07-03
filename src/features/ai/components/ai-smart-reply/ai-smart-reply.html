@@ -2,7 +2,7 @@
 <button
   id="ai-smart-reply-btn"
   type="button"
-  class="w-9 h-9 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-bosla-blue/20 shrink-0 overflow-hidden cursor-pointer bg-gradient-to-br from-bosla-blue to-bosla-primary text-white shadow-sm hover:shadow-md hover:scale-105"
+  class="w-8 h-8 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-bosla-blue/20 shrink-0 overflow-hidden"
   [class.ring-2]="isVisible()"
   [class.ring-bosla-blue]="isVisible()"
   [disabled]="isLoading()"
@@ -16,12 +16,25 @@
       <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
     </svg>
   } @else {
-    <!-- Sparkle AI icon (inline SVG, no external dependency) -->
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-    </svg>
+    <!-- Chat bot image -->
+    <img src="assets/chat.png" alt="AI" class="bot-image-ai" />
   }
 </button>
+
+<style>
+  .bot-image-ai {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    animation: floatBotSmall 3s ease-in-out infinite;
+  }
+  @keyframes floatBotSmall {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-2px) rotate(-2deg); }
+    66% { transform: translateY(-1px) rotate(2deg); }
+  }
+</style>
 
 <!-- Suggestion Chips Panel -->
 @if (isVisible() && !isLoading()) {

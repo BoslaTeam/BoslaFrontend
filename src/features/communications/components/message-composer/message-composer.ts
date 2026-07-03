@@ -30,9 +30,9 @@ export class MessageComposer {
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isCurrentlyTyping = false;
 
-  /** True when the current user has the Specialist role → show AI smart reply button */
+  /** True when the current user is a Specialist → show AI smart reply button */
   readonly isSpecialist = computed(() =>
-    this.authService.roles().includes(UserRole.Specialist)
+    this.authService.userRole() === UserRole.Specialist
   );
 
   constructor() {
