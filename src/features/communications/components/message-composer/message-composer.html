@@ -40,8 +40,8 @@
     <!-- Icon buttons on the END (left in RTL) -->
     <div class="flex items-center gap-0.5 shrink-0">
 
-      <!-- AI Smart Reply panel (only visible for Specialists) -->
-      @if (isSpecialist() && store.activeConversationId()) {
+      <!-- AI Smart Reply panel (visible for all authenticated users) -->
+      @if (isAuthenticated() && store.activeConversationId()) {
         <ai-smart-reply
           [conversationId]="store.activeConversationId()!"
           (replySelected)="fillFromReply($event)"

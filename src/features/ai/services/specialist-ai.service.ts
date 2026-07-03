@@ -15,12 +15,12 @@ import {
 export class SpecialistAiService {
   private readonly http = inject(HttpClient);
 
-  /** GET smart reply suggestions for a conversation (POST because we send a body) */
+  /** GET smart reply suggestions for a conversation (works for all authenticated users) */
   getSmartReplies(conversationId: string): Observable<SmartRepliesResponse> {
     const body: SmartRepliesRequest = { conversationId };
     return this.http
       .post<ApiResponse<SmartRepliesResponse>>(
-        API_ENDPOINTS.ai.specialist.smartReplies,
+        API_ENDPOINTS.ai.smartReplies,
         body
       )
       .pipe(map((res) => res.data!));
