@@ -134,6 +134,14 @@ export class SpecialistsApiService {
     );
   }
 
+  getCertificates(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistDocumentResponse[]>
+    >(
+      API_ENDPOINTS.specialists.certificatesFor(id)
+    );
+  }
+
   start() {
     return this.http.post<ApiResponse<StartResponse>>(
       API_ENDPOINTS.specialists.start,
