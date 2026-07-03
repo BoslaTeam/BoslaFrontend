@@ -42,12 +42,10 @@
 
       <!-- AI Smart Reply panel (only visible for Specialists) -->
       @if (isSpecialist() && store.activeConversationId()) {
-        <div class="relative">
-          <ai-smart-reply
-            [conversationId]="store.activeConversationId()!"
-            (replySelected)="fillFromReply($event)"
-          />
-        </div>
+        <ai-smart-reply
+          [conversationId]="store.activeConversationId()!"
+          (replySelected)="fillFromReply($event)"
+        />
       }
 
       <!-- ── Emoji Picker ── -->

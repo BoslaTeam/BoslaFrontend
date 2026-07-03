@@ -36,61 +36,73 @@
   }
 </style>
 
-<!-- Suggestion Chips Panel -->
+<!-- Suggestion Chips Panel — positioned above the entire composer bar -->
 @if (isVisible() && !isLoading()) {
   <div
     id="ai-smart-reply-panel"
-    class="absolute bottom-full left-0 right-0 mb-2 px-3 pb-1 z-20 animate-in slide-in-from-bottom-2 duration-200"
+    class="absolute bottom-full left-0 right-0 mb-2 px-3 z-20"
+    style="animation: slideUpPanel 0.2s ease-out;"
     role="listbox"
     aria-label="ردود مقترحة"
   >
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-2">
-      <div class="flex items-center gap-1.5 text-[10px] font-semibold text-bosla-blue/80">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-        </svg>
-        ردود مقترحة بالذكاء الاصطناعي
-      </div>
-      <button
-        type="button"
-        class="w-5 h-5 rounded-md flex items-center justify-center text-bosla-grey/50 hover:text-bosla-grey hover:bg-bosla-grey/10 transition-colors"
-        (click)="dismiss()"
-        aria-label="إغلاق الاقتراحات"
-      >
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
+    <style>
+      @keyframes slideUpPanel {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
 
-    <!-- Chips -->
-    <div class="flex flex-wrap gap-1.5">
-      @for (reply of suggestions(); track $index) {
+    <!-- Card -->
+    <div class="bg-white/95 backdrop-blur-xl rounded-2xl border border-bosla-blue/10 shadow-[0_-4px_24px_rgba(27,79,114,0.10)]">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 py-2.5 border-b border-bosla-blue/8">
+        <div class="flex items-center gap-1.5 text-[10px] font-bold text-bosla-blue/80">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+          </svg>
+          ردود مقترحة بالذكاء الاصطناعي
+        </div>
         <button
           type="button"
-          class="px-3 py-1.5 rounded-full border border-bosla-blue/20 bg-bosla-blue/5 text-bosla-charcoal text-xs font-medium hover:bg-bosla-blue/15 hover:border-bosla-blue/40 transition-all cursor-pointer text-right leading-snug focus:outline-none focus:ring-2 focus:ring-bosla-blue/20"
-          role="option"
-          [attr.aria-label]="'اختر: ' + reply"
-          (click)="selectReply(reply)"
+          class="w-5 h-5 rounded-md flex items-center justify-center text-bosla-grey/50 hover:text-bosla-grey hover:bg-bosla-grey/10 transition-colors"
+          (click)="dismiss()"
+          aria-label="إغلاق الاقتراحات"
         >
-          {{ reply }}
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
-      }
+      </div>
 
-      <!-- Refresh button -->
-      <button
-        type="button"
-        class="px-3 py-1.5 rounded-full border border-bosla-grey/20 bg-white text-bosla-grey text-xs hover:text-bosla-primary hover:border-bosla-primary/20 hover:bg-bosla-primary/5 transition-all"
-        (click)="loadSuggestions()"
-        title="تحديث الاقتراحات"
-        aria-label="تحديث الاقتراحات"
-      >
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="inline-block">
-          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-        </svg>
-        تحديث
-      </button>
+      <!-- Chips -->
+      <div class="flex flex-wrap gap-1.5 p-3">
+        @for (reply of suggestions(); track $index) {
+          <button
+            type="button"
+            class="px-3 py-1.5 rounded-full border border-bosla-blue/20 bg-bosla-blue/5 text-bosla-charcoal text-xs font-medium hover:bg-bosla-blue/15 hover:border-bosla-blue/40 transition-all cursor-pointer text-right leading-snug focus:outline-none focus:ring-2 focus:ring-bosla-blue/20"
+            role="option"
+            [attr.aria-label]="'اختر: ' + reply"
+            (click)="selectReply(reply)"
+          >
+            {{ reply }}
+          </button>
+        }
+
+        <!-- Refresh button -->
+        <button
+          type="button"
+          class="px-3 py-1.5 rounded-full border border-bosla-grey/20 bg-white text-bosla-grey text-xs hover:text-bosla-primary hover:border-bosla-primary/20 hover:bg-bosla-primary/5 transition-all flex items-center gap-1"
+          (click)="loadSuggestions()"
+          title="تحديث الاقتراحات"
+          aria-label="تحديث الاقتراحات"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="inline-block">
+            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          تحديث
+        </button>
+      </div>
     </div>
   </div>
 }
