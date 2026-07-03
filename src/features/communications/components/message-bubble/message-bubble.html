@@ -1,7 +1,7 @@
 <div
   [class]="message().isOwn
-    ? 'flex flex-row items-end gap-3 max-w-[80%] md:max-w-[70%] font-sans'
-    : 'flex flex-row-reverse items-end gap-3 max-w-[80%] md:max-w-[70%] font-sans'"
+    ? 'flex flex-row items-end gap-3 w-full font-sans'
+    : 'flex flex-row-reverse items-end gap-3 w-full font-sans'"
 >
   <!-- Incoming avatar -->
   @if (!message().isOwn) {
@@ -17,8 +17,8 @@
   <!-- Bubble -->
   <div
     [class]="message().isOwn
-      ? 'group px-5 py-3.5 text-sm leading-relaxed bg-gradient-to-bl from-[#1B4F72] via-[#1f5c85] to-[#2E86AB] text-white rounded-3xl rounded-br-md shadow-[0_5px_15px_rgba(27,79,114,0.2)] relative transition-all duration-300'
-      : 'group px-5 py-3.5 text-sm leading-relaxed bg-white/90 backdrop-blur-sm text-[#1B4F72] font-semibold border border-white rounded-3xl rounded-bl-md shadow-[0_5px_20px_rgba(27,79,114,0.05)] relative transition-all duration-300'"
+      ? 'group px-5 py-3.5 text-sm leading-relaxed bg-gradient-to-bl from-[#1B4F72] via-[#1f5c85] to-[#2E86AB] text-white rounded-3xl rounded-br-md shadow-[0_5px_15px_rgba(27,79,114,0.2)] relative transition-all duration-300 max-w-[80%] md:max-w-[70%]'
+      : 'group px-5 py-3.5 text-sm leading-relaxed bg-white/90 backdrop-blur-sm text-[#1B4F72] font-semibold border border-white rounded-3xl rounded-bl-md shadow-[0_5px_20px_rgba(27,79,114,0.05)] relative transition-all duration-300 max-w-[80%] md:max-w-[70%]'"
     [attr.aria-label]="(message().isOwn ? 'You: ' : '') + content()"
   >
     @if (canManage() && !isEditing()) {
