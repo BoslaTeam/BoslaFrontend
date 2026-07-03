@@ -4,6 +4,7 @@ export interface AgoraTokenResponse {
   token: string;
   uid: number;
   expiresAt: string;
+  sessionId: string;
 }
 
 export interface VideoSessionDto {

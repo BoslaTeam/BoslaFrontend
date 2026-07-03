@@ -2,7 +2,8 @@
   <div class="w-full max-w-4xl bg-white rounded-3xl shadow-lg border border-bosla-charcoal/5 p-8 md:p-10 mt-20">
     <!-- Brand Header -->
     <div class="text-center mb-6">
-      <div class="inline-flex items-center gap-2 bg-bosla-primary/5 text-bosla-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-2">
+      <div
+        class="inline-flex items-center gap-2 bg-bosla-primary/5 text-bosla-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-2">
         <i class="fa-regular fa-compass"></i>
         انضم إلى بوصلة
       </div>
@@ -10,7 +11,8 @@
       <p class="text-bosla-grey mt-1">أنشئ ملفك التعريفي في خطوات بسيطة — أنت على بعد دقائق من انطلاقة جديدة</p>
     </div>
 
-    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()" [titles]="stepTitles" [icons]="stepIcons" />
+    <onboarding-stepper [currentStep]="onboardingStore.currentStep()" [totalSteps]="onboardingStore.totalSteps()"
+      [titles]="stepTitles" [icons]="stepIcons" />
 
     <div class="mt-8">
       @switch (onboardingStore.currentStep()) {
