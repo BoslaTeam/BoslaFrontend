@@ -1,7 +1,7 @@
 <div
-  class="flex items-end gap-3 max-w-[80%] md:max-w-[70%] font-sans"
-  [style.marginRight]="message().isOwn ? 'auto' : '0'"
-  [style.marginLeft]="message().isOwn ? '0' : 'auto'"
+  [class]="message().isOwn
+    ? 'flex flex-row items-end gap-3 max-w-[80%] md:max-w-[70%] font-sans'
+    : 'flex flex-row-reverse items-end gap-3 max-w-[80%] md:max-w-[70%] font-sans'"
 >
   <!-- Incoming avatar -->
   @if (!message().isOwn) {
