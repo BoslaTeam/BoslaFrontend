@@ -5,7 +5,6 @@ import {
   signal,
   computed,
   effect,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -21,13 +20,16 @@ import { UserRole } from '@core/enums/user-role.enum';
   standalone: true,
   imports: [CommonModule, RouterLink, UiButton, UiSpinner],
   templateUrl: './appointment-details.html',
+  styles: [`
+    ui-button.w-full { display: flex; }
+    ui-button.w-full button { flex: 1; }
+  `],
 })
 export class AppointmentDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -56,6 +58,39 @@ export class AppointmentDetail implements OnInit {
   readonly rejectReason = signal('');
 
   readonly newConversationId = signal<string | null>(null);
+
+  readonly expandedSections = signal<Set<string>>(new Set(['appointment-info']));
+  readonly expandedTimelineItems = signal<Set<number>>(new Set());
+
+  toggleSection(id: string): void {
+    this.expandedSections.update(s => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  toggleTimelineItem(index: number): void {
+    this.expandedTimelineItems.update(s => {
+      const next = new Set(s);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }
+
+  readonly duration = computed(() => {
+    const item = this.store.selectedItem();
+    if (!item) return '';
+    const start = new Date(item.start);
+    const end = new Date(item.end);
+    const diff = end.getTime() - start.getTime();
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    if (hours > 0) return `${hours} ساعة ${minutes > 0 ? `${minutes} دقيقة` : ''}`;
+    return `${minutes} دقيقة`;
+  });
 
   readonly hasConversation = computed(() => {
     return this.newConversationId() ?? this.store.selectedItem()?.conversationId ?? null;
@@ -130,14 +165,6 @@ export class AppointmentDetail implements OnInit {
   });
 
   constructor() {
-    effect(() => {
-      this.store.selectedItem();
-      this.store.isLoading();
-      this.store.selectedSpecialistDetail();
-      this.store.isLoadingSpecialist();
-      this.store.isActionLoading();
-      this.cdr.detectChanges();
-    });
     effect(() => {
       const convId = this.store.lastCreatedConversationId();
       if (convId) {
@@ -235,42 +262,6 @@ export class AppointmentDetail implements OnInit {
 
   onDeleteReminder(reminderId: string): void {
     this.store.deleteReminder(this.appointmentId, reminderId);
-  }
-
-  getStatusGradient(status: AppointmentStatus | undefined): string {
-    switch (status) {
-      case AppointmentStatus.Pending:
-        return 'linear-gradient(135deg, #F39C12, #E67E22)';
-      case AppointmentStatus.Confirmed:
-        return 'linear-gradient(135deg, #1B4F72, #2E86AB)';
-      case AppointmentStatus.Paid:
-        return 'linear-gradient(135deg, #059669, #10B981)';
-      case AppointmentStatus.Completed:
-        return 'linear-gradient(135deg, #059669, #10B981)';
-      case AppointmentStatus.Cancelled:
-        return 'linear-gradient(135deg, #DC2626, #EF4444)';
-      case AppointmentStatus.Rescheduled:
-        return 'linear-gradient(135deg, #7C3AED, #8B5CF6)';
-      default:
-        return 'linear-gradient(135deg, #64748B, #94A3B8)';
-    }
-  }
-
-  getStatusIcon(status: AppointmentStatus | undefined): string {
-    switch (status) {
-      case AppointmentStatus.Pending:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Confirmed:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Paid:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Completed:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-      case AppointmentStatus.Cancelled:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
-      default:
-        return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
-    }
   }
 
   getStatusLabel(status: AppointmentStatus | undefined) {
@@ -372,6 +363,37 @@ export class AppointmentDetail implements OnInit {
         return 'تم إعادة جدولة الموعد';
       default:
         return 'تم تغيير الحالة';
+    }
+  }
+
+  getChangedByLabel(changedBy: string): string {
+    if (changedBy === 'System') return 'النظام';
+    const currentUserId = this.authService.currentUser()?.id;
+    if (currentUserId && changedBy === currentUserId) {
+      return this.userRole() === UserRole.User ? 'بواسطتك' : 'بواسطك';
+    }
+    const role = this.userRole();
+    if (role === UserRole.User) return 'المختص';
+    if (role === UserRole.Specialist || role === UserRole.Admin) return 'المستخدم';
+    return changedBy;
+  }
+
+  getTimelineEventIcon(status: AppointmentStatus | undefined): string {
+    switch (status) {
+      case AppointmentStatus.Pending:
+        return 'M13 10V3L4 14h7v7l9-11h-7z';
+      case AppointmentStatus.Confirmed:
+        return 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z';
+      case AppointmentStatus.Paid:
+        return 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z';
+      case AppointmentStatus.Completed:
+        return 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4';
+      case AppointmentStatus.Cancelled:
+        return 'M6 18L18 6M6 6l12 12';
+      case AppointmentStatus.Rescheduled:
+        return 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15';
+      default:
+        return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
     }
   }
 }

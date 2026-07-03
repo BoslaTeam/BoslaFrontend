@@ -53,7 +53,7 @@ export interface AppointmentDto {
   specialistName?: string;
   specialistTitle?: string;
   specialistImageUrl?: string;
-  amount?: number;
+  sessionPrice?: number;
   paymentStatus?: PaymentStatus;
   conversationId?: string;
 }

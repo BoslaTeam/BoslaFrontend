@@ -1,233 +1,233 @@
 <div class="min-h-screen bg-bosla-offwhite" dir="rtl">
-  <div class="max-w-5xl mx-auto px-4 pt-28 pb-12">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-4xl font-bold text-bosla-orange font-sans">المواعيد</h1>
-        <p class="text-sm text-bosla-grey mt-1">تابع وجدول جلساتك الاستشارية بكل سهولة</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-bosla-charcoal tracking-tight">المواعيد</h1>
+        <p class="text-sm text-bosla-grey mt-1">تابع وجدول جميع جلساتك الاستشارية</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-bosla-grey">
+        <span>إجمالي</span>
+        <span class="font-semibold text-bosla-charcoal bg-white border border-bosla-charcoal/10 px-3 py-1 rounded-lg">{{ store.items().length }}</span>
+        <span>موعد</span>
       </div>
     </div>
 
-    <div class="flex border-b border-bosla-charcoal/10 mb-6">
-      <button
-        (click)="setTab('upcoming')"
-        [class]="
-          activeTab() === 'upcoming'
-            ? 'border-bosla-primary text-bosla-primary font-bold'
-            : 'border-transparent text-bosla-grey hover:text-bosla-charcoal'
-        "
-        class="py-3 px-6 text-sm font-sans border-b-2 transition-all duration-200 outline-none"
-      >
-        المواعيد القادمة
-      </button>
-      <button
-        (click)="setTab('past')"
-        [class]="
-          activeTab() === 'past'
-            ? 'border-bosla-primary text-bosla-primary font-bold'
-            : 'border-transparent text-bosla-grey hover:text-bosla-charcoal'
-        "
-        class="py-3 px-6 text-sm font-sans border-b-2 transition-all duration-200 outline-none"
-      >
-        المواعيد السابقة
-      </button>
-      <button
-        (click)="setTab('pending_payment')"
-        [class]="
-          activeTab() === 'pending_payment'
-            ? 'border-bosla-orange text-bosla-orange font-bold'
-            : 'border-transparent text-bosla-grey hover:text-bosla-orange'
-        "
-        class="py-3 px-6 text-sm font-sans border-b-2 transition-all duration-200 outline-none relative"
-      >
-        دفعات معلقة
-        @if (pendingPaymentCount() > 0) {
-          <span class="absolute -top-1 -left-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-            {{ pendingPaymentCount() }}
-          </span>
-        }
-      </button>
+    <!-- Toolbar: Search + Sort -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <div class="relative flex-1">
+        <svg class="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-bosla-grey pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input #searchBox
+          type="text"
+          (input)="onSearchInput($event)"
+          placeholder="ابحث عن موعد حسب اسم الجلسة أو المختص..."
+          autocomplete="off"
+          class="w-full pr-10 pl-4 py-2.5 text-sm bg-white border border-bosla-charcoal/10 rounded-xl outline-none transition-all duration-200 placeholder:text-bosla-grey/60 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
+        />
+        <button (click)="searchBox.value = ''; searchQuery.set('')" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full transition-colors text-xs font-bold"
+          [class]="searchQuery() ? 'bg-rose-100 text-rose-500 hover:bg-rose-200' : 'opacity-0 pointer-events-none'">
+          ✕
+        </button>
+      </div>
+      <div class="relative">
+        <select
+          [value]="sortOrder()"
+          (change)="setSort($any($event.target).value)"
+          class="appearance-none bg-white border border-bosla-charcoal/10 rounded-xl px-4 pr-4 pl-10 py-2.5 text-sm text-bosla-charcoal outline-none cursor-pointer transition-all duration-200 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
+        >
+          <option value="asc">من الأقدم إلى الأحدث</option>
+          <option value="desc">من الأحدث إلى الأقدم</option>
+        </select>
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bosla-grey pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
     </div>
 
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-1.5 mb-8 bg-white border border-bosla-charcoal/5 rounded-2xl p-1.5 shadow-sm">
+      @for (tab of tabs; track tab.key) {
+        @let count = tabCounts()[tab.key];
+        <button
+          (click)="setTab(tab.key)"
+          class="relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none"
+          [class]="activeTab() === tab.key
+            ? 'bg-bosla-primary text-white shadow-md shadow-bosla-primary/15'
+            : 'text-bosla-grey hover:text-bosla-charcoal hover:bg-bosla-charcoal/[0.03]'"
+        >
+          {{ tab.label }}
+          @if (count > 0) {
+            <span
+              class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+              [class]="activeTab() === tab.key ? 'bg-white/20 text-white' : 'bg-bosla-charcoal/5 text-bosla-grey'"
+            >{{ count }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Loading State -->
     @if (store.isLoading()) {
-      <div class="flex flex-col items-center justify-center py-24">
-        <ui-spinner size="lg"></ui-spinner>
-        <p class="text-sm text-bosla-grey mt-4">جاري تحميل قائمة المواعيد...</p>
+      <div class="flex flex-col items-center justify-center py-32">
+        <div class="w-10 h-10 border-[3px] border-bosla-primary/20 border-t-bosla-primary rounded-full animate-spin"></div>
+        <p class="text-sm text-bosla-grey mt-5">جاري تحميل المواعيد...</p>
       </div>
     } @else {
-      @if (filteredAppointments().length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          @for (appointment of displayedAppointments(); track appointment.id) {
-                <div
-              class="group block bg-white rounded-2xl border border-bosla-charcoal/5 hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-            >
-              <div
-                [routerLink]="['/appointments', appointment.id]"
-                class="cursor-pointer"
-              >
-                <div class="p-5 pb-3">
-                  <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="w-10 h-10 rounded-full bg-bosla-primary/10 flex items-center justify-center overflow-hidden shrink-0"
-                      >
-                        @if (appointment.specialistImageUrl) {
-                          <img
-                            [src]="appointment.specialistImageUrl"
-                            class="w-full h-full object-cover"
-                          />
-                        } @else {
-                          <span class="text-bosla-primary text-sm font-bold">
-                            {{ (appointment.specialistName || 'م').charAt(0) }}
-                          </span>
-                        }
-                      </div>
-                      <div>
-                        <h3
-                          class="text-sm font-bold text-bosla-charcoal group-hover:text-bosla-blue transition-colors leading-tight"
-                        >
-                          {{ appointment.sessionTopic || 'جلسة استشارية' }}
-                        </h3>
-                        @if (appointment.specialistName) {
-                          <p class="text-xs text-bosla-grey mt-0.5">
-                            {{ appointment.specialistName }}
-                          </p>
-                        }
-                      </div>
-                    </div>
+      @if (getFilteredAppointments().length > 0) {
+        <!-- Table Header (desktop) -->
+        <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-3 mb-2 text-xs font-medium text-bosla-grey uppercase tracking-wider">
+          <div class="col-span-4">الجلسة</div>
+          <div class="col-span-3">التاريخ والوقت</div>
+          <div class="col-span-2">اليوم</div>
+          <div class="col-span-1 text-center">الحالة</div>
+          <div class="col-span-2 text-left">الإجراءات</div>
+        </div>
 
-                    @let statusInfo = getStatusDetails(appointment.status);
-                    <span
-                      [class]="
-                        'text-xs font-medium px-2.5 py-1 rounded-full border shrink-0 ' +
-                        statusInfo.classes
-                      "
-                    >
-                      {{ statusInfo.text }}
-                    </span>
+        <!-- Appointments List -->
+        <div class="space-y-2">
+          @for (appointment of getFilteredAppointments(); track appointment.id) {
+            @let meta = getStatusMeta(appointment.status);
+            @let startDate = appointment.start | date: 'dd MMMM yyyy' : '' : 'ar';
+            @let startDay = getDayName(appointment.start);
+            @let startTime = appointment.start | date: 'hh:mm a';
+            @let endTime = appointment.end | date: 'hh:mm a';
+
+            <div class="group relative bg-white rounded-2xl border border-bosla-charcoal/5 hover:border-bosla-charcoal/15 shadow-sm hover:shadow-md transition-all duration-300">
+              <!-- Status dot indicator -->
+              <div class="absolute right-0 top-0 bottom-0 w-1 rounded-r-2xl {{ meta.dot }}"></div>
+
+              <div class="lg:grid lg:grid-cols-12 lg:gap-4 px-5 pr-6 py-4 lg:py-5 items-center">
+                <!-- Session Info -->
+                <div class="col-span-4 flex items-center gap-3.5 min-w-0 mb-3 lg:mb-0">
+                  <div class="w-10 h-10 rounded-xl shrink-0 overflow-hidden ring-2 ring-bosla-charcoal/5">
+                    @if (appointment.specialistImageUrl) {
+                      <img [src]="appointment.specialistImageUrl" class="w-full h-full object-cover" />
+                    } @else {
+                      <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-sm font-bold">
+                        {{ (appointment.specialistName || 'م').charAt(0) }}
+                      </div>
+                    }
                   </div>
-
-                  <div
-                    class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-t border-bosla-charcoal/5 pt-4"
-                  >
-                    <div class="flex items-center gap-1.5">
-                      <svg
-                        class="w-4 h-4 text-bosla-blue"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <span class="text-xs text-bosla-charcoal/70">{{
-                        appointment.start | date: 'dd MMMM yyyy' : '' : 'ar'
-                      }}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                      <svg
-                        class="w-4 h-4 text-bosla-blue"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span class="text-xs text-bosla-charcoal/70" dir="ltr">
-                        {{ appointment.start | date: 'hh:mm a' }} -
-                        {{ appointment.end | date: 'hh:mm a' }}
-                      </span>
-                    </div>
+                  <div class="min-w-0">
+                    <a [routerLink]="['/appointments', appointment.id]" class="text-sm font-bold text-bosla-charcoal truncate block group-hover:text-bosla-primary transition-colors">
+                      {{ appointment.sessionTopic || 'جلسة استشارية' }}
+                    </a>
+                    @if (appointment.specialistName) {
+                      <p class="text-xs text-bosla-grey mt-0.5 truncate flex items-center gap-1">
+                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {{ appointment.specialistName }}
+                      </p>
+                    }
                   </div>
                 </div>
-              </div>
 
-              <div class="px-5 pb-4 flex flex-wrap items-center gap-2 border-t border-bosla-charcoal/5 pt-3">
-                @if (
-                  appointment.status === AppointmentStatus.Confirmed &&
-                  appointment.paymentStatus !== PaymentStatus.Paid &&
-                  appointment.paymentStatus !== PaymentStatus.Refunded
-                ) {
-                  <a
-                    [routerLink]="['/appointments', appointment.id, 'pay']"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-lg transition-colors"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                <!-- Date & Time -->
+                <div class="col-span-3 flex items-center gap-2.5 mb-2 lg:mb-0">
+                  <div class="w-8 h-8 rounded-lg bg-bosla-blue/5 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    إتمام الدفع
+                  </div>
+                  <div>
+                    <span class="text-sm font-semibold text-bosla-charcoal block leading-tight">{{ startDate }}</span>
+                    <span class="text-xs text-bosla-grey block mt-0.5" dir="ltr">{{ startTime }} - {{ endTime }}</span>
+                  </div>
+                </div>
+
+                <!-- Day -->
+                <div class="col-span-2 flex items-center gap-2 mb-2 lg:mb-0">
+                  <div class="w-8 h-8 rounded-lg bg-bosla-primary/5 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-bosla-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium text-bosla-charcoal">{{ startDay }}</span>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="col-span-1 flex lg:justify-center mb-3 lg:mb-0">
+                  <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg border {{ meta.bg }}">
+                    {{ meta.label }}
+                  </span>
+                </div>
+
+                <!-- Actions -->
+                <div class="col-span-2 flex items-center gap-2 lg:justify-end">
+                  @if (appointment.status === AppointmentStatus.Confirmed && appointment.paymentStatus !== PaymentStatus.Paid) {
+                    <a [routerLink]="['/appointments', appointment.id, 'pay']"
+                      class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-xl hover:shadow-md hover:shadow-bosla-orange/15 hover:-translate-y-0.5 transition-all duration-200 shrink-0">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      الدفع
+                    </a>
+                  }
+                  <a [routerLink]="['/appointments', appointment.id]"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-xl text-bosla-grey hover:text-bosla-blue hover:bg-bosla-blue/5 border border-transparent hover:border-bosla-blue/15 transition-all duration-200 shrink-0"
+                    title="التفاصيل">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </a>
-                }
-                <a
-                  [routerLink]="['/appointments', appointment.id, 'track']"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-bosla-blue bg-bosla-blue/5 hover:bg-bosla-blue/10 border border-bosla-blue/20 rounded-lg transition-colors"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  تتبع الحالة
-                </a>
+                  <a [routerLink]="['/appointments', appointment.id, 'track']"
+                    class="inline-flex items-center justify-center w-9 h-9 rounded-xl text-bosla-grey hover:text-bosla-blue hover:bg-bosla-blue/5 border border-transparent hover:border-bosla-blue/15 transition-all duration-200 shrink-0"
+                    title="تتبع الحالة">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           }
         </div>
-
-        @if (hasMore()) {
-          <div class="flex justify-center mt-8">
-            <button (click)="showMore()"
-              class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-bosla-blue bg-white border border-bosla-blue/20 rounded-xl hover:bg-bosla-blue/5 hover:shadow-sm transition-all duration-200">
-              عرض المزيد
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-        }
       } @else {
-        <div
-          class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6"
-        >
-          <div
-            class="w-16 h-16 bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-4"
-          >
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-bosla-charcoal/5 shadow-sm px-6">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-bosla-blue/10 to-bosla-primary/10 flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-bosla-blue/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 class="text-lg font-bold text-bosla-charcoal font-sans">
-            @if (activeTab() === 'upcoming') {
-              لا توجد مواعيد قادمة
-            } @else if (activeTab() === 'pending_payment') {
-              لا توجد دفعات معلقة
+          <h3 class="text-lg font-bold text-bosla-charcoal">
+            @if (activeTab() === 'all') {
+              لا توجد مواعيد مسجلة
+            } @else if (activeTab() === 'pending') {
+              لا توجد مواعيد قيد الانتظار
+            } @else if (activeTab() === 'awaiting_payment') {
+              لا توجد مواعيد بانتظار الدفع
+            } @else if (activeTab() === 'paid') {
+              لا توجد مواعيد مؤكدة ومدفوعة
+            } @else if (activeTab() === 'completed') {
+              لا توجد مواعيد مكتملة
             } @else {
-              لا يوجد سجل مواعيد سابقة
+              لا توجد مواعيد ملغية
             }
           </h3>
-          <p class="text-sm text-bosla-grey max-w-sm mt-1">
-            @if (activeTab() === 'upcoming') {
+          <p class="text-sm text-bosla-grey max-w-sm mt-2 leading-relaxed">
+            @if (searchQuery()) {
+              لا توجد نتائج تطابق بحثك. جرب كلمات بحث مختلفة.
+            } @else if (activeTab() === 'all') {
               ابدأ رحلتك الاستشارية واحجز جلستك الأولى مع أحد المختصين المعتمدين.
-            } @else if (activeTab() === 'pending_payment') {
-              جميع مواعيدك قد تم دفعها. شكراً لك!
+            } @else if (activeTab() === 'pending') {
+              عندما يقوم مستخدم بحجز موعد، سيظهر هنا بانتظار موافقتك.
             } @else {
-              لم يتم تسجيل أي مواعيد سابقة بعد.
+              لا يوجد أي مواعيد في هذا القسم حالياً.
             }
           </p>
-          @if (activeTab() === 'upcoming') {
-            <ui-button [routerLink]="['/specialists']" size="md" variant="secondary" class="mt-6">
-              احجز جلستك الأولى
+          @if (!searchQuery() && activeTab() === 'all') {
+            <ui-button [routerLink]="['/specialists']" size="md" variant="primary" class="mt-6">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                احجز جلستك الأولى
+              </span>
             </ui-button>
           }
         </div>
