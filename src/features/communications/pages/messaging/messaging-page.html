@@ -50,14 +50,14 @@
   } @else {
     <!-- ========= DESKTOP LAYOUT ========= -->
 
-    <!-- Conversation Sidebar (first in DOM = right side in RTL) -->
+    <!-- Left Sidebar (Specialist Card + Upcoming Session + Shared Resources) -->
     <div
-      class="shrink-0 h-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10 glass-panel border-l border-slate-200/50"
-      [style.width]="showConversationSidebar() ? '340px' : '0px'"
-      [style.opacity]="showConversationSidebar() ? '1' : '0'"
-      [style.overflow]="showConversationSidebar() ? 'visible' : 'hidden'"
+      class="shrink-0 h-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10 glass-panel border-r border-slate-200/50"
+      [style.width]="showDetailsSidebar() ? '320px' : '0px'"
+      [style.opacity]="showDetailsSidebar() ? '1' : '0'"
+      [style.overflow]="showDetailsSidebar() ? 'visible' : 'hidden'"
     >
-      <chat-conversation-sidebar />
+      <chat-left-sidebar />
     </div>
 
     <!-- Chat Area (dominant — flex-1 fills remaining space) -->
@@ -69,14 +69,14 @@
       (toggleDetailsPanel)="toggleDetailsSidebar()"
     />
 
-    <!-- Left Sidebar (Specialist details — last in DOM = left side in RTL) -->
+    <!-- Conversation Sidebar -->
     <div
-      class="shrink-0 h-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10 glass-panel border-r border-slate-200/50"
-      [style.width]="showDetailsSidebar() ? '320px' : '0px'"
-      [style.opacity]="showDetailsSidebar() ? '1' : '0'"
-      [style.overflow]="showDetailsSidebar() ? 'visible' : 'hidden'"
+      class="shrink-0 h-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative z-10 glass-panel border-l border-slate-200/50"
+      [style.width]="showConversationSidebar() ? '340px' : '0px'"
+      [style.opacity]="showConversationSidebar() ? '1' : '0'"
+      [style.overflow]="showConversationSidebar() ? 'visible' : 'hidden'"
     >
-      <chat-left-sidebar />
+      <chat-conversation-sidebar />
     </div>
   }
 
