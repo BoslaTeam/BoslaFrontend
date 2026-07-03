@@ -4,7 +4,6 @@ import {
 import { ChatStore } from '../../store/chat.store';
 import { ChatSignalrService } from '../../services/chat-signalr.service';
 import { AuthService } from '@core/services/auth.service';
-import { UserRole } from '@core/enums/user-role.enum';
 import { AiSmartReply } from '@features/ai/components/ai-smart-reply/ai-smart-reply';
 import { EmojiPickerComponent } from '@shared/components/emoji-picker/emoji-picker.component';
 
@@ -30,9 +29,9 @@ export class MessageComposer {
   private typingTimeout: ReturnType<typeof setTimeout> | null = null;
   private isCurrentlyTyping = false;
 
-  /** True when the current user is a Specialist → show AI smart reply button */
-  readonly isSpecialist = computed(() =>
-    this.authService.userRole() === UserRole.Specialist
+  /** True when the current user is authenticated → show AI smart reply button */
+  readonly isAuthenticated = computed(() =>
+    this.authService.isAuthenticated()
   );
 
   constructor() {

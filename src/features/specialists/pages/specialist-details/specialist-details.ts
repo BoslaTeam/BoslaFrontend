@@ -27,6 +27,10 @@ export class SpecialistDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  isImage(url: string): boolean {
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  }
+
   readonly activeTab = signal<string>('profile');
 
   readonly tabs: TabItem[] = [

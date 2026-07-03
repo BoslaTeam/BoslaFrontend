@@ -89,6 +89,7 @@ export const API_ENDPOINTS = {
     byId: (id: string) => `${V}/specialists/${id}`,
     availabilityFor: (id: string) => `${V}/specialists/${id}/availability`,
     reviewsFor: (id: string) => `${V}/specialists/${id}/reviews`,
+    certificatesFor: (id: string) => `${V}/specialists/${id}/certificates`,
     embeddingRefresh: `${V}/specialists/me/embedding/refresh`,
     dashboard: `${V}/specialists/me/dashboard`,
     myReviews: `${V}/specialists/me/reviews`,
@@ -116,6 +117,7 @@ export const API_ENDPOINTS = {
     summaryRegenerate: (id: string) => `${V}/ai/summaries/${id}/regenerate`,
     recommendations: `${V}/ai/recommendations`,
     chat: `${V}/ai/chat`,
+    smartReplies: `${V}/ai/smart-replies`,
     specialist: {
       smartReplies: `${V}/ai/specialist/smart-replies`,
       sessionPrep: (appointmentId: string) => `${V}/ai/specialist/session-prep/${appointmentId}`,
