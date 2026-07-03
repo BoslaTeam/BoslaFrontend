@@ -6,5 +6,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './not-found.html',
+  styleUrls: ['./not-found.css']
 })
 export class NotFound {}

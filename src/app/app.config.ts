@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, LOCALE_ID } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
 
@@ -17,7 +17,12 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'ar' },
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withViewTransitions(),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
+    ),
     provideHttpClient(
       withInterceptors([
         authInterceptor,
