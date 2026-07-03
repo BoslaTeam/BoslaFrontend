@@ -27,9 +27,10 @@ export class AppointmentService {
       .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.myappointments);
   }
 
-  getAppointmentsBySpecialist(specialistId: string): Observable<ApiResponse<contract.AppointmentDto[]>> {
+  getAppointmentsBySpecialist(specialistId: string, pageSize = 100): Observable<ApiResponse<contract.AppointmentDto[]>> {
+    const url = `${this.endpoints.bySpecialist(specialistId)}?pageSize=${pageSize}`;
     return this.http
-      .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.bySpecialist(specialistId));
+      .get<ApiResponse<contract.AppointmentDto[]>>(url);
   }
 
   getMySpecialistAppointments(pageNumber = 1, pageSize = 50): Observable<ApiResponse<contract.AppointmentDto[]>> {

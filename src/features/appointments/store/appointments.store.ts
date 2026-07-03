@@ -249,22 +249,24 @@ export class AppointmentsStore {
       appointments: this.appointmentService.getAppointmentsBySpecialist(specialistId),
     }).subscribe({
       next: ({ slots, appointments }) => {
-        const bookedAppointments = appointments.data.filter(
-          a => a.status === AppointmentStatus.Pending || a.status === AppointmentStatus.Confirmed
-        );
-
-        const availabilitySlots = slots.data.map(slot => {
+        const availabilitySlots = slots.data
+          .filter(slot => new Date(slot.start) > new Date())
+          .map(slot => {
           const slotStart = new Date(slot.start).getTime();
           const slotEnd = new Date(slot.end).getTime();
 
-          const isBooked = bookedAppointments.some(apt => {
+          const isOverlapping = (appointments.data ?? []).filter(
+            a => a.status !== AppointmentStatus.Completed
+              && a.status !== AppointmentStatus.Cancelled
+          ).some(apt => {
             const aptStart = new Date(apt.start).getTime();
             const aptEnd = new Date(apt.end).getTime();
             return slotStart < aptEnd && slotEnd > aptStart;
           });
 
-          return { ...slot, isBooked };
+          return { ...slot, isBooked: slot.isBooked || isOverlapping };
         });
+
 
         this.updateState({ availabilitySlots });
       },

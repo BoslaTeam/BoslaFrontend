@@ -31,6 +31,7 @@ export class AppointmentDetail implements OnInit {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
 
+  readonly Math = Math;
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
   readonly showCancelModal = signal(false);
