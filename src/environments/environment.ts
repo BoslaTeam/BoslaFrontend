@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://localhost:7275/api/v1',
+  apiBaseUrl: 'https://localhost:44397/api/v1',
   googleClientId: '818109149867-jlbj83dcs95rknac2g38asnefamefj5o.apps.googleusercontent.com',
   agoraAppId: '',
-  hubBaseUrl: 'https://localhost:7275',
+  hubBaseUrl: 'https://localhost:44397',
   stripePublishableKey: 'pk_test_51TkOLj05d5HmC2JPeXjUoGecsh3nv5vqPOqbCK5cDPcyM5VEzuoOxHfjAenQ7iKJiBhQsXH3RrwouMnfJ9wkWK4700ia1UKSfl',
   // apiBaseUrl: 'https://192.168.1.2:7275/api/v1'
 };
