@@ -18,6 +18,7 @@ import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '@features/video/services/video-session.service';
+import { ToastService } from '@core/services/toast.service';
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
@@ -34,6 +35,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly toast = inject(ToastService);
 
   readonly Math = Math;
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -158,7 +160,16 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     if (!item) return false;
     if (item.status === AppointmentStatus.Completed) return false;
     if (item.status === AppointmentStatus.Cancelled) return false;
-    return item.paymentStatus === PaymentStatus.Paid || item.status === AppointmentStatus.Paid;
+    if (item.paymentStatus !== PaymentStatus.Paid && item.status !== AppointmentStatus.Paid) return false;
+    return true;
+  });
+
+  readonly canJoinNow = computed(() => {
+    if (!this.canJoin()) return false;
+    const item = this.store.selectedItem();
+    if (!item) return false;
+    const startMs = new Date(item.start).getTime() - 15 * 60 * 1000;
+    return Date.now() >= startMs;
   });
 
   readonly canCancel = computed(() => {
@@ -250,6 +261,10 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   }
 
   async joinSession(): Promise<void> {
+    if (!this.canJoinNow()) {
+      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      return;
+    }
     const item = this.store.selectedItem();
     if (!item) return;
     try {

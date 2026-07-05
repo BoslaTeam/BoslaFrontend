@@ -279,11 +279,7 @@
                         دفع
                       </a>
                     }
-                    @if (
-                      (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
-                      appointment.status !== AppointmentStatus.Cancelled &&
-                      appointment.status !== AppointmentStatus.Completed
-                    ) {
+                    @if (canJoinAppointment(appointment)) {
                       <button
                         (click)="joinSession(appointment.id)"
                         class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"
@@ -464,11 +460,7 @@
                           دفع
                         </a>
                       }
-                      @if (
-                        (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
-                        appointment.status !== AppointmentStatus.Cancelled &&
-                        appointment.status !== AppointmentStatus.Completed
-                      ) {
+                      @if (canJoinAppointment(appointment)) {
                         <button
                           (click)="joinSession(appointment.id)"
                           class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"

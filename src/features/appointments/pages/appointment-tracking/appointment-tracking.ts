@@ -7,6 +7,7 @@ import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { VideoSessionService } from '@features/video/services/video-session.service';
+import { ToastService } from '@core/services/toast.service';
 
 export interface TrackingStep {
   key: string;
@@ -30,6 +31,7 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   private readonly el = inject(ElementRef);
 
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly toast = inject(ToastService);
 
   readonly newConversationId = signal<string | null>(null);
 
@@ -128,7 +130,16 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     if (!app) return false;
     if (app.status === AppointmentStatus.Cancelled) return false;
     if (app.status === AppointmentStatus.Completed) return false;
-    return app.paymentStatus === PaymentStatus.Paid || app.status === AppointmentStatus.Paid;
+    if (app.paymentStatus !== PaymentStatus.Paid && app.status !== AppointmentStatus.Paid) return false;
+    return true;
+  });
+
+  readonly canJoinNow = computed(() => {
+    if (!this.canJoin()) return false;
+    const app = this.store.selectedItem();
+    if (!app) return false;
+    const startMs = new Date(app.start).getTime() - 15 * 60 * 1000;
+    return Date.now() >= startMs;
   });
 
   constructor() {
@@ -174,6 +185,10 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async joinSession(): Promise<void> {
+    if (!this.canJoinNow()) {
+      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      return;
+    }
     const app = this.store.selectedItem();
     if (!app) return;
     try {

@@ -327,7 +327,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
       next: (res) => {
         const sessionId = res.data?.sessionId;
         if (sessionId) {
-          this.router.navigate(['/specialist/video', sessionId]);
+          this.router.navigate(['/video', sessionId]);
         } else {
           this.toast.danger('فشل الحصول على معرف الجلسة');
         }

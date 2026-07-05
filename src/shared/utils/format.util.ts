@@ -51,8 +51,8 @@ export function formatArabicDuration(minutes: number): string {
 
 /* ── Arabic Countdown ────────────────────────────────────────────────── */
 
-export function formatArabicCountdown(targetDate: Date): string {
-  const now = Date.now();
+export function formatArabicCountdown(targetDate: Date, nowMs?: number): string {
+  const now = nowMs ?? Date.now();
   const diffMs = targetDate.getTime() - now;
 
   if (diffMs <= 0) {

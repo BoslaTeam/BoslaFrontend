@@ -10,6 +10,8 @@ import { LookupResponse } from '../../contracts/lookup.contract';
 import { ExperienceResponse } from '../../contracts/specialist-experience.contract';
 import { SpecialistDocumentResponse, SpecialistDocumentType } from '../../contracts/specialist-document.contract';
 import { ToastService } from '@core/services/toast.service';
+import { UserProfileService } from '@features/users/services/user-profile.service';
+import { AuthService } from '@core/services/auth.service';
 import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
 import { UiTextarea } from '@shared/ui/textarea/textarea';
@@ -37,12 +39,15 @@ export class SpecialistProfileManagement implements OnInit {
   private fb = inject(FormBuilder);
   private specialistApi = inject(SpecialistApiService);
   private specialistsApi = inject(SpecialistsApiService);
+  private userProfileService = inject(UserProfileService);
+  private authService = inject(AuthService);
   private toast = inject(ToastService);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
 
   readonly profile = signal<SpecialistProfileResponse | null>(null);
+  readonly profileImageError = signal(false);
   readonly experienceLevel = signal(0);
   readonly levelLabel = computed(() => LEVEL_LABELS[this.experienceLevel()]);
 
@@ -164,7 +169,7 @@ export class SpecialistProfileManagement implements OnInit {
     this.loadAll();
   }
 
-  private loadAll(): void {
+  private loadProfile(): void {
     this.loading.set(true);
     this.specialistApi.getMyProfile().pipe(finalize(() => this.loading.set(false))).subscribe({
       next: (res) => {
@@ -194,6 +199,10 @@ export class SpecialistProfileManagement implements OnInit {
       },
       error: () => this.toast.danger('فشل تحميل بيانات الملف الشخصي'),
     });
+  }
+
+  private loadAll(): void {
+    this.loadProfile();
 
     this.specialistsApi.getMySkills().subscribe({
       next: (res) => this.mySkills.set(res.data),
@@ -224,6 +233,34 @@ export class SpecialistProfileManagement implements OnInit {
     this.specialistsApi.getDocuments().subscribe({
       next: (res) => this.certificates.set(res.data.filter(d => d.type === SpecialistDocumentType.Certificate)),
     });
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.profile.update(p => p ? { ...p, profileImageUrl: e.target?.result as string } : p);
+      };
+      reader.readAsDataURL(file);
+
+      this.profileImageError.set(false);
+
+      this.userProfileService.uploadProfileImage(file).subscribe({
+        next: (res) => {
+          const fileUrl = res.data || res;
+          this.profile.update(p => p ? { ...p, profileImageUrl: fileUrl } : p);
+          this.authService.updateAvatar(fileUrl);
+          this.toast.success('تم تحديث الصورة الشخصية بنجاح');
+        },
+        error: () => {
+          this.toast.danger('فشل تحديث الصورة الشخصية');
+          this.loadProfile();
+        },
+      });
+    }
   }
 
   onBookingSubmit(): void {
