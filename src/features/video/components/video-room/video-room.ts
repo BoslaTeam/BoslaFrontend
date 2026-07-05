@@ -8,7 +8,7 @@ import {
   effect,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AgoraService } from '@core/services/agora.service';
 import { SessionTimerService } from '@core/services/session-timer.service';
@@ -32,11 +32,13 @@ import { ScreenShareIndicator } from '../screen-share-indicator/screen-share-ind
 import { VideoRecordingTimerService } from '../../services/video-recording-timer.service';
 import { RecordingButton } from '../recording-button/recording-button';
 import { RecordingIndicator } from '../recording-indicator/recording-indicator';
+import { VideoSessionStateService } from '../../services/video-session-state.service';
+import { AppointmentService } from '@features/appointments/services/appointments.service';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
+  imports: [RouterLink, ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -56,6 +58,8 @@ export class VideoRoom {
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
+  readonly sessionStateService = inject(VideoSessionStateService);
+  private readonly appointmentService = inject(AppointmentService);
 
   public sessionId: string;
   private isDestroyed = false;
@@ -104,6 +108,7 @@ export class VideoRoom {
     this.sessionId = id!;
 
     this.videoDeviceService.enumerateDevices();
+    this.loadSessionState();
 
     effect(() => {
       const payload = this.videoSignalrService.sessionStarted();
@@ -128,6 +133,7 @@ export class VideoRoom {
       this._sessionEndedAt = this.toTimestamp(payload.endedAtUtc);
       this.sessionTimerService.stop();
       this.recordingTimerService.stop();
+      this.sessionStateService.setSessionCompleted();
       this.isSessionEnded.set(true);
       this.isWaitingForSpecialist.set(false);
 
@@ -168,6 +174,7 @@ export class VideoRoom {
       this.videoSignalrService.disconnect();
       this.sessionTimerService.stop();
       this.agoraService.disconnect();
+      this.sessionStateService.reset();
     });
   }
 
@@ -190,6 +197,8 @@ export class VideoRoom {
     if (!session || this.isDestroyed) return;
 
     this._appointmentId = session.appointmentId;
+    this.sessionStateService.reset();
+    await this.initStateFromSession(session);
 
     if (session.recording?.isRecording && session.recording.startedAtUtc) {
       this.recordingTimerService.start(session.recording.startedAtUtc);
@@ -212,6 +221,46 @@ export class VideoRoom {
     this.signalrFailed.set(false);
     this.agoraService.clearError();
     this.handleJoinClick();
+  }
+
+  private async loadSessionState(): Promise<void> {
+    try {
+      const sessionRes = await firstValueFrom(
+        this.videoSessionService.getSession(this.sessionId)
+      );
+      if (this.isDestroyed) return;
+
+      const session = sessionRes.data;
+      if (!session) return;
+
+      await this.initStateFromSession(session);
+    } catch {
+      // Session load failed — canJoin stays false, user can retry via handleJoinClick
+    }
+  }
+
+  private async initStateFromSession(session: VideoSessionDto): Promise<void> {
+    let startMs = this.toTimestamp(session.appointmentStart);
+    let endMs = this.toTimestamp(session.appointmentEnd);
+
+    if (startMs === null || endMs === null) {
+      try {
+        const aptRes = await firstValueFrom(
+          this.appointmentService.getById(session.appointmentId)
+        );
+        if (this.isDestroyed) return;
+        if (aptRes.data) {
+          startMs = this.toTimestamp(aptRes.data.start);
+          endMs = this.toTimestamp(aptRes.data.end);
+        }
+      } catch {
+        return;
+      }
+    }
+
+    if (startMs !== null && endMs !== null) {
+      this.sessionStateService.init(startMs, endMs);
+    }
   }
 
   private async loadVideoSession(): Promise<VideoSessionDto | null> {
@@ -288,6 +337,7 @@ export class VideoRoom {
     if (this.isDestroyed || !this._appointmentId) return;
 
     this._joinFlowInProgress = true;
+    this.sessionStateService.setSessionConnecting();
 
     try {
       const tokenRes = await firstValueFrom(
@@ -322,6 +372,7 @@ export class VideoRoom {
         return;
       }
 
+      this.sessionStateService.setSessionConnected();
       this.networkQualityService.start();
       this.videoDeviceService.refreshPermissions();
       this.videoDeviceService.enumerateDevices();

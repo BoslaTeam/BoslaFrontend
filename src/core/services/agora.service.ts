@@ -152,6 +152,16 @@ export class AgoraService {
     this.client.on('user-left', (user: IAgoraRTCRemoteUser) => {
       this.handleUserLeft(user);
     });
+
+    this.client.on('stream-message', (uid, payload) => {
+      console.log('[STT]', 'Message Received');
+      try {
+        const decoded = new TextDecoder().decode(payload);
+        console.log('[STT RAW]', decoded);
+      } catch {
+        console.log('[STT RAW]', '(non-UTF8 payload)', payload);
+      }
+    });
   }
 
   private async handleUserPublished(user: IAgoraRTCRemoteUser, mediaType: 'video' | 'audio'): Promise<void> {
