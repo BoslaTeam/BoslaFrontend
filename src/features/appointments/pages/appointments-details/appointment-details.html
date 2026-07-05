@@ -12,7 +12,7 @@
       <div class="flex items-center justify-between mb-6">
         <a
           [routerLink]="['/appointments']"
-          class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-charcoal transition-colors group"
+          class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-charcoal transition-colors group cursor-pointer"
         >
           <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -27,7 +27,7 @@
 
           <!-- Session Info -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('session-info')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+            <button (click)="toggleSection('session-info')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -76,7 +76,7 @@
 
           <!-- Notes -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('notes')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+            <button (click)="toggleSection('notes')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -87,17 +87,6 @@
                 }
               </h3>
               <div class="flex items-center gap-2">
-                @if (canEditNotes()) {
-                  <button
-                    (click)="openNotesModal(); $event.stopPropagation()"
-                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    تعديل
-                  </button>
-                }
                 <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('notes')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -118,7 +107,7 @@
 
           <!-- Reminders -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('reminders')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+            <button (click)="toggleSection('reminders')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -129,17 +118,6 @@
                 }
               </h3>
               <div class="flex items-center gap-2">
-                @if (canAddReminder()) {
-                  <button
-                    (click)="showReminderModal.set(true); $event.stopPropagation()"
-                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    إضافة
-                  </button>
-                }
                 <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('reminders')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -167,7 +145,7 @@
                         </div>
                         <button
                           (click)="onDeleteReminder(reminder.id)"
-                          class="shrink-0 p-1.5 text-bosla-grey/40 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                          class="shrink-0 p-1.5 text-bosla-grey/40 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -192,7 +170,7 @@
 
           <!-- Status Timeline -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('timeline')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right">
+            <button (click)="toggleSection('timeline')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -283,7 +261,15 @@
               @let statusInfo = getStatusLabel(appointment.status);
               <span [class]="'text-xs font-medium px-3 py-1.5 rounded-full border ' + statusInfo.classes">
                 {{ statusInfo.text }}
+                @if (paymentDeadline()) {
+                  <span class="mr-1.5" [class]="remainingMs() > 60000 ? 'text-amber-600' : 'text-red-600'" dir="ltr">
+                    · {{ formatCountdown(remainingMs()) }}
+                  </span>
+                }
               </span>
+              @if (paymentDeadline()) {
+                <p class="text-[11px] text-amber-600 mt-1.5">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع قبل انتهاء الوقت</p>
+              }
             </div>
             <div class="space-y-3">
               <div class="flex items-center justify-between text-sm">
@@ -309,12 +295,12 @@
 
           <!-- Action Panel -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-5 space-y-3">
-            @if (canPay() || hasConversation()) {
+            @if (canPay() || hasConversation() || canJoin()) {
               <div class="flex items-stretch gap-2">
                 @if (canPay()) {
                   <a
                     [routerLink]="['/appointments', appointment.id, 'pay']"
-                    class="flex-1 flex items-center justify-center gap-2.5 h-10 text-sm font-bold text-white bg-amber-400 hover:bg-amber-500 rounded-xl transition-colors"
+                    class="flex-1 flex items-center justify-center gap-2.5 h-10 text-sm font-bold text-white bg-amber-400 hover:bg-amber-500 rounded-xl transition-colors cursor-pointer"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -322,10 +308,22 @@
                     إتمام الدفع
                   </a>
                 }
+                @if (canJoin()) {
+                  <button
+                    (click)="joinSession()"
+                    class="flex-1 flex items-center justify-center gap-2.5 h-10 text-sm font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-xl transition-colors cursor-pointer"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                    </svg>
+                    انضم للجلسة
+                  </button>
+                }
                 @if (hasConversation()) {
                   <button
                     (click)="goToConversation()"
-                    class="group relative w-10 h-10 flex items-center justify-center rounded-xl border border-bosla-charcoal/15 text-bosla-charcoal/60 hover:text-bosla-blue hover:border-bosla-blue/30 hover:bg-bosla-blue/5 transition-colors shrink-0"
+                    class="group relative w-10 h-10 flex items-center justify-center rounded-xl border border-bosla-charcoal/15 text-bosla-charcoal/60 hover:text-bosla-blue hover:border-bosla-blue/30 hover:bg-bosla-blue/5 transition-colors shrink-0 cursor-pointer"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -335,12 +333,11 @@
                 }
               </div>
             }
-            @if (canConfirm() || canComplete() || canReschedule() || canAddReminder() || canAddReview() || canEditNotes() || canCancel() || canReject()) {
-              <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap">
                 @if (canConfirm()) {
                   <button
                     (click)="onConfirm()"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -351,7 +348,7 @@
                 @if (canComplete()) {
                   <button
                     (click)="onComplete()"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -362,7 +359,7 @@
                 @if (canAddReview()) {
                   <button
                     (click)="showReviewModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-amber-500 hover:bg-amber-50 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-amber-500 hover:bg-amber-50 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -370,21 +367,10 @@
                     <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تقييم</span>
                   </button>
                 }
-                @if (canEditNotes()) {
-                  <button
-                    (click)="openNotesModal()"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
-                  >
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تعديل الملاحظات</span>
-                  </button>
-                }
                 @if (canReject()) {
                   <button
                     (click)="showRejectModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -394,7 +380,7 @@
                 }
                 <button
                   (click)="openNotesModal()"
-                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
                 >
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -404,7 +390,7 @@
                 @if (canAddReminder()) {
                   <button
                     (click)="showReminderModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -412,20 +398,9 @@
                     <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تذكير</span>
                   </button>
                 }
-                @if (canReschedule()) {
-                  <button
-                    (click)="showRescheduleModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
-                  >
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إعادة جدولة</span>
-                  </button>
-                }
                 <a
                   [routerLink]="['/appointments', appointment.id, 'track']"
-                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
+                  class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
                 >
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -435,7 +410,7 @@
                 @if (canCancel()) {
                   <button
                     (click)="showCancelModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                   >
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -444,7 +419,6 @@
                   </button>
                 }
               </div>
-            }
           </div>
           
           <!-- Specialist Card -->
@@ -480,7 +454,7 @@
               </div>
               <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
                 <a [routerLink]="['/specialists', specialist.id]"
-                  class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200">
+                  class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200 cursor-pointer">
                   عرض الملف الشخصي
                   <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -577,7 +551,7 @@
                   (click)="reviewRating.set(star)"
                   (mouseenter)="reviewHover.set(star)"
                   (mouseleave)="reviewHover.set(0)"
-                  class="p-1 transition-all duration-150 hover:scale-110 active:scale-95"
+                  class="p-1 transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer"
                 >
                   <svg
                     class="w-9 h-9 sm:w-10 sm:h-10 transition-colors duration-150"
@@ -650,47 +624,6 @@
           <div class="flex justify-end gap-2 mt-5">
             <ui-button (click)="showReminderModal.set(false); reminderMessage.set(''); reminderDate.set(''); reminderTime.set('')" size="sm" variant="ghost">إلغاء</ui-button>
             <ui-button (click)="onAddReminder()" [disabled]="!reminderDate() || !reminderTime() || !reminderMessage().trim()" size="sm" variant="primary">إضافة التذكير</ui-button>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- Reschedule Modal -->
-    @if (showRescheduleModal()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
-        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-xl">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">إعادة جدولة الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">اختر التاريخ والوقت الجديد للموعد</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">التاريخ الجديد</label>
-              <input type="date" [value]="rescheduleDate()" (input)="rescheduleDate.set($any($event.target).value)" [attr.min]="tomorrow()" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت البداية</label>
-                <input type="time" [value]="rescheduleStartTime()" (input)="rescheduleStartTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت النهاية</label>
-                <input type="time" [value]="rescheduleEndTime()" (input)="rescheduleEndTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-              </div>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showRescheduleModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
-            <ui-button (click)="onRescheduleSubmit()" [disabled]="!rescheduleDate() || !rescheduleStartTime() || !rescheduleEndTime()" [loading]="store.isActionLoading()" size="sm" variant="primary">تأكيد إعادة الجدولة</ui-button>
           </div>
         </div>
       </div>

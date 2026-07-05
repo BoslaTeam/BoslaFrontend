@@ -1,10 +1,12 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { UiButton } from '@shared/ui/button/button';
 import { AuthService } from '@core/services/auth.service';
+import { VideoSessionService } from '@features/video/services/video-session.service';
 
 import { PaymentStatus, AppointmentDto } from '../../contracts/appointments.contracts';
 
@@ -22,9 +24,38 @@ interface TabDef {
   imports: [CommonModule, RouterLink, UiButton],
   templateUrl: './appointments-list.html',
 })
-export class AppointmentList {
+export class AppointmentList implements OnDestroy {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly videoSessionService = inject(VideoSessionService);
+  readonly now = signal(Date.now());
+  private readonly timerHandle = setInterval(() => this.now.set(Date.now()), 1000);
+
+  async joinSession(appointmentId: string): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.videoSessionService.generateToken(appointmentId));
+      if (res.data?.sessionId) {
+        this.router.navigate(['/video', res.data.sessionId]);
+      }
+    } catch (err) {
+      console.error('Failed to join session', err);
+    }
+  }
+
+  getCountdownText(confirmedAt: string, nowMs: number): string | null {
+    const deadline = new Date(confirmedAt).getTime() + 3_600_000;
+    const remaining = deadline - nowMs;
+    if (remaining <= 0) return null;
+    const totalSec = Math.floor(remaining / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timerHandle);
+  }
 
   readonly activeTab = signal<AppointmentTab>('all');
   readonly searchQuery = signal('');

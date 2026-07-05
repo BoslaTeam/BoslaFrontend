@@ -156,23 +156,6 @@
                 </div>
               </div>
 
-              <!-- Pending: Awaiting specialist confirmation -->
-              @if (apt.status === ApptStatus.Pending) {
-                <div class="mt-3 text-xs text-amber-600 bg-amber-50 rounded-xl px-4 py-2 border border-amber-200 flex items-center gap-2">
-                  <i class="fa-regular fa-clock ml-1"></i>
-                  <span>في انتظار موافقتك</span>
-                  <span class="me-auto font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg text-[10px]">قيد المراجعة</span>
-                </div>
-              }
-
-              <!-- Paid: Payment completed -->
-              @if (apt.status === ApptStatus.Paid) {
-                <div class="mt-3 text-xs text-emerald-600 bg-emerald-50 rounded-xl px-4 py-2 border border-emerald-200 flex items-center gap-2">
-                  <i class="fa-solid fa-circle-check ml-1"></i>
-                  <span class="font-bold">تم الدفع</span>
-                  <span class="me-auto font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg text-[10px]">مدفوع</span>
-                </div>
-              }
 
               <!-- Confirmed / Paid / InProgress: Countdown, Late, Missed or Meeting Timer -->
               @if (apt.status === ApptStatus.Confirmed || apt.status === ApptStatus.Paid) {

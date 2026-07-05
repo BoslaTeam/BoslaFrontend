@@ -57,6 +57,7 @@ export interface AppointmentDto {
   sessionPrice?: number;
   paymentStatus?: PaymentStatus;
   conversationId?: string;
+  confirmedAt?: string;
 }
 
 export interface AppointmentStatusHistoryDto {
