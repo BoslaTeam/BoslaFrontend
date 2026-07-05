@@ -46,7 +46,7 @@
         />
         <button
           (click)="searchBox.value = ''; searchQuery.set('')"
-          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full transition-colors text-xs font-bold"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full transition-colors text-xs font-bold cursor-pointer"
           [class]="
             searchQuery()
               ? 'bg-rose-100 text-rose-500 hover:bg-rose-200'
@@ -89,7 +89,7 @@
         @let count = tabCounts()[tab.key];
         <button
           (click)="setTab(tab.key)"
-          class="relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none"
+          class="relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none cursor-pointer"
           [class]="
             activeTab() === tab.key
               ? 'bg-bosla-primary text-white shadow-md shadow-bosla-primary/15'
@@ -164,7 +164,7 @@
                   <div class="min-w-0 pt-0.5">
                     <a
                       [routerLink]="['/appointments', appointment.id]"
-                      class="text-sm font-bold text-gray-900 truncate block leading-snug group-hover:text-bosla-primary transition-colors"
+                      class="text-sm font-bold text-gray-900 truncate block leading-snug group-hover:text-bosla-primary transition-colors cursor-pointer"
                     >
                       {{ appointment.specialistName || 'مختص' }}
                     </a>
@@ -261,7 +261,7 @@
                     ) {
                       <a
                         [routerLink]="['/appointments', appointment.id, 'pay']"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm hover:shadow-md hover:shadow-bosla-orange/15 hover:-translate-y-[0.5px] transition-all duration-200"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm hover:shadow-md hover:shadow-bosla-orange/15 hover:-translate-y-[0.5px] transition-all duration-200 cursor-pointer"
                       >
                         <svg
                           class="w-3.5 h-3.5"
@@ -279,9 +279,25 @@
                         دفع
                       </a>
                     }
+                    @if (
+                      (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
+                      appointment.status !== AppointmentStatus.Cancelled &&
+                      appointment.status !== AppointmentStatus.Completed
+                    ) {
+                      <button
+                        (click)="joinSession(appointment.id)"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        انضم للجلسة
+                      </button>
+                    }
                     <a
                       [routerLink]="['/appointments', appointment.id]"
-                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
                       title="التفاصيل"
                     >
                       <svg
@@ -300,7 +316,7 @@
                     </a>
                     <a
                       [routerLink]="['/appointments', appointment.id, 'track']"
-                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
                       title="تتبع الحالة"
                     >
                       <svg
@@ -344,7 +360,7 @@
                   <div class="min-w-0 flex-1 pt-0.5">
                     <a
                       [routerLink]="['/appointments', appointment.id]"
-                      class="text-sm font-bold text-gray-900 truncate block leading-snug"
+                      class="text-sm font-bold text-gray-900 truncate block leading-snug cursor-pointer"
                     >
                       {{ appointment.specialistName || 'مختص' }}
                     </a>
@@ -430,7 +446,7 @@
                       ) {
                         <a
                           [routerLink]="['/appointments', appointment.id, 'pay']"
-                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm transition-all duration-200"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
                         >
                           <svg
                             class="w-3.5 h-3.5"
@@ -448,9 +464,25 @@
                           دفع
                         </a>
                       }
+                      @if (
+                        (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
+                        appointment.status !== AppointmentStatus.Cancelled &&
+                        appointment.status !== AppointmentStatus.Completed
+                      ) {
+                        <button
+                          (click)="joinSession(appointment.id)"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                          </svg>
+                          انضم للجلسة
+                        </button>
+                      }
                       <a
                         [routerLink]="['/appointments', appointment.id]"
-                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
                         title="التفاصيل"
                       >
                         <svg
@@ -469,7 +501,7 @@
                       </a>
                       <a
                         [routerLink]="['/appointments', appointment.id, 'track']"
-                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
                         title="تتبع الحالة"
                       >
                         <svg

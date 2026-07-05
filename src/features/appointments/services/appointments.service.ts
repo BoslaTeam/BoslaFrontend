@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { ApiResponse } from '@core/models/api-response.model';
+import { PaymentStatus } from '../contracts/appointments.contracts';
 import * as contract from '../contracts/appointments.contracts';
 
 @Injectable({
@@ -17,30 +18,49 @@ export class AppointmentService {
       .post<ApiResponse<string>>(this.endpoints.base, request);
   }
 
+  private mapAppointment(dto: contract.AppointmentDto): contract.AppointmentDto {
+    return {
+      ...dto,
+      paymentStatus: (dto as any).isPaid ? PaymentStatus.Paid : PaymentStatus.Unpaid,
+    };
+  }
+
+  private mapAppointments(dtos: contract.AppointmentDto[]): contract.AppointmentDto[] {
+    return dtos.map((d) => this.mapAppointment(d));
+  }
+
   getById(id: string): Observable<ApiResponse<contract.AppointmentDto>> {
     return this.http
-      .get<ApiResponse<contract.AppointmentDto>>(this.endpoints.byId(id));
+      .get<ApiResponse<contract.AppointmentDto>>(this.endpoints.byId(id))
+      .pipe(map((res) => ({
+        ...res,
+        data: res.data ? this.mapAppointment(res.data) : res.data,
+      })));
   }
 
   getMyAppointments(): Observable<ApiResponse<contract.AppointmentDto[]>> {
     return this.http
-      .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.myappointments);
+      .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.myappointments)
+      .pipe(map((res) => ({ ...res, data: res.data ? this.mapAppointments(res.data) : res.data })));
   }
 
   getAppointmentsBySpecialist(specialistId: string, pageSize = 100): Observable<ApiResponse<contract.AppointmentDto[]>> {
     const url = `${this.endpoints.bySpecialist(specialistId)}?pageSize=${pageSize}`;
     return this.http
-      .get<ApiResponse<contract.AppointmentDto[]>>(url);
+      .get<ApiResponse<contract.AppointmentDto[]>>(url)
+      .pipe(map((res) => ({ ...res, data: res.data ? this.mapAppointments(res.data) : res.data })));
   }
 
   getMySpecialistAppointments(pageNumber = 1, pageSize = 50): Observable<ApiResponse<contract.AppointmentDto[]>> {
     return this.http
-      .get<ApiResponse<contract.AppointmentDto[]>>(`${this.endpoints.mySpecialistAppointments}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+      .get<ApiResponse<contract.AppointmentDto[]>>(`${this.endpoints.mySpecialistAppointments}?pageNumber=${pageNumber}&pageSize=${pageSize}`)
+      .pipe(map((res) => ({ ...res, data: res.data ? this.mapAppointments(res.data) : res.data })));
   }
 
   getUpcomingAppointments(): Observable<ApiResponse<contract.AppointmentDto[]>> {
     return this.http
-      .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.upcoming);
+      .get<ApiResponse<contract.AppointmentDto[]>>(this.endpoints.upcoming)
+      .pipe(map((res) => ({ ...res, data: res.data ? this.mapAppointments(res.data) : res.data })));
   }
 
   getStatusHistory(id: string): Observable<ApiResponse<contract.AppointmentStatusHistoryDto[]>> {

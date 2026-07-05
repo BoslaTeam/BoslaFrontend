@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, inject, computed, effect, ChangeDetectorRef, ElementRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { VideoSessionService } from '@features/video/services/video-session.service';
 
 export interface TrackingStep {
   key: string;
@@ -26,6 +28,8 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   readonly store = inject(AppointmentsStore);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly el = inject(ElementRef);
+
+  private readonly videoSessionService = inject(VideoSessionService);
 
   readonly newConversationId = signal<string | null>(null);
 
@@ -119,6 +123,14 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     return cancel?.reason;
   });
 
+  readonly canJoin = computed(() => {
+    const app = this.store.selectedItem();
+    if (!app) return false;
+    if (app.status === AppointmentStatus.Cancelled) return false;
+    if (app.status === AppointmentStatus.Completed) return false;
+    return app.paymentStatus === PaymentStatus.Paid || app.status === AppointmentStatus.Paid;
+  });
+
   constructor() {
     effect(() => {
       this.store.selectedItem();
@@ -158,6 +170,19 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     const convId = this.hasConversation();
     if (convId) {
       this.router.navigate(['/chat', convId]);
+    }
+  }
+
+  async joinSession(): Promise<void> {
+    const app = this.store.selectedItem();
+    if (!app) return;
+    try {
+      const res = await firstValueFrom(this.videoSessionService.generateToken(app.id));
+      if (res.data?.sessionId) {
+        this.router.navigate(['/video', res.data.sessionId]);
+      }
+    } catch (err) {
+      console.error('Failed to join session', err);
     }
   }
 

@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
@@ -16,6 +17,7 @@ import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
+import { VideoSessionService } from '@features/video/services/video-session.service';
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
@@ -31,6 +33,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
+  private readonly videoSessionService = inject(VideoSessionService);
 
   readonly Math = Math;
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -148,6 +151,16 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     return true;
   });
 
+  readonly canJoin = computed(() => {
+    const u = this.userRole();
+    const item = this.store.selectedItem();
+    if (u !== UserRole.User) return false;
+    if (!item) return false;
+    if (item.status === AppointmentStatus.Completed) return false;
+    if (item.status === AppointmentStatus.Cancelled) return false;
+    return item.paymentStatus === PaymentStatus.Paid || item.status === AppointmentStatus.Paid;
+  });
+
   readonly canCancel = computed(() => {
     const s = this.store.selectedItem()?.status;
     return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed;
@@ -233,6 +246,19 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     const convId = this.hasConversation();
     if (convId) {
       this.router.navigate(['/chat', convId]);
+    }
+  }
+
+  async joinSession(): Promise<void> {
+    const item = this.store.selectedItem();
+    if (!item) return;
+    try {
+      const res = await firstValueFrom(this.videoSessionService.generateToken(item.id));
+      if (res.data?.sessionId) {
+        this.router.navigate(['/video', res.data.sessionId]);
+      }
+    } catch (err) {
+      console.error('Failed to join session', err);
     }
   }
 
