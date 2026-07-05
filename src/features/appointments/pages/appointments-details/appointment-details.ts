@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   inject,
   signal,
   computed,
@@ -25,7 +26,7 @@ import { UserRole } from '@core/enums/user-role.enum';
     ui-button.w-full button { flex: 1; }
   `],
 })
-export class AppointmentDetail implements OnInit {
+export class AppointmentDetail implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
@@ -47,11 +48,6 @@ export class AppointmentDetail implements OnInit {
   readonly reminderDate = signal('');
   readonly reminderTime = signal('');
 
-  readonly showRescheduleModal = signal(false);
-  readonly rescheduleDate = signal('');
-  readonly rescheduleStartTime = signal('');
-  readonly rescheduleEndTime = signal('');
-
   readonly showNotesModal = signal(false);
   readonly editNotesText = signal('');
 
@@ -59,6 +55,24 @@ export class AppointmentDetail implements OnInit {
   readonly rejectReason = signal('');
 
   readonly newConversationId = signal<string | null>(null);
+
+  readonly paymentDeadline = computed(() => {
+    const item = this.store.selectedItem();
+    if (!item?.confirmedAt) return null;
+    if (item.status !== AppointmentStatus.Confirmed) return null;
+    if (item.paymentStatus === PaymentStatus.Paid || item.paymentStatus === PaymentStatus.Refunded) return null;
+    return new Date(item.confirmedAt).getTime() + 3_600_000;
+  });
+
+  readonly remainingMs = signal(0);
+  private paymentTimerHandle: ReturnType<typeof setInterval> | null = null;
+
+  private stopPaymentTimer(): void {
+    if (this.paymentTimerHandle) {
+      clearInterval(this.paymentTimerHandle);
+      this.paymentTimerHandle = null;
+    }
+  }
 
   readonly expandedSections = signal<Set<string>>(new Set(['appointment-info']));
   readonly expandedTimelineItems = signal<Set<number>>(new Set());
@@ -94,7 +108,12 @@ export class AppointmentDetail implements OnInit {
   });
 
   readonly hasConversation = computed(() => {
-    return this.newConversationId() ?? this.store.selectedItem()?.conversationId ?? null;
+    const item = this.store.selectedItem();
+    if (!item) return null;
+    if (item.status === AppointmentStatus.Cancelled) return null;
+    const deadline = this.paymentDeadline();
+    if (deadline && deadline <= Date.now()) return null;
+    return this.newConversationId() ?? item.conversationId ?? null;
   });
 
   readonly userRole = computed(() => this.authService.userRole());
@@ -124,6 +143,8 @@ export class AppointmentDetail implements OnInit {
     if (s?.status !== AppointmentStatus.Confirmed) return false;
     if (s?.paymentStatus === PaymentStatus.Paid || s?.paymentStatus === PaymentStatus.Refunded)
       return false;
+    const deadline = this.paymentDeadline();
+    if (deadline && deadline <= Date.now()) return false;
     return true;
   });
 
@@ -138,11 +159,6 @@ export class AppointmentDetail implements OnInit {
     return (u === UserRole.Specialist || u === UserRole.Admin) && s === AppointmentStatus.Pending;
   });
 
-  readonly canReschedule = computed(() => {
-    const s = this.store.selectedItem()?.status;
-    return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed;
-  });
-
   readonly canAddReview = computed(() => {
     const u = this.userRole();
     const s = this.store.selectedItem()?.status;
@@ -151,12 +167,13 @@ export class AppointmentDetail implements OnInit {
 
   readonly canEditNotes = computed(() => {
     const u = this.userRole();
-    return u === UserRole.Specialist || u === UserRole.Admin;
+    const s = this.store.selectedItem()?.status;
+    return u === UserRole.Specialist || u === UserRole.Admin || s === AppointmentStatus.Paid;
   });
 
   readonly canAddReminder = computed(() => {
     const s = this.store.selectedItem()?.status;
-    return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed;
+    return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid;
   });
 
   readonly tomorrow = computed(() => {
@@ -173,12 +190,35 @@ export class AppointmentDetail implements OnInit {
         this.store.lastCreatedConversationId.set(null);
       }
     });
+    effect(() => {
+      const deadline = this.paymentDeadline();
+      this.stopPaymentTimer();
+      if (deadline) {
+        this.remainingMs.set(deadline - Date.now());
+        this.paymentTimerHandle = setInterval(() => {
+          const remaining = deadline - Date.now();
+          if (remaining <= 0) {
+            this.remainingMs.set(0);
+            this.stopPaymentTimer();
+            this.store.loadAppointmentDetails(this.appointmentId);
+          } else {
+            this.remainingMs.set(remaining);
+          }
+        }, 1000);
+      } else {
+        this.remainingMs.set(0);
+      }
+    });
   }
 
   ngOnInit(): void {
     if (this.appointmentId) {
       this.store.loadAppointmentDetails(this.appointmentId);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stopPaymentTimer();
   }
 
   onConfirm(): void {
@@ -212,17 +252,6 @@ export class AppointmentDetail implements OnInit {
     this.store.rejectAppointment(this.appointmentId, { reason: this.rejectReason() });
     this.showRejectModal.set(false);
     this.rejectReason.set('');
-  }
-
-  onRescheduleSubmit(): void {
-    if (!this.rescheduleDate() || !this.rescheduleStartTime() || !this.rescheduleEndTime()) return;
-    const newStart = new Date(`${this.rescheduleDate()}T${this.rescheduleStartTime()}`);
-    const newEnd = new Date(`${this.rescheduleDate()}T${this.rescheduleEndTime()}`);
-    this.store.rescheduleAppointment(this.appointmentId, { newStart, newEnd });
-    this.showRescheduleModal.set(false);
-    this.rescheduleDate.set('');
-    this.rescheduleStartTime.set('');
-    this.rescheduleEndTime.set('');
   }
 
   openNotesModal(): void {
@@ -263,6 +292,14 @@ export class AppointmentDetail implements OnInit {
 
   onDeleteReminder(reminderId: string): void {
     this.store.deleteReminder(this.appointmentId, reminderId);
+  }
+
+  formatCountdown(ms: number): string {
+    if (ms <= 0) return '0:00';
+    const totalSec = Math.floor(ms / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
   }
 
   getStatusLabel(status: AppointmentStatus | undefined) {

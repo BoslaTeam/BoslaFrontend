@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
@@ -22,9 +22,25 @@ interface TabDef {
   imports: [CommonModule, RouterLink, UiButton],
   templateUrl: './appointments-list.html',
 })
-export class AppointmentList {
+export class AppointmentList implements OnDestroy {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
+  readonly now = signal(Date.now());
+  private readonly timerHandle = setInterval(() => this.now.set(Date.now()), 1000);
+
+  getCountdownText(confirmedAt: string, nowMs: number): string | null {
+    const deadline = new Date(confirmedAt).getTime() + 3_600_000;
+    const remaining = deadline - nowMs;
+    if (remaining <= 0) return null;
+    const totalSec = Math.floor(remaining / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.timerHandle);
+  }
 
   readonly activeTab = signal<AppointmentTab>('all');
   readonly searchQuery = signal('');

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject, computed, effect, ChangeDetectorRef, ElementRef, signal } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, inject, computed, effect, ChangeDetectorRef, ElementRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentsStore } from '../../store/appointments.store';
@@ -20,7 +20,7 @@ export interface TrackingStep {
   imports: [CommonModule, RouterLink, UiSpinner],
   templateUrl: './appointment-tracking.html',
 })
-export class AppointmentTracking implements OnInit, AfterViewInit {
+export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly store = inject(AppointmentsStore);
@@ -30,8 +30,43 @@ export class AppointmentTracking implements OnInit, AfterViewInit {
   readonly newConversationId = signal<string | null>(null);
 
   readonly hasConversation = computed(() => {
-    return this.newConversationId() ?? this.store.selectedItem()?.conversationId ?? null;
+    const item = this.store.selectedItem();
+    if (!item) return null;
+    if (item.status === AppointmentStatus.Cancelled) return null;
+    if (item.status === AppointmentStatus.Confirmed) {
+      if (item.confirmedAt) {
+        const deadline = new Date(item.confirmedAt).getTime() + 3_600_000;
+        if (deadline <= Date.now()) return null;
+      }
+    }
+    return this.newConversationId() ?? item.conversationId ?? null;
   });
+
+  readonly paymentDeadline = computed(() => {
+    const item = this.store.selectedItem();
+    if (!item?.confirmedAt) return null;
+    if (item.status !== AppointmentStatus.Confirmed) return null;
+    if (item.paymentStatus === PaymentStatus.Paid || item.paymentStatus === PaymentStatus.Refunded) return null;
+    return new Date(item.confirmedAt).getTime() + 3_600_000;
+  });
+
+  readonly remainingMs = signal(0);
+  private paymentTimerHandle: ReturnType<typeof setInterval> | null = null;
+
+  private stopPaymentTimer(): void {
+    if (this.paymentTimerHandle) {
+      clearInterval(this.paymentTimerHandle);
+      this.paymentTimerHandle = null;
+    }
+  }
+
+  formatCountdown(ms: number): string {
+    if (ms <= 0) return '0:00';
+    const totalSec = Math.floor(ms / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
+  }
 
   private readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -98,6 +133,25 @@ export class AppointmentTracking implements OnInit, AfterViewInit {
         this.store.lastCreatedConversationId.set(null);
       }
     });
+    effect(() => {
+      const deadline = this.paymentDeadline();
+      this.stopPaymentTimer();
+      if (deadline) {
+        this.remainingMs.set(deadline - Date.now());
+        this.paymentTimerHandle = setInterval(() => {
+          const remaining = deadline - Date.now();
+          if (remaining <= 0) {
+            this.remainingMs.set(0);
+            this.stopPaymentTimer();
+            this.store.loadAppointmentDetails(this.appointmentId);
+          } else {
+            this.remainingMs.set(remaining);
+          }
+        }, 1000);
+      } else {
+        this.remainingMs.set(0);
+      }
+    });
   }
 
   goToConversation(): void {
@@ -111,6 +165,10 @@ export class AppointmentTracking implements OnInit, AfterViewInit {
     if (this.appointmentId) {
       this.store.loadAppointmentDetails(this.appointmentId);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stopPaymentTimer();
   }
 
   ngAfterViewInit(): void {

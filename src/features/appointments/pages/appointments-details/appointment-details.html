@@ -87,17 +87,6 @@
                 }
               </h3>
               <div class="flex items-center gap-2">
-                @if (canEditNotes()) {
-                  <button
-                    (click)="openNotesModal(); $event.stopPropagation()"
-                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    تعديل
-                  </button>
-                }
                 <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('notes')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -129,17 +118,6 @@
                 }
               </h3>
               <div class="flex items-center gap-2">
-                @if (canAddReminder()) {
-                  <button
-                    (click)="showReminderModal.set(true); $event.stopPropagation()"
-                    class="text-xs text-bosla-blue hover:text-bosla-primary transition-colors font-medium flex items-center gap-1"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    إضافة
-                  </button>
-                }
                 <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('reminders')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -283,7 +261,15 @@
               @let statusInfo = getStatusLabel(appointment.status);
               <span [class]="'text-xs font-medium px-3 py-1.5 rounded-full border ' + statusInfo.classes">
                 {{ statusInfo.text }}
+                @if (paymentDeadline()) {
+                  <span class="mr-1.5" [class]="remainingMs() > 60000 ? 'text-amber-600' : 'text-red-600'" dir="ltr">
+                    · {{ formatCountdown(remainingMs()) }}
+                  </span>
+                }
               </span>
+              @if (paymentDeadline()) {
+                <p class="text-[11px] text-amber-600 mt-1.5">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع قبل انتهاء الوقت</p>
+              }
             </div>
             <div class="space-y-3">
               <div class="flex items-center justify-between text-sm">
@@ -335,8 +321,7 @@
                 }
               </div>
             }
-            @if (canConfirm() || canComplete() || canReschedule() || canAddReminder() || canAddReview() || canEditNotes() || canCancel() || canReject()) {
-              <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap">
                 @if (canConfirm()) {
                   <button
                     (click)="onConfirm()"
@@ -370,17 +355,6 @@
                     <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تقييم</span>
                   </button>
                 }
-                @if (canEditNotes()) {
-                  <button
-                    (click)="openNotesModal()"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
-                  >
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تعديل الملاحظات</span>
-                  </button>
-                }
                 @if (canReject()) {
                   <button
                     (click)="showRejectModal.set(true)"
@@ -412,17 +386,6 @@
                     <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تذكير</span>
                   </button>
                 }
-                @if (canReschedule()) {
-                  <button
-                    (click)="showRescheduleModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
-                  >
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إعادة جدولة</span>
-                  </button>
-                }
                 <a
                   [routerLink]="['/appointments', appointment.id, 'track']"
                   class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors"
@@ -444,7 +407,6 @@
                   </button>
                 }
               </div>
-            }
           </div>
           
           <!-- Specialist Card -->
@@ -650,47 +612,6 @@
           <div class="flex justify-end gap-2 mt-5">
             <ui-button (click)="showReminderModal.set(false); reminderMessage.set(''); reminderDate.set(''); reminderTime.set('')" size="sm" variant="ghost">إلغاء</ui-button>
             <ui-button (click)="onAddReminder()" [disabled]="!reminderDate() || !reminderTime() || !reminderMessage().trim()" size="sm" variant="primary">إضافة التذكير</ui-button>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- Reschedule Modal -->
-    @if (showRescheduleModal()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
-        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="p-2 bg-bosla-blue/10 text-bosla-blue rounded-xl">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">إعادة جدولة الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">اختر التاريخ والوقت الجديد للموعد</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">التاريخ الجديد</label>
-              <input type="date" [value]="rescheduleDate()" (input)="rescheduleDate.set($any($event.target).value)" [attr.min]="tomorrow()" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت البداية</label>
-                <input type="time" [value]="rescheduleStartTime()" (input)="rescheduleStartTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت النهاية</label>
-                <input type="time" [value]="rescheduleEndTime()" (input)="rescheduleEndTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-              </div>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showRescheduleModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
-            <ui-button (click)="onRescheduleSubmit()" [disabled]="!rescheduleDate() || !rescheduleStartTime() || !rescheduleEndTime()" [loading]="store.isActionLoading()" size="sm" variant="primary">تأكيد إعادة الجدولة</ui-button>
           </div>
         </div>
       </div>
