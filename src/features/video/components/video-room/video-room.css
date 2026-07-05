@@ -674,6 +674,29 @@
   transform: scale(1.05);
 }
 
+/* Finish button (specialist only) */
+.vr-tb-btn--finish {
+  background: var(--vr-error);
+  color: white;
+  border-radius: 14px;
+  width: 56px;
+  margin-right: 4px;
+}
+
+.vr-tb-btn--finish:hover:not(:disabled) {
+  background: #7a0f0f;
+  transform: scale(1.05);
+}
+
+/* Toolbar spinner animation */
+.vr-tb-spinner {
+  animation: vr-spin 1s linear infinite;
+}
+
+@keyframes vr-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Active state (screen share, etc.) */
 .vr-tb-btn--active {
   background: rgba(46, 134, 171, 0.12);

@@ -37,6 +37,14 @@ export class VideoSessionService {
     return this.http.get<ApiResponse<RecordingInfoDto>>(API_ENDPOINTS.video.recordingInfo(sessionId));
   }
 
+  leaveAsync(sessionId: string): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.video.leave(sessionId), {});
+  }
+
+  finishConsultationAsync(sessionId: string): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.video.finish(sessionId), {});
+  }
+
   webhook(data: any): Observable<void> {
     return this.http.post<void>(API_ENDPOINTS.video.webhook, data);
   }

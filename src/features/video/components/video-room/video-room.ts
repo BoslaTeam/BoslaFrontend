@@ -7,6 +7,7 @@ import {
   ChangeDetectionStrategy,
   effect,
   signal,
+  computed,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -33,12 +34,14 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
 import { RecordingButton } from '../recording-button/recording-button';
 import { RecordingIndicator } from '../recording-indicator/recording-indicator';
 import { VideoSessionStateService } from '../../services/video-session-state.service';
+import { VideoSessionFacade } from '../../services/video-session-facade.service';
 import { AppointmentService } from '@features/appointments/services/appointments.service';
+import { UiModal } from '@shared/ui/modal/modal';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [RouterLink, ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
+  imports: [RouterLink, UiModal, ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -59,6 +62,7 @@ export class VideoRoom {
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
   readonly sessionStateService = inject(VideoSessionStateService);
+  readonly sessionFacade = inject(VideoSessionFacade);
   private readonly appointmentService = inject(AppointmentService);
 
   public sessionId: string;
@@ -73,6 +77,11 @@ export class VideoRoom {
   readonly isSessionEnded = signal(false);
   readonly signalrFailed = signal(false);
   readonly currentYear = new Date().getFullYear();
+  readonly userRole = this.authService.userRole;
+  readonly isSpecialist = computed(() => this.userRole() === UserRole.Specialist);
+
+  readonly leaveDialogOpen = signal(false);
+  readonly finishDialogOpen = signal(false);
 
   /** Mobile accordion: device settings panel open/closed state */
   readonly deviceSettingsOpen = signal(false);
@@ -393,19 +402,22 @@ export class VideoRoom {
     this.agoraService.toggleMicrophone();
   }
 
-  async leaveSession(): Promise<void> {
-    this.agoraService.clearError();
-    this.networkQualityService.stop();
-    this.sessionTimerService.stop();
-    await this.agoraService.disconnect();
+  leaveCall(): void {
+    this.leaveDialogOpen.set(true);
+  }
 
-    try {
-      await firstValueFrom(this.videoSessionService.endSession(this.sessionId));
-    } catch (err) {
-      console.error('[VideoRoom] Leave request failed', err);
-    }
+  finishConsultation(): void {
+    this.finishDialogOpen.set(true);
+  }
 
-    this.router.navigate(['..']);
+  onLeaveConfirmed(): void {
+    this.leaveDialogOpen.set(false);
+    this.sessionFacade.leaveSession(this.sessionId);
+  }
+
+  onFinishConfirmed(): void {
+    this.finishDialogOpen.set(false);
+    this.sessionFacade.finishConsultation(this.sessionId);
   }
 
   private checkBrowserSupport(): boolean {

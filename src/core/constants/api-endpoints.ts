@@ -70,6 +70,8 @@ export const API_ENDPOINTS = {
     recordingStart: (id: string) => `${V}/video-sessions/${id}/recording/start`,
     recordingStop: (id: string) => `${V}/video-sessions/${id}/recording/stop`,
     recordingInfo: (id: string) => `${V}/video-sessions/${id}/recording`,
+    leave: (id: string) => `${V}/video-sessions/${id}/leave`,
+    finish: (id: string) => `${V}/video-sessions/${id}/finish`,
   },
   specialists: {
     start: `${V}/specialists/me/start`,
