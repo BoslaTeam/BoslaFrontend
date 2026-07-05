@@ -51,4 +51,10 @@ export const SPECIALIST_PANEL_ROUTES: Routes = [
       import('./pages/specialist-wallet/specialist-wallet')
         .then(m => m.SpecialistWallet),
   },
+  {
+    path: 'portfolio',
+    loadComponent: () =>
+      import('./pages/specialist-portfolio/specialist-portfolio')
+        .then(m => m.SpecialistPortfolio),
+  },
 ];

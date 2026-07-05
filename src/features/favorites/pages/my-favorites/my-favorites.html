@@ -1,0 +1,76 @@
+<section class="bg-bosla-offwhite min-h-screen py-8 md:py-12" dir="rtl">
+  <div class="container mx-auto px-4 max-w-5xl">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl md:text-3xl font-black text-bosla-primary">
+        <i class="fa-solid fa-heart text-red-500 ml-2"></i>
+        المفضلة
+      </h1>
+      <p class="text-slate-500 mt-2">المتخصصون المفضلون لديك</p>
+    </div>
+
+    @if (loading()) {
+      <div class="flex justify-center py-16">
+        <div class="animate-spin w-10 h-10 border-4 border-slate-200 border-t-bosla-orange rounded-full"></div>
+      </div>
+    } @else if (favorites().length === 0) {
+      <ui-empty-state
+        icon="fa-regular fa-heart"
+        title="لا يوجد متخصصون مفضلون"
+        description="يمكنك حفظ المتخصصين المفضلين لديك للعودة إليهم لاحقاً">
+        <ui-button variant="primary" size="sm" [routerLink]="['/specialists']">
+          تصفح المتخصصين
+        </ui-button>
+      </ui-empty-state>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (item of favorites(); track item.specialistId) {
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group">
+            <div class="relative">
+              <a [routerLink]="['/specialists', item.specialistId]" class="block">
+                <div class="aspect-[3/2] bg-slate-100 overflow-hidden">
+                  <img
+                    [src]="item.imageUrl || 'assets/icons/favicon.ico'"
+                    [alt]="item.name"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              </a>
+              <button (click)="remove(item.specialistId)"
+                class="absolute top-2 left-2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-sm flex items-center justify-center text-red-500 hover:text-red-600 transition-all"
+                title="إزالة من المفضلة">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              @if (item.isVerified) {
+                <span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                  <i class="fa-solid fa-circle-check ml-1"></i>موثق
+                </span>
+              }
+            </div>
+
+            <div class="p-4">
+              <a [routerLink]="['/specialists', item.specialistId]"
+                class="font-bold text-slate-800 hover:text-bosla-primary transition-colors block truncate">
+                {{ item.name }}
+              </a>
+              <p class="text-sm text-slate-500 mt-1 truncate">{{ item.title }}</p>
+
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                <div class="flex items-center gap-1 text-sm">
+                  <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                  <span class="font-bold text-slate-700">{{ item.rating | number:'1.1-1' }}</span>
+                </div>
+                <span class="text-sm font-bold text-bosla-primary">${{ item.hourlyRate }}</span>
+              </div>
+
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs text-slate-400 bg-slate-50 rounded-lg px-2 py-1">
+                  {{ experienceLevelLabel(item.experienceLevel) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

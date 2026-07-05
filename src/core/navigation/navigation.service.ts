@@ -39,6 +39,7 @@ export class NavigationService {
       video: '/video',
       payments: '/payments',
       becomeSpecialist: '/become-specialist',
+      favorites: '/specialists/favorites',
     },
     specialist: {
       dashboard: '/specialist/dashboard',
@@ -47,6 +48,7 @@ export class NavigationService {
       availability: '/specialist/availability',
       appointments: '/specialist/appointments',
       profileManagement: '/specialist/profile-management',
+      portfolio: '/specialist/portfolio',
     },
     admin: {
       dashboard: '/admin/dashboard',
@@ -65,6 +67,7 @@ export class NavigationService {
   readonly videoRoute = this.ROUTES.user.video;
   readonly paymentsRoute = this.ROUTES.user.payments;
   readonly becomeSpecialistRoute = this.ROUTES.user.becomeSpecialist;
+  readonly favoritesRoute = this.ROUTES.user.favorites;
 
   readonly specialistDashboardRoute = this.ROUTES.specialist.dashboard;
   readonly specialistChatRoute = this.ROUTES.specialist.chat;
@@ -72,6 +75,7 @@ export class NavigationService {
   readonly specialistAvailabilityRoute = this.ROUTES.specialist.availability;
   readonly specialistAppointmentsRoute = this.ROUTES.specialist.appointments;
   readonly specialistProfileManagementRoute = this.ROUTES.specialist.profileManagement;
+  readonly specialistPortfolioRoute = this.ROUTES.specialist.portfolio;
 
   readonly dashboardRoute = computed(() => {
     const role = this.authService.userRole();
@@ -159,6 +163,14 @@ export class NavigationService {
       });
     }
 
+    if (!isAdmin) {
+      items.push({
+        label: 'المفضلة',
+        route: this.ROUTES.user.favorites,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>',
+      });
+    }
+
     const needsOnboarding = this.authService.needsSpecialistOnboarding();
 
     if (needsOnboarding || (role === UserRole.User)) {
@@ -214,6 +226,11 @@ export class NavigationService {
         label: 'المحفظة المالية',
         route: '/specialist/wallet',
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
+      },
+      {
+        label: 'معرض الأعمال',
+        route: this.ROUTES.specialist.portfolio,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
       },
     );
 

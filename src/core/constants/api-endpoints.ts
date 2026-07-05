@@ -30,6 +30,8 @@ export const API_ENDPOINTS = {
     markAllRead: `${V}/notifications/read`,
     markRead: (id: string) => `${V}/notifications/${id}/read`,
     delete: (id: string) => `${V}/notifications/${id}`,
+    preferences: `${V}/notifications/preferences`,
+    updatePreference: (type: string) => `${V}/notifications/preferences/${type}`,
   },
   appointments: {
     base: `${V}/Appointments`,
@@ -169,5 +171,21 @@ export const API_ENDPOINTS = {
     wallet: `${V}/withdrawals/wallet`,
     request: `${V}/withdrawals/request`,
     history: `${V}/withdrawals/history`,
+  },
+  favorites: {
+    specialists: `${V}/favorites/specialists`,
+    specialistStatus: (id: string) => `${V}/favorites/specialists/${id}/status`,
+    toggleSpecialist: (id: string) => `${V}/favorites/specialists/${id}`,
+  },
+  portfolio: {
+    myPortfolio: `${V}/specialists/me/portfolio`,
+    myPortfolioItem: (id: string) => `${V}/specialists/me/portfolio/${id}`,
+    uploadImage: `${V}/specialists/me/portfolio/upload-image`,
+    reorder: `${V}/specialists/me/portfolio/reorder`,
+    public: (specialistId: string) => `${V}/specialists/${specialistId}/portfolio`,
+    publicItem: (specialistId: string, itemId: string) => `${V}/specialists/${specialistId}/portfolio/${itemId}`,
+    adminBySpecialist: (specialistId: string) => `${V}/admin/specialists/${specialistId}/portfolio`,
+    adminApprove: (specialistId: string, itemId: string) => `${V}/admin/specialists/${specialistId}/portfolio/${itemId}/approve`,
+    adminReject: (specialistId: string, itemId: string) => `${V}/admin/specialists/${specialistId}/portfolio/${itemId}/reject`,
   },
 } as const;

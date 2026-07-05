@@ -227,3 +227,47 @@
   .two-col-content { grid-template-columns: 1fr; }
   .profile-stats-row { width: 100%; justify-content: space-around; }
 }
+
+/* Portfolio Section */
+.portfolio-section { }
+.portfolio-section .documents-header h4 { margin-bottom: 0; }
+.portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.portfolio-card {
+  display: flex; flex-direction: column; border-radius: 12px;
+  border: 1px solid rgba(27, 79, 114, 0.08); background: #fff;
+  overflow: hidden; transition: box-shadow 0.2s;
+}
+.portfolio-card:hover { box-shadow: 0 4px 12px rgba(27, 79, 114, 0.06); }
+.portfolio-thumb {
+  height: 140px; background: rgba(27, 79, 114, 0.04);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.portfolio-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.portfolio-thumb-badge {
+  position: absolute; top: 0.5rem; right: 0.5rem;
+  background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 0.625rem; font-weight: 700;
+  padding: 0.2rem 0.5rem; border-radius: 6px;
+  display: flex; align-items: center; gap: 0.25rem;
+  backdrop-filter: blur(4px);
+}
+.portfolio-body { padding: 0.875rem; flex: 1; }
+.portfolio-title { font-size: 0.8125rem; font-weight: 700; color: #1B4F72; margin-bottom: 0.25rem; }
+.portfolio-desc { font-size: 0.6875rem; color: #95A5A6; line-height: 1.5; margin-bottom: 0.5rem; }
+.portfolio-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.portfolio-draft { color: #95A5A6; background: rgba(149, 165, 166, 0.1); }
+.portfolio-pending { color: #F39C12; background: rgba(243, 156, 18, 0.1); }
+.portfolio-approved { color: #16a34a; background: rgba(22, 163, 74, 0.1); }
+.portfolio-rejected { color: #ba1a1a; background: rgba(186, 26, 26, 0.08); }
+.portfolio-actions {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 0.875rem; border-top: 1px solid rgba(27, 79, 114, 0.06);
+}
+.portfolio-view-link {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.375rem 0.75rem; border-radius: 6px;
+  font-size: 0.6875rem; font-weight: 600; color: #2E86AB;
+  background: rgba(46, 134, 171, 0.06); text-decoration: none; transition: background 0.2s;
+}
+.portfolio-view-link:hover { background: rgba(46, 134, 171, 0.12); }

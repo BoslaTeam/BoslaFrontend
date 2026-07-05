@@ -31,6 +31,7 @@ import { AddToolsRequest } from '../contracts/specialist-tool.contract';
 import { UpdateSpecialistRequest, UpdateBookingPolicyRequest, UpdateCancellationPolicyRequest, UpdateExperienceRequest } from '../contracts/specialist-profile-update.contract';
 import { VerificationDetailsResponse } from '../contracts/specialist-verification.contract';
 import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
+import { PortfolioItemDto, CreatePortfolioItemRequest, UpdatePortfolioItemRequest, ReorderPortfolioRequest } from '../contracts/specialist-portfolio.contract';
 
 @Injectable({
   providedIn: 'root',
@@ -288,6 +289,44 @@ export class SpecialistsApiService {
     return this.http.delete(
       API_ENDPOINTS.specialists.experienceById(id)
     );
+  }
+
+  // ==========================================
+  // Portfolio
+  // ==========================================
+
+  getMyPortfolio() {
+    return this.http.get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.myPortfolio);
+  }
+
+  createPortfolioItem(request: CreatePortfolioItemRequest) {
+    return this.http.post<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.myPortfolio, request);
+  }
+
+  updatePortfolioItem(id: string, request: UpdatePortfolioItemRequest) {
+    return this.http.put<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.myPortfolioItem(id), request);
+  }
+
+  deletePortfolioItem(id: string) {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.myPortfolioItem(id));
+  }
+
+  reorderPortfolio(request: ReorderPortfolioRequest) {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.reorder, request);
+  }
+
+  getPublicPortfolio(specialistId: string) {
+    return this.http.get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.public(specialistId));
+  }
+
+  getPublicPortfolioItem(specialistId: string, itemId: string) {
+    return this.http.get<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.publicItem(specialistId, itemId));
+  }
+
+  uploadPortfolioImage(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.portfolio.uploadImage, formData);
   }
 
   // ==========================================

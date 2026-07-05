@@ -1,0 +1,190 @@
+<div dir="rtl" class="min-h-screen bg-[#F7F9FA] font-sans selection:bg-bosla-primary/20 selection:text-bosla-primary">
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center min-h-screen gap-4">
+      <div class="relative w-16 h-16">
+        <div class="absolute inset-0 rounded-full border-4 border-bosla-primary/10"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-t-bosla-primary border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+      </div>
+      <p class="text-sm text-slate-400 font-medium animate-pulse">جاري تحميل العمل...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @else if (error()) {
+    <div class="max-w-lg mx-auto px-4 py-32 text-center animate-fade-in">
+      <div class="relative inline-flex mb-6">
+        <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center shadow-sm">
+          <i class="fa-regular fa-circle-xmark text-3xl text-red-400"></i>
+        </div>
+      </div>
+      <h2 class="text-xl font-black text-slate-800 mb-2">لم يتم العثور على العمل</h2>
+      <p class="text-sm text-slate-500 mb-8 leading-relaxed">قد يكون هذا العمل قد أزيل أو لم يتم الموافقة عليه بعد.</p>
+      <button (click)="goBack()" class="px-8 py-3 bg-bosla-primary hover:bg-bosla-primary/90 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-bosla-primary/20 hover:shadow-bosla-primary/30 active:scale-[0.97]">
+        العودة
+      </button>
+    </div>
+  }
+
+  <!-- Content -->
+  @else if (item(); as it) {
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden bg-gradient-to-b from-bosla-primary/5 via-white to-transparent pb-8 sm:pb-12">
+      <!-- Decorative blobs -->
+      <div class="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-bosla-primary/3 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -right-20 w-60 h-60 rounded-full bg-bosla-orange/5 blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/3 right-1/4 w-40 h-40 rounded-full bg-bosla-primary/5 blur-3xl pointer-events-none"></div>
+
+      <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+        <!-- Top bar -->
+        <div class="flex items-center gap-3 mb-8 sm:mb-10 animate-fade-up stagger-1">
+          <button (click)="goBack()" class="shrink-0 w-10 h-10 rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-bosla-primary hover:border-bosla-primary/30 transition-all shadow-sm hover:shadow-md active:scale-90 group">
+            <i class="fa-solid fa-arrow-right text-sm group-hover:-translate-x-0.5 transition-transform"></i>
+          </button>
+          <div class="flex items-center gap-1.5 text-xs font-medium text-slate-400 min-w-0 overflow-hidden">
+            <a [routerLink]="['/specialists']" class="shrink-0 hover:text-bosla-primary transition-colors">المتخصصون</a>
+            <i class="fa-solid fa-chevron-left text-[7px] shrink-0 text-slate-300"></i>
+            <span class="truncate min-w-0 max-w-[100px] sm:max-w-[160px] hover:text-bosla-primary transition-colors">{{ specialistName() || 'المتخصص' }}</span>
+            <i class="fa-solid fa-chevron-left text-[7px] shrink-0 text-slate-300"></i>
+            <span class="text-bosla-primary font-bold truncate min-w-0 max-w-[120px] sm:max-w-[200px]">{{ it.title }}</span>
+          </div>
+        </div>
+
+        <!-- Title + Meta -->
+        <div class="animate-fade-up stagger-2 mb-6 sm:mb-8">
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bosla-primary/10 text-bosla-primary text-[11px] font-bold">
+              <i class="fa-solid fa-check-circle text-[10px]"></i>
+              معتمد
+            </span>
+            @if (it.images.length > 0) {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[11px] font-medium">
+              <i class="fa-regular fa-images text-[10px]"></i>
+              {{ allImages().length }} صور
+            </span>
+            }
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-[1.15] tracking-tight">{{ it.title }}</h1>
+        </div>
+
+        <!-- Cover Image -->
+        <div class="animate-scale-in stagger-3 relative group">
+          <div class="absolute -inset-1 bg-gradient-to-br from-bosla-primary/20 to-bosla-orange/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 bg-white img-zoom">
+            <div class="aspect-[4/3] sm:aspect-[21/9]">
+              <img [src]="it.coverImageUrl" [alt]="it.title" class="w-full h-full object-cover" loading="eager" />
+            </div>
+            <!-- Gradient overlay at bottom for text readability if needed -->
+            <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+          </div>
+          <!-- Image count badge -->
+          @if (allImages().length > 1) {
+          <div class="absolute bottom-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 backdrop-blur-sm border border-white/50 text-xs font-bold text-slate-700 shadow-sm animate-fade-in">
+            <i class="fa-regular fa-images text-bosla-primary"></i>
+            1 / {{ allImages().length }}
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 -mt-2 pb-12 sm:pb-16">
+
+      <!-- Sub Images Gallery -->
+      @if (allImages().length > 1) {
+      <div class="animate-fade-up mb-8 sm:mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-bold text-slate-600 flex items-center gap-2">
+            <span class="w-1 h-4 rounded-full bg-bosla-primary"></span>
+            معرض الصور
+          </h2>
+          <span class="text-[11px] font-medium text-slate-400">{{ allImages().length - 1 }} صور إضافية</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          @for (img of allImages(); track img; let i = $index) {
+          @if (i > 0) {
+          <div (click)="openPreview(img)"
+            class="aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-slate-200/80 shadow-sm hover:shadow-lg hover:border-bosla-primary/30 transition-all duration-300 img-zoom active:scale-[0.97] group bg-white">
+            <img [src]="img" class="w-full h-full object-cover" loading="lazy" />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none"></div>
+          </div>
+          }
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Description -->
+      @if (it.description) {
+      <div class="animate-fade-up mb-8 sm:mb-10">
+        <div class="relative p-6 sm:p-8 md:p-10 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <!-- Decorative accent -->
+          <div class="absolute top-0 right-0 w-24 h-1 bg-gradient-to-l from-bosla-primary to-bosla-primary/20 rounded-full"></div>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-bosla-primary/10 to-bosla-primary/5 flex items-center justify-center">
+              <i class="fa-regular fa-align-right text-bosla-primary"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-slate-800">وصف العمل</h2>
+              <p class="text-[11px] text-slate-400">تفاصيل العمل والمشروع</p>
+            </div>
+          </div>
+          <p class="text-sm sm:text-base text-slate-600 leading-[1.8] sm:leading-[1.9] whitespace-pre-line">{{ it.description }}</p>
+        </div>
+      </div>
+      }
+
+      <!-- Work URL CTA -->
+      @if (it.workUrl) {
+      <div class="animate-fade-up mb-8 sm:mb-10">
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-bosla-primary via-bosla-primary/95 to-bosla-primary/90 shadow-xl shadow-bosla-primary/20 p-6 sm:p-8 md:p-10">
+          <!-- Decorative circles -->
+          <div class="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+          <div class="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/3 w-40 h-40 rounded-full bg-bosla-orange/10 blur-3xl pointer-events-none"></div>
+
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8">
+            <div class="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/10">
+              <i class="fa-solid fa-arrow-up-right-from-square text-2xl text-white"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="text-lg sm:text-xl font-black text-white mb-1">معاينة العمل</h2>
+              <p class="text-sm text-white/70">يمكنك الاطلاع على العمل كاملاً من خلال الرابط التالي</p>
+            </div>
+            <a [href]="it.workUrl" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3 sm:py-3.5 bg-white hover:bg-white/95 text-bosla-primary rounded-2xl font-bold text-sm transition-all shadow-lg shadow-black/10 hover:shadow-xl active:scale-[0.97] shrink-0 group">
+              <span>معاينة العمل</span>
+              <i class="fa-solid fa-eye group-hover:scale-110 transition-transform"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Bottom Navigation -->
+      <div class="animate-fade-up flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 border-t border-slate-200/60">
+        <button (click)="goBack()" class="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white border border-slate-200/80 hover:border-bosla-primary/30 text-slate-600 hover:text-bosla-primary font-bold text-sm transition-all shadow-sm hover:shadow-md active:scale-[0.97] group">
+          <i class="fa-solid fa-arrow-right group-hover:-translate-x-0.5 transition-transform"></i>
+          العودة للمتخصص
+        </button>
+        <span class="text-[11px] text-slate-400 font-medium">بوصلة — معرض الأعمال</span>
+      </div>
+    </div>
+  }
+
+  <!-- Image Preview Modal -->
+  @if (previewUrl(); as url) {
+  <div (click)="closePreview()" class="fixed inset-0 z-[999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <div class="relative max-w-5xl w-full animate-scale-in">
+      <button (click)="closePreview()" class="absolute -top-4 -left-4 w-11 h-11 rounded-2xl bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 transition-all z-10 active:scale-90 border border-slate-200">
+        <i class="fa-solid fa-xmark text-slate-600"></i>
+      </button>
+      <div class="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+        <img [src]="url" class="w-full h-auto max-h-[80vh] object-contain bg-black/40" />
+      </div>
+      <p class="text-center text-white/50 text-xs mt-4 font-medium">اضغط خارج الصورة للإغلاق</p>
+    </div>
+  </div>
+  }
+</div>

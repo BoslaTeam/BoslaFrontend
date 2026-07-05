@@ -4,6 +4,8 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { AdminSpecialistDetailDto } from '../../contracts/admin.contracts';
+import { PortfolioItemDto, AdminReviewPortfolioRequest } from '@features/specialists/contracts/specialist-portfolio.contract';
+import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 
 @Component({
   selector: 'app-admin-specialist-detail',
@@ -20,10 +22,15 @@ export class AdminSpecialistDetail implements OnInit {
   readonly specialist = signal<AdminSpecialistDetailDto | null>(null);
   readonly isLoading = signal(true);
   readonly hasError = signal(false);
-  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'ai'>('info');
+  readonly activeTab = signal<'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'portfolio' | 'ai'>('info');
   readonly isVerifying = signal(false);
   readonly isUpdatingStatus = signal(false);
   readonly adminNotes = signal('');
+
+  // Portfolio
+  readonly portfolioItems = signal<PortfolioItemDto[]>([]);
+  readonly portfolioLoading = signal(false);
+  readonly reviewingItemId = signal<string | null>(null);
 
   readonly documentTypeLabels: Record<string, string> = {
     Identity: 'هوية شخصية',
@@ -51,8 +58,11 @@ export class AdminSpecialistDetail implements OnInit {
     });
   }
 
-  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'ai'): void {
+  setTab(tab: 'info' | 'skills' | 'experience' | 'expertise' | 'reviews' | 'documents' | 'portfolio' | 'ai'): void {
     this.activeTab.set(tab);
+    if (tab === 'portfolio') {
+      this.loadPortfolio();
+    }
   }
 
   verifyWithNotes(isApproved: boolean): void {
@@ -106,5 +116,43 @@ export class AdminSpecialistDetail implements OnInit {
   formatRating(rating: number): string {
     if (!rating || rating <= 0) return 'لا توجد تقييمات';
     return `${rating.toFixed(1)} ★`;
+  }
+
+  // ── Portfolio ──
+
+  private loadPortfolio(): void {
+    this.portfolioLoading.set(true);
+    this.adminService.getSpecialistPortfolio(this.id()).subscribe({
+      next: (items) => {
+        this.portfolioItems.set(items);
+        this.portfolioLoading.set(false);
+      },
+      error: () => this.portfolioLoading.set(false),
+    });
+  }
+
+  approvePortfolioItem(itemId: string): void {
+    this.reviewingItemId.set(itemId);
+    const request: AdminReviewPortfolioRequest = { adminNotes: '' };
+    this.adminService.approvePortfolioItem(this.id(), itemId, request).subscribe({
+      next: () => {
+        this.loadPortfolio();
+        this.reviewingItemId.set(null);
+      },
+      error: () => this.reviewingItemId.set(null),
+    });
+  }
+
+  rejectPortfolioItem(itemId: string): void {
+    const notes = prompt('سبب الرفض (اختياري):');
+    this.reviewingItemId.set(itemId);
+    const request: AdminReviewPortfolioRequest = { adminNotes: notes || '' };
+    this.adminService.rejectPortfolioItem(this.id(), itemId, request).subscribe({
+      next: () => {
+        this.loadPortfolio();
+        this.reviewingItemId.set(null);
+      },
+      error: () => this.reviewingItemId.set(null),
+    });
   }
 }
