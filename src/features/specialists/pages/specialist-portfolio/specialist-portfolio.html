@@ -1,0 +1,164 @@
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-slate-50 font-sans">
+  <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    <span class="text-bosla-primary font-bold">معرض الأعمال</span>
+  </header>
+
+  <div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-black text-slate-800">معرض الأعمال</h1>
+        <p class="text-sm text-slate-500 mt-1">أضف أعمالك وإنجازاتك ليطلع عليها العملاء قبل الحجز</p>
+      </div>
+      <button (click)="openAddForm()" class="px-5 py-2.5 bg-bosla-primary hover:bg-bosla-primary/90 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-plus"></i>
+        إضافة عمل
+      </button>
+    </div>
+
+    <!-- Add/Edit Form -->
+    @if (showForm()) {
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">{{ editId() ? 'تعديل العمل' : 'إضافة عمل جديد' }}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">العنوان *</label>
+            <input [(ngModel)]="formTitle" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" placeholder="عنوان العمل" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">الوصف</label>
+            <textarea [(ngModel)]="formDescription" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" rows="3" placeholder="وصف مختصر للعمل"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">الصورة الرئيسية *</label>
+            <div class="flex items-center gap-3">
+              <label class="cursor-pointer px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-sm text-slate-600 transition-all">
+                <i class="fa-solid fa-upload ml-1.5"></i>
+                اختر صورة
+                <input type="file" accept="image/*" class="hidden" (change)="onCoverImageSelected($event)" />
+              </label>
+              @if (formCoverImageUploading) {
+                <div class="w-5 h-5 border-2 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+              }
+              @if (formCoverImageUrl) {
+                <img [src]="formCoverImageUrl" class="w-14 h-14 rounded-xl object-cover border border-slate-200" />
+              }
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">صور إضافية</label>
+            <div class="flex items-center gap-3">
+              <label class="cursor-pointer px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-sm text-slate-600 transition-all">
+                <i class="fa-solid fa-plus ml-1.5"></i>
+                إضافة صور
+                <input type="file" accept="image/*" multiple class="hidden" (change)="onImagesSelected($event)" />
+              </label>
+              @if (formImagesUploading) {
+                <div class="w-5 h-5 border-2 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+              }
+            </div>
+            @if (formImageUrls.length > 0) {
+              <div class="flex flex-wrap gap-2 mt-3">
+                @for (url of formImageUrls; track url) {
+                  <div class="relative group">
+                    <img [src]="url" class="w-16 h-16 rounded-xl object-cover border border-slate-200" />
+                    <button (click)="removeImage(url)" class="absolute -top-1.5 -left-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">رابط العمل (اختياري)</label>
+            <input [(ngModel)]="formWorkUrl" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" placeholder="https://..." />
+            <p class="text-xs text-slate-400 mt-1.5">يمكنك إضافة رابط للمشروع إذا كان منشوراً على الإنترنت</p>
+          </div>
+          <div class="md:col-span-2 flex items-center gap-3 pt-2">
+            <button (click)="submitForm()" [disabled]="saving()" class="px-6 py-2.5 bg-bosla-primary hover:bg-bosla-primary/90 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+              @if (saving()) {
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              }
+              {{ editId() ? 'تحديث' : 'إضافة' }}
+            </button>
+            <button (click)="cancelForm()" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all">إلغاء</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Portfolio Grid -->
+    @if (loading()) {
+      <div class="flex justify-center py-20">
+        <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    } @else if (items().length === 0) {
+      <div class="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
+        <i class="fa-regular fa-images text-5xl text-slate-300 mb-4 block"></i>
+        <h3 class="text-lg font-bold text-slate-500">لم تضف أي أعمال بعد</h3>
+        <p class="text-sm text-slate-400 mt-2">أضف أعمالك وإنجازاتك ليطلع عليها العملاء</p>
+        <button (click)="openAddForm()" class="mt-4 px-5 py-2.5 bg-bosla-primary text-white rounded-xl font-bold text-sm">إضافة أول عمل</button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (item of items(); track item.id) {
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all group">
+            <div class="aspect-video bg-slate-100 overflow-hidden relative">
+              <img [src]="item.coverImageUrl" [alt]="item.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              @if (item.images.length > 0) {
+                <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm">
+                  <i class="fa-regular fa-images ml-1"></i>
+                  {{ item.images.length + 1 }} صور
+                </div>
+              }
+            </div>
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-bold text-slate-800 text-sm truncate">{{ item.title }}</h3>
+                  @if (item.description) {
+                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.description }}</p>
+                  }
+                </div>
+                <span class="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full border {{ getStatusClass(item.status) }}">
+                  {{ getStatusLabel(item.status) }}
+                </span>
+              </div>
+              @if (item.workUrl) {
+                <div class="mt-2">
+                  <a [href]="item.workUrl" target="_blank" rel="noopener noreferrer" class="text-xs text-bosla-primary font-bold hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    رابط العمل
+                  </a>
+                </div>
+              }
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                <span class="text-xs text-slate-400 flex items-center gap-1">
+                  <i class="fa-regular fa-image"></i>
+                  {{ item.images.length + 1 }} صور
+                </span>
+                <div class="flex items-center gap-2">
+                  <button (click)="openEditForm(item)" class="text-xs text-bosla-primary hover:text-bosla-primary/70 transition-colors font-bold flex items-center gap-1">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    تعديل
+                  </button>
+                  <button (click)="deleteItem(item.id)" class="text-xs text-red-400 hover:text-red-600 transition-colors font-bold flex items-center gap-1">
+                    <i class="fa-regular fa-trash-can"></i>
+                    حذف
+                  </button>
+                </div>
+              </div>
+              @if (item.adminNotes) {
+                <div class="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
+                  <span class="font-bold">ملاحظة الإدارة:</span> {{ item.adminNotes }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

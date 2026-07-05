@@ -6,8 +6,9 @@ import { ProfileBasic } from '../../components/profile-basic/profile-basic';
 import { ProfileSecurity } from '../../components/profile-security/profile-security';
 import { ProfileEducation } from '../../components/profile-education/profile-education';
 import { ProfileSocial } from '../../components/profile-social/profile-social';
+import { ProfileNotifications } from '../../components/profile-notifications/profile-notifications';
 
-export type ProfileSection = 'basic' | 'education' | 'social' | 'security';
+export type ProfileSection = 'basic' | 'education' | 'social' | 'security' | 'notifications';
 
 interface NavItem {
   key: ProfileSection;
@@ -24,6 +25,7 @@ interface NavItem {
     ProfileSecurity,
     ProfileEducation,
     ProfileSocial,
+    ProfileNotifications,
   ],
   templateUrl: './profile-page.html',
 })
@@ -42,6 +44,7 @@ export class ProfilePage implements OnInit {
     { key: 'education', label: 'التعليم', icon: 'fa-solid fa-graduation-cap' },
     { key: 'social', label: 'الروابط الاجتماعية', icon: 'fa-solid fa-link' },
     { key: 'security', label: 'الأمان', icon: 'fa-solid fa-lock' },
+    { key: 'notifications', label: 'الإشعارات', icon: 'fa-regular fa-bell' },
   ];
 
   ngOnInit(): void {

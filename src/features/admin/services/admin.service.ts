@@ -19,6 +19,7 @@ import {
   EmbeddingsStatusDto,
   CreateSpecialistRequest,
 } from '../contracts/admin.contracts';
+import { PortfolioItemDto, AdminReviewPortfolioRequest } from '@features/specialists/contracts/specialist-portfolio.contract';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -302,6 +303,26 @@ export class AdminService {
   rebuildEmbeddings(): Observable<boolean> {
     return this.http
       .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.embeddingsRebuild, {})
+      .pipe(map((res) => res.data!));
+  }
+
+  // ── Portfolio Review ──
+
+  getSpecialistPortfolio(specialistId: string): Observable<PortfolioItemDto[]> {
+    return this.http
+      .get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.adminBySpecialist(specialistId))
+      .pipe(map((res) => res.data!));
+  }
+
+  approvePortfolioItem(specialistId: string, itemId: string, request: AdminReviewPortfolioRequest): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.adminApprove(specialistId, itemId), request)
+      .pipe(map((res) => res.data!));
+  }
+
+  rejectPortfolioItem(specialistId: string, itemId: string, request: AdminReviewPortfolioRequest): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.adminReject(specialistId, itemId), request)
       .pipe(map((res) => res.data!));
   }
 
