@@ -125,7 +125,9 @@ export class AppointmentsStore {
       const fmtTime = (d: Date) => {
         const h = d.getHours();
         const m = d.getMinutes().toString().padStart(2, '0');
-        return `${h.toString().padStart(2, '0')}:${m}`;
+        const amPm = h >= 12 ? 'م' : 'ص';
+        const h12 = h % 12 || 12;
+        return `${h12}:${m} ${amPm}`;
       };
 
       if (!map.has(key)) {
