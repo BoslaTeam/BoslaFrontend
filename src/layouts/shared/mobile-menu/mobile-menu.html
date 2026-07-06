@@ -39,7 +39,11 @@
           }
           <a [routerLink]="navigationService.chatRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">الرسائل</a>
           <a [routerLink]="navigationService.videoRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">جلسات الفيديو</a>
+          @if (authService.userRole() === 1) {
+            <a routerLink="/specialist/wallet" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">المحفظة المالية</a>
+          }
           @if (authService.userRole() === 0) {
+            <a routerLink="/wallet" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">محفظتي</a>
             <a [routerLink]="navigationService.paymentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">المعاملات المالية</a>
           }
 

@@ -23,4 +23,10 @@ export class UiReviewCard {
     const count = Math.min(5, Math.max(1, this.review().rating));
     return Array(count).fill(0);
   });
+
+  readonly emptyStars = computed(() => {
+    const count = Math.min(5, Math.max(1, this.review().rating));
+    const emptyCount = 5 - count;
+    return Array(emptyCount).fill(0);
+  });
 }

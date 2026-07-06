@@ -8,7 +8,6 @@ import { WalletDto, WithdrawalDto, WithdrawRequestDto } from '@features/withdraw
   selector: 'app-specialist-wallet',
   imports: [DatePipe, DecimalPipe, FormsModule],
   templateUrl: './specialist-wallet.html',
-  styleUrl: './specialist-wallet.css',
 })
 export class SpecialistWallet implements OnInit {
   private readonly withdrawalService = inject(WithdrawalService);
@@ -62,7 +61,7 @@ export class SpecialistWallet implements OnInit {
     }
 
     if (this.requestAmount > wallet.availableBalance) {
-      this.errorMessage.set(`المبلغ المطلوب يتجاوز الرصيد المتاح (${wallet.availableBalance} ر.س).`);
+      this.errorMessage.set(`المبلغ المطلوب يتجاوز الرصيد المتاح (${wallet.availableBalance} ج.م).`);
       return;
     }
 

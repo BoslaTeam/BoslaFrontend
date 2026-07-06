@@ -68,6 +68,11 @@ export const PUBLIC_ROUTES: Routes = [
         canActivate: [authGuard, nonSpecialistGuard],
         loadComponent: () => import('@features/specialists/pages/onboarding/specialist-onboarding').then(m => m.SpecialistOnboardingPage),
       },
+      {
+        path: 'wallet',
+        canActivate: [authGuard],
+        loadComponent: () => import('@features/wallet/pages/my-wallet/my-wallet').then(m => m.MyWallet),
+      },
     ],
   },
 ];

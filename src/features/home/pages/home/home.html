@@ -18,7 +18,11 @@ HERO SECTION — تم إعادة التصميم بالكامل
     <!-- Particles -->
     @for (p of particles; track $index) {
     <div class="hero-particle"
-      style="top:{{p.y}}%;left:{{p.x}}%;--delay:{{p.delay}}s;--dx:{{p.dx}}px;--dy:{{p.dy}}px;"></div>
+      [style.top]="p.y + '%'"
+      [style.left]="p.x + '%'"
+      [style.--delay]="p.delay + 's'"
+      [style.--dx]="p.dx + 'px'"
+      [style.--dy]="p.dy + 'px'"></div>
     }
   </div>
 
@@ -158,7 +162,7 @@ DOMAINS SECTION — تم إعادة التصميم بالكامل - تصميم �
       @for (item of displayedExpertise; track $index; let i = $index) {
       <a [routerLink]="['/specialists']" [queryParams]="{expertise:item.id}"
         class="group relative bg-white rounded-[2rem] p-8 flex flex-col items-center justify-center text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-[0_20px_50px_rgba(27,79,114,0.12)] hover:-translate-y-3 transition-all duration-500 overflow-hidden"
-        style="transition-delay:{{ 0.05 * i }}s;">
+        [style.transitionDelay]="(0.05 * i) + 's'">
         
         <!-- Glowing Compass Accent -->
         <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -236,7 +240,7 @@ FEATURED SPECIALISTS SECTION — تم إعادة التصميم بالكامل
       @for (specialist of featuredSpecialists; track specialist.id; let i = $index) {
       <div [routerLink]="['/specialists', specialist.id]"
         class="specialist-premium"
-        style="transition-delay:{{ 0.08 * i }}s;">
+        [style.transition-delay]="(0.08 * i) + 's'">
         <!-- Header -->
         <div class="specialist-premium-header" style="background:linear-gradient(135deg, #1B4F72, #2E86AB);">
           <div class="specialist-premium-shimmer"></div>
@@ -278,7 +282,7 @@ FEATURED SPECIALISTS SECTION — تم إعادة التصميم بالكامل
               {{ specialist.rating > 0 ? specialist.rating : 'جديد' }}
             </div>
             <div class="specialist-premium-rate">
-              ${{ specialist.hourlyRate }} <small>/س</small>
+              ج.م {{ specialist.hourlyRate }} <small>/س</small>
             </div>
           </div>
         </div>

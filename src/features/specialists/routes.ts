@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '@core/guards/auth.guard';
 
 export const SPECIALISTS_ROUTES: Routes = [
   {
     path: 'favorites',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('@features/favorites/pages/my-favorites/my-favorites')
         .then(m => m.MyFavoritesPage)
