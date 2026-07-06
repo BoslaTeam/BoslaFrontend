@@ -1,6 +1,5 @@
 import { Component, effect, inject, output, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
 import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
@@ -94,10 +93,10 @@ export class BasicInfoStep {
         this.isLoading.set(false);
         this.completed.emit();
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err) => {
         this.isLoading.set(false);
         this.errorMessage.set(
-          err.error?.title ?? 'حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? 'حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى.'
         );
       },
     });
