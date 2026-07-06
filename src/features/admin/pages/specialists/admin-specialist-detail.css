@@ -189,20 +189,15 @@
   background: rgba(46, 134, 171, 0.06); text-decoration: none; transition: background 0.2s;
 }
 .doc-view-link:hover { background: rgba(46, 134, 171, 0.12); }
-.verify-actions {
-  display: flex; flex-direction: column; gap: 0.75rem;
-  padding: 1rem; border-radius: 10px;
-  background: rgba(243, 156, 18, 0.04); border: 1px solid rgba(243, 156, 18, 0.15);
-  margin-bottom: 1rem;
-}
 .admin-notes-input {
-  width: 100%; padding: 0.625rem; border-radius: 8px;
-  border: 1px solid rgba(27, 79, 114, 0.1); background: #fff;
+  width: 100%; padding: 0.75rem; border-radius: 8px;
+  border: 1px solid rgba(27, 79, 114, 0.12); background: #fff;
   font-size: 0.8125rem; font-family: inherit; resize: vertical;
-  outline: none; box-sizing: border-box;
+  outline: none; box-sizing: border-box; line-height: 1.6;
 }
-.admin-notes-input:focus { border-color: #2E86AB; }
-.verify-buttons { display: flex; gap: 0.5rem; }
+.admin-notes-input:focus { border-color: #2E86AB; box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.08); }
+.rejection-error { color: #ba1a1a; font-size: 0.75rem; font-weight: 500; margin: 0; }
+.verify-buttons { display: flex; align-items: center; gap: 0.5rem; }
 .verify-btn {
   display: inline-flex; align-items: center; gap: 0.375rem;
   padding: 0.5rem 1rem; border-radius: 8px;
@@ -215,12 +210,32 @@
 .verify-btn.reject { background: #ba1a1a; color: #fff; }
 .verify-btn.reject:hover:not(:disabled) { background: #9d1515; }
 .admin-notes-display {
-  padding: 0.75rem; border-radius: 8px;
-  background: rgba(27, 79, 114, 0.04); border: 1px solid rgba(27, 79, 114, 0.06);
-  font-size: 0.8125rem; color: #2C3E50; margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: 10px;
+  background: rgba(245, 245, 245, 0.06); border: 1px solid rgba(27, 79, 114, 0.06);
+  border-inline-start: 3px solid #F39C12;
+  font-size: 0.8125rem; color: #2C3E50; margin-top: 0.75rem;
 }
 .admin-notes-display strong { display: block; font-size: 0.6875rem; color: #95A5A6; margin-bottom: 0.25rem; }
-.admin-notes-display p { margin: 0; line-height: 1.6; }
+.admin-notes-display p { margin: 0; line-height: 1.6; color: #555; }
+
+.verify-section {
+  margin: 1.25rem 0; padding: 1.25rem; border-radius: 12px;
+  background: #fff; border: 1px solid rgba(46, 134, 171, 0.12);
+  box-shadow: 0 2px 8px rgba(27, 79, 114, 0.04);
+}
+.verify-section-header {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.9375rem; font-weight: 700; color: #1B4F72; margin-bottom: 0.75rem;
+}
+.verify-hint {
+  font-size: 0.75rem; color: #95A5A6; line-height: 1.6; margin: 0;
+}
+.verify-section-body {
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+.verify-notes-label {
+  font-size: 0.75rem; font-weight: 600; color: #555; margin: 0;
+}
 @media (max-width: 640px) {
   .profile-top { flex-direction: column; }
   .info-grid { grid-template-columns: 1fr; }
