@@ -25,6 +25,7 @@ export class BookAppointment implements OnInit {
   readonly notes = signal('');
   readonly selectedSlotId = signal<string | null>(null);
   readonly selectedDate = signal<string | null>(null);
+  readonly showReview = signal(false);
 
   specialistNotFound = signal(false);
 
@@ -57,13 +58,20 @@ export class BookAppointment implements OnInit {
   readonly currentStep = computed(() => {
     if (!this.selectedDate()) return 1;
     if (!this.selectedSlotId()) return 2;
-    return 3;
+    if (!this.showReview()) return 3;
+    return 4;
   });
 
   readonly durationMinutes = computed(() => {
     const slot = this.selectedSlotInfo();
     if (!slot) return 0;
     return Math.round((slot.end.getTime() - slot.start.getTime()) / 60000);
+  });
+
+  readonly totalPrice = computed(() => {
+    const rate = this.store.specialistInfo()?.hourlyRate ?? 0;
+    const hours = this.durationMinutes() / 60;
+    return Math.round(rate * hours);
   });
 
   ngOnInit(): void {
@@ -94,6 +102,15 @@ export class BookAppointment implements OnInit {
   selectSlot(slotId: string, dateStr: string): void {
     this.selectedSlotId.set(slotId);
     this.selectedDate.set(dateStr);
+    this.showReview.set(false);
+  }
+
+  goToReview(): void {
+    this.showReview.set(true);
+  }
+
+  backToStep3(): void {
+    this.showReview.set(false);
   }
 
   onSubmit(): void {
@@ -115,5 +132,18 @@ export class BookAppointment implements OnInit {
 
   goToAppointments(): void {
     this.router.navigate(['/appointments']);
+  }
+
+  resetStep1(): void {
+    if (this.store.bookingStep() === 'form') {
+      this.selectedDate.set(null);
+      this.selectedSlotId.set(null);
+    }
+  }
+
+  resetStep2(): void {
+    if (this.store.bookingStep() === 'form' && this.selectedDate()) {
+      this.selectedSlotId.set(null);
+    }
   }
 }

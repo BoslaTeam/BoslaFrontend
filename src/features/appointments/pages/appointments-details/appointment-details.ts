@@ -66,7 +66,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     if (!item?.confirmedAt) return null;
     if (item.status !== AppointmentStatus.Confirmed) return null;
     if (item.paymentStatus === PaymentStatus.Paid || item.paymentStatus === PaymentStatus.Refunded) return null;
-    return new Date(item.confirmedAt).getTime() + 3_600_000;
+    return new Date(item.confirmedAt).getTime() + 21_600_000;
   });
 
   readonly remainingMs = signal(0);
@@ -336,11 +336,12 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   }
 
   formatCountdown(ms: number): string {
-    if (ms <= 0) return '0:00';
+    if (ms <= 0) return '0:00:00';
     const totalSec = Math.floor(ms / 1000);
-    const min = Math.floor(totalSec / 60);
+    const hours = Math.floor(totalSec / 3600);
+    const min = Math.floor((totalSec % 3600) / 60);
     const sec = totalSec % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${hours}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   getStatusLabel(status: AppointmentStatus | undefined) {

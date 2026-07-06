@@ -64,13 +64,14 @@ export class AppointmentList implements OnDestroy {
   }
 
   getCountdownText(confirmedAt: string, nowMs: number): string | null {
-    const deadline = new Date(confirmedAt).getTime() + 3_600_000;
+    const deadline = new Date(confirmedAt).getTime() + 21_600_000;
     const remaining = deadline - nowMs;
     if (remaining <= 0) return null;
     const totalSec = Math.floor(remaining / 1000);
-    const min = Math.floor(totalSec / 60);
+    const hours = Math.floor(totalSec / 3600);
+    const min = Math.floor((totalSec % 3600) / 60);
     const sec = totalSec % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${hours}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   ngOnDestroy(): void {
