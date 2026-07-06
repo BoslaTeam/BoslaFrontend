@@ -5,8 +5,8 @@
 .ntf-dropdown {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
-  left: auto;
+  left: 0;
+  right: auto;
   width: 380px;
   max-width: calc(100vw - 32px);
   background: white;
@@ -16,15 +16,16 @@
   z-index: 100;
   overflow: hidden;
   animation: ntf-dropdown-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  transform-origin: top right;
+  transform-origin: top left;
 }
 
 @media (max-width: 480px) {
   .ntf-dropdown {
     position: fixed;
     top: 76px;
+    left: 16px;
     right: 16px;
-    width: 360px;
+    width: auto;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 96px);
   }

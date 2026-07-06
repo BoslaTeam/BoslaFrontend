@@ -1,0 +1,124 @@
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+  <!-- Breadcrumb -->
+  <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    <span class="text-bosla-primary font-bold">محفظتي</span>
+  </header>
+
+  @if (loading()) {
+    <div class="flex justify-center py-20">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm text-slate-400 font-medium">جاري التحميل...</p>
+      </div>
+    </div>
+  } @else if (wallet(); as w) {
+    <!-- Balance Card -->
+    <div class="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-bosla-primary to-bosla-blue p-8 shadow-lg">
+      <div class="absolute -left-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+      <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+      <div class="relative z-10">
+        <div class="flex items-center gap-2 text-white/70 mb-4">
+          <i class="fa-solid fa-wallet"></i>
+          <span class="text-sm font-medium">الرصيد الحالي</span>
+        </div>
+        <p class="text-4xl md:text-5xl font-black text-white mb-2">{{ formatAmount(w.balance) }} <span class="text-lg font-bold text-white/60">ج.م</span></p>
+        @if (w.holdBalance > 0) {
+          <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur rounded-2xl px-4 py-2 text-white/80 text-sm">
+            <i class="fa-solid fa-lock text-xs"></i>
+            <span>مبلغ مجمد: {{ formatAmount(w.holdBalance) }} ج.م</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="mb-8 grid grid-cols-2 gap-4">
+      <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-green-600">{{ formatAmount(w.balance - w.holdBalance) }}</p>
+        <p class="text-xs text-slate-500 mt-1">المتاح</p>
+      </div>
+      <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm text-center">
+        <p class="text-2xl font-black text-amber-600">{{ formatAmount(w.holdBalance) }}</p>
+        <p class="text-xs text-slate-500 mt-1">المجمد</p>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden">
+      <div class="px-6 md:px-8 py-5 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-slate-800">آخر الحركات</h2>
+            <p class="text-xs text-slate-400">أحدث المعاملات على محفظتك</p>
+          </div>
+        </div>
+      </div>
+
+      @if (transactions().length === 0) {
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fa-regular fa-receipt text-2xl text-slate-300"></i>
+          </div>
+          <p class="text-slate-500 font-medium">لا توجد حركات بعد.</p>
+        </div>
+      } @else {
+        <!-- Desktop table -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-right">
+            <thead class="bg-bosla-offwhite text-slate-500 text-xs font-bold">
+              <tr>
+                <th class="px-6 py-4">البيان</th>
+                <th class="px-6 py-4">المبلغ</th>
+                <th class="px-6 py-4">النوع</th>
+                <th class="px-6 py-4">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+              @for (t of transactions(); track t.id) {
+                <tr class="hover:bg-bosla-offwhite/50 transition-colors">
+                  <td class="px-6 py-4 font-medium text-slate-700">{{ t.description }}</td>
+                  <td class="px-6 py-4 font-bold" [class.text-green-600]="t.type === 'Credit' || t.type === 'Release'" [class.text-red-600]="t.type === 'Debit'">
+                    {{ t.type === 'Credit' || t.type === 'Release' ? '+' : '-' }}{{ formatAmount(t.amount) }}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border {{ getTypeClass(t.type) }}">
+                      <i class="fa-solid {{ getTypeIcon(t.type) }} text-[10px]"></i>
+                      {{ getTypeLabel(t.type) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-slate-500 text-sm">{{ t.createdAtUtc | date:'yyyy/MM/dd HH:mm' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile cards -->
+        <div class="md:hidden divide-y divide-slate-50">
+          @for (t of transactions(); track t.id) {
+            <div class="p-4 space-y-2">
+              <div class="flex items-start justify-between">
+                <p class="text-sm font-medium text-slate-700 flex-1 ml-2">{{ t.description }}</p>
+                <span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold border {{ getTypeClass(t.type) }}">
+                  <i class="fa-solid {{ getTypeIcon(t.type) }}"></i>
+                  {{ getTypeLabel(t.type) }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <p class="text-lg font-black" [class.text-green-600]="t.type === 'Credit' || t.type === 'Release'" [class.text-red-600]="t.type === 'Debit'">
+                  {{ t.type === 'Credit' || t.type === 'Release' ? '+' : '-' }}{{ formatAmount(t.amount) }} ج.م
+                </p>
+                <span class="text-xs text-slate-400">{{ t.createdAtUtc | date:'yyyy/MM/dd HH:mm' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

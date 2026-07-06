@@ -88,7 +88,7 @@ export class StripePaymentForm implements OnDestroy {
   readonly clientSecret = input.required<string>();
   readonly appointmentId = input.required<string>();
   readonly amount = input.required<number>();
-  readonly currency = input('usd');
+  readonly currency = input('egp');
 
   readonly paymentSuccess = output<string>();
   readonly paymentError = output<string>();
