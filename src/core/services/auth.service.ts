@@ -165,7 +165,8 @@ export class AuthService {
     }
 
     private fetchSpecialistStatus(): Observable<SpecialistStatus> {
-        if (!this.isAuthenticated()) {
+        const user = this._currentUser();
+        if (!user || !user.roles.includes(UserRole.Specialist)) {
             this._specialistStatus.set(null);
             return of(null);
         }
