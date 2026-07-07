@@ -52,7 +52,7 @@ export class DocumentsStep implements OnInit {
       error: (err) => {
         this.isUploading.set(false);
         this.errorMessage.set(
-          err.error?.title ?? 'فشل في رفع الملف. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? 'فشل في رفع الملف. يرجى المحاولة مرة أخرى.'
         );
         input.value = '';
       },
@@ -68,7 +68,7 @@ export class DocumentsStep implements OnInit {
       error: (err) => {
         this.isDeleting.update(d => ({ ...d, [doc.id]: false }));
         this.errorMessage.set(
-          err.error?.title ?? 'فشل في حذف الملف. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? 'فشل في حذف الملف. يرجى المحاولة مرة أخرى.'
         );
       },
     });

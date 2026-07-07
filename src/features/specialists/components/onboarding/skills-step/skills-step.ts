@@ -52,7 +52,7 @@ export class SkillsStep {
       error: (err) => {
         this.isSaving.set(false);
         this.errorMessage.set(
-          err.error?.title ?? 'فشل في حفظ المهارات. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? 'فشل في حفظ المهارات. يرجى المحاولة مرة أخرى.'
         );
       },
     });
