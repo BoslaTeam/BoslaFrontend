@@ -63,13 +63,13 @@ export class SubmitStep {
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const body = err.error;
-        if (body?.errors) {
-          const msgs = Object.values(body.errors).flat() as string[];
+        const apiError = err.error ?? err;
+        if (apiError?.errors) {
+          const msgs = Object.values(apiError.errors).flat() as string[];
           this.errorMessage.set(msgs.join(' • '));
         } else {
           this.errorMessage.set(
-            body?.title ?? 'فشل في إرسال الطلب. يرجى المحاولة مرة أخرى.'
+            apiError?.title ?? 'فشل في إرسال الطلب. يرجى المحاولة مرة أخرى.'
           );
         }
       },

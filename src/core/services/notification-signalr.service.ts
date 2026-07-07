@@ -48,9 +48,13 @@ export class NotificationSignalrService {
     });
 
     this.hubConnection.on('ReceiveNotification', (dto: SignalRNotificationDto) => {
+      const typeMap: Record<string, number> = {
+        Message: 0, Booking: 1, Reminder: 2, SpecialistVerification: 3, Withdrawal: 4,
+        PortfolioApproved: 5, PortfolioRejected: 6, PortfolioPendingReview: 7,
+      };
       const notification: AppNotification = {
         id: dto.id,
-        type: parseInt(dto.type, 10) || 1,
+        type: typeMap[dto.type] ?? parseInt(dto.type, 10) ?? 0,
         title: dto.title,
         message: dto.message,
         isRead: dto.isRead,
