@@ -65,13 +65,33 @@ export class AdminSpecialistDetail implements OnInit {
     }
   }
 
+  readonly rejectionError = signal('');
+
+  get isPending(): boolean {
+    return this.specialist()?.verificationStatus === 'Pending';
+  }
+
+  get isRejected(): boolean {
+    return this.specialist()?.verificationStatus === 'Rejected';
+  }
+
   verifyWithNotes(isApproved: boolean): void {
+    this.rejectionError.set('');
+
+    if (!isApproved && !this.adminNotes()?.trim()) {
+      this.rejectionError.set('يرجى إدخال سبب الرفض.');
+      return;
+    }
+
     this.isVerifying.set(true);
     this.adminService.verifySpecialist(this.id(), {
       isVerified: isApproved,
       adminNotes: this.adminNotes() || undefined,
     }).subscribe({
-      next: () => this.loadSpecialist(),
+      next: () => {
+        this.rejectionError.set('');
+        this.loadSpecialist();
+      },
       error: () => this.isVerifying.set(false),
       complete: () => this.isVerifying.set(false),
     });

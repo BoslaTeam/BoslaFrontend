@@ -66,7 +66,7 @@
             <span class="mini-stat-label">الجلسات</span>
           </div>
           <div class="mini-stat">
-            <span class="mini-stat-value">${{ s.totalEarnings.toLocaleString() }}</span>
+            <span class="mini-stat-value">ج.م {{ s.totalEarnings.toLocaleString() }}</span>
             <span class="mini-stat-label">الأرباح</span>
           </div>
         </div>
@@ -95,6 +95,75 @@
         }
       </div>
     </div>
+
+    @if (isPending || isRejected) {
+      <div class="verify-section">
+        <div class="verify-section-header">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 1 0 10 10"/>
+          </svg>
+          @if (isPending) {
+            <span>مراجعة طلب الاعتماد</span>
+          } @else {
+            <span>إعادة النظر في الرفض</span>
+          }
+        </div>
+
+        <div class="verify-section-body">
+          @if (isPending) {
+            <p class="verify-hint">يرجى مراجعة مستندات ومعلومات المتخصص قبل الاعتماد. الملاحظات إلزامية في حالة الرفض.</p>
+          } @else {
+            <p class="verify-hint">بعد قيام المتخصص بتعديل بياناته، يمكنك إعادة اعتماده. الملاحظات توضيحية واختيارية.</p>
+          }
+
+          <label class="verify-notes-label">ملاحظات الإدارة</label>
+          <textarea
+            class="admin-notes-input"
+            placeholder="أدخل ملاحظات الإدارة هنا..."
+            [(ngModel)]="adminNotes"
+            rows="3"
+          ></textarea>
+
+          @if (rejectionError()) {
+            <p class="rejection-error">{{ rejectionError() }}</p>
+          }
+
+          <div class="verify-buttons">
+            @if (isPending) {
+              <button class="verify-btn approve" (click)="verifyWithNotes(true)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                اعتماد المتخصص
+              </button>
+              <button class="verify-btn reject" (click)="verifyWithNotes(false)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                رفض الطلب
+              </button>
+            } @else {
+              <button class="verify-btn approve" (click)="verifyWithNotes(true)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                إعادة الاعتماد
+              </button>
+            }
+            @if (isVerifying()) {
+              <span class="status-updating">جاري التحديث...</span>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (s.adminNotes) {
+      <div class="admin-notes-display">
+        <strong>ملاحظات الإدارة السابقة:</strong>
+        <p>{{ s.adminNotes }}</p>
+      </div>
+    }
 
     <div class="detail-tabs">
       <button class="detail-tab" [class.active]="activeTab() === 'info'" (click)="setTab('info')">المعلومات الأساسية</button>
@@ -133,7 +202,7 @@
           </div>
           <div class="info-item">
             <span class="info-label">سعر الساعة</span>
-            <span class="info-value">${{ s.hourlyRate.toFixed(2) }}</span>
+            <span class="info-value">ج.م {{ s.hourlyRate.toFixed(2) }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">البلد</span>
@@ -296,39 +365,6 @@
         <div class="documents-section">
           <div class="documents-header">
             <h4>المستندات المرفوعة</h4>
-            @if (s.verificationStatus === 'Pending') {
-              <div class="verify-actions">
-                <textarea
-                  class="admin-notes-input"
-                  placeholder="ملاحظات الإدارة (اختياري)..."
-                  [(ngModel)]="adminNotes"
-                  rows="2"
-                ></textarea>
-                <div class="verify-buttons">
-                  <button class="verify-btn approve" (click)="verifyWithNotes(true)" [disabled]="isVerifying()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    اعتماد
-                  </button>
-                  <button class="verify-btn reject" (click)="verifyWithNotes(false)" [disabled]="isVerifying()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                    رفض
-                  </button>
-                </div>
-                @if (isVerifying()) {
-                  <span class="status-updating">جاري التحديث...</span>
-                }
-              </div>
-            }
-            @if (s.adminNotes) {
-              <div class="admin-notes-display">
-                <strong>ملاحظات الإدارة:</strong>
-                <p>{{ s.adminNotes }}</p>
-              </div>
-            }
           </div>
 
           @if (s.documents.length === 0) {

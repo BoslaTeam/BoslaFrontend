@@ -39,7 +39,15 @@
 
           <div class="grid grid-cols-2 gap-4">
             <ui-input formControlName="fromDate" label="تاريخ البداية" type="date" [required]="true" />
-            <ui-input formControlName="toDate" label="تاريخ النهاية" type="date" />
+            <div>
+              <ui-input formControlName="toDate" label="تاريخ النهاية" type="date" />
+              <label class="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                <input type="checkbox" [checked]="isCurrent()[$index]"
+                  (change)="toggleCurrent($index)"
+                  class="w-4 h-4 rounded border-slate-300 text-bosla-primary focus:ring-bosla-primary/30 cursor-pointer" />
+                <span class="text-xs text-slate-500 font-medium">حتى الآن</span>
+              </label>
+            </div>
           </div>
 
           <ui-textarea formControlName="description" label="الوصف" placeholder="صف مهامك وإنجازاتك في هذه الخبرة" [rows]="2" />

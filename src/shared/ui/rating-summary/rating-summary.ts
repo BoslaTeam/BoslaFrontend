@@ -24,4 +24,12 @@ export class UiRatingSummary {
   readonly fullStars = computed(() => {
     return Array(Math.floor(this.averageRating())).fill(0);
   });
+
+  readonly emptyStars = computed(() => {
+    const total = 5;
+    const full = Math.floor(this.averageRating());
+    const hasHalf = this.averageRating() - full >= 0.5 ? 1 : 0;
+    const empty = Math.max(0, total - full - hasHalf);
+    return Array(empty).fill(0);
+  });
 }

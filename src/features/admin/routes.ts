@@ -94,5 +94,10 @@ export const ADMIN_ROUTES: Routes = [
     path: 'withdrawals/:id',
     loadComponent: () => import('./pages/withdrawals/admin-withdrawal-detail').then(m => m.AdminWithdrawalDetail),
     title: 'تفاصيل السحب'
+  },
+  {
+    path: 'wallet',
+    loadComponent: () => import('@features/wallet/pages/admin-wallet/admin-wallet').then(m => m.AdminWallet),
+    title: 'محفظة المنصة'
   }
 ];

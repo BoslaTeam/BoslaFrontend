@@ -96,7 +96,9 @@ function timeOptions(): { value: string; label: string }[] {
   for (let h = 0; h < 24; h++) {
     for (const m of [0, 30]) {
       const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      opts.push({ value: v, label: v });
+      const period = h >= 12 ? 'م' : 'ص';
+      const hour12 = h % 12 || 12;
+      opts.push({ value: v, label: `${hour12}:${String(m).padStart(2, '0')} ${period}` });
     }
   }
   return opts;
