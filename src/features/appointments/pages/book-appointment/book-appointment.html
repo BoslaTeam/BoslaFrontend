@@ -589,6 +589,13 @@
 
                 <!-- Actions row -->
                 <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                  <a [routerLink]="['/appointments/book']" [queryParams]="{ specialistId: specialistId() }"
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:shadow-bosla-primary/20 transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    حجز موعد
+                  </a>
                   <a [routerLink]="['/specialists', specialistId()]"
                     class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200">
                     عرض الملف الشخصي
