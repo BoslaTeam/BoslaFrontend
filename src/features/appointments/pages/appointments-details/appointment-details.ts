@@ -48,11 +48,6 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly reviewHover = signal(0);
   readonly reviewComment = signal('');
 
-  readonly showReminderModal = signal(false);
-  readonly reminderMessage = signal('');
-  readonly reminderDate = signal('');
-  readonly reminderTime = signal('');
-
   readonly showNotesModal = signal(false);
   readonly editNotesText = signal('');
 
@@ -195,17 +190,6 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     return u === UserRole.Specialist || u === UserRole.Admin || s === AppointmentStatus.Paid;
   });
 
-  readonly canAddReminder = computed(() => {
-    const s = this.store.selectedItem()?.status;
-    return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid;
-  });
-
-  readonly tomorrow = computed(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  });
-
   constructor() {
     effect(() => {
       const convId = this.store.lastCreatedConversationId();
@@ -319,20 +303,6 @@ export class AppointmentDetail implements OnInit, OnDestroy {
         this.reviewComment.set('');
       },
     );
-  }
-
-  onAddReminder(): void {
-    if (!this.reminderDate() || !this.reminderTime() || !this.reminderMessage().trim()) return;
-    const reminderTime = new Date(`${this.reminderDate()}T${this.reminderTime()}`);
-    this.store.addReminder(this.appointmentId, { reminderTime, message: this.reminderMessage() });
-    this.showReminderModal.set(false);
-    this.reminderDate.set('');
-    this.reminderTime.set('');
-    this.reminderMessage.set('');
-  }
-
-  onDeleteReminder(reminderId: string): void {
-    this.store.deleteReminder(this.appointmentId, reminderId);
   }
 
   formatCountdown(ms: number): string {

@@ -105,68 +105,7 @@
             }
           </div>
 
-          <!-- Reminders -->
-          <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('reminders')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
-              <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
-                <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                التذكيرات
-                @if (store.selectedItemReminders().length > 0) {
-                  <span class="text-xs bg-bosla-blue/10 text-bosla-blue px-2 py-0.5 rounded-full">{{ store.selectedItemReminders().length }}</span>
-                }
-              </h3>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('reminders')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </button>
-            @if (expandedSections().has('reminders')) {
-              <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4">
-                @if (store.selectedItemReminders().length > 0) {
-                  <div class="space-y-3">
-                    @for (reminder of store.selectedItemReminders(); track reminder.id) {
-                      <div class="flex items-start justify-between gap-3 p-3.5 bg-bosla-offwhite rounded-xl border border-bosla-charcoal/5 group hover:border-bosla-blue/20 transition-colors">
-                        <div class="flex items-start gap-3 min-w-0">
-                          <div class="p-1.5 bg-amber-50 text-amber-500 rounded-lg shrink-0 mt-0.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                          </div>
-                          <div class="min-w-0">
-                            <p class="text-sm font-medium text-bosla-charcoal truncate">{{ reminder.message }}</p>
-                            <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">{{ reminder.reminderTime | date: 'dd/MM/yyyy - hh:mm a' }}</p>
-                            @if (reminder.isSent) {
-                              <span class="inline-block mt-1 text-[10px] font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">تم الإرسال</span>
-                            }
-                          </div>
-                        </div>
-                        <button
-                          (click)="onDeleteReminder(reminder.id)"
-                          class="shrink-0 p-1.5 text-bosla-grey/40 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <div class="text-center py-8 bg-bosla-offwhite rounded-xl">
-                    <div class="w-12 h-12 mx-auto bg-bosla-grey/10 text-bosla-grey/50 rounded-full flex items-center justify-center mb-3">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                      </svg>
-                    </div>
-                    <p class="text-sm text-bosla-grey">لا توجد تذكيرات</p>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+
 
           <!-- Status Timeline -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
@@ -386,17 +325,6 @@
                   </svg>
                   <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تحديث الملاحظات</span>
                 </button>
-                @if (canAddReminder()) {
-                  <button
-                    (click)="showReminderModal.set(true)"
-                    class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
-                  >
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تذكير</span>
-                  </button>
-                }
                 <a
                   [routerLink]="['/appointments', appointment.id, 'track']"
                   class="group relative w-9 h-9 flex items-center justify-center rounded-lg text-bosla-charcoal/60 hover:text-bosla-charcoal hover:bg-bosla-charcoal/5 transition-colors cursor-pointer"
@@ -461,7 +389,7 @@
                 </a>
                 <a [routerLink]="['/specialists', specialist.id]"
                   class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200 cursor-pointer">
-                  عرض الملف الشخصي
+                  عرض الملف
                   <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
@@ -591,45 +519,6 @@
           <div class="flex justify-end gap-2 mt-5">
             <ui-button (click)="showReviewModal.set(false); reviewRating.set(0); reviewComment.set('')" size="sm" variant="ghost">إلغاء</ui-button>
             <ui-button (click)="onReviewSubmit()" [disabled]="reviewRating() === 0" [loading]="store.isActionLoading()" size="sm" variant="primary">إرسال التقييم</ui-button>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- Reminder Modal -->
-    @if (showReminderModal()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bosla-charcoal/40 backdrop-blur-sm">
-        <div class="bg-white border border-bosla-charcoal/10 w-full max-w-md rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="p-2 bg-amber-50 text-amber-500 rounded-xl">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">إضافة تذكير</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">سيتم إرسال تذكير لك في الوقت المحدد</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">تاريخ التذكير</label>
-              <input type="date" [value]="reminderDate()" (input)="reminderDate.set($any($event.target).value)" [attr.min]="tomorrow()" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">وقت التذكير</label>
-              <input type="time" [value]="reminderTime()" (input)="reminderTime.set($any($event.target).value)" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-bosla-charcoal/70 mb-1.5">رسالة التذكير</label>
-              <input type="text" [value]="reminderMessage()" (input)="reminderMessage.set($any($event.target).value)" placeholder="مثال: موعدك مع المختص بعد ساعة" class="w-full p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue transition-colors" />
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showReminderModal.set(false); reminderMessage.set(''); reminderDate.set(''); reminderTime.set('')" size="sm" variant="ghost">إلغاء</ui-button>
-            <ui-button (click)="onAddReminder()" [disabled]="!reminderDate() || !reminderTime() || !reminderMessage().trim()" size="sm" variant="primary">إضافة التذكير</ui-button>
           </div>
         </div>
       </div>

@@ -76,6 +76,8 @@ export class NotificationDropdown implements OnInit {
     if (!notif.appointmentId) return;
     if (notif.type === NotificationType.Message) {
       this.router.navigate(['/chat', notif.appointmentId]);
+    } else if (notif.type === NotificationType.Reminder) {
+      this.router.navigate(['/appointments', notif.appointmentId]);
     } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }

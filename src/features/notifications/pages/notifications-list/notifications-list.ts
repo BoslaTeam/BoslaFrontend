@@ -12,6 +12,7 @@ import { NotificationType } from '@core/enums/notification-type.enum';
   templateUrl: './notifications-list.html',
 })
 export class NotificationsList implements OnInit {
+  protected readonly NotificationType = NotificationType;
   private notificationsService = inject(NotificationsService);
   private notificationState = inject(NotificationService);
   private router = inject(Router);
@@ -60,6 +61,8 @@ export class NotificationsList implements OnInit {
     if (!notif.appointmentId) return;
     if (notif.type === NotificationType.Message) {
       this.router.navigate(['/chat', notif.appointmentId]);
+    } else if (notif.type === NotificationType.Reminder) {
+      this.router.navigate(['/appointments', notif.appointmentId]);
     } else {
       this.router.navigate(['/appointments', notif.appointmentId, 'pay']);
     }
