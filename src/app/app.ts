@@ -1,5 +1,5 @@
 import { Component, inject, signal, effect, NgZone, computed } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { UiToast } from "@shared/ui/toast/toast";
 import { UiGlobalLoader } from "@shared/ui/global-loader/global-loader";
 import { NotificationSignalrService } from '@core/services/notification-signalr.service';
@@ -26,8 +26,10 @@ export class App {
   private _router = inject(Router);
   private _zone = inject(NgZone);
 
+  private readonly currentUrl = signal(this._router.url);
+
   protected readonly showChat = computed(() => {
-    const url = this._router.url;
+    const url = this.currentUrl();
     return this._auth.isAuthenticated()
       && !url.startsWith('/auth/login')
       && !url.startsWith('/auth/register');
@@ -36,6 +38,12 @@ export class App {
   private _audioCtx: AudioContext | null = null;
 
   constructor() {
+    this._router.events.subscribe(e => {
+      if (e instanceof NavigationEnd) {
+        this.currentUrl.set(e.urlAfterRedirects);
+      }
+    });
+
     effect(() => {
       if (this._auth.isAuthenticated()) {
         this._signalr.init();
