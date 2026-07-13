@@ -76,27 +76,31 @@ interface ChatMessage { role: string; content: string; }
               @if (cards?.length) {
                 <div class="cards-row animate-in delay-1">
                   @for (c of cards; track c.id) {
-                     <a (click)="goToSpecialist(c.id); $event.preventDefault()" class="specialist-card">
-                      <div class="card-glow"></div>
-                      <div class="card-content">
-                        <div class="card-avatar">
-                          <img [src]="c.profileImageUrl?.trim() || 'assets/icons/favicon.ico'" [alt]="c.name"
-                            (error)="c.profileImageUrl = undefined" />
-                          @if (c.isOnline) { <div class="card-online"></div> }
-                        </div>
-                        <div class="card-info">
-                          <div class="card-name">{{ c.name }}</div>
-                          <div class="card-title">{{ c.title || 'متخصص' }}</div>
-                          <div class="card-footer">
-                            <span class="card-rating">
-                              <i class="fa-solid fa-star text-[#F39C12] text-[10px]"></i>
-                              {{ c.rating > 0 ? c.rating : 'جديد' }}
-                            </span>
-                            <span class="card-rate">{{ c.hourlyRate }} <small>/س</small></span>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
+                      <a (click)="goToSpecialist(c.id); $event.preventDefault()" class="specialist-card">
+                       <div class="card-glow"></div>
+                       <div class="card-content">
+                         <div class="card-avatar">
+                           <img [src]="c.profileImageUrl?.trim() || 'assets/icons/favicon.ico'" [alt]="c.name"
+                             (error)="c.profileImageUrl = undefined" />
+                           @if (c.isOnline) { <div class="card-online"></div> }
+                         </div>
+                         <div class="card-info">
+                           <div class="card-name">{{ c.name }}</div>
+                           <div class="card-title">{{ c.title || 'متخصص' }}</div>
+                           <button (click)="$event.preventDefault(); $event.stopPropagation(); goToBooking(c.id)"
+                             class="mt-2 w-full py-2 px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg transition-all duration-200 cursor-pointer">
+                             حجز موعد
+                           </button>
+                           <div class="card-footer mt-2">
+                             <span class="card-rating">
+                               <i class="fa-solid fa-star text-[#F39C12] text-[10px]"></i>
+                               {{ c.rating > 0 ? c.rating : 'جديد' }}
+                             </span>
+                             <span class="card-rate">{{ c.hourlyRate }} <small>/س</small></span>
+                           </div>
+                         </div>
+                       </div>
+                     </a>
                   }
                 </div>
               }
@@ -565,6 +569,11 @@ export class AiChatWidget implements AfterViewChecked {
 
   goToSpecialist(id: string) {
     this.router.navigate(['/specialists', id]);
+    this.isOpen.set(false);
+  }
+
+  goToBooking(id: string) {
+    this.router.navigate(['/appointments/book'], { queryParams: { specialistId: id } });
     this.isOpen.set(false);
   }
 

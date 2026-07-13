@@ -1,124 +1,261 @@
-<div class="wallet-page">
-  <div class="page-header">
-    <h1>المحفظة المالية</h1>
-    <p class="page-subtitle">إدارة أرباحك وطلبات السحب</p>
-  </div>
+<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+  <!-- Breadcrumb -->
+  <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    <span class="text-bosla-primary font-bold">المحفظة المالية</span>
+  </header>
 
   @if (successMessage()) {
-    <div class="alert alert-success">{{ successMessage() }}</div>
+    <div class="mb-6 flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-5 py-4 text-sm text-green-700 font-medium">
+      <i class="fa-solid fa-circle-check text-green-500"></i>
+      {{ successMessage() }}
+    </div>
   }
 
   @if (isLoading()) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>جاري التحميل...</p>
+    <div class="flex justify-center py-20">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm text-slate-400 font-medium">جاري التحميل...</p>
+      </div>
     </div>
   } @else if (wallet(); as w) {
     <!-- Balance Cards -->
-    <div class="balance-grid">
-      <div class="balance-card total">
-        <div class="balance-label">إجمالي الأرباح</div>
-        <div class="balance-amount">{{ w.totalEarnings | number:'1.2-2' }} ر.س</div>
+    <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+        <div class="absolute -left-6 -top-6 w-24 h-24 bg-slate-100 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 border border-slate-200">
+              <i class="fa-solid fa-coins text-xl"></i>
+            </div>
+          </div>
+          <h3 class="text-sm font-medium text-slate-500">إجمالي الأرباح</h3>
+          <p class="mt-1.5 text-2xl md:text-3xl font-black text-slate-800">{{ w.totalEarnings | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
+        </div>
       </div>
-      <div class="balance-card available">
-        <div class="balance-label">الرصيد المتاح للسحب</div>
-        <div class="balance-amount">{{ w.availableBalance | number:'1.2-2' }} ر.س</div>
+
+      <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+        <div class="absolute -left-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+              <i class="fa-solid fa-wallet text-xl"></i>
+            </div>
+          </div>
+          <h3 class="text-sm font-medium text-slate-500">الرصيد المتاح للسحب</h3>
+          <p class="mt-1.5 text-2xl md:text-3xl font-black text-bosla-primary">{{ w.availableBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
+        </div>
       </div>
-      <div class="balance-card pending">
-        <div class="balance-label">رصيد قيد الانتظار</div>
-        <div class="balance-amount">{{ w.pendingBalance | number:'1.2-2' }} ر.س</div>
+
+      <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+        <div class="absolute -left-6 -top-6 w-24 h-24 bg-amber-50 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
+              <i class="fa-solid fa-clock text-xl"></i>
+            </div>
+          </div>
+          <h3 class="text-sm font-medium text-slate-500">رصيد قيد الانتظار</h3>
+          <p class="mt-1.5 text-2xl md:text-3xl font-black text-bosla-orange">{{ w.pendingBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
+        </div>
       </div>
-      <div class="balance-card withdrawn">
-        <div class="balance-label">إجمالي المسحوبات</div>
-        <div class="balance-amount">{{ w.totalWithdrawn | number:'1.2-2' }} ر.س</div>
+
+      <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+        <div class="absolute -left-6 -top-6 w-24 h-24 bg-slate-100 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 border border-slate-200">
+              <i class="fa-solid fa-arrow-up-from-bracket text-xl"></i>
+            </div>
+          </div>
+          <h3 class="text-sm font-medium text-slate-500">إجمالي المسحوبات</h3>
+          <p class="mt-1.5 text-2xl md:text-3xl font-black text-slate-600">{{ w.totalWithdrawn | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
+        </div>
       </div>
     </div>
 
-    <!-- Request Withdrawal Button -->
+    <!-- Request Withdrawal -->
     @if (w.availableBalance > 0) {
-      <div class="request-section">
-        <button class="btn btn-primary" (click)="openRequestForm()">طلب سحب جديد</button>
+      <div class="mb-8">
+        <button (click)="openRequestForm()" class="px-6 py-3 bg-bosla-primary hover:bg-bosla-primary/90 text-white font-bold rounded-2xl transition-all shadow-sm flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-plus"></i>
+          طلب سحب جديد
+        </button>
       </div>
     }
 
     <!-- Request Form Modal -->
     @if (showRequestForm()) {
-      <div class="modal-overlay" (click)="closeRequestForm()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <h2>طلب سحب جديد</h2>
-            <button class="modal-close" (click)="closeRequestForm()">×</button>
-          </div>
-
-          @if (errorMessage()) {
-            <div class="alert alert-error">{{ errorMessage() }}</div>
-          }
-
-          <div class="form-group">
-            <label>المبلغ (ر.س)</label>
-            <input type="number" [(ngModel)]="requestAmount" class="form-control" min="1" [max]="wallet()?.availableBalance ?? 0" placeholder="أدخل المبلغ">
-            <small class="form-hint">الرصيد المتاح: {{ wallet()?.availableBalance | number:'1.2-2' }} ر.س</small>
-          </div>
-
-          <div class="form-group">
-            <label>طريقة الدفع</label>
-            <select [(ngModel)]="requestMethod" class="form-control">
-              <option value="bank">تحويل بنكي</option>
-              <option value="wallet">محفظة إلكترونية</option>
-              <option value="paypal">PayPal</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>تفاصيل الدفع (رقم الحساب / المحفظة)</label>
-            <input type="text" [(ngModel)]="requestDetails" class="form-control" placeholder="IBAN أو رقم المحفظة">
-          </div>
-
-          <div class="modal-actions">
-            <button class="btn btn-primary" (click)="submitRequest()" [disabled]="submitting()">
-              {{ submitting() ? 'جاري...' : 'تقديم الطلب' }}
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" (click)="closeRequestForm()">
+        <div class="bg-white rounded-3xl max-w-md w-full mx-auto shadow-2xl border border-slate-100" (click)="$event.stopPropagation()">
+          <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <h2 class="text-lg font-black text-slate-800">طلب سحب جديد</h2>
+            </div>
+            <button (click)="closeRequestForm()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 transition-colors flex items-center justify-center cursor-pointer">
+              <i class="fa-solid fa-xmark"></i>
             </button>
-            <button class="btn btn-secondary" (click)="closeRequestForm()">إلغاء</button>
+          </div>
+
+          <div class="p-6 space-y-5">
+            @if (errorMessage()) {
+              <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+                <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5 shrink-0"></i>
+                <p class="text-sm text-red-700 font-medium">{{ errorMessage() }}</p>
+              </div>
+            }
+
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">المبلغ (ج.م)</label>
+              <input type="number" [(ngModel)]="requestAmount" class="w-full h-11 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" min="1" [max]="wallet()?.availableBalance ?? 0" placeholder="أدخل المبلغ" />
+              <p class="text-xs text-slate-400 mt-1">الرصيد المتاح: {{ wallet()?.availableBalance | number:'1.2-2' }} ج.م</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">طريقة الدفع</label>
+              <select [(ngModel)]="requestMethod" class="w-full h-11 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer">
+                <option value="bank">تحويل بنكي</option>
+                <option value="wallet">محفظة إلكترونية</option>
+                <option value="paypal">PayPal</option>
+              </select>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">تفاصيل الدفع (رقم الحساب / المحفظة)</label>
+              <input type="text" [(ngModel)]="requestDetails" class="w-full h-11 px-4 text-sm bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" placeholder="IBAN أو رقم المحفظة" />
+            </div>
+
+            <div class="flex gap-3 pt-2">
+              <button (click)="submitRequest()" [disabled]="submitting()" class="flex-1 h-11 bg-bosla-primary hover:bg-bosla-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all text-sm flex items-center justify-center gap-2 cursor-pointer">
+                @if (submitting()) {
+                  <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>جاري...</span>
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                  <span>تقديم الطلب</span>
+                }
+              </button>
+              <button (click)="closeRequestForm()" class="flex-1 h-11 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all text-sm cursor-pointer">
+                إلغاء
+              </button>
+            </div>
           </div>
         </div>
       </div>
     }
 
     <!-- Recent Withdrawals -->
-    <div class="section">
-      <h2>آخر السحوبات</h2>
+    <div class="rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden">
+      <div class="px-6 md:px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-black text-slate-800">آخر السحوبات</h2>
+            <p class="text-xs text-slate-400">طلبات السحب السابقة وحالتها</p>
+          </div>
+        </div>
+      </div>
+
       @if (w.recentWithdrawals.length === 0) {
-        <div class="empty-state">
-          <p>لا توجد سحوبات سابقة.</p>
+        <div class="p-12 text-center">
+          <div class="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <i class="fa-regular fa-circle-down text-2xl text-slate-300"></i>
+          </div>
+          <p class="text-slate-500 font-medium">لا توجد سحوبات سابقة.</p>
         </div>
       } @else {
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
+        <!-- Desktop table -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-right">
+            <thead class="bg-bosla-offwhite text-slate-500 text-xs font-bold">
               <tr>
-                <th>المبلغ</th>
-                <th>طريقة الدفع</th>
-                <th>الحالة</th>
-                <th>تاريخ الطلب</th>
-                <th>تاريخ المعالجة</th>
+                <th class="px-6 py-4">المبلغ</th>
+                <th class="px-6 py-4">طريقة الدفع</th>
+                <th class="px-6 py-4">الحالة</th>
+                <th class="px-6 py-4">تاريخ الطلب</th>
+                <th class="px-6 py-4">تاريخ المعالجة</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-slate-50">
               @for (item of w.recentWithdrawals; track item.id) {
-                <tr>
-                  <td class="amount">{{ item.amount | number:'1.2-2' }} ر.س</td>
-                  <td>{{ getMethodLabel(item.paymentMethod) }}</td>
-                  <td>
-                    <span class="status-badge" [class]="getStatusClass(item.status)">
+                <tr class="hover:bg-bosla-offwhite/50 transition-colors">
+                  <td class="px-6 py-4 font-bold text-slate-800">{{ item.amount | number:'1.2-2' }} ج.م</td>
+                  <td class="px-6 py-4 text-slate-600 text-sm">{{ getMethodLabel(item.paymentMethod) }}</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border"
+                      [class.bg-amber-50]="item.status === 'Pending'"
+                      [class.text-amber-600]="item.status === 'Pending'"
+                      [class.border-amber-200]="item.status === 'Pending'"
+                      [class.bg-blue-50]="item.status === 'Processing'"
+                      [class.text-blue-600]="item.status === 'Processing'"
+                      [class.border-blue-200]="item.status === 'Processing'"
+                      [class.bg-green-50]="item.status === 'Completed'"
+                      [class.text-green-600]="item.status === 'Completed'"
+                      [class.border-green-200]="item.status === 'Completed'"
+                      [class.bg-red-50]="item.status === 'Rejected'"
+                      [class.text-red-600]="item.status === 'Rejected'"
+                      [class.border-red-200]="item.status === 'Rejected'">
+                      <span class="w-1.5 h-1.5 rounded-full inline-block"
+                        [class.bg-amber-500]="item.status === 'Pending'"
+                        [class.bg-blue-500]="item.status === 'Processing'"
+                        [class.bg-green-500]="item.status === 'Completed'"
+                        [class.bg-red-400]="item.status === 'Rejected'"></span>
                       {{ getStatusLabel(item.status) }}
                     </span>
                   </td>
-                  <td>{{ item.requestedAt | date:'yyyy/MM/dd' }}</td>
-                  <td>{{ item.processedAt ? (item.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
+                  <td class="px-6 py-4 text-slate-500 text-sm">{{ item.requestedAt | date:'yyyy/MM/dd' }}</td>
+                  <td class="px-6 py-4 text-slate-500 text-sm">{{ item.processedAt ? (item.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
                 </tr>
               }
             </tbody>
           </table>
+        </div>
+
+        <!-- Mobile cards -->
+        <div class="md:hidden divide-y divide-slate-50">
+          @for (item of w.recentWithdrawals; track item.id) {
+            <div class="p-4 space-y-3">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-lg font-black text-slate-800">{{ item.amount | number:'1.2-2' }} ج.م</p>
+                  <p class="text-xs text-slate-400 mt-0.5">{{ getMethodLabel(item.paymentMethod) }}</p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border"
+                  [class.bg-amber-50]="item.status === 'Pending'"
+                  [class.text-amber-600]="item.status === 'Pending'"
+                  [class.border-amber-200]="item.status === 'Pending'"
+                  [class.bg-blue-50]="item.status === 'Processing'"
+                  [class.text-blue-600]="item.status === 'Processing'"
+                  [class.border-blue-200]="item.status === 'Processing'"
+                  [class.bg-green-50]="item.status === 'Completed'"
+                  [class.text-green-600]="item.status === 'Completed'"
+                  [class.border-green-200]="item.status === 'Completed'"
+                  [class.bg-red-50]="item.status === 'Rejected'"
+                  [class.text-red-600]="item.status === 'Rejected'"
+                  [class.border-red-200]="item.status === 'Rejected'">
+                  <span class="w-1.5 h-1.5 rounded-full inline-block"
+                    [class.bg-amber-500]="item.status === 'Pending'"
+                    [class.bg-blue-500]="item.status === 'Processing'"
+                    [class.bg-green-500]="item.status === 'Completed'"
+                    [class.bg-red-400]="item.status === 'Rejected'"></span>
+                  {{ getStatusLabel(item.status) }}
+                </span>
+              </div>
+              <div class="flex items-center gap-4 text-xs text-slate-400">
+                <span><i class="fa-regular fa-calendar ml-1"></i>{{ item.requestedAt | date:'yyyy/MM/dd' }}</span>
+                @if (item.processedAt) {
+                  <span><i class="fa-regular fa-circle-check ml-1"></i>{{ item.processedAt | date:'yyyy/MM/dd' }}</span>
+                }
+              </div>
+            </div>
+          }
         </div>
       }
     </div>

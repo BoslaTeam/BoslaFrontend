@@ -104,7 +104,8 @@
 
         <!-- Session Status Banner -->
         <div class="vr-status-banner">
-          <span class="vr-status-badge" [class.vr-status-badge--waiting]="sessionStateService.sessionStatus() === 'Waiting'"
+          <span class="vr-status-badge"
+            [class.vr-status-badge--waiting]="sessionStateService.sessionStatus() === 'Waiting'"
             [class.vr-status-badge--ready]="sessionStateService.sessionStatus() === 'Ready to Join'"
             [class.vr-status-badge--connecting]="sessionStateService.sessionStatus() === 'Connecting'"
             [class.vr-status-badge--in-progress]="sessionStateService.sessionStatus() === 'In Progress'"
@@ -142,7 +143,8 @@
           <a routerLink="/" class="vr-home-btn" type="button">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
               aria-hidden="true">
-              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              <path
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             العودة إلى الرئيسية
           </a>
@@ -207,15 +209,24 @@
         <div class="vr-state-card vr-state-card--join">
           <div class="vr-state-icon-wrap" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              @if (isRejoining()) {
+              <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              } @else {
               <path d="M23 7l-7 5 7 5V7z" />
               <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              }
             </svg>
           </div>
-          <h2 class="vr-state-title">جاهز للانضمام؟</h2>
-          <p class="vr-state-subtitle">انقر على الزر أدناه للانضمام إلى جلسة الاستشارة.</p>
+          <h2 class="vr-state-title">
+            {{ isRejoining() ? 'العودة للجلسة؟' : 'جاهز للانضمام؟' }}
+          </h2>
+          <p class="vr-state-subtitle">
+            {{ isRejoining() ? 'انقر للعودة ومتابعة الاستشارة الخاصة بك.' : 'انقر على الزر أدناه للانضمام إلى جلسة
+            الاستشارة.' }}
+          </p>
           <button id="btn-join-session" class="vr-join-btn" (click)="handleJoinClick()"
-            [disabled]="agoraService.joining() || !sessionStateService.canJoin() || sessionFacade.leaving() || sessionFacade.finishing()" type="button"
-            [attr.aria-label]="agoraService.joining() ? 'Joining session...' : 'Join session'">
+            [disabled]="agoraService.joining() || !sessionStateService.canJoin() || sessionFacade.leaving() || sessionFacade.finishing()"
+            type="button" [attr.aria-label]="agoraService.joining() ? 'Joining session...' : 'Join session'">
             @if (agoraService.joining()) {
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
               aria-hidden="true">
@@ -226,10 +237,14 @@
             } @else {
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
               aria-hidden="true">
+              @if (isRejoining()) {
+              <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              } @else {
               <path d="M23 7l-7 5 7 5V7z" />
               <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              }
             </svg>
-            انضمام للجلسة
+            {{ isRejoining() ? 'العودة للجلسة' : 'انضمام للجلسة' }}
             }
           </button>
         </div>
@@ -263,43 +278,35 @@
       <div class="vr-toolbar" role="toolbar" aria-label="Meeting controls">
 
         <!-- Leave -->
-        <button class="vr-tb-btn vr-tb-btn--leave" (click)="leaveCall()" type="button"
-          aria-label="Leave session" title="Leave Session"
-          [disabled]="sessionFacade.leaving() || sessionFacade.finishing()">
-          @if (sessionFacade.leaving()) {
-            <svg class="vr-tb-spinner" viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
-              <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-            </svg>
-          } @else {
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" aria-hidden="true">
-              <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
-              <polyline points="17 8 21 12 17 16" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-          }
+        <button id="btn-leave-session" class="vr-tb-btn vr-tb-btn--leave" (click)="confirmLeave()" type="button"
+          aria-label="Leave session" title="Leave Session">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
+            <polyline points="17 8 21 12 17 16" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
         </button>
 
         <!-- Finish (specialist only) -->
         @if (isSpecialist()) {
-          <button class="vr-tb-btn vr-tb-btn--finish" (click)="finishConsultation()" type="button"
-            aria-label="Finish consultation" title="Finish Consultation"
-            [disabled]="sessionFacade.leaving() || sessionFacade.finishing()">
-            @if (sessionFacade.finishing()) {
-              <svg class="vr-tb-spinner" viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
-                <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            } @else {
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" aria-hidden="true">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            }
-          </button>
+        <button class="vr-tb-btn vr-tb-btn--finish" (click)="finishConsultation()" type="button"
+          aria-label="Finish consultation" title="Finish Consultation"
+          [disabled]="sessionFacade.leaving() || sessionFacade.finishing()">
+          @if (sessionFacade.finishing()) {
+          <svg class="vr-tb-spinner" viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3" />
+            <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+          </svg>
+          } @else {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          }
+        </button>
         }
 
         <!-- Desktop-only divider -->
@@ -358,6 +365,16 @@
 
         <!-- Recording (specialist only) -->
         <app-recording-button [sessionId]="sessionId" />
+
+        @if (isSpecialist) {
+        <button id="btn-finish-session" class="vr-tb-btn vr-tb-btn--finish" (click)="confirmFinish()" type="button"
+          aria-label="Finish consultation" title="Finish Consultation">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true">
+            <path d="M5 12l5 5l10 -10" />
+          </svg>
+        </button>
+        }
 
         <!-- Desktop-only divider -->
         <div class="vr-toolbar-divider" aria-hidden="true"></div>
@@ -612,6 +629,48 @@
     }
     <!-- /@if joined -->
 
+    <!-- Leave Confirmation Dialog -->
+    @if (showLeaveConfirm()) {
+    <div class="vr-dialog-overlay">
+      <div class="vr-dialog">
+        <div class="vr-dialog-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
+            <polyline points="17 8 21 12 17 16" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </div>
+        <h3 class="vr-dialog-title">هل تريد مغادرة الجلسة؟</h3>
+        <p class="vr-dialog-text">يمكنك العودة مرة أخرى طالما لم تنتهِ مدة الجلسة.</p>
+        <div class="vr-dialog-actions">
+          <button class="vr-btn-cancel" (click)="cancelLeave()">إلغاء</button>
+          <button class="vr-btn-confirm" (click)="leaveSession()">مغادرة</button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Finish Consultation Confirmation Dialog (Specialist) -->
+    @if (showFinishConfirm()) {
+    <div class="vr-dialog-overlay">
+      <div class="vr-dialog">
+        <div class="vr-dialog-icon vr-dialog-icon--warning">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <h3 class="vr-dialog-title">إنهاء الاستشارة نهائياً؟</h3>
+        <p class="vr-dialog-text">بمجرد الإنهاء، سيتم إغلاق الجلسة لكافة الأطراف ولن يمكن العودة إليها مجدداً.</p>
+        <div class="vr-dialog-actions">
+          <button class="vr-btn-cancel" (click)="cancelFinish()">إلغاء</button>
+          <button class="vr-btn-finish" (click)="finishConsultation()">تأكيد الإنهاء</button>
+        </div>
+      </div>
+    </div>
+    }
+
   </main>
   <!-- /vr-main -->
 
@@ -629,11 +688,14 @@
   </footer> -->
 
   <!-- Leave confirmation dialog -->
-  <ui-modal [isOpen]="leaveDialogOpen()" title="Leave Video Call?" message="You can rejoin this consultation anytime before it ends."
-    confirmText="Leave" cancelText="Cancel" (confirm)="onLeaveConfirmed()" (close)="leaveDialogOpen.set(false)" />
+  <ui-modal [isOpen]="leaveDialogOpen()" title="Leave Video Call?"
+    message="You can rejoin this consultation anytime before it ends." confirmText="Leave" cancelText="Cancel"
+    (confirm)="onLeaveConfirmed()" (close)="leaveDialogOpen.set(false)" />
 
   <!-- Finish confirmation dialog -->
-  <ui-modal [isOpen]="finishDialogOpen()" title="Finish Consultation?" message="This will end the consultation for all participants. After finishing, no participant can rejoin."
-    confirmText="Finish Consultation" cancelText="Cancel" [danger]="true" (confirm)="onFinishConfirmed()" (close)="finishDialogOpen.set(false)" />
+  <ui-modal [isOpen]="finishDialogOpen()" title="Finish Consultation?"
+    message="This will end the consultation for all participants. After finishing, no participant can rejoin."
+    confirmText="Finish Consultation" cancelText="Cancel" [danger]="true" (confirm)="onFinishConfirmed()"
+    (close)="finishDialogOpen.set(false)" />
 
 </div>

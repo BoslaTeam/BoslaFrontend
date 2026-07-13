@@ -96,7 +96,7 @@
               <td>
                 <span class="status-badge" [class]="getStatusClass(apt.status)">{{ getStatusLabel(apt.status) }}</span>
               </td>
-              <td><span class="amount-text">${{ apt.totalAmount.toFixed(2) }}</span></td>
+              <td><span class="amount-text">ج.م {{ apt.totalAmount.toFixed(2) }}</span></td>
               <td>
                 <div class="action-btns">
                   <a class="action-btn" [routerLink]="['/admin/appointments', apt.id]" title="عرض التفاصيل">

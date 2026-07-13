@@ -96,7 +96,9 @@ function timeOptions(): { value: string; label: string }[] {
   for (let h = 0; h < 24; h++) {
     for (const m of [0, 30]) {
       const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      opts.push({ value: v, label: v });
+      const period = h >= 12 ? 'م' : 'ص';
+      const hour12 = h % 12 || 12;
+      opts.push({ value: v, label: `${hour12}:${String(m).padStart(2, '0')} ${period}` });
     }
   }
   return opts;
@@ -640,7 +642,7 @@ export class SpecialistAvailability implements OnInit {
 
     // Build draft for conflict check
     const draft: ScheduleDefinition = {
-      id: editId || '__draft__',
+      id: editId || generateId(),
       days: selectedDays,
       startTime: this.formStartTime(),
       endTime: this.formEndTime(),
@@ -663,10 +665,11 @@ export class SpecialistAvailability implements OnInit {
 
     // If editing, remove old slots first
     if (editId) {
-      this.deleteSlotsForSchedule(editId, true);
+      const oldSchedule = this.schedules().find(s => s.id === editId);
+      if (oldSchedule) this.deleteSlotsForSchedule(oldSchedule, true);
     }
 
-    // Save schedule
+    // Save schedule locally
     this.schedules.update((list) => {
       if (editId) {
         return list.map((s) => (s.id === editId ? { ...draft, createdAt: s.createdAt } : s));
@@ -675,13 +678,15 @@ export class SpecialistAvailability implements OnInit {
     });
 
     // Sync slots to backend
-    this.syncScheduleSlots(draft);
-    this.closeForm();
-    this.toast.success(editId ? 'تم تحديث الجدول بنجاح' : 'تم إنشاء الجدول بنجاح');
+    this.isSyncing.set(true);
+    this.syncScheduleSlots(draft, !!editId);
   }
 
-  private syncScheduleSlots(schedule: ScheduleDefinition): void {
-    if (!schedule.enabled) return;
+  private syncScheduleSlots(schedule: ScheduleDefinition, isEdit = false): void {
+    if (!schedule.enabled) {
+      this.finishSync(isEdit);
+      return;
+    }
 
     const existing = this.rawSlots();
     const genSlots = generateSlotsFromSchedule(schedule, existing);
@@ -689,9 +694,10 @@ export class SpecialistAvailability implements OnInit {
 
     const newSlots = genSlots.filter((gs) => !gs.existingSlotId);
 
-    if (newSlots.length === 0) return;
-
-    this.isSyncing.set(true);
+    if (newSlots.length === 0) {
+      this.finishSync(isEdit);
+      return;
+    }
 
     // Create slots in batches
     const batchSize = 10;
@@ -715,16 +721,17 @@ export class SpecialistAvailability implements OnInit {
           completed += batch.length;
           if (completed >= newSlots.length) {
             this.scheduleSlotMap.update((m) => ({ ...m, [schedule.id]: slotIds }));
-            this.isSyncing.set(false);
             this.loadData();
+            this.finishSync(isEdit);
           } else {
             const nextBatch = newSlots.slice(completed, completed + batchSize);
             if (nextBatch.length) createBatch(nextBatch);
           }
         },
-        error: () => {
+        error: (err: any) => {
           this.isSyncing.set(false);
-          this.toast.danger('حدث خطأ أثناء مزامنة المواعيد مع الخادم.');
+          const title = err?.title || err?.error?.title || err?.message || 'خطأ غير معروف';
+          this.toast.danger('خطأ في مزامنة المواعيد: ' + title);
         },
       });
     };
@@ -733,12 +740,38 @@ export class SpecialistAvailability implements OnInit {
     if (firstBatch.length) createBatch(firstBatch);
   }
 
-  private deleteSlotsForSchedule(scheduleId: string, silent: boolean): void {
-    const map = this.scheduleSlotMap();
-    const slotIds = map[scheduleId];
-    if (!slotIds || slotIds.length === 0) return;
+  private finishSync(isEdit: boolean): void {
+    this.isSyncing.set(false);
+    this.closeForm();
+    this.toast.success(isEdit ? 'تم تحديث الجدول بنجاح' : 'تم إنشاء الجدول بنجاح');
+  }
 
-    slotIds.forEach((id) => {
+  private deleteSlotsForSchedule(schedule: ScheduleDefinition, silent: boolean): void {
+    const map = this.scheduleSlotMap();
+    const trackedIds = map[schedule.id];
+    const raw = this.rawSlots();
+
+    // Collect all slot IDs from this schedule
+    const idsToDelete = new Set<string>(trackedIds ?? []);
+
+    // Also find matching raw slots by time
+    const now = new Date();
+    const startDate = new Date(schedule.startDate + 'T00:00:00');
+    const endDateObj = schedule.endDate ? new Date(schedule.endDate + 'T00:00:00') : null;
+    const maxDate = new Date(now);
+    maxDate.setDate(maxDate.getDate() + MAX_GENERATION_DAYS);
+    const effectiveEnd = endDateObj && endDateObj < maxDate ? endDateObj : maxDate;
+
+    for (const rawSlot of raw) {
+      if (rawSlot.start >= startDate && rawSlot.start <= effectiveEnd &&
+          schedule.days.includes(rawSlot.start.getDay())) {
+        idsToDelete.add(rawSlot.id);
+      }
+    }
+
+    if (idsToDelete.size === 0) return;
+
+    idsToDelete.forEach((id) => {
       this.http.delete(API_ENDPOINTS.specialists.availabilityById(id)).subscribe({
         error: () => {
           if (!silent) this.toast.danger(`فشل حذف الموعد ${id}`);
@@ -748,7 +781,7 @@ export class SpecialistAvailability implements OnInit {
 
     this.scheduleSlotMap.update((m) => {
       const next = { ...m };
-      delete next[scheduleId];
+      delete next[schedule.id];
       return next;
     });
   }
@@ -768,7 +801,7 @@ export class SpecialistAvailability implements OnInit {
     const schedule = this.scheduleToDelete();
     if (!schedule) return;
 
-    this.deleteSlotsForSchedule(schedule.id, false);
+    this.deleteSlotsForSchedule(schedule, false);
     this.schedules.update((list) => list.filter((s) => s.id !== schedule.id));
     this.showDeleteConfirm.set(false);
     this.scheduleToDelete.set(null);
@@ -790,7 +823,7 @@ export class SpecialistAvailability implements OnInit {
       this.toast.success('تم تفعيل الجدول');
     } else {
       // Disable — delete slots
-      this.deleteSlotsForSchedule(schedule.id, false);
+      this.deleteSlotsForSchedule(schedule, false);
       this.toast.success('تم تعطيل الجدول');
       this.loadData();
     }
@@ -805,12 +838,12 @@ export class SpecialistAvailability implements OnInit {
       this.toast.danger('لا يمكن حذف موعد مرتبط بحجز نشط.');
       return;
     }
-    if (slot.source !== 'manual') {
-      this.toast.danger('هذا الموعد ناتج عن جدول عمل. قم بتعطيل أو حذف الجدول لإزالته.');
+    if (slot.source === 'manual' || slot.status === 'ended' || slot.status === 'cancelled') {
+      this.slotToDelete.set(slot);
+      this.showDeleteSlotConfirm.set(true);
       return;
     }
-    this.slotToDelete.set(slot);
-    this.showDeleteSlotConfirm.set(true);
+    this.toast.danger('هذا الموعد ناتج عن جدول عمل. قم بتعطيل أو حذف الجدول لإزالته.');
   }
 
   cancelDeleteSlot(): void {
@@ -822,16 +855,21 @@ export class SpecialistAvailability implements OnInit {
     const slot = this.slotToDelete();
     if (!slot) return;
 
+    this.showDeleteSlotConfirm.set(false);
+    this.slotToDelete.set(null);
+
+    if (slot.id.startsWith('gen_')) {
+      this.toast.success('تم حذف الموعد');
+      this.loadData();
+      return;
+    }
+
     this.http
       .delete(API_ENDPOINTS.specialists.availabilityById(slot.id))
-      .pipe(finalize(() => {
-        this.showDeleteSlotConfirm.set(false);
-        this.slotToDelete.set(null);
-      }))
+      .pipe(finalize(() => this.loadData()))
       .subscribe({
         next: () => {
           this.toast.success('تم حذف الموعد');
-          this.loadData();
         },
         error: (err: any) => {
           const msg = err?.title || err?.error?.title || err?.message || 'فشل حذف الموعد.';

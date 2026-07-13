@@ -7,6 +7,7 @@ import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { VideoSessionService } from '@features/video/services/video-session.service';
+import { ToastService } from '@core/services/toast.service';
 
 export interface TrackingStep {
   key: string;
@@ -30,6 +31,7 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   private readonly el = inject(ElementRef);
 
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly toast = inject(ToastService);
 
   readonly newConversationId = signal<string | null>(null);
 
@@ -39,7 +41,7 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     if (item.status === AppointmentStatus.Cancelled) return null;
     if (item.status === AppointmentStatus.Confirmed) {
       if (item.confirmedAt) {
-        const deadline = new Date(item.confirmedAt).getTime() + 3_600_000;
+        const deadline = new Date(item.confirmedAt).getTime() + 21_600_000;
         if (deadline <= Date.now()) return null;
       }
     }
@@ -51,7 +53,7 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     if (!item?.confirmedAt) return null;
     if (item.status !== AppointmentStatus.Confirmed) return null;
     if (item.paymentStatus === PaymentStatus.Paid || item.paymentStatus === PaymentStatus.Refunded) return null;
-    return new Date(item.confirmedAt).getTime() + 3_600_000;
+    return new Date(item.confirmedAt).getTime() + 21_600_000;
   });
 
   readonly remainingMs = signal(0);
@@ -65,11 +67,12 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formatCountdown(ms: number): string {
-    if (ms <= 0) return '0:00';
+    if (ms <= 0) return '0:00:00';
     const totalSec = Math.floor(ms / 1000);
-    const min = Math.floor(totalSec / 60);
+    const hours = Math.floor(totalSec / 3600);
+    const min = Math.floor((totalSec % 3600) / 60);
     const sec = totalSec % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${hours}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   private readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -128,7 +131,16 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
     if (!app) return false;
     if (app.status === AppointmentStatus.Cancelled) return false;
     if (app.status === AppointmentStatus.Completed) return false;
-    return app.paymentStatus === PaymentStatus.Paid || app.status === AppointmentStatus.Paid;
+    if (app.paymentStatus !== PaymentStatus.Paid && app.status !== AppointmentStatus.Paid) return false;
+    return true;
+  });
+
+  readonly canJoinNow = computed(() => {
+    if (!this.canJoin()) return false;
+    const app = this.store.selectedItem();
+    if (!app) return false;
+    const startMs = new Date(app.start).getTime() - 15 * 60 * 1000;
+    return Date.now() >= startMs;
   });
 
   constructor() {
@@ -174,6 +186,10 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async joinSession(): Promise<void> {
+    if (!this.canJoinNow()) {
+      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      return;
+    }
     const app = this.store.selectedItem();
     if (!app) return;
     try {

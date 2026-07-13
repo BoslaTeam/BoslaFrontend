@@ -36,8 +36,7 @@ export interface VideoSessionDto {
   status: string;
   startedAt?: string | null;
   endedAt?: string | null;
-  appointmentStart?: string | null;
-  appointmentEnd?: string | null;
+  appointmentEndTime?: string | null;
   participants: VideoSessionParticipant[];
   recording?: RecordingInfoDto | null;
 }

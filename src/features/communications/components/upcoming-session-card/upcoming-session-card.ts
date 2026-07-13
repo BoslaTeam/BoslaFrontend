@@ -50,8 +50,10 @@ export class UpcomingSessionCard implements OnDestroy {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   private pollSubscription?: ReturnType<typeof setInterval>;
+  private timerSubscription?: ReturnType<typeof setInterval>;
 
   readonly appointmentId = input.required<string>();
+  readonly now = signal(Date.now());
 
   readonly appointment = signal<AppointmentDto | null | undefined>(undefined);
   readonly error = signal<string | null>(null);
@@ -118,10 +120,10 @@ export class UpcomingSessionCard implements OnDestroy {
     return d !== undefined ? formatArabicDuration(d) : '';
   });
 
-  readonly countdownLabel = computed(() => {
+  readonly remainingLabel = computed(() => {
     const apt = this.appointment();
     if (!apt) return '';
-    return formatArabicCountdown(new Date(apt.start));
+    return formatArabicCountdown(new Date(apt.start), this.now());
   });
 
   readonly isPastOrCancelled = computed(() => {
@@ -136,7 +138,7 @@ export class UpcomingSessionCard implements OnDestroy {
     }
 
     const end = new Date(apt.end).getTime();
-    if (end < Date.now()) {
+    if (end < this.now()) {
       return true;
     }
 
@@ -147,11 +149,22 @@ export class UpcomingSessionCard implements OnDestroy {
     const apt = this.appointment();
     if (!apt) return false;
 
-    const now = Date.now();
+    const n = this.now();
     const start = new Date(apt.start).getTime();
     const end = new Date(apt.end).getTime();
 
-    return now >= start && now < end;
+    return n >= start && n < end;
+  });
+
+  readonly canJoin = computed(() => {
+    if (this.isPastOrCancelled()) return false;
+    if (this.isActiveSession()) return true;
+    const s = this.sessionData()?.status;
+    if (s !== AppointmentStatus.Paid && s !== AppointmentStatus.Confirmed) return false;
+    const apt = this.appointment();
+    if (!apt) return false;
+    const startMs = new Date(apt.start).getTime() - 15 * 60 * 1000;
+    return this.now() >= startMs;
   });
 
   readonly shouldDisplay = computed(() => {
@@ -185,6 +198,8 @@ export class UpcomingSessionCard implements OnDestroy {
   }
 
   constructor() {
+    this.timerSubscription = setInterval(() => this.now.set(Date.now()), 1000);
+
     effect(() => {
       const id = this.appointmentId();
       if (!id) return;
@@ -204,6 +219,9 @@ export class UpcomingSessionCard implements OnDestroy {
   ngOnDestroy(): void {
     if (this.pollSubscription) {
       clearInterval(this.pollSubscription);
+    }
+    if (this.timerSubscription) {
+      clearInterval(this.timerSubscription);
     }
   }
 }

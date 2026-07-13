@@ -25,6 +25,7 @@ import { UiEmptyState } from '@shared/ui/empty-state/empty-state';
     RouterModule
   ],
   templateUrl: './specialist-details.html',
+  styleUrl: './specialist-details.css',
 })
 export class SpecialistDetailsPage implements OnInit {
   readonly store = inject(SpecialistDetailsStore);

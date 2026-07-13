@@ -7,7 +7,7 @@ import { UpdateProfileRequest } from '../contracts/specialist-onboard.contract';
 import { ExperienceRequest } from '../contracts/specialist-experience.contract';
 import { AvailabilityRequest } from '../contracts/specialist-availability.contract';
 import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
-import { SpecialistOnboardingDraft } from '../models/specialist-onboarding-draft.model';
+import { ScheduleDraft, SpecialistOnboardingDraft } from '../models/specialist-onboarding-draft.model';
 import { SpecialistOnboardingRepository } from '../data-access/specialist-onboarding.repository';
 
 const EMPTY_DRAFT: SpecialistOnboardingDraft = {
@@ -17,6 +17,7 @@ const EMPTY_DRAFT: SpecialistOnboardingDraft = {
   experiences: [],
   availabilities: [],
   documents: [],
+  schedules: [],
 };
 
 @Injectable({
@@ -70,6 +71,10 @@ export class SpecialistOnboardingStore {
 
   updateAvailabilities(availabilities: AvailabilityRequest[]) {
     this.draft.update((d) => ({ ...d, availabilities }));
+  }
+
+  updateSchedules(schedules: ScheduleDraft[]) {
+    this.draft.update((d) => ({ ...d, schedules }));
   }
 
   updateDocuments(documents: SpecialistDocumentResponse[]) {
@@ -215,6 +220,7 @@ export class SpecialistOnboardingStore {
       ),
       tap(({ profile, skills, tools, experiences, availabilities, documents }) => {
         this.draft.set({
+          schedules: [],
           basicInfo: profile
             ? {
                 experienceYears: profile.experienceYears,

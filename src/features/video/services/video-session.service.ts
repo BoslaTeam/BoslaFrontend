@@ -25,6 +25,14 @@ export class VideoSessionService {
     return this.http.post<ApiResponse<EndSessionResponse>>(API_ENDPOINTS.video.end(sessionId), {});
   }
 
+  leaveSession(sessionId: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(API_ENDPOINTS.video.leave(sessionId), {});
+  }
+
+  finishConsultation(sessionId: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(API_ENDPOINTS.video.finishConsultation(sessionId), {});
+  }
+
   startRecording(sessionId: string): Observable<ApiResponse<StartRecordingResponse>> {
     return this.http.post<ApiResponse<StartRecordingResponse>>(API_ENDPOINTS.video.recordingStart(sessionId), {});
   }

@@ -7,6 +7,7 @@ import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { UiButton } from '@shared/ui/button/button';
 import { AuthService } from '@core/services/auth.service';
 import { VideoSessionService } from '@features/video/services/video-session.service';
+import { ToastService } from '@core/services/toast.service';
 
 import { PaymentStatus, AppointmentDto } from '../../contracts/appointments.contracts';
 
@@ -29,10 +30,16 @@ export class AppointmentList implements OnDestroy {
   readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly toast = inject(ToastService);
   readonly now = signal(Date.now());
   private readonly timerHandle = setInterval(() => this.now.set(Date.now()), 1000);
 
   async joinSession(appointmentId: string): Promise<void> {
+    const apt = this.store.items().find(a => a.id === appointmentId);
+    if (!apt || !this.canJoinAppointmentNow(apt)) {
+      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      return;
+    }
     try {
       const res = await firstValueFrom(this.videoSessionService.generateToken(appointmentId));
       if (res.data?.sessionId) {
@@ -43,14 +50,28 @@ export class AppointmentList implements OnDestroy {
     }
   }
 
+  canJoinAppointment(apt: AppointmentDto): boolean {
+    if (apt.status === AppointmentStatus.Cancelled) return false;
+    if (apt.status === AppointmentStatus.Completed) return false;
+    if (apt.paymentStatus !== PaymentStatus.Paid && apt.status !== AppointmentStatus.Paid) return false;
+    return true;
+  }
+
+  canJoinAppointmentNow(apt: AppointmentDto): boolean {
+    if (!this.canJoinAppointment(apt)) return false;
+    const startMs = new Date(apt.start).getTime() - 15 * 60 * 1000;
+    return this.now() >= startMs;
+  }
+
   getCountdownText(confirmedAt: string, nowMs: number): string | null {
-    const deadline = new Date(confirmedAt).getTime() + 3_600_000;
+    const deadline = new Date(confirmedAt).getTime() + 21_600_000;
     const remaining = deadline - nowMs;
     if (remaining <= 0) return null;
     const totalSec = Math.floor(remaining / 1000);
-    const min = Math.floor(totalSec / 60);
+    const hours = Math.floor(totalSec / 3600);
+    const min = Math.floor((totalSec % 3600) / 60);
     const sec = totalSec % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${hours}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   ngOnDestroy(): void {

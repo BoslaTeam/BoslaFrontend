@@ -155,6 +155,14 @@ export class NavigationService {
       });
     }
 
+    if (!isAdmin) {
+      items.push({
+        label: isSpecialist ? 'المحفظة المالية' : 'محفظتي',
+        route: isSpecialist ? '/specialist/wallet' : '/wallet',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 1 0 0 4h4v-4Z"/></svg>',
+      });
+    }
+
     if (!isSpecialist && !isAdmin) {
       items.push({
         label: 'المعاملات المالية',
@@ -216,11 +224,6 @@ export class NavigationService {
         label: 'إدارة المواعيد',
         route: this.ROUTES.specialist.availability,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-      },
-      {
-        label: 'الرسائل',
-        route: this.ROUTES.specialist.chat,
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
       },
       {
         label: 'المحفظة المالية',

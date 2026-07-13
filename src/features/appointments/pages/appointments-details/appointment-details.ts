@@ -18,6 +18,7 @@ import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '@features/video/services/video-session.service';
+import { ToastService } from '@core/services/toast.service';
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
@@ -34,6 +35,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly store = inject(AppointmentsStore);
   readonly authService = inject(AuthService);
   private readonly videoSessionService = inject(VideoSessionService);
+  private readonly toast = inject(ToastService);
 
   readonly Math = Math;
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -45,11 +47,6 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly reviewRating = signal(0);
   readonly reviewHover = signal(0);
   readonly reviewComment = signal('');
-
-  readonly showReminderModal = signal(false);
-  readonly reminderMessage = signal('');
-  readonly reminderDate = signal('');
-  readonly reminderTime = signal('');
 
   readonly showNotesModal = signal(false);
   readonly editNotesText = signal('');
@@ -64,7 +61,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     if (!item?.confirmedAt) return null;
     if (item.status !== AppointmentStatus.Confirmed) return null;
     if (item.paymentStatus === PaymentStatus.Paid || item.paymentStatus === PaymentStatus.Refunded) return null;
-    return new Date(item.confirmedAt).getTime() + 3_600_000;
+    return new Date(item.confirmedAt).getTime() + 21_600_000;
   });
 
   readonly remainingMs = signal(0);
@@ -158,7 +155,16 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     if (!item) return false;
     if (item.status === AppointmentStatus.Completed) return false;
     if (item.status === AppointmentStatus.Cancelled) return false;
-    return item.paymentStatus === PaymentStatus.Paid || item.status === AppointmentStatus.Paid;
+    if (item.paymentStatus !== PaymentStatus.Paid && item.status !== AppointmentStatus.Paid) return false;
+    return true;
+  });
+
+  readonly canJoinNow = computed(() => {
+    if (!this.canJoin()) return false;
+    const item = this.store.selectedItem();
+    if (!item) return false;
+    const startMs = new Date(item.start).getTime() - 15 * 60 * 1000;
+    return Date.now() >= startMs;
   });
 
   readonly canCancel = computed(() => {
@@ -182,17 +188,6 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     const u = this.userRole();
     const s = this.store.selectedItem()?.status;
     return u === UserRole.Specialist || u === UserRole.Admin || s === AppointmentStatus.Paid;
-  });
-
-  readonly canAddReminder = computed(() => {
-    const s = this.store.selectedItem()?.status;
-    return s === AppointmentStatus.Pending || s === AppointmentStatus.Confirmed || s === AppointmentStatus.Paid;
-  });
-
-  readonly tomorrow = computed(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
   });
 
   constructor() {
@@ -250,6 +245,10 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   }
 
   async joinSession(): Promise<void> {
+    if (!this.canJoinNow()) {
+      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      return;
+    }
     const item = this.store.selectedItem();
     if (!item) return;
     try {
@@ -306,26 +305,13 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     );
   }
 
-  onAddReminder(): void {
-    if (!this.reminderDate() || !this.reminderTime() || !this.reminderMessage().trim()) return;
-    const reminderTime = new Date(`${this.reminderDate()}T${this.reminderTime()}`);
-    this.store.addReminder(this.appointmentId, { reminderTime, message: this.reminderMessage() });
-    this.showReminderModal.set(false);
-    this.reminderDate.set('');
-    this.reminderTime.set('');
-    this.reminderMessage.set('');
-  }
-
-  onDeleteReminder(reminderId: string): void {
-    this.store.deleteReminder(this.appointmentId, reminderId);
-  }
-
   formatCountdown(ms: number): string {
-    if (ms <= 0) return '0:00';
+    if (ms <= 0) return '0:00:00';
     const totalSec = Math.floor(ms / 1000);
-    const min = Math.floor(totalSec / 60);
+    const hours = Math.floor(totalSec / 3600);
+    const min = Math.floor((totalSec % 3600) / 60);
     const sec = totalSec % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${hours}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   getStatusLabel(status: AppointmentStatus | undefined) {

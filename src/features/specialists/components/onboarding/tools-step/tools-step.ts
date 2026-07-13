@@ -52,7 +52,7 @@ export class ToolsStep {
       error: (err) => {
         this.isSaving.set(false);
         this.errorMessage.set(
-          err.error?.title ?? 'فشل في حفظ الأدوات. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? 'فشل في حفظ الأدوات. يرجى المحاولة مرة أخرى.'
         );
       },
     });

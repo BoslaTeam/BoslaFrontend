@@ -9,7 +9,7 @@ import { PaymentResponseDto, InitiatePaymentRequest } from '../contracts/payment
 export class PaymentService {
   private http = inject(HttpClient);
 
-  initiate(appointmentId: string, currency = 'usd'): Observable<ApiResponse<PaymentResponseDto>> {
+  initiate(appointmentId: string, currency = 'egp'): Observable<ApiResponse<PaymentResponseDto>> {
     return this.http.post<ApiResponse<PaymentResponseDto>>(API_ENDPOINTS.payments.base, { appointmentId, currency } as InitiatePaymentRequest);
   }
 

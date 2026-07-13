@@ -66,6 +66,8 @@ export const API_ENDPOINTS = {
     sessionById: (id: string) => `${V}/video-sessions/${id}`,
     start: (id: string) => `${V}/video-sessions/${id}/start`,
     end: (id: string) => `${V}/video-sessions/${id}/end`,
+    leave: (id: string) => `${V}/video-sessions/${id}/leave`,
+    finishConsultation: (id: string) => `${V}/video-sessions/${id}/finish-consultation`,
     webhook: `${V}/webhooks/agora`,
     recordingStart: (id: string) => `${V}/video-sessions/${id}/recording/start`,
     recordingStop: (id: string) => `${V}/video-sessions/${id}/recording/stop`,
@@ -168,11 +170,18 @@ export const API_ENDPOINTS = {
     approveWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/approve`,
     rejectWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/reject`,
     completeWithdrawal: (id: string) => `${V}/admin/withdrawals/${id}/complete`,
+    walletStats: `${V}/admin/wallet/stats`,
+    walletTransactions: `${V}/admin/wallet/transactions`,
+    walletMe: `${V}/admin/wallet/me`,
   },
   withdrawals: {
     wallet: `${V}/withdrawals/wallet`,
     request: `${V}/withdrawals/request`,
     history: `${V}/withdrawals/history`,
+  },
+  wallet: {
+    me: `${V}/wallet/me`,
+    myTransactions: `${V}/wallet/me/transactions`,
   },
   favorites: {
     specialists: `${V}/favorites/specialists`,

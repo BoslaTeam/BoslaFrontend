@@ -81,7 +81,9 @@ export class AdminSpecialistsList implements OnInit {
   }
 
   verifySpecialist(id: string, isApproved: boolean): void {
-    this.adminService.verifySpecialist(id, { isVerified: isApproved }).subscribe({
+    const adminNotes = isApproved ? undefined : (prompt('سبب الرفض:') || undefined);
+    if (!isApproved && !adminNotes) return;
+    this.adminService.verifySpecialist(id, { isVerified: isApproved, adminNotes }).subscribe({
       next: () => this.loadSpecialists(),
     });
   }

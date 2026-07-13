@@ -279,18 +279,13 @@
                         دفع
                       </a>
                     }
-                    @if (
-                      (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
-                      appointment.status !== AppointmentStatus.Cancelled &&
-                      appointment.status !== AppointmentStatus.Completed
-                    ) {
+                    @if (canJoinAppointment(appointment)) {
                       <button
                         (click)="joinSession(appointment.id)"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg shadow-sm transition-colors cursor-pointer"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
                         </svg>
                         انضم للجلسة
                       </button>
@@ -464,18 +459,13 @@
                           دفع
                         </a>
                       }
-                      @if (
-                        (appointment.paymentStatus === PaymentStatus.Paid || appointment.status === AppointmentStatus.Paid) &&
-                        appointment.status !== AppointmentStatus.Cancelled &&
-                        appointment.status !== AppointmentStatus.Completed
-                      ) {
+                      @if (canJoinAppointment(appointment)) {
                         <button
                           (click)="joinSession(appointment.id)"
-                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-lg shadow-sm transition-colors cursor-pointer"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg shadow-sm transition-colors cursor-pointer"
                         >
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
                           </svg>
                           انضم للجلسة
                         </button>

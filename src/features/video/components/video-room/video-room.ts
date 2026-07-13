@@ -14,6 +14,8 @@ import { firstValueFrom } from 'rxjs';
 import { AgoraService } from '@core/services/agora.service';
 import { SessionTimerService } from '@core/services/session-timer.service';
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
+import { AppointmentExpiryService } from '@core/services/appointment-expiry.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '../../services/video-session.service';
 import { VideoSignalrService } from '../../services/video-signalr.service';
@@ -61,6 +63,8 @@ export class VideoRoom {
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly videoSignalrService = inject(VideoSignalrService);
   private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+  readonly expiryService = inject(AppointmentExpiryService);
   readonly sessionStateService = inject(VideoSessionStateService);
   readonly sessionFacade = inject(VideoSessionFacade);
   private readonly appointmentService = inject(AppointmentService);
@@ -70,12 +74,17 @@ export class VideoRoom {
   private _sessionStartedAt: number | null = null;
   private _sessionEndedAt: number | null = null;
   private _appointmentId: string | null = null;
-  private _joinFlowInProgress = false;
   private _waitingCancelled = false;
+  private _joinFlowInProgress = false;
+
+  get isSpecialist(): boolean {
+    return this.authService.userRole() === UserRole.Specialist;
+  }
 
   readonly isWaitingForSpecialist = signal(false);
   readonly isSessionEnded = signal(false);
   readonly signalrFailed = signal(false);
+  readonly isRejoining = signal(false);
   readonly currentYear = new Date().getFullYear();
   readonly userRole = this.authService.userRole;
   readonly isSpecialist = computed(() => this.userRole() === UserRole.Specialist);
@@ -150,6 +159,33 @@ export class VideoRoom {
         this.networkQualityService.stop();
         this.agoraService.disconnect();
       }
+
+      // Auto-navigate home after 3 seconds so user sees the ended state briefly
+      setTimeout(() => {
+        if (!this.isDestroyed) {
+          this.router.navigate(['..']);
+        }
+      }, 3000);
+    });
+
+    effect(() => {
+      if (this.expiryService.isExpired()) {
+        this.toastService.warning('انتهت مدة الجلسة تلقائياً.');
+        this.sessionTimerService.stop();
+        this.recordingTimerService.stop();
+        this.isSessionEnded.set(true);
+
+        if (this.agoraService.joined()) {
+          this.networkQualityService.stop();
+          this.agoraService.disconnect();
+        }
+
+        setTimeout(() => {
+          if (!this.isDestroyed) {
+            this.router.navigate(['..']);
+          }
+        }, 3000);
+      }
     });
 
     effect(() => {
@@ -211,6 +247,10 @@ export class VideoRoom {
 
     if (session.recording?.isRecording && session.recording.startedAtUtc) {
       this.recordingTimerService.start(session.recording.startedAtUtc);
+    }
+
+    if (session.appointmentEndTime) {
+      this.expiryService.start(session.appointmentEndTime);
     }
 
     if (!await this.connectSignalr()) return;
@@ -315,6 +355,7 @@ export class VideoRoom {
     }
 
     if (session.status === 'Active') {
+      this.isRejoining.set(true);
       return true;
     }
 
@@ -402,22 +443,57 @@ export class VideoRoom {
     this.agoraService.toggleMicrophone();
   }
 
-  leaveCall(): void {
-    this.leaveDialogOpen.set(true);
+  readonly showLeaveConfirm = signal(false);
+  readonly showFinishConfirm = signal(false);
+
+  confirmLeave(): void {
+    this.showLeaveConfirm.set(true);
   }
 
-  finishConsultation(): void {
-    this.finishDialogOpen.set(true);
+  cancelLeave(): void {
+    this.showLeaveConfirm.set(false);
   }
 
-  onLeaveConfirmed(): void {
-    this.leaveDialogOpen.set(false);
-    this.sessionFacade.leaveSession(this.sessionId);
+  async leaveSession(): Promise<void> {
+    this.showLeaveConfirm.set(false);
+    this.agoraService.clearError();
+    this.networkQualityService.stop();
+    this.sessionTimerService.stop();
+    await this.agoraService.disconnect();
+
+    try {
+      await firstValueFrom(this.videoSessionService.leaveSession(this.sessionId));
+    } catch (err) {
+      console.error('[VideoRoom] Leave request failed', err);
+    }
+
+    this.router.navigate(['..']);
   }
 
-  onFinishConfirmed(): void {
-    this.finishDialogOpen.set(false);
-    this.sessionFacade.finishConsultation(this.sessionId);
+  confirmFinish(): void {
+    this.showFinishConfirm.set(true);
+  }
+
+  cancelFinish(): void {
+    this.showFinishConfirm.set(false);
+  }
+
+  async finishConsultation(): Promise<void> {
+    this.showFinishConfirm.set(false);
+    this.agoraService.clearError();
+    this.networkQualityService.stop();
+    this.sessionTimerService.stop();
+    await this.agoraService.disconnect();
+
+    try {
+      await firstValueFrom(this.videoSessionService.finishConsultation(this.sessionId));
+    } catch (err) {
+      console.error('[VideoRoom] Finish consultation request failed', err);
+      this.toastService.danger('فشل في إنهاء الاستشارة.');
+      return;
+    }
+
+    this.router.navigate(['..']);
   }
 
   private checkBrowserSupport(): boolean {

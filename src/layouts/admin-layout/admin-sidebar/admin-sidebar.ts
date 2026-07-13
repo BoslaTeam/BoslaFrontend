@@ -54,6 +54,7 @@ export class AdminSidebar {
         { label: 'الحجوزات', route: '/admin/appointments', icon: 'appointments' },
         { label: 'المدفوعات', route: '/admin/payments', icon: 'payments' },
         { label: 'السحوبات', route: '/admin/withdrawals', icon: 'payments' },
+        { label: 'محفظة المنصة', route: '/admin/wallet', icon: 'wallet' },
       ],
     },
     {

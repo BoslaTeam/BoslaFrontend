@@ -17,7 +17,7 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
     <ui-input
       formControlName="title"
-      label="المسمى الوظيفي"
+      label="الاختصاص"
       type="text"
       placeholder="مثال: أخصائي نفسي إكلينيكي"
       [required]="true"
@@ -43,7 +43,7 @@
 
     <ui-input
       formControlName="hourlyRate"
-      label="التسعيرة لكل جلسة (USD)"
+      label="التسعيرة لكل جلسة (ج.م)"
       type="number"
       placeholder="مثال: 50"
       [required]="true"
