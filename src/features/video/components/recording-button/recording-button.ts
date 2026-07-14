@@ -104,12 +104,23 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
 
     /* ── Confirmation Modal (Native Dialog) ── */
     .rec-confirm-dialog {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
       border: none;
       background: transparent;
-      padding: 0;
-      overflow: visible;
+      padding: 24px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+      overflow: hidden;
       outline: none;
-      max-width: calc(100% - 32px);
     }
     .rec-confirm-dialog::backdrop {
       background: rgba(0, 0, 0, 0.45);
@@ -120,12 +131,17 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       background: #ffffff;
       border-radius: 20px;
       padding: 2rem 2rem 1.75rem;
-      max-width: 360px;
-      width: 100%;
+      width: 440px;
+      max-width: 100%;
       text-align: center;
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
       animation: rec-box-in 0.2s ease;
       box-sizing: border-box;
+    }
+    @media (max-width: 768px) {
+      .rec-confirm-box {
+        width: min(420px, calc(100vw - 48px));
+      }
     }
     .rec-confirm-icon {
       width: 64px;
