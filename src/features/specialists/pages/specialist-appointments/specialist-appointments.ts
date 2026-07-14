@@ -1,4 +1,4 @@
-import { Component, signal, computed, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -9,6 +9,8 @@ import { AppointmentsStore } from '@features/appointments/store/appointments.sto
 import { AppointmentService } from '@features/appointments/services/appointments.service';
 import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
+import { NotificationService } from '@core/services/notification.service';
+import { NotificationType } from '@core/enums/notification-type.enum';
 
 export enum ApptStatus {
   Pending = 0,
@@ -99,8 +101,18 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private toast = inject(ToastService);
   private appointmentService = inject(AppointmentService);
   readonly store = inject(AppointmentsStore);
+  private notificationService = inject(NotificationService);
 
   private router = inject(Router);
+
+  constructor() {
+    effect(() => {
+      const push = this.notificationService.livePush();
+      if (push && push.type === NotificationType.Booking) {
+        this.loadAppointments();
+      }
+    });
+  }
 
   // Core state
   readonly activeTab = signal<ApptStatus | 'all'>('all');
