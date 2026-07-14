@@ -16,7 +16,14 @@ export class VideoRecordingTimerService {
 
   start(startedAtUtc: string): void {
     this.stop();
-    const ts = new Date(startedAtUtc).getTime();
+    let str = startedAtUtc.trim();
+    if (str.includes('T') && !str.endsWith('Z') && !str.includes('+')) {
+      const timePart = str.slice(str.indexOf('T'));
+      if (!timePart.includes('-')) {
+        str += 'Z';
+      }
+    }
+    const ts = new Date(str).getTime();
     if (!Number.isFinite(ts)) return;
 
     this._startedAt = ts;

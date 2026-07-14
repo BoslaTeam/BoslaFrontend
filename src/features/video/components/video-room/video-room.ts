@@ -34,11 +34,12 @@ import { ScreenShareIndicator } from '../screen-share-indicator/screen-share-ind
 import { VideoRecordingTimerService } from '../../services/video-recording-timer.service';
 import { RecordingButton } from '../recording-button/recording-button';
 import { RecordingIndicator } from '../recording-indicator/recording-indicator';
+import { AppHeader } from '@layouts/shared/app-header/app-header';
 
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator, AppHeader],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',
@@ -454,7 +455,14 @@ export class VideoRoom {
 
   private toTimestamp(value?: string | null): number | null {
     if (!value) return null;
-    const timestamp = new Date(value).getTime();
+    let str = value.trim();
+    if (str.includes('T') && !str.endsWith('Z') && !str.includes('+')) {
+      const timePart = str.slice(str.indexOf('T'));
+      if (!timePart.includes('-')) {
+        str += 'Z';
+      }
+    }
+    const timestamp = new Date(str).getTime();
     return Number.isFinite(timestamp) ? timestamp : null;
   }
 }

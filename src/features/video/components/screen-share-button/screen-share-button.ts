@@ -2,96 +2,78 @@ import { Component, inject, computed } from '@angular/core';
 import { VideoScreenShareService } from '../../services/video-screen-share.service';
 import { ScreenShareState } from '../../models/screen-share-state.enum';
 
-const SHARE_ICON = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-  <line x1="8" y1="21" x2="16" y2="21"/>
-  <line x1="12" y1="17" x2="12" y2="21"/>
-</svg>`;
-
-const STOP_ICON = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="currentColor" stroke-width="2">
-  <rect x="6" y="6" width="12" height="12" rx="2"/>
-  <line x1="8" y1="21" x2="16" y2="21"/>
-  <line x1="12" y1="17" x2="12" y2="21"/>
-</svg>`;
-
 @Component({
   selector: 'app-screen-share-button',
   standalone: true,
   template: `
     <button
-      class="screen-share-btn"
-      [class.screen-share-btn--active]="isSharing()"
+      class="vr-tb-btn"
+      [class.vr-tb-btn--active]="isSharing()"
+      [class.vr-tb-btn--loading]="isTransitioning()"
       [disabled]="disabled()"
       (click)="toggle()"
       [attr.aria-label]="label()"
+      [attr.aria-pressed]="isSharing()"
       type="button"
+      [title]="label()"
     >
-      <span class="screen-share-btn-icon" [innerHTML]="isSharing() ? stopIcon : shareIcon"></span>
-      <span class="screen-share-btn-label">{{ label() }}</span>
+      @if (isSharing()) {
+        <!-- Stop sharing: filled square icon -->
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+          <rect x="8" y="7" width="8" height="6" rx="1" fill="currentColor" stroke="none"/>
+        </svg>
+      } @else {
+        <!-- Start sharing: monitor + arrow icon -->
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+          <polyline points="8 10 12 6 16 10"/>
+          <line x1="12" y1="6" x2="12" y2="14"/>
+        </svg>
+      }
     </button>
   `,
   styles: [`
-    /* ── Toolbar Circle Button ── */
-    .screen-share-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      border: none;
-      background: #f0f4f8;
-      color: #2C3E50;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
+    /*
+     * The screen share button adopts the parent toolbar's vr-tb-btn class.
+     * Active state override is defined here in :host scope so it can layer
+     * on top of the base vr-tb-btn style without specificity conflicts.
+     */
+    :host {
+      display: contents; /* transparent host — no extra wrapper in layout */
     }
-    .screen-share-btn:hover:not(:disabled) {
-      background: #e8ecf0;
-      transform: scale(1.05);
+
+    /* Active (sharing) state — Bosla blue accent */
+    .vr-tb-btn.vr-tb-btn--active {
+      background: rgba(46, 134, 171, 0.15) !important;
+      color: #2E86AB !important;
     }
-    .screen-share-btn:focus-visible {
-      outline: 3px solid #2E86AB;
-      outline-offset: 2px;
+    .vr-tb-btn.vr-tb-btn--active:hover:not(:disabled) {
+      background: rgba(46, 134, 171, 0.25) !important;
     }
-    .screen-share-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    /* Active (Sharing) state → Bosla blue tint */
-    .screen-share-btn--active {
-      background: rgba(46, 134, 171, 0.12);
-      color: #2E86AB;
-    }
-    .screen-share-btn--active:hover:not(:disabled) {
-      background: rgba(46, 134, 171, 0.2);
-    }
-    .screen-share-btn-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-    }
-    /* Label hidden — aria-label on button provides context */
-    .screen-share-btn-label {
-      display: none;
-    }
-    /* Mobile: shrink to 44px to match other toolbar buttons */
-    @media (max-width: 768px) {
-      .screen-share-btn {
-        width: 44px;
-        height: 44px;
-      }
+
+    /* Loading/transitioning state */
+    .vr-tb-btn--loading {
+      opacity: 0.6;
+      pointer-events: none;
     }
   `],
 })
 export class ScreenShareButton {
   private readonly screenShareService = inject(VideoScreenShareService);
 
-  readonly shareIcon = SHARE_ICON;
-  readonly stopIcon = STOP_ICON;
   readonly isSharing = this.screenShareService.isSharing;
+
+  readonly isTransitioning = computed(() => {
+    const s = this.screenShareService.state();
+    return s === ScreenShareState.Starting || s === ScreenShareState.Stopping;
+  });
 
   readonly disabled = computed(() => {
     const s = this.screenShareService.state();
@@ -102,8 +84,8 @@ export class ScreenShareButton {
     switch (this.screenShareService.state()) {
       case ScreenShareState.Starting: return 'جارٍ بدء المشاركة...';
       case ScreenShareState.Stopping: return 'جارٍ إيقاف المشاركة...';
-      case ScreenShareState.Sharing: return '🟥 إيقاف المشاركة';
-      default: return 'مشاركة الشاشة';
+      case ScreenShareState.Sharing:  return 'إيقاف مشاركة الشاشة';
+      default:                        return 'مشاركة الشاشة';
     }
   });
 
