@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, Input } from '@angular/core';
+import { Component, inject, computed, signal, Input, ViewChild, ElementRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { VideoSessionService } from '../../services/video-session.service';
 import { AuthService } from '@core/services/auth.service';
@@ -10,125 +10,164 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
   standalone: true,
   template: `
     @if (visible()) {
+
+      <!-- Start Confirmation Modal -->
       @if (confirming()) {
-        <div class="rec-confirm-overlay" (click)="cancelConfirm()">
+        <dialog #confirmDialog class="rec-confirm-dialog" (click)="cancelConfirm()"
+          aria-labelledby="rec-confirm-title">
           <div class="rec-confirm-box" (click)="$event.stopPropagation()">
-            <p class="rec-confirm-text">سيتم تسجيل الجلسة. هل تريد المتابعة؟</p>
+            <div class="rec-confirm-icon" aria-hidden="true">
+              <!-- Record dot icon -->
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9"/>
+                <circle cx="12" cy="12" r="4" fill="currentColor"/>
+              </svg>
+            </div>
+            <p class="rec-confirm-title" id="rec-confirm-title">تسجيل الجلسة؟</p>
+            <p class="rec-confirm-text">سيتم تسجيل هذه الجلسة. يرجى إعلام جميع المشاركين بذلك.</p>
             <div class="rec-confirm-actions">
-              <button class="rec-confirm-btn rec-confirm-btn--yes" (click)="confirmStart()">تسجيل</button>
-              <button class="rec-confirm-btn rec-confirm-btn--no" (click)="cancelConfirm()">إلغاء</button>
+              <button class="rec-confirm-btn rec-confirm-btn--no"
+                (click)="cancelConfirm()" type="button">إلغاء</button>
+              <button class="rec-confirm-btn rec-confirm-btn--yes"
+                (click)="confirmStart()" type="button">بدء التسجيل</button>
             </div>
           </div>
-        </div>
+        </dialog>
       }
-      <button
-        class="rec-btn"
-        [class.rec-btn--active]="isRecording()"
-        [class.rec-btn--loading]="loading()"
-        [disabled]="disabled()"
-        (click)="handleClick()"
-        [attr.aria-label]="label()"
-        type="button"
-      >
-        <span class="rec-btn-dot"></span>
-        <span class="rec-btn-label">{{ label() }}</span>
-      </button>
+
+      <!-- Idle: Start Recording button -->
+      @if (!isRecording()) {
+        <button
+          class="vr-tb-btn"
+          [class.vr-tb-btn--loading]="loading()"
+          [disabled]="disabled()"
+          (click)="handleClick()"
+          aria-label="بدء التسجيل"
+          title="بدء التسجيل"
+          type="button"
+        >
+          <!-- Record circle icon -->
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+          </svg>
+        </button>
+      }
+
+      <!-- Recording: Stop Recording button (only shown while recording) -->
+      @if (isRecording()) {
+        <button
+          class="vr-tb-btn vr-tb-btn--recording"
+          [class.vr-tb-btn--loading]="loading()"
+          [disabled]="disabled()"
+          (click)="handleClick()"
+          aria-label="إيقاف التسجيل"
+          title="إيقاف التسجيل"
+          type="button"
+        >
+          <!-- Stop square icon -->
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <rect x="5" y="5" width="14" height="14" rx="2"/>
+          </svg>
+        </button>
+      }
+
     }
   `,
   styles: [`
-    /* ── Toolbar Circle Button ── */
-    .rec-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      border: none;
-      background: #f0f4f8;
-      color: #2C3E50;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-      position: relative;
-    }
-    .rec-btn:hover:not(:disabled) {
-      background: #e8ecf0;
-      transform: scale(1.05);
-    }
-    .rec-btn:focus-visible {
-      outline: 3px solid #2E86AB;
-      outline-offset: 2px;
-    }
-    .rec-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    /* Active = Recording → orange accent (REC is allowed orange use case) */
-    .rec-btn--active {
-      background: rgba(243, 156, 18, 0.12);
-      color: #F39C12;
-    }
-    .rec-btn--active:hover:not(:disabled) {
-      background: rgba(243, 156, 18, 0.2);
-    }
-    .rec-btn--loading {
-      pointer-events: none;
-    }
-    /* Record dot icon */
-    .rec-btn-dot {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2.5px solid currentColor;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .rec-btn-dot::after {
-      content: '';
-      position: absolute;
-      inset: 3px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-    .rec-btn--active .rec-btn-dot {
-      animation: rec-pulse 1.4s ease-in-out infinite;
-    }
-    /* Label hidden — aria-label handles accessibility */
-    .rec-btn-label {
-      display: none;
+    :host {
+      display: contents; /* transparent host */
     }
 
-    /* ── Confirmation Modal ── */
-    .rec-confirm-overlay {
+    /* ── Recording-Active State: orange accent ── */
+    .vr-tb-btn.vr-tb-btn--recording {
+      background: rgba(243, 156, 18, 0.15) !important;
+      color: #F39C12 !important;
+      animation: rec-btn-pulse 2.2s ease-in-out infinite;
+    }
+    .vr-tb-btn.vr-tb-btn--recording:hover:not(:disabled) {
+      background: rgba(243, 156, 18, 0.25) !important;
+      animation: none;
+    }
+    .vr-tb-btn--loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @keyframes rec-btn-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
+      50%       { box-shadow: 0 0 0 6px rgba(243, 156, 18, 0.2); }
+    }
+
+    /* ── Confirmation Modal (Native Dialog) ── */
+    .rec-confirm-dialog {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      border: none;
+      background: transparent;
+      padding: 24px;
+      box-sizing: border-box;
       display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      z-index: 100000;
+      overflow: hidden;
+      outline: none;
+    }
+    .rec-confirm-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     .rec-confirm-box {
       background: #ffffff;
       border-radius: 20px;
-      padding: 2rem 2.5rem;
-      max-width: 380px;
-      width: 90%;
+      padding: 2rem 2rem 1.75rem;
+      width: 440px;
+      max-width: 100%;
       text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-      animation: rec-scale-in 0.2s ease;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+      animation: rec-box-in 0.2s ease;
+      box-sizing: border-box;
+    }
+    @media (max-width: 768px) {
+      .rec-confirm-box {
+        width: min(420px, calc(100vw - 48px));
+      }
+    }
+    .rec-confirm-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(243, 156, 18, 0.1);
+      color: #F39C12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .rec-confirm-title {
+      margin: 0 0 0.5rem;
+      font-size: 1.125rem;
+      color: #1B4F72;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
     }
     .rec-confirm-text {
       margin: 0 0 1.5rem;
-      font-size: 1rem;
-      color: #2C3E50;
+      font-size: 0.9375rem;
+      color: #4a5568;
       font-family: 'Cairo', sans-serif;
       line-height: 1.65;
-      font-weight: 500;
+      font-weight: 400;
     }
     .rec-confirm-actions {
       display: flex;
@@ -136,7 +175,8 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       justify-content: center;
     }
     .rec-confirm-btn {
-      padding: 10px 28px;
+      flex: 1;
+      padding: 10px 20px;
       border: none;
       border-radius: 9999px;
       font-size: 0.9375rem;
@@ -160,24 +200,19 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
     .rec-confirm-btn--no:hover {
       background: #e8ecf0;
     }
-    @keyframes rec-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.88); }
-    }
-    @keyframes rec-scale-in {
-      from { opacity: 0; transform: scale(0.94); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    /* Mobile: shrink to 44px to match other toolbar buttons */
-    @media (max-width: 768px) {
-      .rec-btn {
-        width: 44px;
-        height: 44px;
-      }
+
+    @keyframes rec-box-in {
+      from { opacity: 0; transform: scale(0.94) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
     }
   `],
 })
 export class RecordingButton {
+  @ViewChild('confirmDialog') set confirmDialog(ref: ElementRef<HTMLDialogElement> | undefined) {
+    if (ref) {
+      ref.nativeElement.showModal();
+    }
+  }
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly authService = inject(AuthService);
   readonly recordingTimer = inject(VideoRecordingTimerService);
