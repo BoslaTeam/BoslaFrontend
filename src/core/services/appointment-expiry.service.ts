@@ -12,7 +12,22 @@ export class AppointmentExpiryService {
     this.stop();
     this._isExpired.set(false);
 
-    const endTime = new Date(endTimeUtc).getTime();
+    let endTime: number;
+    if (endTimeUtc instanceof Date) {
+      endTime = endTimeUtc.getTime();
+    } else if (typeof endTimeUtc === 'number') {
+      endTime = endTimeUtc;
+    } else {
+      let str = String(endTimeUtc).trim();
+      if (str.includes('T') && !str.endsWith('Z') && !str.includes('+')) {
+        const timePart = str.slice(str.indexOf('T'));
+        if (!timePart.includes('-')) {
+          str += 'Z';
+        }
+      }
+      endTime = new Date(str).getTime();
+    }
+
     if (!Number.isFinite(endTime)) return;
 
     const checkExpiry = () => {

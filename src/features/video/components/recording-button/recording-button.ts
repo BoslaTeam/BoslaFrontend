@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, Input } from '@angular/core';
+import { Component, inject, computed, signal, Input, ViewChild, ElementRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { VideoSessionService } from '../../services/video-session.service';
 import { AuthService } from '@core/services/auth.service';
@@ -13,8 +13,8 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
 
       <!-- Start Confirmation Modal -->
       @if (confirming()) {
-        <div class="rec-confirm-overlay" (click)="cancelConfirm()" role="dialog"
-          aria-modal="true" aria-labelledby="rec-confirm-title">
+        <dialog #confirmDialog class="rec-confirm-dialog" (click)="cancelConfirm()"
+          aria-labelledby="rec-confirm-title">
           <div class="rec-confirm-box" (click)="$event.stopPropagation()">
             <div class="rec-confirm-icon" aria-hidden="true">
               <!-- Record dot icon -->
@@ -33,7 +33,7 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
                 (click)="confirmStart()" type="button">بدء التسجيل</button>
             </div>
           </div>
-        </div>
+        </dialog>
       }
 
       <!-- Idle: Start Recording button -->
@@ -102,28 +102,30 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       50%       { box-shadow: 0 0 0 6px rgba(243, 156, 18, 0.2); }
     }
 
-    /* ── Confirmation Modal ── */
-    .rec-confirm-overlay {
-      position: fixed;
-      inset: 0;
+    /* ── Confirmation Modal (Native Dialog) ── */
+    .rec-confirm-dialog {
+      border: none;
+      background: transparent;
+      padding: 0;
+      overflow: visible;
+      outline: none;
+      max-width: calc(100% - 32px);
+    }
+    .rec-confirm-dialog::backdrop {
       background: rgba(0, 0, 0, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1200;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      animation: rec-overlay-in 0.2s ease;
     }
     .rec-confirm-box {
       background: #ffffff;
       border-radius: 20px;
       padding: 2rem 2rem 1.75rem;
       max-width: 360px;
-      width: 90%;
+      width: 100%;
       text-align: center;
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
       animation: rec-box-in 0.2s ease;
+      box-sizing: border-box;
     }
     .rec-confirm-icon {
       width: 64px;
@@ -183,10 +185,6 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
       background: #e8ecf0;
     }
 
-    @keyframes rec-overlay-in {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
     @keyframes rec-box-in {
       from { opacity: 0; transform: scale(0.94) translateY(8px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
@@ -194,6 +192,11 @@ import { VideoRecordingTimerService } from '../../services/video-recording-timer
   `],
 })
 export class RecordingButton {
+  @ViewChild('confirmDialog') set confirmDialog(ref: ElementRef<HTMLDialogElement> | undefined) {
+    if (ref) {
+      ref.nativeElement.showModal();
+    }
+  }
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly authService = inject(AuthService);
   readonly recordingTimer = inject(VideoRecordingTimerService);

@@ -455,7 +455,14 @@ export class VideoRoom {
 
   private toTimestamp(value?: string | null): number | null {
     if (!value) return null;
-    const timestamp = new Date(value).getTime();
+    let str = value.trim();
+    if (str.includes('T') && !str.endsWith('Z') && !str.includes('+')) {
+      const timePart = str.slice(str.indexOf('T'));
+      if (!timePart.includes('-')) {
+        str += 'Z';
+      }
+    }
+    const timestamp = new Date(str).getTime();
     return Number.isFinite(timestamp) ? timestamp : null;
   }
 }
