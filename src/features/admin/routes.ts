@@ -76,6 +76,16 @@ export const ADMIN_ROUTES: Routes = [
     title: 'المدفوعات'
   },
   {
+    path: 'payments/disputes',
+    loadComponent: () => import('./pages/payments/admin-disputes-list').then(m => m.AdminDisputesList),
+    title: 'الشكاوى'
+  },
+  {
+    path: 'payments/disputes/:id',
+    loadComponent: () => import('./pages/payments/admin-dispute-detail').then(m => m.AdminDisputeDetail),
+    title: 'تفاصيل الشكوى'
+  },
+  {
     path: 'payments/:id',
     loadComponent: () => import('./pages/payments/admin-payment-detail').then(m => m.AdminPaymentDetail),
     title: 'تفاصيل الدفع'
@@ -100,14 +110,4 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@features/wallet/pages/admin-wallet/admin-wallet').then(m => m.AdminWallet),
     title: 'محفظة المنصة'
   },
-  {
-    path: 'payments/disputes',
-    loadComponent: () => import('./pages/payments/admin-disputes-list').then(m => m.AdminDisputesList),
-    title: 'الشكاوى'
-  },
-  {
-    path: 'payments/disputes/:id',
-    loadComponent: () => import('./pages/payments/admin-dispute-detail').then(m => m.AdminDisputeDetail),
-    title: 'تفاصيل الشكوى'
-  }
 ];

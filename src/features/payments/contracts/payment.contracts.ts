@@ -44,6 +44,7 @@ export interface ComplaintDto {
 export interface ComplaintDetailDto {
   id: string;
   paymentId: string;
+  appointmentId: string;
   userId: string;
   userName: string;
   userAvatarUrl?: string;
@@ -52,9 +53,26 @@ export interface ComplaintDetailDto {
   status: 'Pending' | 'Reviewed' | 'ResolvedRefunded' | 'ResolvedRejected';
   amount: number;
   currency: string;
+  specialistName?: string;
   createdAtUtc: string;
   adminNotes?: string;
   resolvedAt?: string;
+}
+
+export interface ComplaintListItemDto {
+  id: string;
+  paymentId: string;
+  appointmentId: string;
+  reason: string;
+  description?: string;
+  status: 'Pending' | 'Reviewed' | 'ResolvedRefunded' | 'ResolvedRejected';
+  createdAtUtc: string;
+  adminNotes?: string;
+  resolvedAt?: string;
+  userName: string;
+  userAvatarUrl?: string;
+  amount: number;
+  currency: string;
 }
 
 export interface ResolveDisputeRequest {

@@ -23,11 +23,22 @@
       <div class="space-y-4 mb-8">
         <div class="flex justify-between py-2 border-b border-slate-50">
           <span class="text-slate-500 text-sm">المستخدم</span>
-          <span class="font-bold text-slate-800">{{ d.userName }}</span>
+          <div class="flex items-center gap-2">
+            @if (d.userAvatarUrl) {
+              <img [src]="d.userAvatarUrl" [alt]="d.userName" class="w-6 h-6 rounded-full object-cover">
+            }
+            <span class="font-bold text-slate-800">{{ d.userName }}</span>
+          </div>
         </div>
+        @if (d.specialistName) {
+          <div class="flex justify-between py-2 border-b border-slate-50">
+            <span class="text-slate-500 text-sm">المختص</span>
+            <span class="font-bold text-slate-800">{{ d.specialistName }}</span>
+          </div>
+        }
         <div class="flex justify-between py-2 border-b border-slate-50">
           <span class="text-slate-500 text-sm">المبلغ</span>
-          <span class="font-bold text-slate-800">{{ d.amount }} {{ d.currency }}</span>
+          <span class="font-bold text-slate-800">{{ d.amount }} {{ d.currency | uppercase }}</span>
         </div>
         <div class="flex justify-between py-2 border-b border-slate-50">
           <span class="text-slate-500 text-sm">الحالة</span>
@@ -37,6 +48,15 @@
           <span class="text-slate-500 text-sm">تاريخ التقديم</span>
           <span class="font-bold text-slate-800">{{ d.createdAtUtc | date:'yyyy/MM/dd hh:mm a' }}</span>
         </div>
+        @if (d.appointmentId) {
+          <div class="flex justify-between py-2 border-b border-slate-50">
+            <span class="text-slate-500 text-sm">الموعد</span>
+            <a [routerLink]="['/admin/appointments', d.appointmentId]"
+               class="font-bold text-bosla-primary hover:underline">
+              عرض تفاصيل الموعد
+            </a>
+          </div>
+        }
       </div>
 
       <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">

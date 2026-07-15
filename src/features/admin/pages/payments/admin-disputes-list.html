@@ -6,6 +6,25 @@
     </div>
   </div>
 
+  <!-- Filter Tabs -->
+  <div class="flex gap-2 mb-6">
+    <button (click)="setTab('all')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'all' ? 'bg-bosla-primary text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+      الكل
+    </button>
+    <button (click)="setTab('Pending')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'Pending' ? 'bg-amber-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+      معلقة
+    </button>
+    <button (click)="setTab('Resolved')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'Resolved' ? 'bg-green-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+      تم الحل
+    </button>
+  </div>
+
   @if (isLoading()) {
     <div class="flex justify-center py-20">
       <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
@@ -13,14 +32,22 @@
   } @else if (disputes().length === 0) {
     <div class="text-center py-20 text-slate-400 bg-white rounded-2xl shadow-sm border border-slate-100">
       <i class="fa-solid fa-circle-check text-5xl mb-4 opacity-30"></i>
-      <p class="text-lg font-bold">لا توجد شكاوى معلقة</p>
+      @if (activeTab() === 'all') {
+        <p class="text-lg font-bold">لا توجد شكاوى</p>
+      } @else if (activeTab() === 'Pending') {
+        <p class="text-lg font-bold">لا توجد شكاوى معلقة</p>
+      } @else {
+        <p class="text-lg font-bold">لا توجد شكاوى تم حلها</p>
+      }
     </div>
   } @else {
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <table class="w-full text-right">
         <thead class="bg-slate-50 text-slate-500 text-xs font-bold">
           <tr>
+            <th class="px-6 py-4">المستخدم</th>
             <th class="px-6 py-4">السبب</th>
+            <th class="px-6 py-4">المبلغ</th>
             <th class="px-6 py-4">الحالة</th>
             <th class="px-6 py-4">تاريخ التقديم</th>
             <th class="px-6 py-4"></th>
@@ -29,7 +56,15 @@
         <tbody class="divide-y divide-slate-50">
           @for (d of disputes(); track d.id) {
             <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <img [src]="d.userAvatarUrl || 'assets/icons/favicon.ico'"
+                       [alt]="d.userName" class="w-7 h-7 rounded-full object-cover bg-slate-100">
+                  <span class="font-medium text-slate-800 text-sm">{{ d.userName }}</span>
+                </div>
+              </td>
               <td class="px-6 py-4 font-medium text-slate-800">{{ d.reason }}</td>
+              <td class="px-6 py-4 text-slate-800 font-bold">{{ d.amount }} {{ d.currency | uppercase }}</td>
               <td class="px-6 py-4">
                 <span class="px-3 py-1 rounded-xl text-xs font-bold border {{ getStatusClass(d.status) }}">
                   {{ getStatusLabel(d.status) }}

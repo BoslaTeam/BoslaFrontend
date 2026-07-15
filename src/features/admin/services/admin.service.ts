@@ -244,8 +244,12 @@ export class AdminService {
 
   // ── Disputes ──
 
-  getPendingDisputes(): Observable<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDto[]>> {
-    return this.http.get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDto[]>>(API_ENDPOINTS.admin.paymentDisputes);
+  getAllDisputes(status?: string): Observable<import('@features/payments/contracts/payment.contracts').ComplaintListItemDto[]> {
+    let params = new HttpParams();
+    if (status) params = params.set('status', status);
+    return this.http
+      .get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintListItemDto[]>>(API_ENDPOINTS.admin.paymentDisputes, { params })
+      .pipe(map((res) => res.data!));
   }
 
   getDisputeDetail(id: string): Observable<import('@features/payments/contracts/payment.contracts').ComplaintDetailDto> {

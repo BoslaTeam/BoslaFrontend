@@ -77,13 +77,13 @@ export class SpecialistWallet implements OnInit {
     this.withdrawalService.requestWithdrawal(payload).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.successMessage.set('تم تقديم طلب السحب بنجاح.');
+        this.successMessage.set('تم سحب المبلغ بنجاح.');
         this.showRequestForm.set(false);
         this.loadWallet();
       },
       error: (err) => {
         this.submitting.set(false);
-        this.errorMessage.set(err?.error?.title || 'حدث خطأ أثناء تقديم الطلب.');
+        this.errorMessage.set(err?.error?.title || 'حدث خطأ أثناء عملية السحب.');
       },
     });
   }

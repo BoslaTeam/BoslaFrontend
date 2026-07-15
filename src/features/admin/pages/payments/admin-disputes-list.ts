@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
-import { ComplaintDto } from '@features/payments/contracts/payment.contracts';
+import { ComplaintListItemDto } from '@features/payments/contracts/payment.contracts';
 
 @Component({
   selector: 'app-admin-disputes-list',
@@ -13,8 +13,9 @@ import { ComplaintDto } from '@features/payments/contracts/payment.contracts';
 export class AdminDisputesList implements OnInit {
   private readonly adminService = inject(AdminService);
 
-  readonly disputes = signal<ComplaintDto[]>([]);
+  readonly disputes = signal<ComplaintListItemDto[]>([]);
   readonly isLoading = signal(true);
+  readonly activeTab = signal<'all' | 'Pending' | 'Resolved'>('all');
 
   ngOnInit(): void {
     this.loadDisputes();
@@ -22,13 +23,19 @@ export class AdminDisputesList implements OnInit {
 
   loadDisputes(): void {
     this.isLoading.set(true);
-    this.adminService.getPendingDisputes().subscribe({
-      next: (res) => {
-        this.disputes.set(res.data ?? []);
+    const status = this.activeTab() === 'all' ? undefined : this.activeTab();
+    this.adminService.getAllDisputes(status).subscribe({
+      next: (data) => {
+        this.disputes.set(data);
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false),
     });
+  }
+
+  setTab(tab: 'all' | 'Pending' | 'Resolved'): void {
+    this.activeTab.set(tab);
+    this.loadDisputes();
   }
 
   getStatusLabel(status: string): string {

@@ -37,27 +37,14 @@
       </div>
 
       <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-        <div class="absolute -left-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-xl"></div>
-        <div class="relative z-10">
-          <div class="mb-4 flex items-center justify-between">
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
-              <i class="fa-solid fa-wallet text-xl"></i>
-            </div>
-          </div>
-          <h3 class="text-sm font-medium text-slate-500">الرصيد المتاح للسحب</h3>
-          <p class="mt-1.5 text-2xl md:text-3xl font-black text-bosla-primary">{{ w.availableBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
-        </div>
-      </div>
-
-      <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
         <div class="absolute -left-6 -top-6 w-24 h-24 bg-blue-50 rounded-full blur-xl"></div>
         <div class="relative z-10">
           <div class="mb-4 flex items-center justify-between">
             <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
-              <i class="fa-solid fa-clock text-xl"></i>
+              <i class="fa-solid fa-lock text-xl"></i>
             </div>
           </div>
-          <h3 class="text-sm font-medium text-slate-500">رصيد قيد الإفراج (14 يوم)</h3>
+          <h3 class="text-sm font-medium text-slate-500">الرصيد المحجوز</h3>
           <p class="mt-1.5 text-2xl md:text-3xl font-black text-blue-600">{{ w.pendingReleaseBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
           @if (w.nextReleaseDate) {
             <p class="text-xs text-slate-400 mt-1">تاريخ الإفراج التالي: {{ w.nextReleaseDate | date:'dd MMM yyyy' }}</p>
@@ -66,15 +53,15 @@
       </div>
 
       <div class="group relative overflow-hidden rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-        <div class="absolute -left-6 -top-6 w-24 h-24 bg-amber-50 rounded-full blur-xl"></div>
+        <div class="absolute -left-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-xl"></div>
         <div class="relative z-10">
           <div class="mb-4 flex items-center justify-between">
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
-              <i class="fa-solid fa-hand-holding-dollar text-xl"></i>
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+              <i class="fa-solid fa-wallet text-xl"></i>
             </div>
           </div>
-          <h3 class="text-sm font-medium text-slate-500">رصيد طلبات السحب</h3>
-          <p class="mt-1.5 text-2xl md:text-3xl font-black text-bosla-orange">{{ w.pendingBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
+          <h3 class="text-sm font-medium text-slate-500">الرصيد القابل للسحب</h3>
+          <p class="mt-1.5 text-2xl md:text-3xl font-black text-bosla-primary">{{ w.availableBalance | number:'1.2-2' }} <span class="text-sm font-bold text-slate-400">ج.م</span></p>
         </div>
       </div>
 
@@ -97,7 +84,7 @@
       <div class="mb-8">
         <button (click)="openRequestForm()" class="px-6 py-3 bg-bosla-primary hover:bg-bosla-primary/90 text-white font-bold rounded-2xl transition-all shadow-sm flex items-center gap-2 text-sm">
           <i class="fa-solid fa-plus"></i>
-          طلب سحب جديد
+          سحب الآن
         </button>
       </div>
     }
@@ -111,7 +98,7 @@
               <div class="w-10 h-10 rounded-2xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
                 <i class="fa-solid fa-hand-holding-dollar"></i>
               </div>
-              <h2 class="text-lg font-black text-slate-800">طلب سحب جديد</h2>
+              <h2 class="text-lg font-black text-slate-800">سحب الأموال</h2>
             </div>
             <button (click)="closeRequestForm()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 transition-colors flex items-center justify-center cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
@@ -153,7 +140,7 @@
                   <span>جاري...</span>
                 } @else {
                   <i class="fa-solid fa-check"></i>
-                  <span>تقديم الطلب</span>
+                  <span>تأكيد السحب</span>
                 }
               </button>
               <button (click)="closeRequestForm()" class="flex-1 h-11 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all text-sm cursor-pointer">
