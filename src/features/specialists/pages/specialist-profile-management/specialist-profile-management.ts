@@ -32,7 +32,7 @@ function dateRangeValidator(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-specialist-profile-management',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea, UiSelect],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea],
   templateUrl: './specialist-profile-management.html',
 })
 export class SpecialistProfileManagement implements OnInit {

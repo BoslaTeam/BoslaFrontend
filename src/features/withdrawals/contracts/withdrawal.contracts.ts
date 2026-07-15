@@ -2,6 +2,8 @@ export interface WalletDto {
   totalEarnings: number;
   availableBalance: number;
   pendingBalance: number;
+  pendingReleaseBalance: number;
+  nextReleaseDate?: string;
   totalWithdrawn: number;
   recentWithdrawals: WithdrawalDto[];
 }

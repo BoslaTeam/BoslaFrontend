@@ -107,6 +107,13 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     return `${minutes} دقيقة`;
   });
 
+  readonly disputeInfo = computed(() => {
+    const item = this.store.selectedItem();
+    if (!item?.escrowStatus) return null;
+    if (item.escrowStatus === 'Held' || item.escrowStatus === 'Released') return null;
+    return item;
+  });
+
   readonly hasConversation = computed(() => {
     const item = this.store.selectedItem();
     if (!item) return null;
@@ -354,6 +361,21 @@ export class AppointmentDetail implements OnInit, OnDestroy {
         };
       case PaymentStatus.Refunded:
         return { text: 'مسترجع', classes: 'bg-blue-500/10 text-blue-600 border-blue-500/20' };
+      default:
+        return { text: 'غير محدد', classes: 'bg-gray-500/10 text-gray-500' };
+    }
+  }
+
+  getEscrowStatusLabel(status: string | undefined): { text: string; classes: string } {
+    switch (status) {
+      case 'Held':
+        return { text: 'معلق', classes: 'bg-amber-500/10 text-amber-600' };
+      case 'Released':
+        return { text: 'تم الصرف', classes: 'bg-emerald-500/10 text-emerald-600' };
+      case 'Disputed':
+        return { text: 'في نزاع', classes: 'bg-rose-500/10 text-rose-600' };
+      case 'Refunded':
+        return { text: 'مسترجع', classes: 'bg-blue-500/10 text-blue-600' };
       default:
         return { text: 'غير محدد', classes: 'bg-gray-500/10 text-gray-500' };
     }

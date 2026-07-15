@@ -308,6 +308,24 @@ export interface AdminPaymentDetailDto {
   taxAmount: number;
   refundReason?: string;
   createdAt: string;
+  escrowStatus?: string;
+  heldUntil?: string;
+  disputeInfo?: AdminDisputeInfoDto;
+}
+
+export interface AdminDisputeInfoDto {
+  id: string;
+  reason: string;
+  description?: string;
+  status: string;
+  filedAt: string;
+  resolvedAt?: string;
+  adminNotes?: string;
+}
+
+export interface ResolveDisputeRequest {
+  approveRefund: boolean;
+  adminNotes?: string;
 }
 
 // ── AI Embeddings ──

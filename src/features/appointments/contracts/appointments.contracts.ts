@@ -58,6 +58,13 @@ export interface AppointmentDto {
   paymentStatus?: PaymentStatus;
   conversationId?: string;
   confirmedAt?: string;
+
+  paymentId?: string;
+  escrowStatus?: string;
+  disputeReason?: string;
+  disputeAdminNotes?: string;
+  complaintStatus?: string;
+  disputeDescription?: string;
 }
 
 export interface AppointmentStatusHistoryDto {
