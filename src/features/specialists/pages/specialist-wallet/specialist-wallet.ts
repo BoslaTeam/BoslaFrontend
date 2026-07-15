@@ -77,7 +77,7 @@ export class SpecialistWallet implements OnInit {
     this.withdrawalService.requestWithdrawal(payload).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.successMessage.set('تم تقديم طلب السحب بنجاح. سيتم مراجعته من قبل الإدارة.');
+        this.successMessage.set('تم تقديم طلب السحب بنجاح.');
         this.showRequestForm.set(false);
         this.loadWallet();
       },

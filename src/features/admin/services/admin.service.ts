@@ -242,6 +242,24 @@ export class AdminService {
       .pipe(map((res) => res.success));
   }
 
+  // ── Disputes ──
+
+  getPendingDisputes(): Observable<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDto[]>> {
+    return this.http.get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDto[]>>(API_ENDPOINTS.admin.paymentDisputes);
+  }
+
+  getDisputeDetail(id: string): Observable<import('@features/payments/contracts/payment.contracts').ComplaintDetailDto> {
+    return this.http
+      .get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDetailDto>>(API_ENDPOINTS.admin.paymentDisputeDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  resolveDispute(id: string, request: import('@features/admin/contracts/admin.contracts').ResolveDisputeRequest): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.resolveDispute(id), request)
+      .pipe(map((res) => res.success));
+  }
+
   updateSpecialistStatus(id: string, status: string): Observable<boolean> {
     return this.http
       .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.specialistStatus(id), { status })

@@ -1,0 +1,51 @@
+<div dir="rtl" class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-black text-slate-800">الشكاوى</h1>
+      <p class="text-sm text-slate-500">إدارة شكاوى المدفوعات</p>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  } @else if (disputes().length === 0) {
+    <div class="text-center py-20 text-slate-400 bg-white rounded-2xl shadow-sm border border-slate-100">
+      <i class="fa-solid fa-circle-check text-5xl mb-4 opacity-30"></i>
+      <p class="text-lg font-bold">لا توجد شكاوى معلقة</p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <table class="w-full text-right">
+        <thead class="bg-slate-50 text-slate-500 text-xs font-bold">
+          <tr>
+            <th class="px-6 py-4">السبب</th>
+            <th class="px-6 py-4">الحالة</th>
+            <th class="px-6 py-4">تاريخ التقديم</th>
+            <th class="px-6 py-4"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          @for (d of disputes(); track d.id) {
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-6 py-4 font-medium text-slate-800">{{ d.reason }}</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-xl text-xs font-bold border {{ getStatusClass(d.status) }}">
+                  {{ getStatusLabel(d.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-slate-500 text-sm">{{ d.createdAtUtc | date:'yyyy/MM/dd' }}</td>
+              <td class="px-6 py-4">
+                <a [routerLink]="['/admin/payments/disputes', d.id]"
+                   class="text-bosla-primary hover:underline font-bold text-sm">
+                  التفاصيل
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
