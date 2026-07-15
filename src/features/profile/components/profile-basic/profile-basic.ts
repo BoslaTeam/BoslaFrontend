@@ -2,6 +2,7 @@ import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileStore } from '../../stores/profile.store';
+import { SelectOption } from '@shared/types/select-option.type';
 
 @Component({
   selector: 'app-profile-basic',
@@ -14,6 +15,37 @@ export class ProfileBasic {
   private fb = inject(FormBuilder);
 
   basicInfoForm: FormGroup;
+
+  readonly genderOptions: SelectOption[] = [
+    { value: 'ذكر', label: 'ذكر' },
+    { value: 'أنثى', label: 'أنثى' },
+  ];
+
+  readonly languageOptions: SelectOption[] = [
+    { value: 'العربية', label: 'العربية' },
+    { value: 'English', label: 'English' },
+  ];
+
+  readonly countryOptions: SelectOption[] = [
+    { value: 'مصر', label: 'مصر' },
+    { value: 'السعودية', label: 'السعودية' },
+    { value: 'الإمارات', label: 'الإمارات' },
+    { value: 'قطر', label: 'قطر' },
+    { value: 'الكويت', label: 'الكويت' },
+    { value: 'البحرين', label: 'البحرين' },
+    { value: 'عمان', label: 'عُمان' },
+    { value: 'الأردن', label: 'الأردن' },
+    { value: 'العراق', label: 'العراق' },
+    { value: 'سوريا', label: 'سوريا' },
+    { value: 'لبنان', label: 'لبنان' },
+    { value: 'فلسطين', label: 'فلسطين' },
+    { value: 'تونس', label: 'تونس' },
+    { value: 'الجزائر', label: 'الجزائر' },
+    { value: 'المغرب', label: 'المغرب' },
+    { value: 'ليبيا', label: 'ليبيا' },
+    { value: 'السودان', label: 'السودان' },
+    { value: 'اليمن', label: 'اليمن' },
+  ];
 
   constructor() {
     this.basicInfoForm = this.fb.group({

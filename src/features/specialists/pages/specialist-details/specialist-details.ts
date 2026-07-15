@@ -48,7 +48,7 @@ export class SpecialistDetailsPage implements OnInit {
 
   readonly tabs: TabItem[] = [
     { id: 'profile', label: 'الملف الشخصي' },
-    { id: 'portfolio', label: 'معرض الأعمال' },
+    // { id: 'portfolio', label: 'معرض الأعمال' },
     { id: 'reviews', label: 'التقييمات' },
     { id: 'availability', label: 'الأوقات المتاحة' },
   ];
