@@ -87,11 +87,11 @@ interface ChatMessage { role: string; content: string; }
                          <div class="card-info">
                            <div class="card-name">{{ c.name }}</div>
                            <div class="card-title">{{ c.title || 'متخصص' }}</div>
-                           <button (click)="$event.preventDefault(); $event.stopPropagation(); goToBooking(c.id)"
-                             class="mt-2 w-full py-2 px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg transition-all duration-200 cursor-pointer">
-                             حجز موعد
-                           </button>
-                           <div class="card-footer mt-2">
+                            <button (click)="$event.preventDefault(); $event.stopPropagation(); goToBooking(c.id)"
+                              class="w-full py-1.5 px-2 rounded-lg text-[11px] font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg transition-all duration-200 cursor-pointer">
+                              حجز موعد
+                            </button>
+                            <div class="card-footer">
                              <span class="card-rating">
                                <i class="fa-solid fa-star text-[#F39C12] text-[10px]"></i>
                                {{ c.rating > 0 ? c.rating : 'جديد' }}
@@ -421,63 +421,61 @@ interface ChatMessage { role: string; content: string; }
 
     /* --- Cards Carousel --- */
     .cards-row {
-      display: flex; gap: 12px; overflow-x: auto;
-      padding: 8px 4px 16px; margin: 4px 0;
-      scroll-snap-type: x mandatory;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 8px 0 4px;
+      margin: 4px 0 12px;
     }
-    .cards-row::-webkit-scrollbar { height: 4px; }
-    .cards-row::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
 
     .specialist-card {
       position: relative;
-      min-width: 220px; max-width: 240px;
-      background: #fff; border-radius: 20px;
+      background: #fff; border-radius: 16px;
       text-decoration: none; color: inherit;
-      display: flex; flex-direction: row; align-items: center; gap: 12px;
-      padding: 12px; scroll-snap-align: start;
+      display: flex; flex-direction: column; align-items: stretch;
+      padding: 12px;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       border: 1px solid rgba(226, 232, 240, 0.8);
-      flex-shrink: 0;
       cursor: pointer;
     }
     
     .card-glow {
-      position: absolute; inset: 0;
-      border-radius: 20px;
+      position: absolute; top: -2px; bottom: -2px; left: -2px; right: -2px;
+      border-radius: 18px;
       background: linear-gradient(135deg, #1B4F72, #F39C12);
       opacity: 0; transition: opacity 0.3s;
-      z-index: -1; margin: -2px;
+      z-index: -1;
     }
 
-    .specialist-card:hover { transform: translateY(-4px); }
     .specialist-card:hover .card-glow { opacity: 0.15; }
 
     .card-content {
-      display: flex; align-items: center; gap: 12px; width: 100%;
+      display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;
     }
 
     .card-avatar {
-      width: 56px; height: 56px; border-radius: 16px;
+      width: 56px; height: 56px; border-radius: 50%;
       background: #f1f5f9; position: relative; overflow: hidden;
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .card-online {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #2ecc71; border: 2.5px solid #fff;
-      position: absolute; bottom: -2px; right: -2px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #2ecc71; border: 2px solid #fff;
+      position: absolute; bottom: 1px; inset-inline-end: 1px;
     }
 
-    .card-info { flex: 1; min-width: 0; }
-    .card-name { font-weight: 800; font-size: 14px; color: #1B4F72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-title { font-size: 12px; color: #64748b; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-info { width: 100%; text-align: center; }
+    .card-name { font-weight: 800; font-size: 13px; color: #1B4F72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-title { font-size: 10px; color: #64748b; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .card-footer {
       display: flex; align-items: center; justify-content: space-between; 
-      font-size: 12px; font-weight: 600;
+      font-size: 11px; font-weight: 600;
+      gap: 4px;
     }
-    .card-rating { display: flex; align-items: center; gap: 4px; color: #475569; }
-    .card-rate { color: #F39C12; background: rgba(243,156,18,0.1); padding: 2px 6px; border-radius: 6px; }
+    .card-rating { display: flex; align-items: center; gap: 3px; color: #475569; }
+    .card-rate { color: #F39C12; background: rgba(243,156,18,0.1); padding: 1px 5px; border-radius: 5px; }
 
     /* --- Input Area --- */
     .chat-input-wrapper {

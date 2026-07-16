@@ -28,22 +28,29 @@
       </div>
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-slate-700">الدولة</label>
-        <input type="text" formControlName="country" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all">
+        <select formControlName="country" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all appearance-none">
+          <option value="" disabled selected>اختر الدولة</option>
+          @for (opt of countryOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
       </div>
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-slate-700">الجنس</label>
         <select formControlName="gender" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all appearance-none">
           <option value="" disabled selected>اختر الجنس</option>
-          <option value="male">ذكر</option>
-          <option value="female">أنثى</option>
+          @for (opt of genderOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
         </select>
       </div>
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-slate-700">اللغة المفضلة</label>
         <select formControlName="preferredLanguage" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all appearance-none">
           <option value="" disabled selected>اختر اللغة</option>
-          <option value="ar">العربية (Arabic)</option>
-          <option value="en">الإنجليزية (English)</option>
+          @for (opt of languageOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
         </select>
       </div>
     </div>

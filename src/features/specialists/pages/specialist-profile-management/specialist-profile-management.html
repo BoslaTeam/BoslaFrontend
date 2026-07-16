@@ -75,9 +75,6 @@
             <ui-input formControlName="experienceYears" label="سنوات الخبرة" type="number" [required]="true" />
             <ui-input formControlName="title" label="المسمى الوظيفي" placeholder="مثال: مهندس برمجيات" />
             <ui-textarea formControlName="bio" label="نبذة عني" placeholder="اكتب نبذة مختصرة عن نفسك" [rows]="2" />
-            <ui-select formControlName="gender" label="الجنس" [options]="genderOptions" placeholder="اختر الجنس" />
-            <ui-select formControlName="preferredLanguage" label="اللغة المفضلة" [options]="languageOptions" placeholder="اختر اللغة" />
-            <ui-select formControlName="country" label="الدولة" [options]="countryOptions" placeholder="اختر الدولة" />
             <div class="sm:col-span-2 flex justify-end">
               <ui-button type="button" (btnClick)="onProfileUpdate()" [loading]="saving()">حفظ التعديلات</ui-button>
             </div>

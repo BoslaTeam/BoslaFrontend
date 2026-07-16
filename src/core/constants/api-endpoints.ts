@@ -111,6 +111,9 @@ export const API_ENDPOINTS = {
   payments: {
     base: `${V}/payments`,
     byId: (id: string) => `${V}/payments/${id}`,
+    dispute: (id: string) => `${V}/payments/${id}/dispute`,
+    myDisputes: `${V}/payments/disputes/me`,
+    myEscrow: `${V}/payments/escrow/me`,
     earnings: `${V}/specialists/me/earnings`,
   },
   ai: {
@@ -162,6 +165,9 @@ export const API_ENDPOINTS = {
     payments: `${V}/admin/payments`,
     paymentDetail: (id: string) => `${V}/admin/payments/${id}`,
     refundPayment: (id: string) => `${V}/admin/payments/${id}/refund`,
+    paymentDisputes: `${V}/admin/payments/disputes`,
+    paymentDisputeDetail: (id: string) => `${V}/admin/payments/disputes/${id}`,
+    resolveDispute: (id: string) => `${V}/admin/payments/disputes/${id}/resolve`,
     withdrawals: `${V}/admin/withdrawals`,
     withdrawalsPending: `${V}/admin/withdrawals/pending`,
     withdrawalDetail: (id: string) => `${V}/admin/withdrawals/${id}`,

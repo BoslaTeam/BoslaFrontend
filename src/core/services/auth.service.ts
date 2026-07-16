@@ -147,11 +147,20 @@ export class AuthService {
 
     syncProfileAvatar(): void {
         if (!this.isAuthenticated()) return;
-        this.http.get<ApiResponse<{ profilePictureUrl?: string }>>(API_ENDPOINTS.users.me)
+        this.http.get<ApiResponse<{ name?: string; profilePictureUrl?: string }>>(API_ENDPOINTS.users.me)
             .pipe(catchError(() => of(null)))
             .subscribe(res => {
-                if (res?.data?.profilePictureUrl) {
+                if (!res?.data) return;
+                if (res.data.profilePictureUrl) {
                     this.updateAvatar(res.data.profilePictureUrl);
+                }
+                if (res.data.name) {
+                    const user = this._currentUser();
+                    if (user && user.fullName !== res.data.name) {
+                        const updatedUser = { ...user, fullName: res.data.name };
+                        this._currentUser.set(updatedUser);
+                        this.storage.setJson(STORAGE_KEYS.currentUser, updatedUser);
+                    }
                 }
             });
     }
