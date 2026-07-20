@@ -9,8 +9,8 @@
       </svg>
     </button>
     <div>
-      <div class="header-page-title">لوحة التحكم</div>
-      <div class="header-page-subtitle">إدارة منصة بوصلة</div>
+      <div class="header-page-title">{{ 'nav.dashboard' | t }}</div>
+      <div class="header-page-subtitle">{{ 'admin.header.subtitle' | t }}</div>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
     </div>
-    <input type="text" class="header-search-input" placeholder="بحث في لوحة التحكم...">
+    <input type="text" class="header-search-input" placeholder="{{ 'admin.header.searchPlaceholder' | t }}">
   </div>
 
   <!-- End: Actions -->
@@ -41,11 +41,14 @@
       <app-notification-dropdown [isOpen]="notifOpen()" (close)="notifOpen.set(false)" />
     </div>
 
+    <!-- Language Toggle -->
+    <app-language-toggle />
+
     <!-- User Menu -->
     <div class="header-dropdown-wrapper">
       <button class="header-user-btn" (click)="toggleDropdown()">
         <div class="header-user-avatar">{{ userInitials() }}</div>
-        <span class="header-user-name">{{ currentUser()?.fullName ?? 'مدير' }}</span>
+        <span class="header-user-name">{{ currentUser()?.fullName ?? ('admin.header.adminFallback' | t) }}</span>
         <svg class="header-user-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"/>
         </svg>
@@ -59,9 +62,7 @@
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
               <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            تسجيل الخروج
-          </button>
+            </svg>{{ 'nav.logout' | t }}</button>
         </div>
       }
     </div>

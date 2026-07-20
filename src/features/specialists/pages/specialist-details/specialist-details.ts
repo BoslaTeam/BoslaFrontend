@@ -12,18 +12,12 @@ import { UiReviewCard } from '@shared/ui/review-card/review-card';
 import { UiTabs, TabItem } from '@shared/ui/tabs/tabs';
 import { UiEmptyState } from '@shared/ui/empty-state/empty-state';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-specialist-details-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    UiButton,
-    UiRatingSummary,
-    UiReviewCard,
-    UiEmptyState,
-    UiTabs,
-    RouterModule
-  ],
+  imports: [CommonModule, UiButton, UiRatingSummary, UiReviewCard, UiEmptyState, UiTabs, RouterModule, TranslatePipe],
   templateUrl: './specialist-details.html',
   styleUrl: './specialist-details.css',
 })
@@ -34,7 +28,9 @@ export class SpecialistDetailsPage implements OnInit {
   private specialistsApi = inject(SpecialistsApiService);
   private favoritesApi = inject(FavoritesApiService);
   readonly authService = inject(AuthService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   isImage(url: string): boolean {
     return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
   }

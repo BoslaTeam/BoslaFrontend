@@ -6,9 +6,10 @@ import { UiPagination } from "@shared/ui/pagination/pagination";
 import { SpecialistsGridComponent } from "@features/specialists/components/specialists-grid/specialists-grid";
 import { SpecialistsFiltersComponent } from '@features/specialists/components/specialist-filters/specialist-filters';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-specialist-list-page',
-  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent],
+  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, TranslatePipe],
   standalone: true,
   templateUrl: './specialist-list.html',
   styleUrls: ['./specialist-list.css']

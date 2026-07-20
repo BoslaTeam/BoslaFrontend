@@ -2,30 +2,35 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { TranslationService } from '@core/services/translation.service';
 import { WithdrawalService } from '@features/withdrawals/services/withdrawal.service';
 import { AdminWithdrawalListDto } from '@features/withdrawals/contracts/withdrawal.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-withdrawals-list',
-  imports: [RouterLink, FormsModule, DatePipe, DecimalPipe],
+  imports: [RouterLink, FormsModule, DatePipe, DecimalPipe, TranslatePipe],
   templateUrl: './admin-withdrawals-list.html',
   styleUrl: './admin-withdrawals-list.css',
 })
 export class AdminWithdrawalsList implements OnInit {
   private readonly withdrawalService = inject(WithdrawalService);
+  private readonly translationService = inject(TranslationService);
 
   readonly withdrawals = signal<AdminWithdrawalListDto[]>([]);
   readonly isLoading = signal(true);
 
   selectedStatus = signal<string | null>(null);
 
-  readonly statusOptions = [
-    { value: null, label: 'الكل' },
-    { value: 'Pending', label: 'قيد الانتظار' },
-    { value: 'Processing', label: 'قيد المعالجة' },
-    { value: 'Completed', label: 'مكتمل' },
-    { value: 'Rejected', label: 'مرفوض' },
-  ];
+  get statusOptions() {
+    return [
+      { value: null, label: this.translationService.translate('admin.filter.all') },
+      { value: 'Pending', label: this.translationService.translate('admin.status.pending') },
+      { value: 'Processing', label: this.translationService.translate('admin.status.processing') },
+      { value: 'Completed', label: this.translationService.translate('admin.status.completed') },
+      { value: 'Rejected', label: this.translationService.translate('admin.status.rejected') },
+    ];
+  }
 
   ngOnInit(): void {
     this.loadWithdrawals();
@@ -66,10 +71,10 @@ export class AdminWithdrawalsList implements OnInit {
 
   getMethodLabel(method: string): string {
     const labels: Record<string, string> = {
-      bank: 'تحويل بنكي',
-      wallet: 'محفظة إلكترونية',
-      paypal: 'PayPal',
-      stripe: 'Stripe',
+      bank: this.translationService.translate('admin.method.bank'),
+      wallet: this.translationService.translate('admin.method.eWallet'),
+      paypal: this.translationService.translate('admin.method.paypal'),
+      stripe: this.translationService.translate('admin.method.stripe'),
     };
     return labels[method.toLowerCase()] ?? method;
   }

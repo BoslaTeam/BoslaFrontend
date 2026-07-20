@@ -1,4 +1,14 @@
-<div dir="rtl" class="font-sans">
+<style>
+  @keyframes cardFadeInUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card-fade-in {
+    animation: cardFadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+</style>
+
+<div class="font-sans">
 
   <!-- ==========================================
     HERO
@@ -11,14 +21,14 @@
     <div class="container mx-auto px-6 relative z-10 text-center">
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-bosla-orange/40 bg-bosla-orange/10 mb-8">
         <span class="w-2 h-2 rounded-full bg-bosla-orange animate-pulse"></span>
-        <span class="text-bosla-orange font-semibold text-sm">تواصل معنا</span>
+        <span class="text-bosla-orange font-semibold text-sm">{{ 'about.contact.twasl_mana' | t }}</span>
       </div>
       <h1 class="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
-        نحن هنا<br>
-        <span style="color: #F39C12;">لنساعدك</span>
+        {{ 'contact.hero.title1' | t }}<br>
+        <span style="color: #F39C12;">{{ 'contact.hero.titleAccent' | t }}</span>
       </h1>
       <p class="text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
-        هل لديك سؤال، اقتراح، أو تحتاج مساعدة؟ فريق بوصلة جاهز للإجابة على استفساراتك.
+        {{ 'contact.hero.desc' | t }}
       </p>
     </div>
     <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
@@ -37,62 +47,62 @@
 
         <!-- Form -->
         <div class="lg:col-span-3">
-          <div class="bg-white rounded-3xl p-8 md:p-10 border border-slate-100 shadow-sm">
-            <h2 class="text-2xl font-black text-bosla-primary mb-2">أرسل لنا رسالة</h2>
-            <p class="text-bosla-charcoal/60 mb-8">املأ النموذج وسنرد عليك في أقرب وقت.</p>
+          <div class="card-fade-in bg-white rounded-3xl p-8 md:p-10 border border-slate-100 shadow-sm" style="animation-delay:0.1s">
+            <h2 class="text-2xl font-black text-bosla-primary mb-2">{{ 'contact.form.title' | t }}</h2>
+            <p class="text-bosla-charcoal/60 mb-8">{{ 'contact.form.subtitle' | t }}</p>
 
             <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="space-y-6">
               <!-- Name & Email -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-slate-700">الاسم الكامل <span class="text-red-500">*</span></label>
-                  <input type="text" formControlName="name" placeholder="مثال: أحمد علي"
+                  <label class="block text-sm font-bold text-slate-700">{{ 'contact.form.nameLabel' | t }} <span class="text-red-500">*</span></label>
+                  <input type="text" formControlName="name" [placeholder]="'contact.form.namePlaceholder' | t"
                     class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all text-slate-800 placeholder:text-slate-400">
                   @if (contactForm.get('name')?.touched && contactForm.get('name')?.hasError('required')) {
-                    <p class="text-xs text-red-500 mt-1">هذا الحقل مطلوب</p>
+                    <p class="text-xs text-red-500 mt-1">{{ 'errors.required' | t }}</p>
                   }
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-slate-700">البريد الإلكتروني <span class="text-red-500">*</span></label>
+                  <label class="block text-sm font-bold text-slate-700">{{ 'auth.login.email' | t }}<span class="text-red-500">*</span></label>
                   <input type="email" formControlName="email" placeholder="example@email.com" dir="ltr"
                     class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all text-slate-800 placeholder:text-slate-400">
                   @if (contactForm.get('email')?.touched && contactForm.get('email')?.hasError('required')) {
-                    <p class="text-xs text-red-500 mt-1">هذا الحقل مطلوب</p>
+                    <p class="text-xs text-red-500 mt-1">{{ 'errors.required' | t }}</p>
                   }
                   @if (contactForm.get('email')?.touched && contactForm.get('email')?.hasError('email')) {
-                    <p class="text-xs text-red-500 mt-1">البريد الإلكتروني غير صالح</p>
+                    <p class="text-xs text-red-500 mt-1">{{ 'errors.email' | t }}</p>
                   }
                 </div>
               </div>
 
               <!-- Subject -->
               <div class="space-y-2">
-                <label class="block text-sm font-bold text-slate-700">الموضوع <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-bold text-slate-700">{{ 'contact.subject' | t }}<span class="text-red-500">*</span></label>
                 <select formControlName="subject"
                   class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all text-slate-800 appearance-none">
-                  <option value="" disabled selected>اختر الموضوع</option>
-                  <option value="general">استفسار عام</option>
-                  <option value="support">دعم فني</option>
-                  <option value="partnership">شراكة وتعاون</option>
-                  <option value="specialist">انضمام كمتخصص</option>
-                  <option value="complaint">شكوى أو اقتراح</option>
-                  <option value="other">أخرى</option>
+                  <option value="" disabled selected>{{ 'contact.form.subjectPlaceholder' | t }}</option>
+                  <option value="general">{{ 'contact.form.subjectGeneral' | t }}</option>
+                  <option value="support">{{ 'contact.form.subjectSupport' | t }}</option>
+                  <option value="partnership">{{ 'contact.form.subjectPartnership' | t }}</option>
+                  <option value="specialist">{{ 'contact.form.subjectSpecialist' | t }}</option>
+                  <option value="complaint">{{ 'contact.form.subjectComplaint' | t }}</option>
+                  <option value="other">{{ 'contact.form.subjectOther' | t }}</option>
                 </select>
                 @if (contactForm.get('subject')?.touched && contactForm.get('subject')?.hasError('required')) {
-                  <p class="text-xs text-red-500 mt-1">هذا الحقل مطلوب</p>
+                  <p class="text-xs text-red-500 mt-1">{{ 'errors.required' | t }}</p>
                 }
               </div>
 
               <!-- Message -->
               <div class="space-y-2">
-                <label class="block text-sm font-bold text-slate-700">الرسالة <span class="text-red-500">*</span></label>
-                <textarea formControlName="message" rows="5" placeholder="اكتب رسالتك هنا..."
+                <label class="block text-sm font-bold text-slate-700">{{ 'contact.message' | t }}<span class="text-red-500">*</span></label>
+                <textarea formControlName="message" rows="5" [placeholder]="'contact.form.messagePlaceholder' | t"
                   class="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-bosla-primary/20 focus:border-bosla-primary outline-none transition-all text-slate-800 placeholder:text-slate-400 resize-none"></textarea>
                 @if (contactForm.get('message')?.touched && contactForm.get('message')?.hasError('required')) {
-                  <p class="text-xs text-red-500 mt-1">هذا الحقل مطلوب</p>
+                  <p class="text-xs text-red-500 mt-1">{{ 'errors.required' | t }}</p>
                 }
                 @if (contactForm.get('message')?.touched && contactForm.get('message')?.hasError('minlength')) {
-                  <p class="text-xs text-red-500 mt-1">الرسالة يجب أن تحتوي على 10 أحرف على الأقل</p>
+                  <p class="text-xs text-red-500 mt-1">{{ 'contact.form.messageMinLength' | t }}</p>
                 }
               </div>
 
@@ -106,12 +116,12 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                     </svg>
-                    جاري الإرسال...
+                    {{ 'contact.form.sending' | t }}
                   } @else {
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    إرسال الرسالة
+                    {{ 'contact.form.submit' | t }}
                   }
                 </button>
               </div>
@@ -122,7 +132,7 @@
         <!-- Contact Info Sidebar -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Email -->
-          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+          <div class="card-fade-in bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow" style="animation-delay:0.2s">
             <div class="flex items-center gap-4 mb-4">
               <div class="w-12 h-12 rounded-xl bg-bosla-primary/10 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6 text-bosla-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -130,14 +140,14 @@
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold text-bosla-primary">البريد الإلكتروني</h3>
-                <p class="text-bosla-charcoal/60 text-sm mt-0.5" dir="ltr">support@bosla.com</p>
+                <h3 class="font-bold text-bosla-primary">{{ 'auth.login.email' | t }}</h3>
+                <p class="text-bosla-charcoal/60 text-sm mt-0.5" dir="ltr">{{ 'contact.info.email' | t }}</p>
               </div>
             </div>
           </div>
 
           <!-- Phone -->
-          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+          <div class="card-fade-in bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow" style="animation-delay:0.3s">
             <div class="flex items-center gap-4 mb-4">
               <div class="w-12 h-12 rounded-xl bg-bosla-orange/10 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6 text-bosla-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -145,15 +155,15 @@
                 </svg>
               </div>
               <div>
-                <h3 class="font-bold text-bosla-primary">رقم الهاتف</h3>
-                <p class="text-bosla-charcoal/60 text-sm mt-0.5" dir="ltr">+966 55 123 4567</p>
+                <h3 class="font-bold text-bosla-primary">{{ 'auth.register.phone' | t }}</h3>
+                <p class="text-bosla-charcoal/60 text-sm mt-0.5" dir="ltr">{{ 'contact.info.phone' | t }}</p>
               </div>
             </div>
           </div>
 
           <!-- Social -->
-          <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-            <h3 class="font-bold text-bosla-primary mb-4">تابعنا على</h3>
+          <div class="card-fade-in bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow" style="animation-delay:0.4s">
+            <h3 class="font-bold text-bosla-primary mb-4">{{ 'contact.info.followUs' | t }}</h3>
             <div class="flex gap-3">
               <a href="#" class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-bosla-primary hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
@@ -171,11 +181,11 @@
           </div>
 
           <!-- FAQ Link -->
-          <div class="bg-gradient-to-br from-bosla-primary to-bosla-blue rounded-2xl p-6 text-white shadow-sm">
-            <h3 class="font-bold text-lg mb-2">هل لديك استفسار سريع؟</h3>
-            <p class="text-white/70 text-sm mb-4">تفقد صفحة الأسئلة الشائعة — قد تجد إجابتك هناك.</p>
-            <a href="#" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-orange hover:text-orange-300 transition-colors">
-              زراعة الأسئلة الشائعة
+          <div class="card-fade-in bg-gradient-to-br from-bosla-primary to-bosla-blue rounded-2xl p-6 text-white shadow-sm" style="animation-delay:0.5s">
+            <h3 class="font-bold text-lg mb-2">{{ 'contact.faq.title' | t }}</h3>
+            <p class="text-white/70 text-sm mb-4">{{ 'contact.faq.desc' | t }}</p>
+            <a routerLink="/faq" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-orange hover:text-orange-300 transition-colors">
+              {{ 'contact.faq.link' | t }}
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
               </svg>

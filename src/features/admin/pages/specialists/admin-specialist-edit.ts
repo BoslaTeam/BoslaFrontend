@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-specialist-edit',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './admin-specialist-edit.html',
   styleUrl: './admin-specialist-create.css',
 })

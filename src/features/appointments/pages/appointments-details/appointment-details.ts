@@ -19,10 +19,12 @@ import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { VideoSessionService } from '@features/video/services/video-session.service';
 import { ToastService } from '@core/services/toast.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiButton, UiSpinner],
+  imports: [CommonModule, RouterLink, UiButton, UiSpinner, TranslatePipe],
   templateUrl: './appointment-details.html',
   styles: [`
     ui-button.w-full { display: flex; }
@@ -36,7 +38,9 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly authService = inject(AuthService);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly toast = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly Math = Math;
   readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 

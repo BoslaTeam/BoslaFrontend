@@ -1,16 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
+import { TranslationService } from '@core/services/translation.service';
 import { EmbeddingsStatusDto } from '../../contracts/admin.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-ai',
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   templateUrl: './admin-ai.html',
   styleUrl: './admin-ai.css',
 })
 export class AdminAi implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly status = signal<EmbeddingsStatusDto | null>(null);
   readonly isLoading = signal(true);
@@ -44,7 +47,10 @@ export class AdminAi implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = { up_to_date: 'محدث', outdated: 'بحاجة للتحديث' };
+    const labels: Record<string, string> = {
+      up_to_date: this.translationService.translate('admin.ai.status.up_to_date'),
+      outdated: this.translationService.translate('admin.ai.status.outdated'),
+    };
     return labels[status] ?? status;
   }
 

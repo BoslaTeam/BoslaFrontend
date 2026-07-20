@@ -23,6 +23,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "assets/i18n/**",
+                "input": "src"
               }
             ],
             "styles": [

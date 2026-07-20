@@ -1,6 +1,6 @@
 <aside
   class="flex flex-col h-full min-h-0 w-full overflow-hidden bg-transparent"
-  role="navigation" aria-label="المحادثات">
+  role="navigation" [attr.aria-label]="'messaging.conversations.qaemh_almhadthat' | t">
 
   <!-- Header -->
   <div class="p-5 pb-4 shrink-0 bg-transparent relative">
@@ -11,7 +11,7 @@
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       </div>
-      <span>الرسائل</span>
+      <span>{{ 'nav.messages' | t }}</span>
       @if (store.totalUnread() > 0) {
       <span class="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#F39C12] to-[#e67e22] text-white text-xs font-black shadow-[0_0_10px_rgba(243,156,18,0.4)] ml-auto animate-pulse">{{ store.totalUnread() >
         99 ? '99+' : store.totalUnread() }}</span>
@@ -48,17 +48,15 @@
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
       </div>
-      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">تعذر تحميل المحادثات</h4>
-      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">يرجى التحقق من اتصالك والمحاولة مرة أخرى.</p>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">{{ 'messaging.loadConversationsError' | t }}</h4>
+      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">{{ 'messaging.checkConnection' | t }}</p>
       <button
         class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-sans"
         (click)="store.loadConversations()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-        </svg>
-        إعادة المحاولة
-      </button>
+        </svg>{{ 'common.retry' | t }}</button>
     </div>
     }
 
@@ -72,8 +70,8 @@
           <path d="m21 21-4.35-4.35" />
         </svg>
       </div>
-      <h4 class="text-sm font-bold text-[#1B4F72] font-sans">لم يتم العثور على نتائج</h4>
-      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">لا توجد محادثات تطابق "{{ store.searchQuery() }}"
+      <h4 class="text-sm font-bold text-[#1B4F72] font-sans">{{ 'common.noResults' | t }}</h4>
+      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">{{ 'messaging.noResultsMatch' | t: { query: store.searchQuery() } }}
       </p>
       } @else {
       <div class="w-14 h-14 rounded-2xl bg-white/50 flex items-center justify-center text-[#2E86AB] shadow-sm">
@@ -81,15 +79,15 @@
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       </div>
-      <h4 class="text-sm font-bold text-[#1B4F72] font-sans">لا توجد محادثات حتى الآن</h4>
-      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">احجز جلسة مع متخصص لبدء المراسلة.</p>
+      <h4 class="text-sm font-bold text-[#1B4F72] font-sans">{{ 'messaging.empty.la_twjd_mhadthat' | t }}</h4>
+      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">{{ 'messaging.bookToStart' | t }}</p>
       <a routerLink="/specialists"
         class="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#F39C12] to-[#e67e22] text-white text-xs font-bold rounded-xl hover:shadow-[0_4px_15px_rgba(243,156,18,0.3)] hover:-translate-y-0.5 transition-all cursor-pointer font-sans">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
         </svg>
-        ابحث عن متخصص
+        {{ 'messaging.findSpecialist' | t }}
       </a>
       }
     </div>

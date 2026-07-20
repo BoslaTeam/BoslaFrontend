@@ -4,7 +4,7 @@
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
     </svg>
-    العودة للحجوزات
+    {{ 'admin.appointments.backToAppointments' | t }}
   </button>
 
   @if (isLoading()) {
@@ -23,9 +23,9 @@
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h3>خطأ في تحميل بيانات الحجز</h3>
-      <p>حدث خطأ أثناء محاولة جلب التفاصيل.</p>
-      <button class="retry-btn" (click)="loadAppointment()">إعادة المحاولة</button>
+      <h3>{{ 'common.errorLabel.khta' | t }} في تحميل بيانات الحجز</h3>
+      <p>{{ 'common.error.hdth_khta' | t }} أثناء محاولة جلب التفاصيل.</p>
+      <button class="retry-btn" (click)="loadAppointment()">{{ 'common.retry' | t }}</button>
     </div>
   } @else {
     @let a = appointment()!;
@@ -34,7 +34,7 @@
     <div class="detail-header">
       <div class="header-row">
         <div>
-          <h2 class="header-title">تفاصيل الحجز</h2>
+          <h2 class="header-title">{{ 'admin.appointments.appointmentDetails' | t }}</h2>
           <div class="header-meta">
             <span class="status-badge" [class]="getStatusClass(a.status)">{{ getStatusLabel(a.status) }}</span>
             <span class="header-id">#{{ a.id | slice:0:8 }}</span>
@@ -43,14 +43,12 @@
         <div class="header-actions">
           @if (a.status === 'Pending') {
             <button class="action-btn confirm" (click)="confirmAppointment()" [disabled]="isUpdating()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              تأكيد الحجز
-            </button>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>{{ 'appointments.book.confirm' | t }}</button>
           }
           @if (a.status === 'Confirmed' || a.status === 'Paid') {
             <button class="action-btn complete" (click)="completeAppointment()" [disabled]="isUpdating()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              إكمال الحجز
+              {{ 'admin.appointments.completeAppointment' | t }}
             </button>
           }
           @if (a.status !== 'Cancelled' && a.status !== 'Completed') {
@@ -58,7 +56,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
               </svg>
-              إلغاء الحجز
+              {{ 'admin.appointments.cancelBooking' | t }}
             </button>
           }
         </div>
@@ -68,19 +66,19 @@
     <div class="detail-grid">
       <!-- User Info -->
       <div class="detail-card">
-        <h3 class="card-title">المستخدم</h3>
+        <h3 class="card-title">{{ 'admin.audit.user' | t }}</h3>
         <div class="person-info">
           <div class="person-avatar">{{ a.userName.substring(0, 2) }}</div>
           <div>
             <div class="person-name">{{ a.userName }}</div>
-            <div class="person-email" [class.empty]="!a.userEmail">{{ a.userEmail || 'بريد غير متاح' }}</div>
+            <div class="person-email" [class.empty]="!a.userEmail">{{ a.userEmail || ('common.emailNotAvailable' | t) }}</div>
           </div>
         </div>
       </div>
 
       <!-- Specialist Info -->
       <div class="detail-card">
-        <h3 class="card-title">المتخصص</h3>
+        <h3 class="card-title">{{ 'admin.specialistLabel.almtkhss' | t }}</h3>
         <div class="person-info">
           <div class="person-avatar secondary">{{ a.specialistName.substring(0, 2) }}</div>
           <div>
@@ -91,35 +89,35 @@
 
       <!-- Appointment Details -->
       <div class="detail-card full">
-        <h3 class="card-title">معلومات الحجز</h3>
+        <h3 class="card-title">{{ 'admin.appointments.bookingInfo' | t }}</h3>
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-label">تاريخ البداية</span>
+            <span class="info-label">{{ 'admin.appointments.startDate' | t }}</span>
             <span class="info-value">{{ a.start | date:'yyyy/MM/dd hh:mm a' }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">تاريخ النهاية</span>
+            <span class="info-label">{{ 'admin.appointments.endDate' | t }}</span>
             <span class="info-value">{{ a.end | date:'yyyy/MM/dd hh:mm a' }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">المدة</span>
-            <span class="info-value">{{ a.durationMinutes }} دقيقة</span>
+            <span class="info-label">{{ 'appointments.minute' | t }}</span>
+            <span class="info-value">{{ 'admin.appointments.minutes' | t:a.durationMinutes }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">موضوع الجلسة</span>
-            <span class="info-value" [class.empty]="!a.sessionTopic">{{ a.sessionTopic || 'لم يحدد' }}</span>
+            <span class="info-label">{{ 'admin.appointments.sessionTopic' | t }}</span>
+            <span class="info-value" [class.empty]="!a.sessionTopic">{{ a.sessionTopic || ('common.notSpecified' | t) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">ملاحظات</span>
-            <span class="info-value" [class.empty]="!a.notes">{{ a.notes || 'لا توجد ملاحظات' }}</span>
+            <span class="info-label">{{ 'admin.appointments.notes' | t }}</span>
+            <span class="info-value" [class.empty]="!a.notes">{{ a.notes || ('admin.appointments.noNotes' | t) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">تاريخ الإنشاء</span>
+            <span class="info-label">{{ 'admin.appointments.createdDate' | t }}</span>
             <span class="info-value">{{ a.createdAt | date:'yyyy/MM/dd hh:mm a' }}</span>
           </div>
           @if (a.cancellationReason) {
             <div class="info-item full-width">
-              <span class="info-label">سبب الإلغاء</span>
+              <span class="info-label">{{ 'admin.appointments.cancelReason' | t }}</span>
               <span class="info-value cancel-reason">{{ a.cancellationReason }}</span>
             </div>
           }
@@ -129,23 +127,23 @@
       <!-- Session Summary -->
       @if (a.status === 'Completed' && (a.keyTakeaways || a.actionItemsForUser || a.actionItemsForSpec)) {
         <div class="detail-card full">
-          <h3 class="card-title">ملخص الجلسة</h3>
+          <h3 class="card-title">{{ 'admin.appointments.sessionSummary' | t }}</h3>
           <div class="summary-section">
             @if (a.keyTakeaways) {
               <div class="summary-block">
-                <h4>النقاط الرئيسية</h4>
+                <h4>{{ 'admin.appointments.keyTakeaways' | t }}</h4>
                 <p>{{ a.keyTakeaways }}</p>
               </div>
             }
             @if (a.actionItemsForUser) {
               <div class="summary-block">
-                <h4>الإجراءات المطلوبة من العميل</h4>
+                <h4>{{ 'admin.appointments.clientActions' | t }}</h4>
                 <p>{{ a.actionItemsForUser }}</p>
               </div>
             }
             @if (a.actionItemsForSpec) {
               <div class="summary-block">
-                <h4>متابعة من المتخصص</h4>
+                <h4>{{ 'admin.appointments.specialistFollowUp' | t }}</h4>
                 <p>{{ a.actionItemsForSpec }}</p>
               </div>
             }
@@ -155,14 +153,14 @@
 
       <!-- Payment Info -->
       <div class="detail-card">
-        <h3 class="card-title">الدفع</h3>
+        <h3 class="card-title">{{ 'payments.title' | t }}</h3>
         <div class="info-grid compact">
           <div class="info-item">
-            <span class="info-label">المبلغ</span>
-            <span class="info-value amount">ج.م {{ (a.totalAmount || 0).toFixed(2) }}</span>
+            <span class="info-label">{{ 'payments.amount' | t }}</span>
+            <span class="info-value amount">{{ 'home.specialists.currency' | t }} {{ (a.totalAmount || 0).toFixed(2) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">حالة الدفع</span>
+            <span class="info-label">{{ 'admin.paymentStatus.halh_aldfa' | t }}</span>
             <span class="info-value">{{ getPaymentStatusLabel(a.paymentStatus) }}</span>
           </div>
         </div>
@@ -170,7 +168,7 @@
 
       <!-- Status History -->
       <div class="detail-card full">
-        <h3 class="card-title">سجل الحالة</h3>
+        <h3 class="card-title">{{ 'admin.appointments.statusHistory' | t }}</h3>
         @if (a.statusHistory.length > 0) {
           <div class="status-timeline">
             @for (h of a.statusHistory; track h.createdAt) {
@@ -191,7 +189,7 @@
             }
           </div>
         } @else {
-          <p class="empty-msg">لا يوجد سجل حالة</p>
+          <p class="empty-msg">{{ 'admin.appointments.noStatusHistory' | t }}</p>
         }
       </div>
     </div>
@@ -201,27 +199,27 @@
       <div class="modal-overlay" (click)="showCancelModal.set(false)">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h3>إلغاء الحجز</h3>
+            <h3>{{ 'admin.appointments.cancelAppointment' | t }}</h3>
             <button class="modal-close" (click)="showCancelModal.set(false)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
           <div class="modal-body">
-            <p>هل أنت متأكد من إلغاء هذا الحجز؟</p>
+            <p>{{ 'admin.appointments.confirmMessage' | t }} {{ 'common.cancel' | t }} هذا الحجز؟</p>
             <textarea
               class="modal-textarea"
-              placeholder="الرجاء إدخال سبب الإلغاء..."
+              placeholder="{{ 'admin.appointments.cancelReasonPlaceholder' | t }}"
               [(ngModel)]="cancelReason"
               rows="3"
             ></textarea>
           </div>
           <div class="modal-footer">
-            <button class="modal-btn cancel" (click)="showCancelModal.set(false)">تراجع</button>
+            <button class="modal-btn cancel" (click)="showCancelModal.set(false)">{{ 'actions.undo.traja' | t }}</button>
             <button class="modal-btn confirm" [disabled]="!cancelReason.trim() || isCancelling()" (click)="confirmCancel()">
               @if (isCancelling()) {
-                جاري الإلغاء...
+                {{ 'admin.appointments.cancelling' | t }}
               } @else {
-                تأكيد الإلغاء
+                {{ 'admin.appointments.confirmCancel' | t }}
               }
             </button>
           </div>

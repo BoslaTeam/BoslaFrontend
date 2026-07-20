@@ -37,13 +37,9 @@
 
         @if (isMenuOpen()) {
           <div class="absolute left-0 mt-2 w-32 rounded-2xl bg-white/90 backdrop-blur-md text-[#1B4F72] border border-white shadow-[0_10px_30px_rgba(27,79,114,0.1)] overflow-hidden animate-fade-in z-20">
-            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer" (click)="startEdit()">
-              تعديل
-            </button>
+            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold hover:bg-slate-50 transition-colors cursor-pointer" (click)="startEdit()">{{ 'admin.users.edit' | t }}</button>
             <div class="h-px bg-slate-100 mx-2"></div>
-            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer" (click)="openDeleteConfirm()">
-              حذف
-            </button>
+            <button type="button" class="w-full px-4 py-3 text-left text-xs font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer" (click)="openDeleteConfirm()">{{ 'admin.users.delete' | t }}</button>
           </div>
         }
       </div>
@@ -60,7 +56,7 @@
         ></textarea>
 
         @if (!editText().trim()) {
-          <p class="text-[11px] font-bold text-red-200">الرسالة لا يمكن أن تكون فارغة.</p>
+          <p class="text-[11px] font-bold text-red-200">{{ 'messaging.messageCannotBeEmpty' | t }}</p>
         }
 
         <div class="flex items-center justify-end gap-3">
@@ -69,9 +65,7 @@
             class="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             [disabled]="isSaving()"
             (click)="cancelEdit()"
-          >
-            إلغاء
-          </button>
+          >{{ 'appointments.book.cancel' | t }}</button>
           <button
             type="button"
             class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-white text-[#1B4F72] text-xs font-black hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
@@ -81,7 +75,7 @@
             @if (isSaving()) {
               <span class="w-4 h-4 rounded-full border-2 border-[#1B4F72]/30 border-t-[#1B4F72] animate-spin" aria-hidden="true"></span>
             }
-            حفظ
+            {{ 'common.save' | t }}
           </button>
         </div>
       </div>
@@ -122,8 +116,8 @@
           <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
         </svg>
       </div>
-      <h3 id="delete-message-title" class="text-lg font-black text-[#1B4F72] text-center font-sans tracking-tight mb-2">حذف الرسالة؟</h3>
-      <p class="text-sm leading-relaxed text-slate-500 text-center font-sans">سيتم استبدال نص الرسالة بـ "تم حذف هذه الرسالة". هل أنت متأكد؟</p>
+      <h3 id="delete-message-title" class="text-lg font-black text-[#1B4F72] text-center font-sans tracking-tight mb-2">{{ 'messaging.deleteMessage' | t }}</h3>
+      <p class="text-sm leading-relaxed text-slate-500 text-center font-sans">{{ 'messaging.deleteMessageDesc' | t }}</p>
 
       <div class="mt-8 flex items-center justify-center gap-3">
         <button
@@ -131,9 +125,7 @@
           class="px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           [disabled]="isDeleting()"
           (click)="closeDeleteConfirm()"
-        >
-          إلغاء
-        </button>
+        >{{ 'appointments.book.cancel' | t }}</button>
         <button
           type="button"
           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-black hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
@@ -143,7 +135,7 @@
           @if (isDeleting()) {
             <span class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true"></span>
           }
-          حذف
+          {{ 'common.delete' | t }}
         </button>
       </div>
     </div>

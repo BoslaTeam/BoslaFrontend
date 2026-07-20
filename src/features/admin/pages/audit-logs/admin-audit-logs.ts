@@ -2,9 +2,11 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
+import { TranslationService } from '@core/services/translation.service';
 import { AuditLogDto } from '../../contracts/admin.contracts';
 import { PaginationMetadata } from '@core/models/paginated-response.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 interface ActionOption {
   value: string | null;
   label: string;
@@ -12,12 +14,13 @@ interface ActionOption {
 
 @Component({
   selector: 'app-admin-audit-logs',
-  imports: [DatePipe, SlicePipe, FormsModule],
+  imports: [DatePipe, SlicePipe, FormsModule, TranslatePipe],
   templateUrl: './admin-audit-logs.html',
   styleUrl: './admin-audit-logs.css',
 })
 export class AdminAuditLogs implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly logs = signal<AuditLogDto[]>([]);
   readonly isLoading = signal(true);
@@ -39,24 +42,28 @@ export class AdminAuditLogs implements OnInit {
     !!this.searchQuery || !!this.selectedAction || !!this.entityTypeFilter || !!this.dateFrom || !!this.dateTo
   );
 
-  readonly actionOptions: ActionOption[] = [
-    { value: null, label: 'كل الإجراءات' },
-    { value: 'Created', label: 'إنشاء' },
-    { value: 'Updated', label: 'تحديث' },
-    { value: 'Verified', label: 'تحقق' },
-    { value: 'Deleted', label: 'حذف' },
-  ];
+  get actionOptions(): ActionOption[] {
+    return [
+      { value: null, label: this.translationService.translate('admin.audit.action.all') },
+      { value: 'Created', label: this.translationService.translate('admin.audit.action.Created') },
+      { value: 'Updated', label: this.translationService.translate('admin.audit.action.Updated') },
+      { value: 'Verified', label: this.translationService.translate('admin.audit.action.Verified') },
+      { value: 'Deleted', label: this.translationService.translate('admin.audit.action.Deleted') },
+    ];
+  }
 
-  readonly entityTypeOptions: ActionOption[] = [
-    { value: null, label: 'كل الكيانات' },
-    { value: 'User', label: 'مستخدم' },
-    { value: 'Specialist', label: 'مختص' },
-    { value: 'Appointment', label: 'حجز' },
-    { value: 'Payment', label: 'دفع' },
-    { value: 'Expertise', label: 'مجال خبرة' },
-    { value: 'Skill', label: 'مهارة' },
-    { value: 'Tool', label: 'أداة' },
-  ];
+  get entityTypeOptions(): ActionOption[] {
+    return [
+      { value: null, label: this.translationService.translate('admin.audit.entity.all') },
+      { value: 'User', label: this.translationService.translate('admin.audit.entity.User') },
+      { value: 'Specialist', label: this.translationService.translate('admin.audit.entity.Specialist') },
+      { value: 'Appointment', label: this.translationService.translate('admin.audit.entity.Appointment') },
+      { value: 'Payment', label: this.translationService.translate('admin.audit.entity.Payment') },
+      { value: 'Expertise', label: this.translationService.translate('admin.audit.entity.Expertise') },
+      { value: 'Skill', label: this.translationService.translate('admin.audit.entity.Skill') },
+      { value: 'Tool', label: this.translationService.translate('admin.audit.entity.Tool') },
+    ];
+  }
 
   ngOnInit(): void {
     this.loadLogs();
@@ -140,13 +147,13 @@ export class AdminAuditLogs implements OnInit {
 
   getEntityLabel(type: string): string {
     const labels: Record<string, string> = {
-      User: 'مستخدم',
-      Specialist: 'مختص',
-      Appointment: 'حجز',
-      Payment: 'دفع',
-      Expertise: 'مجال خبرة',
-      Skill: 'مهارة',
-      Tool: 'أداة',
+      User: this.translationService.translate('admin.audit.entity.User'),
+      Specialist: this.translationService.translate('admin.audit.entity.Specialist'),
+      Appointment: this.translationService.translate('admin.audit.entity.Appointment'),
+      Payment: this.translationService.translate('admin.audit.entity.Payment'),
+      Expertise: this.translationService.translate('admin.audit.entity.Expertise'),
+      Skill: this.translationService.translate('admin.audit.entity.Skill'),
+      Tool: this.translationService.translate('admin.audit.entity.Tool'),
     };
     return labels[type] ?? type;
   }

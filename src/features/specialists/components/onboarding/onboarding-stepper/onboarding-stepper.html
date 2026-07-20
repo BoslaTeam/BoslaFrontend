@@ -1,4 +1,4 @@
-<div class="w-full" dir="rtl">
+<div class="w-full" [dir]="direction()">
   <div class="flex items-center justify-between mb-2">
     @for (step of steps(); track step.index; let last = $last) {
       <div class="flex items-center flex-1">

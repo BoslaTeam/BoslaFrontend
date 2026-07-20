@@ -1,18 +1,18 @@
-<div class="bosla-auth-page">
-  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;" class="bosla-auth-video">
+<div class="relative flex items-center justify-center min-h-screen pt-28 px-4 pb-12 overflow-hidden">
+  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;" class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none">
     <source src="assets/videos/login.mp4" type="video/mp4">
   </video>
-  <div class="bosla-auth-overlay"></div>
+  <div class="absolute inset-0 z-10 bg-[linear-gradient(135deg,rgba(27,79,114,0.85)_0%,rgba(46,134,171,0.6)_100%)]"></div>
   
-  <div class="bosla-auth-content w-full px-4">
-    <div class="bosla-auth-form-wrapper">
+  <div class="relative z-10 w-full flex justify-center px-4">
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-[16px] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] p-10 border border-white/30">
       <div class="text-center mb-8">
-        <div class="bosla-auth-icon-wrap">
+        <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-gradient-to-br from-bosla-primary to-bosla-blue shadow-[0_8px_25px_rgba(27,79,114,0.3)]">
           <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
           </svg>
         </div>
-        <h2 class="text-2xl font-black text-bosla-primary mt-4 mb-2">تأكيد البريد الإلكتروني</h2>
+        <h2 class="text-2xl font-black text-bosla-primary mt-4 mb-2">{{ 'auth.verifyEmail.title' | t }}</h2>
       </div>
 
       <div class="text-center mb-8">
@@ -21,16 +21,16 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-bosla-primary mb-2">تفقد صندوق الوارد</h3>
+        <h3 class="text-lg font-bold text-bosla-primary mb-2">{{ 'auth.checkEmail.checkInbox' | t }}</h3>
         <p class="text-sm text-bosla-charcoal/70 leading-relaxed">
-          لقد أرسلنا رابط تفعيل الحساب إلى:<br>
+          {{ 'auth.checkEmail.sentTo' | t }}<br>
           <span class="font-bold text-bosla-primary" dir="ltr">{{ email }}</span>
         </p>
       </div>
 
       @if (resendSuccess()) {
         <div class="mb-4 bg-green-50 border-r-4 border-green-500 p-3 rounded-l-lg text-sm text-green-700 font-medium text-center">
-          تم إعادة إرسال رابط التفعيل بنجاح. يرجى التحقق من بريدك الإلكتروني.
+          {{ 'auth.checkEmail.resendSuccess' | t }}
         </div>
       }
       @if (resendError()) {
@@ -40,16 +40,14 @@
       }
 
       <div class="space-y-4">
-        <button class="bosla-btn-primary" (click)="resendLink()" [disabled]="resending()">
+        <button class="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white border-none cursor-pointer transition-all bg-gradient-to-br from-bosla-primary to-bosla-blue shadow-[0_4px_15px_rgba(27,79,114,0.3)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(27,79,114,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" (click)="resendLink()" [disabled]="resending()">
           @if (resending()) {
-            جاري الإرسال...
+            {{ 'auth.checkEmail.resending' | t }}
           } @else {
-            إعادة إرسال الرابط
+            {{ 'auth.checkEmail.resendBtn' | t }}
           }
         </button>
-        <a routerLink="/auth/login" class="bosla-btn-secondary">
-          العودة لتسجيل الدخول
-        </a>
+        <a routerLink="/auth/login" class="w-full flex items-center justify-center gap-2 rounded-xl border border-bosla-primary/15 py-3.5 text-sm font-semibold text-bosla-charcoal bg-transparent cursor-pointer transition-all hover:bg-bosla-primary/5 hover:border-bosla-primary/30">{{ 'auth.forgotPassword.back' | t }}</a>
       </div>
     </div>
   </div>

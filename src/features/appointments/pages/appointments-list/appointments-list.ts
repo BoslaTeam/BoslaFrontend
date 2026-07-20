@@ -6,11 +6,13 @@ import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { UiButton } from '@shared/ui/button/button';
 import { AuthService } from '@core/services/auth.service';
+import { TranslationService } from '@core/services/translation.service';
 import { VideoSessionService } from '@features/video/services/video-session.service';
 import { ToastService } from '@core/services/toast.service';
 
 import { PaymentStatus, AppointmentDto } from '../../contracts/appointments.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 export type AppointmentTab = 'all' | 'pending' | 'awaiting_payment' | 'paid' | 'completed' | 'cancelled';
 export type SortOrder = 'asc' | 'desc';
 
@@ -22,7 +24,7 @@ interface TabDef {
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiButton],
+  imports: [CommonModule, RouterLink, UiButton, TranslatePipe],
   templateUrl: './appointments-list.html',
 })
 export class AppointmentList implements OnDestroy {
@@ -31,13 +33,14 @@ export class AppointmentList implements OnDestroy {
   private readonly router = inject(Router);
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly toast = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
   readonly now = signal(Date.now());
   private readonly timerHandle = setInterval(() => this.now.set(Date.now()), 1000);
 
   async joinSession(appointmentId: string): Promise<void> {
     const apt = this.store.items().find(a => a.id === appointmentId);
     if (!apt || !this.canJoinAppointmentNow(apt)) {
-      this.toast.warning('لا يمكن الانضمام الآن، الميعاد لم يحن بعد');
+      this.toast.warning(this.translationService.translate('appointments.list.cannotJoin'));
       return;
     }
     try {
@@ -83,12 +86,12 @@ export class AppointmentList implements OnDestroy {
   readonly sortOrder = signal<SortOrder>('asc');
 
   readonly tabs: TabDef[] = [
-    { key: 'all', label: 'الكل' },
-    { key: 'pending', label: 'قيد الانتظار' },
-    { key: 'awaiting_payment', label: 'بانتظار الدفع' },
-    { key: 'paid', label: 'مؤكد ومدفوع' },
-    { key: 'completed', label: 'مكتمل' },
-    { key: 'cancelled', label: 'ملغي' },
+    { key: 'all', label: 'appointments.tab.all' },
+    { key: 'pending', label: 'appointments.tab.pending' },
+    { key: 'awaiting_payment', label: 'appointments.tab.awaitingPayment' },
+    { key: 'paid', label: 'appointments.tab.paid' },
+    { key: 'completed', label: 'appointments.tab.completed' },
+    { key: 'cancelled', label: 'appointments.tab.cancelled' },
   ];
 
   readonly pendingPaymentCount = computed(() =>
@@ -130,7 +133,7 @@ export class AppointmentList implements OnDestroy {
 
     if (query) {
       filtered = filtered.filter(a => {
-        const topic = (a.sessionTopic || 'جلسة استشارية');
+        const topic = (a.sessionTopic || '');
         const name = (a.specialistName || '');
         return topic.includes(query) || name.includes(query) || a.id.toLowerCase().includes(query);
       });
@@ -175,45 +178,45 @@ export class AppointmentList implements OnDestroy {
     switch (status) {
       case AppointmentStatus.Pending:
         return {
-          text: 'قيد الانتظار',
+          text: 'appointments.status.pending',
           dot: 'bg-amber-400',
           bg: 'bg-amber-50 text-amber-700 border-amber-200',
-          label: 'قيد الانتظار',
+          label: 'appointments.status.pending',
         };
       case AppointmentStatus.Confirmed:
         return {
-          text: 'بانتظار الدفع',
+          text: 'appointments.status.awaitingPayment',
           dot: 'bg-emerald-400',
           bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-          label: 'بانتظار الدفع',
+          label: 'appointments.status.awaitingPayment',
         };
       case AppointmentStatus.Paid:
         return {
-          text: 'مؤكد ومدفوع',
+          text: 'appointments.status.paid',
           dot: 'bg-blue-500',
           bg: 'bg-blue-50 text-blue-700 border-blue-200',
-          label: 'مؤكد ومدفوع',
+          label: 'appointments.status.paid',
         };
       case AppointmentStatus.Completed:
         return {
-          text: 'مكتمل',
+          text: 'appointments.status.completed',
           dot: 'bg-indigo-400',
           bg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-          label: 'مكتمل',
+          label: 'appointments.status.completed',
         };
       case AppointmentStatus.Cancelled:
         return {
-          text: 'ملغي',
+          text: 'appointments.status.cancelled',
           dot: 'bg-rose-400',
           bg: 'bg-rose-50 text-rose-700 border-rose-200',
-          label: 'ملغي',
+          label: 'appointments.status.cancelled',
         };
       default:
         return {
-          text: 'غير معروف',
+          text: 'appointments.status.unknown',
           dot: 'bg-gray-400',
           bg: 'bg-gray-50 text-gray-700 border-gray-200',
-          label: 'غير معروف',
+          label: 'appointments.status.unknown',
         };
     }
   }

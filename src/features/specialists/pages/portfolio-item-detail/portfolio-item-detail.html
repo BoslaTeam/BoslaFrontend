@@ -1,4 +1,4 @@
-<div dir="rtl" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
   
   <!-- Global Background Decorations -->
   <div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-bosla-orange/5 blur-[100px] pointer-events-none z-0"></div>
@@ -15,7 +15,7 @@
           <i class="fa-solid fa-compass text-2xl text-bosla-primary animate-pulse"></i>
         </div>
       </div>
-      <p class="text-lg text-bosla-primary font-bold animate-pulse">جاري تحميل الإبداع...</p>
+      <p class="text-lg text-bosla-primary font-bold animate-pulse">{{ 'portfolio.detail.loading' | t }}</p>
     </div>
   }
 
@@ -28,10 +28,10 @@
           <i class="fa-solid fa-link-slash text-5xl text-red-500"></i>
         </div>
       </div>
-      <h2 class="text-3xl font-black text-slate-800 mb-4">العمل غير متاح حالياً</h2>
-      <p class="text-base text-slate-500 mb-10 leading-relaxed max-w-md mx-auto">يبدو أن هذا العمل قد تم إزالته أو لم يتم نشره بعد. يمكنك العودة واستكشاف المزيد من أعمال المتخصص.</p>
+      <h2 class="text-3xl font-black text-slate-800 mb-4">{{ 'portfolio.detail.notAvailable' | t }}</h2>
+      <p class="text-base text-slate-500 mb-10 leading-relaxed max-w-md mx-auto">{{ 'portfolio.detail.notAvailableDesc' | t }}</p>
       <button (click)="goBack()" class="px-10 py-4 bg-gradient-to-l from-bosla-primary to-bosla-blue hover:from-bosla-blue hover:to-bosla-primary text-white rounded-2xl font-bold text-lg transition-all duration-500 shadow-lg shadow-bosla-primary/30 hover:shadow-xl hover:-translate-y-1 active:scale-[0.97] flex items-center gap-3 mx-auto">
-        <i class="fa-solid fa-arrow-right"></i> العودة للمتخصص
+        <i class="fa-solid fa-arrow-right"></i> {{ 'portfolio.detail.backToSpecialist' | t }}
       </button>
     </div>
   }
@@ -50,10 +50,9 @@
           
           <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 min-w-0 overflow-hidden bg-white/50 backdrop-blur-sm px-5 py-3 rounded-2xl border border-white/60 shadow-sm">
             <a [routerLink]="['/specialists']" class="shrink-0 hover:text-bosla-primary transition-colors flex items-center gap-2">
-              <i class="fa-solid fa-users text-bosla-orange"></i> المتخصصون
-            </a>
+              <i class="fa-solid fa-users text-bosla-orange"></i>{{ 'specialists.title.almtkhsswn' | t }}</a>
             <i class="fa-solid fa-chevron-left text-[9px] shrink-0 text-slate-300 mx-1"></i>
-            <span class="truncate min-w-0 max-w-[120px] sm:max-w-[180px] hover:text-bosla-primary transition-colors cursor-pointer" (click)="goBack()">{{ specialistName() || 'المتخصص' }}</span>
+            <span class="truncate min-w-0 max-w-[120px] sm:max-w-[180px] hover:text-bosla-primary transition-colors cursor-pointer" (click)="goBack()">{{ specialistName() || ('portfolio.detail.specialist' | t) }}</span>
             <i class="fa-solid fa-chevron-left text-[9px] shrink-0 text-slate-300 mx-1"></i>
             <span class="text-bosla-primary font-black truncate min-w-0 max-w-[140px] sm:max-w-[250px]">{{ it.title }}</span>
           </div>
@@ -66,12 +65,12 @@
             <div class="flex flex-wrap items-center gap-3 mb-6">
               <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-700 text-xs font-black border border-green-500/20 shadow-sm">
                 <i class="fa-solid fa-shield-check text-green-500 text-sm"></i>
-                عمل معتمد
+                {{ 'portfolio.detail.approvedWork' | t }}
               </span>
               @if (it.images.length > 0) {
               <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-slate-600 text-xs font-black border border-slate-200 shadow-sm">
                 <i class="fa-solid fa-images text-bosla-blue text-sm"></i>
-                {{ allImages().length }} وسائط
+                {{ allImages().length }} {{ 'portfolio.detail.media' | t }}
               </span>
               }
             </div>
@@ -91,7 +90,7 @@
             <a [href]="it.workUrl" target="_blank" rel="noopener noreferrer"
               class="group relative inline-flex items-center justify-center gap-4 px-8 py-5 bg-bosla-primary text-white rounded-3xl font-black text-lg transition-all duration-500 hover:shadow-[0_10px_40px_rgba(27,79,114,0.3)] hover:-translate-y-1 overflow-hidden">
               <div class="absolute inset-0 bg-gradient-to-r from-bosla-orange to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <span class="relative z-10">استعراض العمل المباشر</span>
+              <span class="relative z-10">{{ 'portfolio.detail.viewLive' | t }}</span>
               <i class="fa-solid fa-arrow-up-right-from-square relative z-10 group-hover:rotate-12 group-hover:scale-110 transition-transform"></i>
             </a>
             }
@@ -108,7 +107,7 @@
                   <img [src]="it.coverImageUrl" [alt]="it.title" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="eager" />
                   <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
                     <span class="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-bold text-sm border border-white/30 flex items-center gap-2">
-                      <i class="fa-solid fa-magnifying-glass-plus"></i> تكبير الصورة
+                      <i class="fa-solid fa-magnifying-glass-plus"></i> {{ 'portfolio.detail.zoomImage' | t }}
                     </span>
                   </div>
                 </div>

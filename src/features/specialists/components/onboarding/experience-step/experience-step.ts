@@ -6,15 +6,18 @@ import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
 import { UiTextarea } from '@shared/ui/textarea/textarea';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'experience-step',
   standalone: true,
-  imports: [ReactiveFormsModule, UiButton, UiInput, UiTextarea],
+  imports: [ReactiveFormsModule, UiButton, UiInput, UiTextarea, TranslatePipe],
   templateUrl: './experience-step.html',
 })
 export class ExperienceStep {
   private readonly fb = inject(FormBuilder);
   private readonly onboardingStore = inject(SpecialistOnboardingStore);
+  private readonly translationService = inject(TranslationService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
@@ -113,7 +116,7 @@ export class ExperienceStep {
         this.isSaving.set(false);
         const apiError = err.error ?? err;
         this.errorMessage.set(
-          apiError?.title ?? 'فشل في حفظ الخبرات. يرجى المحاولة مرة أخرى.'
+          apiError?.title ?? this.translationService.translate('onboarding.experience.errorSave')
         );
       },
     });

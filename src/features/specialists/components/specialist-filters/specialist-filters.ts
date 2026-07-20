@@ -13,9 +13,10 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { SpecialistsFilters } from '@features/specialists/contracts/specialist-filters.contract';
 import { LookupItem } from '@features/specialists/models/lookup.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'specialist-filters',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, TranslatePipe],
   templateUrl: './specialist-filters.html',
 })
 export class SpecialistsFiltersComponent implements OnChanges {

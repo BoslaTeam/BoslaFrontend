@@ -6,10 +6,11 @@ import { SpecialistOnboardingRepository } from '../../data-access/specialist-onb
 import { LookupItem } from '../../models/lookup.model';
 import { Experience } from '../../models/experience.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-specialist-professional',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './specialist-professional.html',
 })
 export class SpecialistProfessional implements OnInit {

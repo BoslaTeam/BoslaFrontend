@@ -3,8 +3,8 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-header-info">
-      <h1>إدارة الحجوزات</h1>
-      <p>عرض وإدارة جميع حجوزات المنصة</p>
+      <h1>{{ 'admin.appointments.managementTitle' | t }}</h1>
+      <p>{{ 'admin.appointments.managementSubtitle' | t }}</p>
     </div>
     <div class="count-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -12,7 +12,7 @@
         <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
         <line x1="3" y1="10" x2="21" y2="10"/>
       </svg>
-      {{ totalAppointments() }} حجز
+      {{ totalAppointments() }} {{ 'admin.appointments.booking' | t }}
     </div>
   </div>
 
@@ -24,7 +24,7 @@
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
       </div>
-      <input type="text" class="toolbar-search-input" placeholder="بحث باسم المستخدم أو المتخصص..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+      <input type="text" class="toolbar-search-input" [placeholder]="'admin.appointments.searchPlaceholder' | t" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
     </div>
 
     <select class="toolbar-select" (change)="onStatusFilter($any($event.target).value === '' ? null : +$any($event.target).value)">
@@ -57,20 +57,20 @@
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         </div>
-        <h3>لا يوجد حجوزات</h3>
-        <p>لم يتم العثور على حجوزات مطابقة لمعايير البحث</p>
+        <h3>{{ 'admin.appointments.noAppointments' | t }}</h3>
+        <p>{{ 'admin.appointments.noResults' | t }}</p>
       </div>
     } @else {
       <table class="appointments-table">
         <thead>
           <tr>
-            <th>المستخدم</th>
-            <th>المتخصص</th>
-            <th>التاريخ</th>
-            <th>المدة</th>
-            <th>الحالة</th>
-            <th>المبلغ</th>
-            <th>الإجراءات</th>
+            <th>{{ 'admin.audit.user' | t }}</th>
+            <th>{{ 'admin.specialistLabel.almtkhss' | t }}</th>
+            <th>{{ 'payments.date' | t }}</th>
+            <th>{{ 'admin.appointments.duration' | t }}</th>
+            <th>{{ 'payments.status' | t }}</th>
+            <th>{{ 'payments.amount' | t }}</th>
+            <th>{{ 'admin.appointments.actions' | t }}</th>
           </tr>
         </thead>
         <tbody>
@@ -92,14 +92,14 @@
                 <span class="date-text">{{ apt.scheduledAt | date:'yyyy/MM/dd' }}</span>
                 <span class="time-text">{{ apt.scheduledAt | date:'hh:mm a' }}</span>
               </td>
-              <td><span class="duration-text">{{ apt.durationMinutes }} د</span></td>
+              <td><span class="duration-text">{{ apt.durationMinutes }} {{ 'appointments.minute' | t }}</span></td>
               <td>
                 <span class="status-badge" [class]="getStatusClass(apt.status)">{{ getStatusLabel(apt.status) }}</span>
               </td>
-              <td><span class="amount-text">ج.م {{ apt.totalAmount.toFixed(2) }}</span></td>
+              <td><span class="amount-text">{{ 'home.specialists.currency' | t }} {{ apt.totalAmount.toFixed(2) }}</span></td>
               <td>
                 <div class="action-btns">
-                  <a class="action-btn" [routerLink]="['/admin/appointments', apt.id]" title="عرض التفاصيل">
+                  <a class="action-btn" [routerLink]="['/admin/appointments', apt.id]" [title]="'admin.appointments.viewDetails' | t">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                     </svg>

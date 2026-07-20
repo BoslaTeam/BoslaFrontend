@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { ComplaintListItemDto } from '@features/payments/contracts/payment.contracts';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-disputes-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './admin-disputes-list.html',
 })
 export class AdminDisputesList implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly disputes = signal<ComplaintListItemDto[]>([]);
   readonly isLoading = signal(true);
@@ -40,10 +43,10 @@ export class AdminDisputesList implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Reviewed: 'تمت المراجعة',
-      ResolvedRefunded: 'تم الرد (استرجاع)',
-      ResolvedRejected: 'تم الرد (رفض)',
+      Pending: this.translationService.translate('dispute.status.Pending'),
+      Reviewed: this.translationService.translate('dispute.status.Reviewed'),
+      ResolvedRefunded: this.translationService.translate('dispute.status.ResolvedRefunded'),
+      ResolvedRejected: this.translationService.translate('dispute.status.ResolvedRejected'),
     };
     return labels[status] ?? status;
   }

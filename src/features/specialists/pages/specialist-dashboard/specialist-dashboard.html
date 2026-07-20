@@ -1,15 +1,13 @@
-<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+<div class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
     
     <!-- Top Header Navigation -->
     <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <!-- Breadcrumb -->
         <div class="text-sm font-medium text-slate-500 flex items-center gap-2">
-            <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">
-                الرئيسية
-            </a>
+            <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">{{ 'nav.home' | t }}</a>
             <i class="fa-solid fa-chevron-left text-[10px]"></i>
             <span class="text-bosla-primary font-bold">
-                لوحة تحكم الاختصاصي
+                {{ 'specialist.dashboard.breadcrumb' | t }}
             </span>
         </div>
         
@@ -19,7 +17,7 @@
             <div class="flex h-12 w-full md:w-[320px] items-center rounded-2xl border border-slate-200 bg-white px-4 shadow-sm focus-within:border-bosla-compass focus-within:ring-2 focus-within:ring-bosla-compass/20 transition-all">
                 <i class="fa-solid fa-magnifying-glass text-slate-400 ml-2"></i>
                 <input #search type="text" (input)="searchTerm.set(search.value)"
-                    placeholder="البحث عن مواعيد أو عملاء..." class="w-full border-none bg-transparent outline-none text-slate-700" />
+                    [placeholder]="'specialist.dashboard.searchPlaceholder' | t" class="w-full border-none bg-transparent outline-none text-slate-700" />
             </div>
 
             <!-- Notifications -->
@@ -37,7 +35,7 @@
 
     @if (searchTerm()) {
     <p class="mb-6 text-sm font-bold text-bosla-compass">
-        تم العثور على {{ filteredAppointments().length }} نتيجة لـ "{{ searchTerm() }}"
+        {{ 'specialist.dashboard.searchResults' | t }} {{ filteredAppointments().length }} {{ 'specialist.dashboard.searchResultUnit' | t }} "{{ searchTerm() }}"
     </p>
     }
 
@@ -45,17 +43,17 @@
     <div class="mb-10 flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
         <div class="text-right">
             <h1 class="text-3xl font-black text-bosla-primary mb-2">
-                👋 مرحباً بك مجدداً، {{ profile()?.name || '' }}
+                {{ 'specialist.dashboard.welcomeBack' | t }}، {{ profile()?.name || '' }} 👋
             </h1>
             <p class="text-slate-500 text-lg">
-                إليك نظرة سريعة على أدائك وجلساتك اليوم. لديك <span class="font-bold text-bosla-orange">{{ dashboard()?.upcomingAppointments ?? 0 }}</span> جلسات قادمة.
+                {{ 'specialist.dashboard.welcomeDesc1' | t }} <span class="font-bold text-bosla-orange">{{ dashboard()?.upcomingAppointments ?? 0 }}</span> {{ 'specialist.dashboard.welcomeDesc2' | t }}.
             </p>
         </div>
     </div>
 
     <!-- ✨ AI Insights Card -->
     @if (aiInsights()) {
-    <div id="ai-insights-card" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm" dir="rtl">
+    <div id="ai-insights-card" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm">
         <!-- Header gradient -->
         <div class="bg-gradient-to-l from-indigo-600 to-violet-700 px-8 py-5 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -65,16 +63,16 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-white font-bold text-base leading-tight">تحليلات AI</h2>
-                    <p class="text-white/65 text-xs">مُحدَّثة تلقائياً</p>
+                    <h2 class="text-white font-bold text-base leading-tight">{{ 'specialist.dashboard.aiTitle' | t }}</h2>
+                    <p class="text-white/65 text-xs">{{ 'specialist.dashboard.aiAutoUpdated' | t }}</p>
                 </div>
             </div>
             <button
                 class="text-white/60 hover:text-white transition-colors"
                 (click)="loadAiInsights()"
-                title="تحديث"
+                [title]="'specialist.dashboard.aiRefreshTitle' | t"
                 type="button"
-                aria-label="تحديث تحليلات AI"
+                [attr.aria-label]="'specialist.dashboard.aiRefreshAria' | t"
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
@@ -94,7 +92,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">اليوم</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ 'home.cta.headline2' | t }}</p>
                         <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.todaySummary }}</p>
                     </div>
                 </div>
@@ -107,7 +105,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">الأسبوع القادم</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ 'specialist.dashboard.aiNextWeek' | t }}</p>
                         <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.upcomingSummary }}</p>
                     </div>
                 </div>
@@ -120,7 +118,7 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">نصيحة AI</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{{ 'specialist.dashboard.aiTip' | t }}</p>
                         <p class="text-sm text-slate-700 leading-relaxed">{{ aiInsights()?.aiTip || aiInsights()?.statsBrief || '—' }}</p>
                     </div>
                 </div>
@@ -129,7 +127,7 @@
             <!-- Pending Actions -->
             @if (aiInsights()?.pendingActions && aiInsights()!.pendingActions.length > 0) {
             <div class="mt-5 pt-5 border-t border-slate-100">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">مواعيد تنتظر الموافقة</p>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">{{ 'specialist.dashboard.aiPendingTitle' | t }}</p>
                 <div class="flex flex-wrap gap-2">
                     @for (pending of aiInsights()!.pendingActions; track pending.appointmentId) {
                     <div class="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
@@ -138,7 +136,7 @@
                         <a
                           [routerLink]="['/specialist/appointments']"
                           class="text-xs font-bold text-bosla-primary hover:underline ml-1 cursor-pointer"
-                        >عرض</a>
+                        >{{ 'pagination.showing' | t }}</a>
                     </div>
                     }
                 </div>
@@ -159,7 +157,7 @@
     }
 
     @if (aiInsightsLoading()) {
-    <div id="ai-insights-skeleton" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm animate-pulse" aria-label="جاري تحميل تحليلات AI...">
+    <div id="ai-insights-skeleton" class="mb-8 rounded-3xl overflow-hidden border border-indigo-100 shadow-sm animate-pulse" [attr.aria-label]="'specialist.dashboard.aiLoadingAria' | t">
         <div class="h-16 bg-gradient-to-l from-indigo-200 to-violet-200"></div>
         <div class="bg-white px-8 py-6 flex gap-6">
             <div class="flex-1 h-12 bg-slate-100 rounded-xl"></div>
@@ -180,10 +178,10 @@
                         <i class="fa-solid fa-star text-2xl"></i>
                     </div>
                 </div>
-                <h3 class="text-slate-500 font-medium">التقييم العام</h3>
+                <h3 class="text-slate-500 font-medium">{{ 'specialist.dashboard.overallRating' | t }}</h3>
                 <div class="flex items-end gap-2 mt-2">
                     <p class="text-4xl font-black text-bosla-primary">{{ dashboard()?.averageRating ?? '0.0' }}</p>
-                    <p class="text-sm font-bold text-slate-400 mb-1">/ 5 ({{ dashboard()?.totalReviews ?? 0 }} تقييم)</p>
+                    <p class="text-sm font-bold text-slate-400 mb-1">/ 5 ({{ dashboard()?.totalReviews ?? 0 }} {{ 'specialist.dashboard.ratingCount' | t }})</p>
                 </div>
             </div>
         </div>
@@ -197,8 +195,8 @@
                     <i class="fa-solid fa-wallet text-2xl"></i>
                 </div>
             </div>
-                <h3 class="text-slate-500 font-medium">إجمالي الأرباح</h3>
-                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ totalEarnings().toFixed(2) }} <span class="text-lg font-bold text-slate-400">جنيه</span></p>
+                <h3 class="text-slate-500 font-medium">{{ 'specialist.dashboard.totalEarnings' | t }}</h3>
+                <p class="mt-2 text-4xl font-black text-bosla-primary">{{ totalEarnings().toFixed(2) }} <span class="text-lg font-bold text-slate-400">{{ 'specialist.dashboard.currency' | t }}</span></p>
             </div>
         </div>
 
@@ -215,7 +213,7 @@
                         {{ dashboard()?.completedAppointmentsGrowthPercentage ?? 0 }}%
                     </span>
                 </div>
-                <h3 class="text-slate-500 font-medium">جلسات مكتملة</h3>
+                <h3 class="text-slate-500 font-medium">{{ 'specialist.dashboard.completedLabel' | t }}</h3>
                 <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.completedAppointments ?? 0 }}</p>
             </div>
         </div>
@@ -233,7 +231,7 @@
                         {{ dashboard()?.upcomingAppointmentsGrowthPercentage ?? 0 }}%
                     </span>
                 </div>
-                <h3 class="text-slate-500 font-medium">مواعيد قادمة</h3>
+                <h3 class="text-slate-500 font-medium">{{ 'specialist.dashboard.upcomingLabel' | t }}</h3>
                 <p class="mt-2 text-4xl font-black text-bosla-primary">{{ dashboard()?.upcomingAppointments ?? 0 }}</p>
             </div>
         </div>
@@ -246,14 +244,14 @@
                 <div>
                     <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
                         <i class="fa-solid fa-chart-line text-bosla-orange text-xl"></i>
-                        تحليلات الإيرادات
+                        {{ 'specialist.dashboard.revenueTitle' | t }}
                     </h2>
                     <p class="mt-1 text-sm font-medium text-slate-500">
-                        الإيرادات الشهرية خلال السنة الحالية
+                        {{ 'specialist.dashboard.revenueDesc' | t }}
                     </p>
                 </div>
                 <div class="rounded-xl bg-slate-50 border border-slate-200 px-5 py-2 text-bosla-primary font-bold text-sm">
-                    العام {{ currentYear() }}
+                    {{ 'specialist.dashboard.revenueYear' | t }} {{ currentYear() }}
                 </div>
             </div>
 
@@ -288,13 +286,13 @@
                         <!-- Data point labels -->
                         @for (pt of revenuePoints(); track $index) {
                             <text [attr.x]="pt.x" [attr.y]="pt.y - 12" text-anchor="middle" class="text-xs font-bold fill-bosla-primary">
-                                {{ pt.amount }} ج.م
+                                {{ pt.amount }} {{ 'specialist.dashboard.chartCurrency' | t }}
                             </text>
                         }
                     </svg>
                 } @else {
                     <div class="w-full h-full flex items-center justify-center text-slate-400 font-medium">
-                        لا توجد بيانات كافية لعرض الرسم البياني
+                        {{ 'specialist.dashboard.revenueNoData' | t }}
                     </div>
                 }
 
@@ -303,7 +301,7 @@
                     @for (item of dashboard()?.monthlyRevenue; track item.month) {
                         <div class="flex flex-col items-center">
                             <span class="text-xs font-bold text-slate-500">{{ item.month }}</span>
-                            <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} ج.م</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">{{ item.amount }} {{ 'specialist.dashboard.chartCurrency' | t }}</span>
                         </div>
                     }
                 </div>
@@ -319,11 +317,9 @@
         <div class="lg:col-span-8 rounded-3xl bg-white p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
                 <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
-                    <i class="fa-regular fa-calendar-check text-bosla-compass text-xl"></i>
-                    المواعيد القادمة
-                </h2>
+                    <i class="fa-regular fa-calendar-check text-bosla-compass text-xl"></i>{{ 'appointments.upcoming' | t }}</h2>
                 <span class="px-3 py-1 bg-bosla-primary/5 text-bosla-primary font-bold rounded-lg text-sm border border-bosla-primary/10">
-                    {{ dashboard()?.upcomingAppointments ?? 0 }} موعد
+                    {{ dashboard()?.upcomingAppointments ?? 0 }} {{ 'specialist.dashboard.appointmentCount' | t }}
                 </span>
             </div>
 
@@ -331,17 +327,17 @@
                 <table class="w-full text-right">
                     <thead class="bg-slate-50 text-slate-600 font-bold text-sm border-b border-slate-100">
                         <tr>
-                            <th class="px-6 py-4">العميل</th>
-                            <th class="px-6 py-4">الخدمة</th>
-                            <th class="px-6 py-4">التاريخ والوقت</th>
-                            <th class="px-6 py-4">الحالة</th>
+                            <th class="px-6 py-4">{{ 'admin.client.alamyl' | t }}</th>
+                            <th class="px-6 py-4">{{ 'specialist.dashboard.serviceCol' | t }}</th>
+                            <th class="px-6 py-4">{{ 'admin.dateTime.altarykh_walwqt' | t }}</th>
+                            <th class="px-6 py-4">{{ 'payments.status' | t }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @if (filteredAppointments().length === 0) {
                             <tr>
                                 <td colspan="4" class="px-6 py-8 text-center text-slate-500 font-medium">
-                                    لا توجد مواعيد قادمة مطابقة.
+                                    {{ 'specialist.dashboard.noUpcoming' | t }}.
                                 </td>
                             </tr>
                         }
@@ -370,12 +366,7 @@
                                     [class.bg-red-50]="appointment.status === 'Cancelled'"
                                     [class.text-red-600]="appointment.status === 'Cancelled'"
                                     [class.border-red-200]="appointment.status === 'Cancelled'">
-                                    {{
-                                    appointment.status === 'Pending' ? 'قيد الانتظار'
-                                    : appointment.status === 'Completed' ? 'مكتمل'
-                                    : appointment.status === 'Cancelled' ? 'ملغي'
-                                    : appointment.status
-                                    }}
+                                    {{ appointment.status === 'Pending' ? ('specialist.dashboard.statusPending' | t) : appointment.status === 'Completed' ? ('specialist.dashboard.statusCompleted' | t) : appointment.status === 'Cancelled' ? ('specialist.dashboard.statusCancelled' | t) : appointment.status }}
                                 </span>
                             </td>
                         </tr>
@@ -385,9 +376,7 @@
             </div>
             @if ((dashboard()?.upcomingAppointmentsList?.length ?? 0) > 0) {
                 <div class="mt-4 text-center">
-                    <a routerLink="/specialist/appointments" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors">
-                        عرض الكل
-                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <a routerLink="/specialist/appointments" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors">{{ 'home.specialists.viewAll' | t }}<i class="fa-solid fa-arrow-left text-xs"></i>
                     </a>
                 </div>
             }
@@ -398,10 +387,10 @@
             <div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
                 <h2 class="text-2xl font-black text-bosla-primary flex items-center gap-2">
                     <i class="fa-regular fa-star-half-stroke text-bosla-orange text-xl"></i>
-                    أحدث التقييمات
+                    {{ 'specialist.dashboard.reviewsTitle' | t }}
                 </h2>
                 <button (click)="showAllReviews.set(!showAllReviews())" class="text-sm font-bold text-bosla-compass hover:text-bosla-primary transition-colors bg-transparent border-none cursor-pointer">
-                    {{ showAllReviews() ? 'عرض أقل' : 'عرض الكل' }}
+                    {{ showAllReviews() ? ('specialist.dashboard.showLess' | t) : ('specialist.dashboard.showAll' | t) }}
                 </button>
             </div>
 
@@ -409,7 +398,7 @@
                 @if ((reviews()?.reviews?.items?.length ?? 0) === 0) {
                 <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
                     <i class="fa-regular fa-comments text-4xl text-slate-300 mb-3 block"></i>
-                    <span class="text-slate-500 font-medium">لا توجد تقييمات حتى الآن</span>
+                    <span class="text-slate-500 font-medium">{{ 'specialist.dashboard.noReviews' | t }}</span>
                 </div>
                 }
 

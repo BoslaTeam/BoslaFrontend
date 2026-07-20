@@ -3,9 +3,11 @@ import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { NotificationDropdown } from '@layouts/shared/notification-dropdown/notification-dropdown';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageToggle } from '@shared/ui/language-toggle/language-toggle';
 @Component({
   selector: 'app-admin-header',
-  imports: [NotificationDropdown],
+  imports: [NotificationDropdown, LanguageToggle, TranslatePipe],
   templateUrl: './admin-header.html',
   styleUrl: './admin-header.css',
 })

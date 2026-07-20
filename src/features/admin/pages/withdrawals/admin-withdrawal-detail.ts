@@ -1,13 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { TranslationService } from '@core/services/translation.service';
 import { WithdrawalService } from '@features/withdrawals/services/withdrawal.service';
 import { AdminWithdrawalDetailDto } from '@features/withdrawals/contracts/withdrawal.contracts';
 import { FormsModule } from '@angular/forms';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-withdrawal-detail',
-  imports: [DatePipe, DecimalPipe, FormsModule, RouterLink],
+  imports: [DatePipe, DecimalPipe, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './admin-withdrawal-detail.html',
   styleUrl: './admin-withdrawal-detail.css',
 })
@@ -15,6 +17,7 @@ export class AdminWithdrawalDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly withdrawalService = inject(WithdrawalService);
+  private readonly translationService = inject(TranslationService);
 
   readonly withdrawal = signal<AdminWithdrawalDetailDto | null>(null);
   readonly isLoading = signal(true);
@@ -80,10 +83,10 @@ export class AdminWithdrawalDetail implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Processing: 'قيد المعالجة',
-      Completed: 'مكتمل',
-      Rejected: 'مرفوض',
+      Pending: this.translationService.translate('admin.status.pending'),
+      Processing: this.translationService.translate('admin.status.processing'),
+      Completed: this.translationService.translate('admin.status.completed'),
+      Rejected: this.translationService.translate('admin.status.rejected'),
     };
     return labels[status] ?? status;
   }
@@ -100,10 +103,10 @@ export class AdminWithdrawalDetail implements OnInit {
 
   getMethodLabel(method: string): string {
     const labels: Record<string, string> = {
-      bank: 'تحويل بنكي',
-      wallet: 'محفظة إلكترونية',
-      paypal: 'PayPal',
-      stripe: 'Stripe',
+      bank: this.translationService.translate('admin.method.bank'),
+      wallet: this.translationService.translate('admin.method.eWallet'),
+      paypal: this.translationService.translate('admin.method.paypal'),
+      stripe: this.translationService.translate('admin.method.stripe'),
     };
     return labels[method.toLowerCase()] ?? method;
   }

@@ -1,4 +1,4 @@
-<div dir="rtl">
+<div [dir]="direction()">
 
   <!-- ===== Header ===== -->
   <div class="mb-6">
@@ -7,8 +7,8 @@
         <i class="fa-regular fa-clock"></i>
       </div>
       <div>
-        <h2 class="text-xl font-black text-bosla-primary">المواعيد المتاحة</h2>
-        <p class="text-sm text-slate-500">حدد أوقات العمل المتكررة ليتمكن العملاء من حجز جلسات</p>
+        <h2 class="text-xl font-black text-bosla-primary">{{ 'onboarding.availability.title' | t }}</h2>
+        <p class="text-sm text-slate-500">{{ 'onboarding.availability.subtitle' | t }}</p>
       </div>
     </div>
   </div>
@@ -31,7 +31,7 @@
           </div>
           <div>
             <p class="text-xl md:text-2xl font-black text-slate-800">{{ stats().totalSchedules }}</p>
-            <p class="text-xs text-slate-500 font-medium">الجداول</p>
+            <p class="text-xs text-slate-500 font-medium">{{ 'onboarding.availability.schedules' | t }}</p>
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@
           </div>
           <div>
             <p class="text-xl md:text-2xl font-black text-emerald-600">{{ stats().activeSchedules }}</p>
-            <p class="text-xs text-slate-500 font-medium">نشط</p>
+            <p class="text-xs text-slate-500 font-medium">{{ 'admin.users.active' | t }}</p>
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@
           </div>
           <div>
             <p class="text-xl md:text-2xl font-black text-blue-600">{{ stats().total }}</p>
-            <p class="text-xs text-slate-500 font-medium">موعد متوقع</p>
+            <p class="text-xs text-slate-500 font-medium">{{ 'onboarding.availability.expectedSlots' | t }}</p>
           </div>
         </div>
       </div>
@@ -69,7 +69,7 @@
             <i class="fa-solid fa-clock"></i>
           </div>
           <h3 class="text-base font-black text-bosla-primary">
-            {{ editingScheduleId() ? 'تعديل الجدول' : 'جدول عمل جديد' }}
+            {{ editingScheduleId() ? ('onboarding.availability.editSchedule' | t) : ('onboarding.availability.newSchedule' | t) }}
           </h3>
         </div>
         <button (click)="closeForm()"
@@ -90,7 +90,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 mb-3">أيام الأسبوع</label>
           <div class="flex flex-wrap gap-2">
-            @for (name of weekdayNames; track $index) {
+            @for (name of weekdayNames(); track $index) {
               <button type="button" (click)="toggleDay($index)"
                 [disabled]="!availableWeekdays()[$index]"
                 class="px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all"
@@ -114,7 +114,7 @@
         <!-- Time range -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1.5">
-            <label class="block text-sm font-bold text-slate-700">وقت البداية</label>
+            <label class="block text-sm font-bold text-slate-700">{{ 'onboarding.availability.from' | t }}</label>
             <select [ngModel]="formStartTime()" (ngModelChange)="formStartTime.set($event); formError.set('')"
               class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer">
               @for (opt of allTimeOptions; track opt.value) {
@@ -123,7 +123,7 @@
             </select>
           </div>
           <div class="space-y-1.5">
-            <label class="block text-sm font-bold text-slate-700">وقت النهاية</label>
+            <label class="block text-sm font-bold text-slate-700">{{ 'onboarding.availability.to' | t }}</label>
             <select [ngModel]="formEndTime()" (ngModelChange)="formEndTime.set($event); formError.set('')"
               class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer">
               @for (opt of allTimeOptions; track opt.value) {
@@ -135,7 +135,7 @@
 
         <!-- Duration -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-bold text-slate-700">مدة الجلسة</label>
+          <label class="block text-sm font-bold text-slate-700">{{ 'video.duration.mdh_aljlsh' | t }}</label>
           <div class="flex flex-wrap gap-2">
             @for (d of durationOptions; track d) {
               <button type="button" (click)="formDuration.set(d)"
@@ -180,11 +180,11 @@
             <div class="flex items-start gap-3">
               <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 shrink-0"></i>
               <div>
-                <p class="text-sm font-bold text-amber-800">تعارض مع جداول موجودة</p>
+                <p class="text-sm font-bold text-amber-800">{{ 'onboarding.availability.conflictTitle' | t }}</p>
                 <ul class="text-xs text-amber-700 mt-1 list-disc list-inside space-y-0.5">
                   @for (c of formConflicts(); track c.id) {
                     <li>
-                      {{ c.days.map(d => weekdayNames[d]).join('، ') }} |
+                      {{ c.days.map(d => weekdayNames()[d]).join(', ') }} |
                       {{ formatTimeShort(c.startTime) }} - {{ formatTimeShort(c.endTime) }} |
                       {{ formatSessionDuration(c.sessionDuration) }}
                     </li>
@@ -199,9 +199,9 @@
         @if (formPreview()) {
           <div class="bg-bosla-primary/5 rounded-xl px-4 py-3 border border-bosla-primary/10">
             <p class="text-xs text-slate-600">
-              <span class="font-bold text-bosla-primary">تقديري:</span>
-              ~{{ formPreview()!.weeklySlots }} موعد / أسبوع |
-              ~{{ formPreview()!.slotsPerDay }} موعد / يوم
+              <span class="font-bold text-bosla-primary">{{ 'onboarding.availability.estimated' | t }}:</span>
+              ~{{ formPreview()!.weeklySlots }} {{ 'onboarding.availability.perWeek' | t }} |
+              ~{{ formPreview()!.slotsPerDay }} {{ 'onboarding.availability.perDay' | t }}
             </p>
           </div>
         }
@@ -211,12 +211,10 @@
           <button (click)="saveSchedule()"
             class="px-6 py-2.5 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-colors cursor-pointer flex items-center gap-2">
             <i class="fa-solid fa-check"></i>
-            <span>{{ editingScheduleId() ? 'حفظ التعديلات' : 'إضافة الجدول' }}</span>
+            <span>{{ editingScheduleId() ? ('onboarding.availability.saveEdit' | t) : ('onboarding.availability.addTable' | t) }}</span>
           </button>
           <button (click)="closeForm()" type="button"
-            class="px-4 py-2.5 text-sm text-slate-600 font-medium hover:text-slate-800 transition-colors cursor-pointer">
-            إلغاء
-          </button>
+            class="px-4 py-2.5 text-sm text-slate-600 font-medium hover:text-slate-800 transition-colors cursor-pointer">{{ 'appointments.book.cancel' | t }}</button>
         </div>
       </div>
     </div>
@@ -228,12 +226,12 @@
       <div class="h-24 w-24 mx-auto bg-bosla-primary/5 rounded-full flex items-center justify-center mb-6 border border-bosla-primary/10">
         <i class="fa-regular fa-clock text-4xl text-bosla-primary/40"></i>
       </div>
-      <h3 class="text-xl font-black text-slate-800 mb-2">لا توجد جداول عمل بعد</h3>
-      <p class="text-slate-500 mb-6 max-w-md mx-auto">أنشئ جدول عمل لتحديد أوقاتك المتاحة للحجز. سيتم إنشاء المواعيد تلقائياً بناءً على الجدول.</p>
+      <h3 class="text-xl font-black text-slate-800 mb-2">{{ 'onboarding.availability.noSchedules' | t }}</h3>
+      <p class="text-slate-500 mb-6 max-w-md mx-auto">{{ 'onboarding.availability.noSchedulesDesc' | t }}</p>
       <button (click)="openAddForm()"
         class="px-6 py-3 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-all cursor-pointer inline-flex items-center gap-2">
         <i class="fa-solid fa-plus"></i>
-        <span>إنشاء جدول عمل</span>
+        <span>{{ 'onboarding.availability.createBtn' | t }}</span>
       </button>
     </div>
   }
@@ -246,13 +244,13 @@
           <div class="w-9 h-9 rounded-lg bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
             <i class="fa-solid fa-list"></i>
           </div>
-          <h3 class="text-base font-black text-bosla-primary">جداول العمل</h3>
+          <h3 class="text-base font-black text-bosla-primary">{{ 'onboarding.availability.scheduleList' | t }}</h3>
           <span class="text-xs text-slate-400 font-medium">({{ schedules().length }})</span>
         </div>
         <button (click)="openAddForm()"
           class="flex items-center gap-2 px-4 py-2 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-all cursor-pointer text-sm shadow-sm">
           <i class="fa-solid fa-plus"></i>
-          <span>إضافة</span>
+          <span>{{ 'admin.lookups.add' | t }}</span>
         </button>
       </div>
 
@@ -266,8 +264,8 @@
               <th class="text-right px-6 py-3">المدة</th>
               <th class="text-right px-6 py-3">تاريخ البداية</th>
               <th class="text-right px-6 py-3">تاريخ النهاية</th>
-              <th class="text-right px-6 py-3">الحالة</th>
-              <th class="text-left px-6 py-3">الإجراءات</th>
+              <th class="text-right px-6 py-3">{{ 'payments.status' | t }}</th>
+              <th class="text-left px-6 py-3">{{ 'admin.audit.action' | t }}ات</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
@@ -276,7 +274,7 @@
                 <td class="px-6 py-4">
                   <div class="flex gap-1 flex-wrap">
                     @for (d of sch.days; track d) {
-                      <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames[d] }}</span>
+                      <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames()[d] }}</span>
                     }
                   </div>
                 </td>
@@ -289,13 +287,11 @@
                 <td class="px-6 py-4">
                   @if (sch.enabled) {
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-                      <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>
-                      نشط
-                    </span>
+                      <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>{{ 'admin.users.active' | t }}</span>
                   } @else {
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200">
                       <i class="fa-solid fa-circle text-[6px] text-slate-300"></i>
-                      معطل
+                      {{ 'onboarding.availability.disabled' | t }}
                     </span>
                   }
                 </td>
@@ -311,7 +307,7 @@
                       [class.text-slate-400]="!sch.enabled"
                       [class.border-slate-100]="!sch.enabled"
                       [class.hover:bg-slate-100]="!sch.enabled"
-                      [title]="sch.enabled ? 'تعطيل' : 'تفعيل'">
+                      [title]="sch.enabled ? ('onboarding.availability.disable' | t) : ('onboarding.availability.enable' | t)">
                       @if (sch.enabled) {
                         <i class="fa-solid fa-pause text-xs"></i>
                       } @else {
@@ -320,12 +316,12 @@
                     </button>
                     <button (click)="openEditForm(sch)"
                       class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors flex items-center justify-center cursor-pointer border border-blue-100"
-                      title="تعديل">
+                      [title]="'admin.users.edit' | t">
                       <i class="fa-solid fa-pen text-xs"></i>
                     </button>
                     <button (click)="requestDeleteSchedule(sch)"
                       class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors flex items-center justify-center cursor-pointer border border-red-100"
-                      title="حذف">
+                      [title]="'admin.users.delete' | t">
                       <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
                   </div>
@@ -343,18 +339,16 @@
             <div class="flex items-start justify-between">
               <div class="flex gap-1 flex-wrap">
                 @for (d of sch.days; track d) {
-                  <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames[d] }}</span>
+                  <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames()[d] }}</span>
                 }
               </div>
               @if (sch.enabled) {
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-                  <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>
-                  نشط
-                </span>
+                  <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>{{ 'admin.users.active' | t }}</span>
               } @else {
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200">
                   <i class="fa-solid fa-circle text-[6px] text-slate-300"></i>
-                  معطل
+                  {{ 'onboarding.availability.disabled' | t }}
                 </span>
               }
             </div>
@@ -364,7 +358,7 @@
               <span class="text-slate-500">{{ formatSessionDuration(sch.sessionDuration) }}</span>
             </div>
             <div class="text-xs text-slate-400">
-              من {{ sch.startDate }} @if (sch.endDate) { إلى {{ sch.endDate }} }
+              {{ 'onboarding.availability.from' | t }} {{ sch.startDate }} @if (sch.endDate) { {{ 'onboarding.availability.to' | t }} {{ sch.endDate }} }
             </div>
             <div class="flex gap-2">
               <button (click)="toggleSchedule(sch)"
@@ -375,16 +369,12 @@
                 [class.bg-slate-50]="!sch.enabled"
                 [class.text-slate-500]="!sch.enabled"
                 [class.border-slate-100]="!sch.enabled">
-                {{ sch.enabled ? 'تعطيل' : 'تفعيل' }}
+                {{ sch.enabled ? ('onboarding.availability.disable' | t) : ('onboarding.availability.enable' | t) }}
               </button>
               <button (click)="openEditForm(sch)"
-                class="flex-1 py-2 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer">
-                تعديل
-              </button>
+                class="flex-1 py-2 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer">{{ 'admin.users.edit' | t }}</button>
               <button (click)="requestDeleteSchedule(sch)"
-                class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-xs font-bold border border-red-100 hover:bg-red-100 transition-colors cursor-pointer">
-                حذف
-              </button>
+                class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-xs font-bold border border-red-100 hover:bg-red-100 transition-colors cursor-pointer">{{ 'admin.users.delete' | t }}</button>
             </div>
           </div>
         }
@@ -400,8 +390,8 @@
           <div class="w-9 h-9 rounded-lg bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
             <i class="fa-regular fa-calendar"></i>
           </div>
-          <h3 class="text-base font-black text-bosla-primary">المواعيد المتوقعة</h3>
-          <span class="text-xs text-slate-400 font-medium mr-auto">{{ generatedSlots().length }} موعد</span>
+          <h3 class="text-base font-black text-bosla-primary">{{ 'onboarding.availability.expectedSlots' | t }}</h3>
+          <span class="text-xs text-slate-400 font-medium mr-auto">{{ generatedSlots().length }} {{ 'onboarding.availability.emptySlots' | t }}</span>
         </div>
       </div>
       <div class="divide-y divide-slate-50">
@@ -430,16 +420,16 @@
     <button (click)="back.emit()" type="button"
       class="px-6 py-2.5 text-sm text-slate-600 font-medium hover:text-slate-800 transition-colors cursor-pointer flex items-center gap-2">
       <i class="fa-solid fa-arrow-right"></i>
-      <span>السابق</span>
+      <span>{{ 'pagination.prev' | t }}</span>
     </button>
     <button (click)="onSubmit()" [disabled]="isSaving() || schedules().length === 0"
       class="px-6 py-2.5 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
       @if (isSaving()) {
         <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        <span>جاري الحفظ...</span>
+        <span>{{ 'onboarding.availability.saving' | t }}</span>
       } @else {
         <i class="fa-solid fa-check"></i>
-        <span>حفظ ومتابعة</span>
+        <span>{{ 'onboarding.availability.saveNext' | t }}</span>
       }
     </button>
   </div>
@@ -452,12 +442,12 @@
           <div class="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-4 border border-red-100">
             <i class="fa-solid fa-trash-can text-2xl text-red-400"></i>
           </div>
-          <h3 class="text-lg font-black text-slate-800 mb-1">تأكيد حذف الجدول</h3>
-          <p class="text-sm text-slate-500">هل أنت متأكد من حذف هذا الجدول؟</p>
+          <h3 class="text-lg font-black text-slate-800 mb-1">{{ 'onboarding.availability.confirmDelete' | t }}</h3>
+          <p class="text-sm text-slate-500">{{ 'onboarding.availability.confirmDeleteDesc' | t }}</p>
           <div class="bg-bosla-offwhite rounded-2xl p-4 my-5 border border-slate-100 text-right">
             <div class="flex gap-1 flex-wrap mb-2">
               @for (d of scheduleToDelete()!.days; track d) {
-                <span class="text-xs font-bold text-slate-700 bg-white px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames[d] }}</span>
+                <span class="text-xs font-bold text-slate-700 bg-white px-2 py-1 rounded-lg border border-slate-100">{{ weekdayNames()[d] }}</span>
               }
             </div>
             <p class="text-sm font-bold text-slate-700" dir="ltr">{{ formatTimeShort(scheduleToDelete()!.startTime) }} - {{ formatTimeShort(scheduleToDelete()!.endTime) }}</p>
@@ -465,13 +455,11 @@
           </div>
           <div class="flex gap-3">
             <button (click)="cancelDeleteSchedule()"
-              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors cursor-pointer">
-              إلغاء
-            </button>
+              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors cursor-pointer">{{ 'appointments.book.cancel' | t }}</button>
             <button (click)="confirmDeleteSchedule()"
               class="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
               <i class="fa-solid fa-trash-can"></i>
-              <span>حذف</span>
+              <span>{{ 'admin.users.delete' | t }}</span>
             </button>
           </div>
         </div>

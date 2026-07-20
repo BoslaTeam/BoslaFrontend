@@ -4,7 +4,7 @@
     <button
       class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-bosla-primary/[0.04] transition-all duration-200 text-left cursor-pointer group"
       (click)="openProfile()"
-      aria-label="عرض الملف الشخصي"
+      [attr.aria-label]="'specialist.viewProfile' | t"
     >
       <!-- Avatar -->
       <div class="relative shrink-0">
@@ -35,7 +35,7 @@
         <div class="flex items-center gap-1 mt-0.5">
           <span class="w-1.5 h-1.5 rounded-full" [class]="isOnline() ? 'bg-bosla-success' : 'bg-bosla-grey'"></span>
           <span class="text-[10px] font-medium" [class]="isOnline() ? 'text-bosla-success' : 'text-bosla-grey'">
-            {{ isOnline() ? 'متصل' : 'غير متصل' }}
+            {{ isOnline() ? ('status.online' | t) : ('status.offline' | t) }}
           </span>
         </div>
       </div>
@@ -54,20 +54,20 @@
 
   <!-- Shared Resources -->
   <div class="p-4">
-    <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest mb-2.5">الموارد المشتركة</h4>
+    <h4 class="text-[10px] font-bold text-bosla-grey uppercase tracking-widest mb-2.5">{{ 'messaging.sharedResources' | t }}</h4>
     <div class="flex flex-col gap-0.5">
       <button class="flex items-center gap-2.5 w-full p-2 rounded-lg hover:bg-bosla-primary/[0.04] transition-all duration-200 text-left cursor-pointer group">
         <span class="w-7 h-7 rounded-lg bg-bosla-primary/5 flex items-center justify-center text-sm shrink-0 group-hover:bg-bosla-primary/10 transition-colors">📄</span>
-        <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">الملفات المشتركة</span>
+        <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">{{ 'messaging.sharedFiles' | t }}</span>
       </button>
       <button class="flex items-center gap-2.5 w-full p-2 rounded-lg hover:bg-bosla-primary/[0.04] transition-all duration-200 text-left cursor-pointer group">
         <span class="w-7 h-7 rounded-lg bg-bosla-primary/5 flex items-center justify-center text-sm shrink-0 group-hover:bg-bosla-primary/10 transition-colors">📝</span>
-        <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">الملاحظات</span>
+        <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">{{ 'specialist.appointments.notes' | t }}</span>
       </button>
       @if (appointmentId()) {
         <button class="flex items-center gap-2.5 w-full p-2 rounded-lg hover:bg-bosla-primary/[0.04] transition-all duration-200 text-left cursor-pointer group">
           <span class="w-7 h-7 rounded-lg bg-bosla-primary/5 flex items-center justify-center text-sm shrink-0 group-hover:bg-bosla-primary/10 transition-colors">🎥</span>
-          <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">جلسة فيديو</span>
+          <span class="text-xs font-medium text-bosla-charcoal group-hover:text-bosla-primary transition-colors">{{ 'video.title.jlsat_alfydyw' | t }}</span>
         </button>
       }
     </div>
@@ -81,8 +81,8 @@
       </svg>
     </div>
     <div class="flex flex-col gap-1">
-      <h4 class="text-xs font-bold text-bosla-charcoal">لم يتم اختيار محادثة</h4>
-      <p class="text-[11px] text-bosla-grey leading-relaxed max-w-[180px]">اختر محادثة من القائمة لعرض تفاصيلها.</p>
+      <h4 class="text-xs font-bold text-bosla-charcoal">{{ 'messaging.noConversationSelected' | t }}</h4>
+      <p class="text-[11px] text-bosla-grey leading-relaxed max-w-[180px]">{{ 'messaging.selectConversationToView' | t }}</p>
     </div>
   </div>
 }

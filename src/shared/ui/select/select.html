@@ -1,9 +1,9 @@
-<div class="w-full flex flex-col space-y-1.5 text-right" dir="rtl">
+<div class="w-full flex flex-col space-y-1.5" [dir]="direction()" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
   @if (label()) {
     <label [for]="inputId()" class="text-[13px] font-medium text-bosla-charcoal/80 block">
       {{ label() }}
       @if (required()) {
-        <span class="text-bosla-error mr-0.5" aria-hidden="true">*</span>
+        <span class="text-bosla-error me-0.5" aria-hidden="true">*</span>
       }
     </label>
   }
@@ -30,7 +30,7 @@
       }
     </select>
 
-    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-bosla-charcoal/30">
+    <div class="pointer-events-none absolute inset-y-0 end-0 flex items-center px-3 text-bosla-charcoal/30">
       <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>

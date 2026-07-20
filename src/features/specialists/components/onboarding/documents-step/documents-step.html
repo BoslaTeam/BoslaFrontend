@@ -3,8 +3,8 @@
     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-primary/10 text-bosla-primary mb-4">
       <i class="fa-solid fa-id-card text-lg"></i>
     </div>
-    <h3 class="text-2xl font-bold text-bosla-primary mb-2">المستندات</h3>
-    <p class="text-bosla-grey">خطوتك الأولى نحو الانضمام لبوصلة — حمّل مستنداتك للتحقق من هويتك</p>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">{{ 'admin.documents.almstndat' | t }}</h3>
+    <p class="text-bosla-grey">{{ 'onboarding.documents.subtitle' | t }}</p>
   </div>
 
   @if (errorMessage()) {
@@ -21,7 +21,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-id-card text-bosla-blue"></i>
-          <h4 class="text-sm font-bold text-bosla-charcoal">الهوية الشخصية</h4>
+          <h4 class="text-sm font-bold text-bosla-charcoal">{{ 'onboarding.id.alhwyh_alshkhsyh' | t }}</h4>
         </div>
       </div>
 
@@ -45,15 +45,15 @@
           }
         </div>
       } @else {
-        <p class="text-sm text-bosla-grey text-center py-4">لم يتم رفع أي مستند هوية بعد</p>
+        <p class="text-sm text-bosla-grey text-center py-4">{{ 'onboarding.documents.noIdentity' | t }}</p>
       }
 
       <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
         <i class="fa-solid fa-upload"></i>
         @if (isUploading()) {
-          جاري الرفع...
+          {{ 'onboarding.documents.uploading' | t }}
         } @else {
-          رفع مستند هوية
+          {{ 'onboarding.documents.uploadIdentity' | t }}
         }
         <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 1)" [disabled]="isUploading()" />
       </label>
@@ -64,7 +64,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-certificate text-bosla-blue"></i>
-          <h4 class="text-sm font-bold text-bosla-charcoal">الشهادات</h4>
+          <h4 class="text-sm font-bold text-bosla-charcoal">{{ 'specialist.profile.certificates' | t }}</h4>
         </div>
       </div>
 
@@ -88,15 +88,15 @@
           }
         </div>
       } @else {
-        <p class="text-sm text-bosla-grey text-center py-4">لم يتم رفع أي شهادة بعد</p>
+        <p class="text-sm text-bosla-grey text-center py-4">{{ 'onboarding.documents.noCertificate' | t }}</p>
       }
 
       <label class="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-bosla-blue/30 rounded-xl text-bosla-blue hover:bg-bosla-blue/5 transition-colors cursor-pointer font-sans font-medium text-sm">
         <i class="fa-solid fa-upload"></i>
         @if (isUploading()) {
-          جاري الرفع...
+          {{ 'onboarding.documents.uploading' | t }}
         } @else {
-          رفع شهادة
+          {{ 'onboarding.documents.uploadCertificate' | t }}
         }
         <input type="file" [accept]="acceptedFileTypes" class="hidden" (change)="onFileSelected($event, 2)" [disabled]="isUploading()" />
       </label>
@@ -105,11 +105,9 @@
     <!-- Navigation -->
     <div class="flex justify-between pt-4">
       <ui-button variant="ghost" (btnClick)="back.emit()">
-        <i class="fa-solid fa-chevron-right"></i>
-        السابق
-      </ui-button>
+        <i class="fa-solid fa-chevron-right"></i>{{ 'pagination.prev' | t }}</ui-button>
       <ui-button (btnClick)="onNext()">
-        حفظ ومتابعة
+        {{ 'onboarding.documents.saveNext' | t }}
         <i class="fa-solid fa-arrow-left"></i>
       </ui-button>
     </div>

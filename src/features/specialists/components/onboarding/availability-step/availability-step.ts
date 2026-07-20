@@ -4,6 +4,8 @@ import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.
 import { AvailabilityRequest } from '../../../contracts/specialist-availability.contract';
 import { ScheduleDraft } from '../../../models/specialist-onboarding-draft.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 interface ScheduleDefinition {
   id: string;
   days: number[];
@@ -16,8 +18,7 @@ interface ScheduleDefinition {
   createdAt: string;
 }
 
-const WEEKDAY_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const MONTH_NAMES = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+const WEEKDAY_KEYS = ['day.sunday.alahd', 'day.monday.alathnyn', 'day.tuesday.althlatha', 'day.wednesday.alarbaa', 'day.thursday.alkhmys', 'day.friday.aljmah', 'day.saturday.alsbt'];
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 const MAX_GENERATION_DAYS = 15;
 
@@ -30,7 +31,7 @@ function timeOptions(): { value: string; label: string }[] {
   for (let h = 0; h < 24; h++) {
     for (const m of [0, 30]) {
       const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      const period = h >= 12 ? 'م' : 'ص';
+      const period = h >= 12 ? 'PM' : 'AM';
       const hour12 = h % 12 || 12;
       opts.push({ value: v, label: `${hour12}:${String(m).padStart(2, '0')} ${period}` });
     }
@@ -40,7 +41,7 @@ function timeOptions(): { value: string; label: string }[] {
 
 function formatTimeShort(hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
-  const period = h >= 12 ? 'م' : 'ص';
+  const period = h >= 12 ? 'PM' : 'AM';
   const hour12 = h % 12 || 12;
   return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
 }
@@ -49,17 +50,20 @@ function formatTime(d: Date): string {
   return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-function formatDateLong(d: Date): string {
-  return `${WEEKDAY_NAMES[d.getDay()]}، ${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+function formatDateLong(d: Date, weekdayKeys: string[], translationService: TranslationService): string {
+  const wd = translationService.translate(weekdayKeys[d.getDay()]);
+  const lang = translationService.currentLang();
+  const dateStr = d.toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  return `${wd}، ${dateStr}`;
 }
 
 function formatSessionDuration(minutes: number): string {
   if (minutes >= 60) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
-    return m > 0 ? `${h}س ${m}د` : `${h} ساعات`;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
   }
-  return `${minutes} دقيقة`;
+  return `${minutes}min`;
 }
 
 function formatDuration(ms: number): string {
@@ -67,9 +71,9 @@ function formatDuration(ms: number): string {
   if (totalMin >= 60) {
     const h = Math.floor(totalMin / 60);
     const m = totalMin % 60;
-    return m > 0 ? `${h}s ${m}d` : `${h}s`;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
   }
-  return `${totalMin}d`;
+  return `${totalMin}min`;
 }
 
 function slotsOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {
@@ -129,11 +133,12 @@ function generateSlotsFromSchedule(schedule: ScheduleDefinition): { start: Date;
 @Component({
   selector: 'availability-step',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './availability-step.html',
 })
 export class AvailabilityStep {
   readonly onboardingStore = inject(SpecialistOnboardingStore);
+  readonly translationService = inject(TranslationService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
@@ -142,14 +147,14 @@ export class AvailabilityStep {
   readonly errorMessage = signal('');
 
   readonly allTimeOptions = timeOptions();
-  readonly weekdayNames = WEEKDAY_NAMES;
+  readonly weekdayNames = computed(() => WEEKDAY_KEYS.map(k => this.translationService.translate(k)));
   readonly durationOptions = DURATION_OPTIONS;
   readonly formatTimeShort = formatTimeShort;
   readonly formatTime = formatTime;
   readonly formatSessionDuration = formatSessionDuration;
-  readonly formatDateLong = formatDateLong;
   readonly formatDuration = formatDuration;
   readonly todayStr = new Date().toISOString().slice(0, 10);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly editingScheduleId = signal<string | null>(null);
   readonly formDays = signal<boolean[]>(Array(7).fill(false));
@@ -284,7 +289,7 @@ export class AvailabilityStep {
       .map(([key, slots]) => {
         const [y, m, d] = key.split('-').map(Number);
         return {
-          dateLabel: formatDateLong(new Date(y, m, d)),
+          dateLabel: formatDateLong(new Date(y, m, d), WEEKDAY_KEYS, this.translationService),
           date: new Date(y, m, d),
           slots: slots.sort((a, b) => a.start.getTime() - b.start.getTime()),
         };
@@ -338,22 +343,22 @@ export class AvailabilityStep {
 
     const selectedDays = this.formDays().map((sel, i) => (sel ? i : -1)).filter(i => i >= 0);
     if (selectedDays.length === 0) {
-      this.formError.set('يرجى اختيار يوم واحد على الأقل.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectDay'));
       return;
     }
 
     if (!this.formStartTime() || !this.formEndTime()) {
-      this.formError.set('يرجى تحديد وقت البداية والنهاية.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectTime'));
       return;
     }
 
     if (this.formStartTime() >= this.formEndTime()) {
-      this.formError.set('وقت النهاية يجب أن يكون بعد وقت البداية.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorEndAfterStart'));
       return;
     }
 
     if (!this.formStartDate()) {
-      this.formError.set('يرجى تحديد تاريخ البداية.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectStartDate'));
       return;
     }
 
@@ -361,13 +366,13 @@ export class AvailabilityStep {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (new Date(startDate + 'T00:00:00') < today) {
-      this.formError.set('تاريخ البداية يجب أن يكون اليوم أو بعده.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorStartToday'));
       return;
     }
 
     const endDate = this.formEndDate();
     if (endDate && endDate < startDate) {
-      this.formError.set('تاريخ النهاية يجب أن يكون بعد تاريخ البداية أو يساويه.');
+      this.formError.set(this.translationService.translate('onboarding.availability.errorEndAfterStartDate'));
       return;
     }
 
@@ -388,7 +393,7 @@ export class AvailabilityStep {
     for (const s of this.schedules()) {
       if (s.id === editId) continue;
       if (schedulesConflict(draft, s)) {
-        this.formError.set('هذا الجدول يتعارض مع جدول موجود مسبقاً.');
+        this.formError.set(this.translationService.translate('onboarding.availability.errorConflict'));
         return;
       }
     }
@@ -441,7 +446,7 @@ export class AvailabilityStep {
 
     const allSlots = this.generatedSlots();
     if (allSlots.length === 0) {
-      this.errorMessage.set('يرجى إنشاء جدول عمل واحد على الأقل.');
+      this.errorMessage.set(this.translationService.translate('onboarding.availability.errorCreate'));
       return;
     }
 
@@ -471,7 +476,7 @@ export class AvailabilityStep {
         this.errorMessage.set(
           details.length > 0
             ? details.join(' | ')
-            : (apiError?.title ?? 'فشل في حفظ المواعيد. يرجى المحاولة مرة أخرى.')
+            : (apiError?.title ?? this.translationService.translate('onboarding.availability.errorSave'))
         );
       },
     });

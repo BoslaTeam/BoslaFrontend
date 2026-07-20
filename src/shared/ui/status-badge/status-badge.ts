@@ -1,4 +1,5 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 // تعريف الأنواع المدعومة بدقة بناءً على وثيقة التصميم
 export type ConsultationType = 'scheduled' | 'confirmed' | 'live' | 'completed' | 'cancelled';
@@ -14,6 +15,9 @@ export class UiStatusBadge {
   // المدخلات الأساسية للتحكم بالنوع والمظهر
   readonly type = input<ConsultationType | AvailabilityType>('scheduled');
   readonly isMuted = input<boolean>(false); // خاصة بمجموعة Availability المطفأة
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   // تحديد ما إذا كان العنصر ينتمي لمجموعة التوفر (Availability)
   readonly isAvailabilityGroup = computed(() => {

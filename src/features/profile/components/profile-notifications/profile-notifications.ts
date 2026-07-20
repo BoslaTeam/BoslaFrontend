@@ -4,6 +4,9 @@ import { AuthService } from '@core/services/auth.service';
 import { UserRole } from '@core/enums/user-role.enum';
 import { NotificationsService } from '@features/notifications/services/notifications.service';
 import { NotificationPreferenceDto } from '@features/notifications/contracts/notification-preferences.contracts';
+import { TranslationService } from '@core/services/translation.service';
+
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 type NotificationScope = 'everyone' | 'specialist' | 'admin';
 
@@ -18,15 +21,15 @@ const SCOPE: Record<string, NotificationScope> = {
   PortfolioPendingReview: 'admin',
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  Message: 'الرسائل',
-  Booking: 'الحجوزات',
-  Reminder: 'التذكيرات',
-  SpecialistVerification: 'توثيق الحساب',
-  Withdrawal: 'السحوبات',
-  PortfolioApproved: 'الموافقة على أعمالي',
-  PortfolioRejected: 'رفض أعمالي',
-  PortfolioPendingReview: 'طلبات مراجعة الأعمال',
+const TYPE_LABEL_KEYS: Record<string, string> = {
+  Message: 'notificationType.Message',
+  Booking: 'notificationType.Booking',
+  Reminder: 'notificationType.Reminder',
+  SpecialistVerification: 'notificationType.SpecialistVerification',
+  Withdrawal: 'notificationType.Withdrawal',
+  PortfolioApproved: 'notificationType.PortfolioApproved',
+  PortfolioRejected: 'notificationType.PortfolioRejected',
+  PortfolioPendingReview: 'notificationType.PortfolioPendingReview',
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -43,10 +46,10 @@ const TYPE_ICONS: Record<string, string> = {
 @Component({
   selector: 'app-profile-notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="space-y-4">
-      <p class="text-sm text-slate-500 font-semibold mb-4">تحكم في الإشعارات التي ترغب في استلامها.</p>
+      <p class="text-sm text-slate-500 font-semibold mb-4">{{ 'profile.notificationsSubtitle' | t }}</p>
 
       @if (isLoading()) {
         <div class="flex justify-center py-8">
@@ -62,7 +65,7 @@ const TYPE_ICONS: Record<string, string> = {
             </div>
             <div>
               <p class="font-bold text-bosla-primary text-sm">{{ getLabel(pref.type) }}</p>
-              <p class="text-xs text-slate-400">إشعارات {{ getLabel(pref.type).toLowerCase() }}</p>
+              <p class="text-xs text-slate-400">{{ getLabel(pref.type) }}</p>
             </div>
           </div>
           <button (click)="toggle(pref)"
@@ -82,6 +85,7 @@ const TYPE_ICONS: Record<string, string> = {
 export class ProfileNotifications implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly notificationsService = inject(NotificationsService);
+  private readonly translationService = inject(TranslationService);
 
   preferences = signal<NotificationPreferenceDto[]>([]);
   isLoading = signal(true);
@@ -125,7 +129,8 @@ export class ProfileNotifications implements OnInit {
   }
 
   getLabel(type: string): string {
-    return TYPE_LABELS[type] || type;
+    const key = TYPE_LABEL_KEYS[type];
+    return key ? this.translationService.translate(key) : type;
   }
 
   getIcon(type: string): string {

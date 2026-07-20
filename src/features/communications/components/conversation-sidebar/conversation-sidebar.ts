@@ -4,10 +4,11 @@ import { ConversationSearch } from '../conversation-search/conversation-search';
 import { ConversationItem } from '../conversation-item/conversation-item';
 import { RouterLink } from '@angular/router';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-conversation-sidebar',
   standalone: true,
-  imports: [ConversationSearch, ConversationItem, RouterLink],
+  imports: [ConversationSearch, ConversationItem, RouterLink, TranslatePipe],
   templateUrl: './conversation-sidebar.html',
   styleUrl: '../../chat.css',
   host: {

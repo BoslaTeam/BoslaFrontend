@@ -8,9 +8,10 @@ import { RouterLink } from '@angular/router';
 import { SpecialistAiService } from '@features/ai/services/specialist-ai.service';
 import { DashboardInsightsDto } from '@features/ai/contracts/specialist-ai.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-specialist-dashboard',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TranslatePipe],
   templateUrl: './specialist-dashboard.html',
 })
 export class SpecialistDashboard implements OnInit, OnDestroy {

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileStore } from '../../stores/profile.store';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-profile-education',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './profile-education.html',
 })
 export class ProfileEducation {

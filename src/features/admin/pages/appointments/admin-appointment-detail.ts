@@ -5,15 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { AdminAppointmentDetailDto } from '../../contracts/admin.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-admin-appointment-detail',
-  imports: [DatePipe, SlicePipe, FormsModule],
+  imports: [DatePipe, SlicePipe, FormsModule, TranslatePipe],
   templateUrl: './admin-appointment-detail.html',
   styleUrl: './admin-appointment-detail.css',
 })
 export class AdminAppointmentDetail implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly id = input.required<string>();
 
@@ -86,11 +89,11 @@ export class AdminAppointmentDetail implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Confirmed: 'مؤكد',
-      Completed: 'مكتمل',
-      Cancelled: 'ملغي',
-      Rescheduled: 'معاد جدولته',
+      Pending: this.translationService.translate('admin.status.pending'),
+      Confirmed: this.translationService.translate('admin.status.confirmed'),
+      Completed: this.translationService.translate('admin.status.completed'),
+      Cancelled: this.translationService.translate('admin.status.cancelled'),
+      Rescheduled: this.translationService.translate('admin.status.rescheduled'),
     };
     return labels[status] ?? status;
   }
@@ -108,10 +111,10 @@ export class AdminAppointmentDetail implements OnInit {
 
   getPaymentStatusLabel(status: string | undefined): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Completed: 'مكتمل',
-      Failed: 'فشل',
-      Refunded: 'مسترجع',
+      Pending: this.translationService.translate('admin.status.pending'),
+      Completed: this.translationService.translate('admin.status.completed'),
+      Failed: this.translationService.translate('admin.status.failed'),
+      Refunded: this.translationService.translate('admin.status.refunded'),
     };
     return status ? (labels[status] ?? status) : '—';
   }

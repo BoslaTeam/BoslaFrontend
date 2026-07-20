@@ -1,4 +1,14 @@
-<div dir="rtl" class="font-sans">
+<style>
+  @keyframes cardFadeInUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card-fade-in {
+    animation: cardFadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+</style>
+
+<div class="font-sans">
 
   <!-- ==========================================
     HERO
@@ -12,15 +22,13 @@
     <div class="container mx-auto px-6 relative z-10 text-center">
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-bosla-orange/40 bg-bosla-orange/10 mb-8">
         <span class="w-2 h-2 rounded-full bg-bosla-orange animate-pulse"></span>
-        <span class="text-bosla-orange font-semibold text-sm">قصتنا</span>
+        <span class="text-bosla-orange font-semibold text-sm">{{ 'about.ourStory' | t }}</span>
       </div>
-      <h1 class="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
-        بوصلتك نحو<br>
-        <span style="color: #F39C12;">الخبير المناسب</span>
+      <h1 class="text-5xl md:text-6xl font-black text-white leading-tight mb-6">{{ 'home.hero.headline' | t }}<br>
+        <span style="color: #F39C12;">{{ 'about.rightExpert' | t }}</span>
       </h1>
       <p class="text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
-        بوصلة ليست مجرد منصة استشارات — إنها الدليل الذي يوجّهك إلى الخبير الأنسب لمشكلتك،
-        بثقة وسرعة واحترافية.
+        {{ 'about.hero.desc' | t }}
       </p>
     </div>
     <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
@@ -37,31 +45,25 @@
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Mission -->
-        <div class="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="card-fade-in bg-white rounded-3xl p-10 border border-slate-100 shadow-sm hover:shadow-md transition-shadow" style="animation-delay:0.1s">
           <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #1B4F72, #2E86AB);">
             <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 8l-2 4 4-2-2 4 2-4-4 2 2-4z" fill="currentColor" />
             </svg>
           </div>
-          <h2 class="text-2xl font-black text-bosla-primary mb-4">مهمتنا</h2>
-          <p class="text-bosla-charcoal/70 leading-relaxed text-lg">
-            تمكين الأفراد والشركات من الوصول إلى الخبراء المناسبين في الوقت المناسب،
-            من خلال منصة تجمع بين الدقة والثقة والسرعة.
-          </p>
+          <h2 class="text-2xl font-black text-bosla-primary mb-4">{{ 'about.mission' | t }}</h2>
+          <p class="text-bosla-charcoal/70 leading-relaxed text-lg">{{ 'about.mission.heroDesc' | t }}</p>
         </div>
         <!-- Vision -->
-        <div class="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="card-fade-in bg-white rounded-3xl p-10 border border-slate-100 shadow-sm hover:shadow-md transition-shadow" style="animation-delay:0.2s">
           <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #F39C12, #e67e22);">
             <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
             </svg>
           </div>
-          <h2 class="text-2xl font-black text-bosla-primary mb-4">رؤيتنا</h2>
-          <p class="text-bosla-charcoal/70 leading-relaxed text-lg">
-            أن نكون المنصة الأذكى والأكثر ثقة في العالم العربي لربط الباحثين عن الخبرة
-            بأهل الاختصاص، عبر تقنية ذكية تسبق احتياجات المستخدم.
-          </p>
+          <h2 class="text-2xl font-black text-bosla-primary mb-4">{{ 'about.vision' | t }}</h2>
+          <p class="text-bosla-charcoal/70 leading-relaxed text-lg">{{ 'about.vision.heroDesc' | t }}</p>
         </div>
       </div>
     </div>
@@ -74,46 +76,40 @@
     <div class="container mx-auto px-6">
       <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-          <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold text-bosla-orange mb-4" style="background: rgba(243,156,18,0.1);">لماذا بوصلة؟</span>
-          <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-6">أكثر من مجرد منصة استشارات</h2>
+          <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold text-bosla-orange mb-4" style="background: rgba(243,156,18,0.1);">{{ 'home.features.title' | t }}</span>
+          <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-6">{{ 'about.moreThanPlatform' | t }}</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <!-- Precision -->
-          <div class="p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform">
+          <div class="card-fade-in p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform" style="animation-delay:0.1s">
             <div class="w-14 h-14 rounded-xl bg-bosla-primary/10 flex items-center justify-center mx-auto mb-5">
               <svg class="w-7 h-7 text-bosla-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-bosla-primary mb-3">الدقة</h3>
-            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">
-              نوجّهك إلى الخبير الأنسب، ليس أي خبير. كما أن البوصلة لا تشير إلى أي اتجاه — بل إلى الاتجاه الصحيح.
-            </p>
+            <h3 class="text-lg font-bold text-bosla-primary mb-3">{{ 'about.precision' | t }}</h3>
+            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.precision.desc' | t }}</p>
           </div>
           <!-- Trust -->
-          <div class="p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform">
+          <div class="card-fade-in p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform" style="animation-delay:0.2s">
             <div class="w-14 h-14 rounded-xl bg-bosla-blue/10 flex items-center justify-center mx-auto mb-5">
               <svg class="w-7 h-7 text-bosla-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-bosla-primary mb-3">الثقة</h3>
-            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">
-              كل خبير في بوصلة تم التحقق من مؤهلاته وهويته. لا مكان للمجهول — شفافية كاملة من البداية.
-            </p>
+            <h3 class="text-lg font-bold text-bosla-primary mb-3">{{ 'home.pillars.trust' | t }}</h3>
+            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.trust.desc' | t }}</p>
           </div>
           <!-- Direction -->
-          <div class="p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform">
+          <div class="card-fade-in p-8 rounded-2xl bg-bosla-offwhite border border-slate-100 hover:-translate-y-1 transition-transform" style="animation-delay:0.3s">
             <div class="w-14 h-14 rounded-xl bg-bosla-orange/10 flex items-center justify-center mx-auto mb-5">
               <svg class="w-7 h-7 text-bosla-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.896m0 0a6.023 6.023 0 01-2.77-.896" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-bosla-primary mb-3">التوجيه</h3>
-            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">
-              لا نتركك تبحث في الظلام. نوجّهك إلى الحل الأمثل باقتدار — تماماً كما تفعل البوصلة.
-            </p>
+            <h3 class="text-lg font-bold text-bosla-primary mb-3">{{ 'about.guidance' | t }}</h3>
+            <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.guidance.desc' | t }}</p>
           </div>
         </div>
       </div>
@@ -126,51 +122,51 @@
   <section class="py-24 bg-bosla-offwhite">
     <div class="container mx-auto px-6">
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold text-bosla-orange mb-4" style="background: rgba(243,156,18,0.1);">ركائزنا</span>
-        <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-4">ما نقف عليه</h2>
-        <p class="text-bosla-charcoal/60 text-lg max-w-xl mx-auto">أربع ركائز نبني عليها كل قرار في بوصلة</p>
+        <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold text-bosla-orange mb-4" style="background: rgba(243,156,18,0.1);">{{ 'about.values.badge' | t }}</span>
+        <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-4">{{ 'about.values.title' | t }}</h2>
+        <p class="text-bosla-charcoal/60 text-lg max-w-xl mx-auto">{{ 'about.values.subtitle' | t }}</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Pillar 1 -->
-        <div class="group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+        <div class="card-fade-in group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl" style="animation-delay:0.1s">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #1B4F72, #2E86AB);">
             <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 8l-2 4 4-2-2 4 2-4-4 2 2-4z" fill="currentColor" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-bosla-primary mb-3">الاتجاه الصحيح</h3>
-          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">نوجّهك إلى الخبير الأنسب لمشكلتك، من خلال فلترة دقيقة وملفات شفافة.</p>
+          <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.direction.title' | t }}</h3>
+          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.pillar.direction.desc' | t }}</p>
         </div>
         <!-- Pillar 2 -->
-        <div class="group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+        <div class="card-fade-in group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl" style="animation-delay:0.2s">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #F39C12, #e67e22);">
             <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-bosla-primary mb-3">وصول فوري</h3>
-          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">استشارة في دقائق — حجز سريع، خطوات بسيطة، ولا بيروقراطية.</p>
+          <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.instant.title' | t }}</h3>
+          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.pillar.instant.desc' | t }}</p>
         </div>
         <!-- Pillar 3 -->
-        <div class="group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+        <div class="card-fade-in group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl" style="animation-delay:0.3s">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #2E86AB, #1B4F72);">
             <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-bosla-primary mb-3">ثقة موثّقة</h3>
-          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">كل خبير تم التحقق منه — تقييمات حقيقية، مؤهلات موثّقة.</p>
+          <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.verified.title' | t }}</h3>
+          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.pillar.verified.desc' | t }}</p>
         </div>
         <!-- Pillar 4 -->
-        <div class="group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl">
+        <div class="card-fade-in group bg-white rounded-2xl p-8 border border-slate-100 hover:-translate-y-2 transition-all duration-300 hover:shadow-xl" style="animation-delay:0.4s">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #1B4F72, #F39C12);">
             <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-bosla-primary mb-3">نمو حقيقي</h3>
-          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">نمو العميل والخبير معاً — بأسلوب إنساني دافئ وليس مجرد معاملة.</p>
+          <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.growth.title' | t }}</h3>
+          <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'about.pillar.growth.desc' | t }}</p>
         </div>
       </div>
     </div>
@@ -186,25 +182,25 @@
     </div>
     <div class="container mx-auto px-6 relative z-10">
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/10 text-bosla-orange border border-bosla-orange/30 mb-4">الأرقام تتحدث</span>
-        <h2 class="text-4xl md:text-5xl font-black text-white mb-4">بوصلة في أرقام</h2>
+        <span class="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/10 text-bosla-orange border border-bosla-orange/30 mb-4">{{ 'about.numbers.badge' | t }}</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mb-4">{{ 'about.numbers.title' | t }}</h2>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div class="text-center">
+        <div class="text-center card-fade-in" style="animation-delay:0.1s">
           <div class="text-5xl md:text-6xl font-black text-bosla-orange mb-2">+500</div>
-          <div class="text-white/70 font-medium">متخصص موثّق</div>
+          <div class="text-white/70 font-medium">{{ 'home.hero.statSpecialists' | t }}</div>
         </div>
-        <div class="text-center">
+        <div class="text-center card-fade-in" style="animation-delay:0.2s">
           <div class="text-5xl md:text-6xl font-black text-bosla-orange mb-2">+10K</div>
-          <div class="text-white/70 font-medium">استشارة ناجحة</div>
+          <div class="text-white/70 font-medium">{{ 'home.hero.statConsultations' | t }}</div>
         </div>
-        <div class="text-center">
+        <div class="text-center card-fade-in" style="animation-delay:0.3s">
           <div class="text-5xl md:text-6xl font-black text-bosla-orange mb-2">15+</div>
-          <div class="text-white/70 font-medium">مجال متخصص</div>
+          <div class="text-white/70 font-medium">{{ 'home.hero.statFields' | t }}</div>
         </div>
-        <div class="text-center">
+        <div class="text-center card-fade-in" style="animation-delay:0.4s">
           <div class="text-5xl md:text-6xl font-black text-bosla-orange mb-2">98%</div>
-          <div class="text-white/70 font-medium">رضا العملاء</div>
+          <div class="text-white/70 font-medium">{{ 'home.features.stats.satisfaction' | t }}</div>
         </div>
       </div>
     </div>
@@ -215,16 +211,14 @@
   =========================================== -->
   <section class="py-24 bg-bosla-offwhite">
     <div class="container mx-auto px-6 text-center">
-      <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-6">كن جزءاً من رحلة بوصلة</h2>
-      <p class="text-lg text-bosla-charcoal/60 mb-10 max-w-lg mx-auto">
-        سواء كنت باحثاً عن استشارة أو خبيراً تريد مشاركة خبرتك — بوصلتك هنا.
-      </p>
+      <h2 class="text-4xl md:text-5xl font-black text-bosla-primary mb-6">{{ 'about.cta.title' | t }}</h2>
+      <p class="text-lg text-bosla-charcoal/60 mb-10 max-w-lg mx-auto">{{ 'about.cta.subtitle' | t }}</p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <a routerLink="/auth/register" class="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-lg text-white transition-all hover:-translate-y-1 hover:shadow-2xl" style="background: #F39C12; box-shadow: 0 8px 30px rgba(243,156,18,0.4);">
-          ابدأ رحلتك الآن
+          {{ 'about.cta.startJourney' | t }}
         </a>
         <a routerLink="/specialists" class="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-lg text-bosla-primary border-2 border-bosla-primary hover:bg-bosla-primary/5 transition-all">
-          تصفح المتخصصين
+          {{ 'about.cta.browseSpecialists' | t }}
         </a>
       </div>
     </div>

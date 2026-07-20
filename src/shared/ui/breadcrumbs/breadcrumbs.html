@@ -1,4 +1,4 @@
-<nav class="flex items-center text-[13px] font-sans" dir="rtl" aria-label="Breadcrumb">
+<nav class="flex items-center text-[13px] font-sans" [dir]="direction()" aria-label="Breadcrumb">
     <ol class="flex items-center space-x-reverse space-x-2.5">
         @for (item of items(); track item.label; let isLast = $last) {
         <li class="flex items-center gap-2.5">

@@ -3,10 +3,12 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { LanguageToggle } from '@shared/ui/language-toggle/language-toggle';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-mobile-menu',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, LanguageToggle, TranslatePipe],
   templateUrl: './mobile-menu.html'
 })
 export class MobileMenu {

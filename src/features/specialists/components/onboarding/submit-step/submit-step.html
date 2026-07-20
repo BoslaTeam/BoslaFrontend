@@ -3,8 +3,8 @@
     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-orange/10 text-bosla-orange mb-4">
       <i class="fa-solid fa-paper-plane text-lg"></i>
     </div>
-    <h3 class="text-2xl font-bold text-bosla-primary mb-2">مراجعة الطلب</h3>
-    <p class="text-bosla-grey">أنت على بعد خطوة! راجع بياناتك قبل إرسالها للمراجعة</p>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">{{ 'onboarding.submit.title' | t }}</h3>
+    <p class="text-bosla-grey">{{ 'onboarding.submit.subtitle' | t }}</p>
   </div>
 
   @if (errorMessage()) {
@@ -19,9 +19,9 @@
       <i class="fa-solid fa-circle-info text-bosla-blue mt-0.5"></i>
       <p class="text-sm text-bosla-charcoal font-medium">
         @if (status === 'Approved') {
-          تمت الموافقة على طلبك بالفعل. يمكنك الآن استخدام لوحة التحكم.
+          {{ 'onboarding.submit.alreadyApproved' | t }}
         } @else {
-          طلبك قيد المراجعة حالياً. سنقوم بإعلامك عند اكتمال المراجعة.
+          {{ 'onboarding.submit.pendingReview' | t }}
         }
       </p>
     </div>
@@ -37,12 +37,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasBasicInfo"
             [class.text-bosla-grey]="!hasBasicInfo"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">المعلومات الأساسية</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'onboarding.basicInfo.title' | t }}</span>
         </div>
         @if (hasBasicInfo) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
 
@@ -52,12 +52,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasSkills"
             [class.text-bosla-grey]="!hasSkills"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">المهارات</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'onboarding.skills.title' | t }}</span>
         </div>
         @if (hasSkills) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
 
@@ -67,12 +67,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasTools"
             [class.text-bosla-grey]="!hasTools"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">الأدوات</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'onboarding.tools.title' | t }}</span>
         </div>
         @if (hasTools) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
 
@@ -82,12 +82,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasExperiences"
             [class.text-bosla-grey]="!hasExperiences"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">الخبرات</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'onboarding.experience.title' | t }}</span>
         </div>
         @if (hasExperiences) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
 
@@ -97,12 +97,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasAvailabilities"
             [class.text-bosla-grey]="!hasAvailabilities"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">المواعيد المتاحة</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'onboarding.availability.title' | t }}</span>
         </div>
         @if (hasAvailabilities) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
 
@@ -112,12 +112,12 @@
           <i class="fa-regular fa-circle-check text-lg"
             [class.text-bosla-success]="hasDocuments"
             [class.text-bosla-grey]="!hasDocuments"></i>
-          <span class="text-sm font-medium text-bosla-charcoal">المستندات</span>
+          <span class="text-sm font-medium text-bosla-charcoal">{{ 'admin.documents.almstndat' | t }}</span>
         </div>
         @if (hasDocuments) {
-          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">مكتمل</span>
+          <span class="text-xs text-bosla-success font-semibold bg-bosla-success/5 px-2.5 py-1 rounded-full">{{ 'appointments.status.completed' | t }}</span>
         } @else {
-          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">غير مكتمل</span>
+          <span class="text-xs text-bosla-grey bg-bosla-charcoal/5 px-2.5 py-1 rounded-full">{{ 'onboarding.submit.incomplete' | t }}</span>
         }
       </div>
     </div>
@@ -127,11 +127,11 @@
       <div class="bg-bosla-orange/5 border border-bosla-orange/20 rounded-2xl p-6 text-center">
         <i class="fa-regular fa-compass text-bosla-orange text-2xl mb-3 block"></i>
         <p class="text-sm text-bosla-charcoal/80 mb-4 leading-relaxed">
-          بتقديم طلبك، ستتم مراجعة بياناتك من قبل فريق بوصلة. سيتم إعلامك عند اكتمال المراجعة، وستتمكن من البدء فوراً.
+          {{ 'onboarding.submit.description' | t }}
         </p>
         <ui-button [loading]="isSubmitting()" (btnClick)="onSubmit()">
           <i class="fa-solid fa-paper-plane"></i>
-          إرسال الطلب للمراجعة
+          {{ 'onboarding.submit.sendReview' | t }}
         </ui-button>
       </div>
     }
@@ -140,8 +140,6 @@
   <!-- Navigation -->
   <div class="flex justify-between pt-4">
     <ui-button variant="ghost" (btnClick)="back.emit()">
-      <i class="fa-solid fa-chevron-right"></i>
-      السابق
-    </ui-button>
+      <i class="fa-solid fa-chevron-right"></i>{{ 'pagination.prev' | t }}</ui-button>
   </div>
 </div>

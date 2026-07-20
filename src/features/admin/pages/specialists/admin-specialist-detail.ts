@@ -6,16 +6,19 @@ import { AdminService } from '../../services/admin.service';
 import { AdminSpecialistDetailDto } from '../../contracts/admin.contracts';
 import { PortfolioItemDto, AdminReviewPortfolioRequest } from '@features/specialists/contracts/specialist-portfolio.contract';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-specialist-detail',
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [DatePipe, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './admin-specialist-detail.html',
   styleUrl: './admin-specialist-detail.css',
 })
 export class AdminSpecialistDetail implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly id = input.required<string>();
 
@@ -32,10 +35,12 @@ export class AdminSpecialistDetail implements OnInit {
   readonly portfolioLoading = signal(false);
   readonly reviewingItemId = signal<string | null>(null);
 
-  readonly documentTypeLabels: Record<string, string> = {
-    Identity: 'هوية شخصية',
-    Certificate: 'شهادة / مؤهل',
-  };
+  get documentTypeLabels(): Record<string, string> {
+    return {
+      Identity: this.translationService.translate('admin.specialists.documentIdentity'),
+      Certificate: this.translationService.translate('admin.specialists.documentCertificate'),
+    };
+  }
 
   ngOnInit(): void {
     this.loadSpecialist();
@@ -79,7 +84,7 @@ export class AdminSpecialistDetail implements OnInit {
     this.rejectionError.set('');
 
     if (!isApproved && !this.adminNotes()?.trim()) {
-      this.rejectionError.set('يرجى إدخال سبب الرفض.');
+      this.rejectionError.set(this.translationService.translate('admin.specialists.rejectionError'));
       return;
     }
 
@@ -113,7 +118,12 @@ export class AdminSpecialistDetail implements OnInit {
   }
 
   getVerificationStatusLabel(status: string): string {
-    const labels: Record<string, string> = { Draft: 'مسودة', Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
+    const labels: Record<string, string> = {
+      Draft: this.translationService.translate('specialist.status.Draft'),
+      Pending: this.translationService.translate('specialist.status.Pending'),
+      Approved: this.translationService.translate('specialist.status.Approved'),
+      Rejected: this.translationService.translate('specialist.status.Rejected'),
+    };
     return labels[status] ?? status;
   }
 
@@ -123,7 +133,12 @@ export class AdminSpecialistDetail implements OnInit {
   }
 
   getExperienceLevelLabel(level: string): string {
-    const labels: Record<string, string> = { Entry: 'مبتدئ', Mid: 'متوسط', Senior: 'خبير', Lead: 'قائد' };
+    const labels: Record<string, string> = {
+      Entry: this.translationService.translate('specialist.level.Entry'),
+      Mid: this.translationService.translate('specialist.level.Mid'),
+      Senior: this.translationService.translate('specialist.level.Senior'),
+      Lead: this.translationService.translate('specialist.level.Lead'),
+    };
     return labels[level] ?? level;
   }
 
@@ -134,7 +149,7 @@ export class AdminSpecialistDetail implements OnInit {
   }
 
   formatRating(rating: number): string {
-    if (!rating || rating <= 0) return 'لا توجد تقييمات';
+    if (!rating || rating <= 0) return this.translationService.translate('common.noReviews');
     return `${rating.toFixed(1)} ★`;
   }
 
@@ -164,7 +179,7 @@ export class AdminSpecialistDetail implements OnInit {
   }
 
   rejectPortfolioItem(itemId: string): void {
-    const notes = prompt('سبب الرفض (اختياري):');
+    const notes = prompt(this.translationService.translate('admin.portfolio.rejectionReason'));
     this.reviewingItemId.set(itemId);
     const request: AdminReviewPortfolioRequest = { adminNotes: notes || '' };
     this.adminService.rejectPortfolioItem(this.id(), itemId, request).subscribe({

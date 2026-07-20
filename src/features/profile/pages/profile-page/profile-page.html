@@ -1,14 +1,12 @@
-<section class="bg-bosla-offwhite min-h-screen pt-28 pb-16 font-sans" dir="rtl">
+<section class="bg-bosla-offwhite min-h-screen pt-28 pb-16 font-sans">
   <div class="container mx-auto px-4 max-w-3xl">
 
     <!-- Page Header -->
     <div class="text-center mb-8">
       <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-bosla-primary/10 text-bosla-primary font-bold mb-4 text-sm">
-        <i class="fa-solid fa-id-card text-bosla-orange"></i>
-        الملف الشخصي
-      </span>
-      <h1 class="text-3xl md:text-4xl font-black text-bosla-primary leading-tight">الملف الشخصي</h1>
-      <p class="text-slate-500 mt-2">إدارة بياناتك الشخصية ومعلومات حسابك.</p>
+        <i class="fa-solid fa-id-card text-bosla-orange"></i>{{ 'nav.profile' | t }}</span>
+      <h1 class="text-3xl md:text-4xl font-black text-bosla-primary leading-tight">{{ 'nav.profile' | t }}</h1>
+      <p class="text-slate-500 mt-2">{{ 'profile.subtitle' | t }}</p>
     </div>
 
     <!-- Avatar - Centered + Upload -->
@@ -54,7 +52,7 @@
           <i [class]="item.icon" class="text-sm"
             [class.text-white]="activeSection() === item.key"
             [class.text-bosla-primary]="activeSection() !== item.key"></i>
-          {{ item.label }}
+          {{ item.label | t }}
         </button>
       }
     </div>

@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+<div class="min-h-screen bg-bosla-offwhite" [dir]="direction()">
   <div class="max-w-6xl mx-auto px-4 pt-28 pb-12">
     @if (store.isLoading()) {
       <div class="flex flex-col items-center justify-center py-24">
@@ -6,7 +6,7 @@
           <ui-spinner size="lg"></ui-spinner>
           <div class="absolute inset-0 animate-ping rounded-full bg-bosla-blue/20"></div>
         </div>
-        <p class="text-sm text-bosla-grey mt-6">جاري تحميل تفاصيل الموعد...</p>
+        <p class="text-sm text-bosla-grey mt-6">{{ 'specialist.appointments.loading' | t }}</p>
       </div>
     } @else if (store.selectedItem(); as appointment) {
       <div class="flex items-center justify-between mb-6">
@@ -17,7 +17,7 @@
           <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
-          العودة إلى الحجوزات
+          {{ 'specialist.appointments.backToAppointments' | t }}
         </a>
       </div>
 
@@ -27,12 +27,12 @@
 
           <!-- Session Info -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('session-info')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
+            <button (click)="toggleSection('session-info')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                معلومات الجلسة
+                {{ 'specialist.appointments.sessionInfo' | t }}
               </h3>
               <svg class="w-4 h-4 text-bosla-grey transition-transform duration-200" [class.rotate-180]="expandedSections().has('session-info')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -41,25 +41,25 @@
             @if (expandedSections().has('session-info')) {
               <div class="px-5 pb-5 border-t border-bosla-charcoal/5 pt-4 space-y-4">
                 <div>
-                  <h4 class="text-xs text-bosla-grey font-semibold mb-1">موضوع الجلسة</h4>
-                  <p class="text-sm font-semibold text-bosla-charcoal">{{ appointment.sessionTopic || 'جلسة استشارية عامة' }}</p>
+                  <h4 class="text-xs text-bosla-grey font-semibold mb-1">{{ 'specialist.appointments.sessionTopic' | t }}</h4>
+                  <p class="text-sm font-semibold text-bosla-charcoal">{{ appointment.sessionTopic || ('specialist.appointments.consultationSession' | t) }}</p>
                 </div>
                 @if (appointment.status === AppointmentStatus.Completed && store.selectedSummary()) {
                   <div class="bg-bosla-blue/5 rounded-xl p-4 text-sm text-bosla-charcoal/80 leading-relaxed space-y-3">
-                    <h4 class="font-bold text-bosla-charcoal">ملخص الجلسة</h4>
+                    <h4 class="font-bold text-bosla-charcoal">{{ 'specialist.appointments.sessionSummary' | t }}</h4>
                     <div>
-                      <h5 class="font-bold text-bosla-charcoal mb-1">النقاط الرئيسية</h5>
+                      <h5 class="font-bold text-bosla-charcoal mb-1">{{ 'specialist.appointments.keyPoints' | t }}</h5>
                       <p>{{ store.selectedSummary()?.keyTakeaways }}</p>
                     </div>
                     @if (store.selectedSummary()?.actionItemsForUser) {
                       <div>
-                        <h5 class="font-bold text-bosla-charcoal mb-1">الإجراءات المطلوبة منك</h5>
+                        <h5 class="font-bold text-bosla-charcoal mb-1">{{ 'specialist.appointments.actionsRequired' | t }}</h5>
                         <p>{{ store.selectedSummary()?.actionItemsForUser }}</p>
                       </div>
                     }
                     @if (store.selectedSummary()?.actionItemsForSpec) {
                       <div>
-                        <h5 class="font-bold text-bosla-charcoal mb-1">متابعة من الخبير</h5>
+                        <h5 class="font-bold text-bosla-charcoal mb-1">{{ 'specialist.appointments.followUp' | t }}</h5>
                         <p>{{ store.selectedSummary()?.actionItemsForSpec }}</p>
                       </div>
                     }
@@ -67,7 +67,7 @@
                 } @else if (appointment.status === AppointmentStatus.Completed && store.isLoadingSummary()) {
                   <div class="flex items-center gap-2 text-sm text-bosla-grey p-3 bg-bosla-offwhite rounded-xl">
                     <ui-spinner size="sm"></ui-spinner>
-                    <span>جاري تحميل الملخص...</span>
+                    <span>{{ 'common.loading' | t }}</span>
                   </div>
                 }
               </div>
@@ -76,14 +76,14 @@
 
           <!-- Notes -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('notes')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
+            <button (click)="toggleSection('notes')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                الملاحظات
+                {{ 'specialist.appointments.additionalNotes' | t }}
                 @if (canEditNotes()) {
-                  <span class="text-xs font-normal text-bosla-grey mr-1">(اختيارياً)</span>
+                  <span class="text-xs font-normal text-bosla-grey mr-1">{{ 'specialist.appointments.notesOptional' | t }}</span>
                 }
               </h3>
               <div class="flex items-center gap-2">
@@ -98,7 +98,7 @@
                   @if (appointment.notes) {
                     <p>{{ appointment.notes }}</p>
                   } @else {
-                    <p class="text-bosla-grey/60 italic">لا توجد ملاحظات إضافية مرفقة مع هذا الموعد.</p>
+                    <p class="text-bosla-grey/60 italic">{{ 'common.no' | t }} {{ 'specialist.appointments.notesPresent' | t }}</p>
                   }
                 </div>
               </div>
@@ -109,12 +109,12 @@
 
           <!-- Status Timeline -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 overflow-hidden">
-            <button (click)="toggleSection('timeline')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors text-right cursor-pointer">
+            <button (click)="toggleSection('timeline')" class="w-full flex items-center justify-between p-5 hover:bg-bosla-offwhite/50 transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
               <h3 class="text-sm font-bold text-bosla-charcoal flex items-center gap-2">
                 <svg class="w-4 h-4 text-bosla-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-                سجل الحالة
+                {{ 'specialist.appointments.statusLog' | t }}
                 @if (store.selectedItemHistory().length > 0) {
                   <span class="text-xs bg-bosla-blue/10 text-bosla-blue px-2 py-0.5 rounded-full">{{ store.selectedItemHistory().length }}</span>
                 }
@@ -152,7 +152,7 @@
                           @if (expandedTimelineItems().has($index)) {
                             <div class="mt-3 p-3.5 bg-bosla-offwhite rounded-xl border border-bosla-charcoal/5 space-y-3 text-xs">
                               <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-bosla-grey shrink-0">من:</span>
+                                <span class="text-bosla-grey shrink-0">{{ 'common.from' | t }}:</span>
                                 <span class="text-bosla-charcoal/70">{{ getStatusTimelineLabel(history.oldStatus) }}</span>
                                 <svg class="w-3.5 h-3.5 text-bosla-grey/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -160,7 +160,7 @@
                                 <span class="text-bosla-charcoal font-semibold">{{ getStatusTimelineLabel(history.newStatus) }}</span>
                               </div>
                               <div class="flex items-center gap-2">
-                                <span class="text-bosla-grey shrink-0">تم بواسطة:</span>
+                                <span class="text-bosla-grey shrink-0">{{ 'specialist.appointments.doneBy' | t }}</span>
                                 <span class="font-medium text-bosla-charcoal">{{ getChangedByLabel(history.changedBy) }}</span>
                               </div>
                               @if (history.reason) {
@@ -181,7 +181,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
-                    <p class="text-sm text-bosla-grey">لا يوجد سجل حركات متوفر بعد.</p>
+                    <p class="text-sm text-bosla-grey">{{ 'specialist.appointments.noStatusLog' | t }}</p>
                   </div>
                 }
               </div>
@@ -194,7 +194,7 @@
           <!-- Summary Card -->
           <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-5">
             <h2 class="text-base font-bold text-bosla-charcoal mb-3 leading-relaxed">
-              {{ appointment.sessionTopic || 'جلسة استشارية عامة' }}
+              {{ appointment.sessionTopic || ('specialist.appointments.consultationSession' | t) }}
             </h2>
             <div class="mb-4">
               @let statusInfo = getStatusLabel(appointment.status);
@@ -207,26 +207,26 @@
                 }
               </span>
               @if (paymentDeadline()) {
-                <p class="text-[11px] text-amber-600 mt-1.5">سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع قبل انتهاء الوقت</p>
+                <p class="text-[11px] text-amber-600 mt-1.5">{{ 'specialist.appointments.autoCancelWarning' | t }}</p>
               }
             </div>
             <div class="space-y-3">
               <div class="flex items-center justify-between text-sm">
-                <span class="text-bosla-grey">التاريخ</span>
+                <span class="text-bosla-grey">{{ 'payments.date' | t }}</span>
                 <span class="text-bosla-charcoal font-medium" dir="ltr">{{ appointment.start | date: 'EEEE, dd MMMM yyyy' : '' : 'ar' }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-bosla-grey">الوقت</span>
+                <span class="text-bosla-grey">{{ 'specialist.appointments.time' | t }}</span>
                 <span class="text-bosla-charcoal font-medium" dir="ltr">{{ appointment.start | date: 'hh:mm a' }} - {{ appointment.end | date: 'hh:mm a' }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
-                <span class="text-bosla-grey">المدة</span>
+                <span class="text-bosla-grey">{{ 'specialist.appointments.duration' | t }}</span>
                 <span class="text-bosla-charcoal font-medium">{{ duration() }}</span>
               </div>
               @if (appointment.sessionPrice) {
                 <div class="flex items-center justify-between text-sm pt-3 border-t border-bosla-charcoal/5">
-                  <span class="text-bosla-grey">التكلفة</span>
-                  <span class="text-bosla-charcoal font-bold text-base">{{ appointment.sessionPrice }} ج.م</span>
+                  <span class="text-bosla-grey">{{ 'specialist.appointments.cost' | t }}</span>
+                  <span class="text-bosla-charcoal font-bold text-base">{{ appointment.sessionPrice }} {{ 'specialist.appointments.egp' | t }}</span>
                 </div>
               }
             </div>
@@ -242,7 +242,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                   </div>
-                  <h3 class="text-sm font-bold text-bosla-charcoal">حالة الدفع</h3>
+                  <h3 class="text-sm font-bold text-bosla-charcoal">{{ 'admin.paymentStatus.halh_aldfa' | t }}</h3>
                   <span [class]="'mr-auto text-xs font-medium px-2.5 py-1 rounded-full ' + getEscrowStatusLabel(item.escrowStatus).classes">
                     {{ getEscrowStatusLabel(item.escrowStatus).text }}
                   </span>
@@ -250,19 +250,19 @@
                 <div class="space-y-2.5 text-sm">
                   @if (item.disputeReason) {
                     <div>
-                      <p class="text-xs text-bosla-grey mb-0.5">سبب النزاع</p>
+                      <p class="text-xs text-bosla-grey mb-0.5">{{ 'payments.disputeReason.sbb_alnzaa' | t }}</p>
                       <p class="text-bosla-charcoal font-medium">{{ item.disputeReason }}</p>
                     </div>
                   }
                   @if (item.disputeDescription) {
                     <div>
-                      <p class="text-xs text-bosla-grey mb-0.5">وصف المشكلة</p>
+                      <p class="text-xs text-bosla-grey mb-0.5">{{ 'specialist.appointments.disputeDetails' | t }}</p>
                       <p class="text-bosla-charcoal/80">{{ item.disputeDescription }}</p>
                     </div>
                   }
                   @if (item.disputeAdminNotes) {
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-3">
-                      <p class="text-xs font-semibold text-blue-700 mb-1">ملاحظات الإدارة</p>
+                      <p class="text-xs font-semibold text-blue-700 mb-1">{{ 'specialist.appointments.additionalNotes' | t }}</p>
                       <p class="text-sm text-blue-800/80">{{ item.disputeAdminNotes }}</p>
                     </div>
                   }
@@ -282,9 +282,7 @@
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    إتمام الدفع
-                  </a>
+                    </svg>{{ 'payments.complete.atmam_aldfa' | t }}</a>
                 }
                 @if (canJoin()) {
                   <button
@@ -293,9 +291,7 @@
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
-                    </svg>
-                    انضم للجلسة
-                  </button>
+                    </svg>{{ 'appointments.join' | t }}</button>
                 }
                 @if (hasConversation()) {
                   <button
@@ -305,7 +301,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">المحادثة</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialist.appointments.goToChat' | t }}</span>
                   </button>
                 }
               </div>
@@ -319,7 +315,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تأكيد الموعد</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'appointments.confirm.takyd_almwad' | t }}</span>
                   </button>
                 }
                 @if (canComplete()) {
@@ -330,7 +326,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إنهاء الجلسة</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'video.end.anha_aljlsh' | t }}</span>
                   </button>
                 }
                 @if (canAddReview()) {
@@ -341,7 +337,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تقييم</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialists.rating' | t }}</span>
                   </button>
                 }
                 @if (canReject()) {
@@ -352,7 +348,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">رفض الموعد</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialist.appointments.rejectTitle' | t }}</span>
                   </button>
                 }
                 <button
@@ -362,7 +358,7 @@
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تحديث الملاحظات</span>
+                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialist.appointments.updateNotesTitle' | t }}</span>
                 </button>
                 <a
                   [routerLink]="['/appointments', appointment.id, 'track']"
@@ -371,7 +367,7 @@
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
-                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تتبع الحالة</span>
+                  <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialist.appointments.trackStatus' | t }}</span>
                 </a>
                 @if (canCancel()) {
                   <button
@@ -381,7 +377,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">إلغاء</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'appointments.book.cancel' | t }}</span>
                   </button>
                 }
                 @if (appointment.paymentId && appointment.escrowStatus === 'Held' && userRole() === UserRole.User) {
@@ -392,7 +388,7 @@
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
-                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">تقديم شكوى</span>
+                    <span class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-bosla-charcoal px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 shadow-lg">{{ 'specialist.appointments.fileDispute' | t }}</span>
                   </a>
                 }
               </div>
@@ -411,7 +407,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <h4 class="text-base font-bold text-bosla-charcoal truncate">{{ specialist.name }}</h4>
-                  <p class="text-xs text-gray-500 mt-0.5 truncate">{{ specialist.title || 'مختص معتمد' }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5 truncate">{{ specialist.title || ('specialist.appointments.certifiedSpecialist' | t) }}</p>
                   <div class="flex items-center gap-1 mt-2">
                     <div class="flex gap-0.5">
                       @for (star of [1,2,3,4,5]; track star) {
@@ -426,7 +422,7 @@
                 </div>
                 <div class="shrink-0 text-left">
                   <p class="text-xl font-black text-bosla-primary">{{ specialist.hourlyRate }}</p>
-                  <p class="text-[10px] text-gray-500 mt-0.5 font-medium whitespace-nowrap">ج.م / ساعة</p>
+                  <p class="text-[10px] text-gray-500 mt-0.5 font-medium whitespace-nowrap">{{ 'home.specialists.currency' | t }} {{ 'specialist.appointments.perHour' | t }}</p>
                 </div>
               </div>
               <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -434,13 +430,9 @@
                   class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:shadow-bosla-primary/20 transition-all duration-200 cursor-pointer">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  حجز موعد
-                </a>
+                  </svg>{{ 'appointments.book.title' | t }}</a>
                 <a [routerLink]="['/specialists', specialist.id]"
-                  class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200 cursor-pointer">
-                  عرض الملف
-                  <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200 cursor-pointer">{{ 'specialists.viewProfile.ard_almlf' | t }}<svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </a>
@@ -463,19 +455,19 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">إلغاء الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">يرجى كتابة سبب الإلغاء، سيتم إشعار الطرف الآخر فوراً.</p>
+              <h3 class="text-lg font-bold text-bosla-charcoal">{{ 'specialist.appointments.cancelTitle' | t }}</h3>
+              <p class="text-xs text-bosla-grey mt-0.5">{{ 'specialist.appointments.cancelHint' | t }}</p>
             </div>
           </div>
           <textarea
             [value]="cancelReason()"
             (input)="cancelReason.set($any($event.target).value)"
-            placeholder="اكتب سبب الإلغاء هنا..."
+            [placeholder]="'specialist.appointments.cancelPlaceholder' | t"
             class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showCancelModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
-            <ui-button (click)="onCancelSubmit()" [disabled]="!cancelReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">تأكيد الإلغاء</ui-button>
+            <ui-button (click)="showCancelModal.set(false)" size="sm" variant="ghost">{{ 'actions.undo.traja' | t }}</ui-button>
+            <ui-button (click)="onCancelSubmit()" [disabled]="!cancelReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">{{ 'specialist.appointments.cancelConfirm' | t }}</ui-button>
           </div>
         </div>
       </div>
@@ -492,19 +484,19 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">رفض طلب الموعد</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">يرجى كتابة سبب الرفض، سيتم إشعار المستخدم فوراً.</p>
+              <h3 class="text-lg font-bold text-bosla-charcoal">{{ 'specialist.appointments.rejectTitle' | t }}</h3>
+              <p class="text-xs text-bosla-grey mt-0.5">{{ 'specialist.appointments.rejectHint' | t }}</p>
             </div>
           </div>
           <textarea
             [value]="rejectReason()"
             (input)="rejectReason.set($any($event.target).value)"
-            placeholder="اكتب سبب الرفض هنا..."
+            [placeholder]="'specialist.appointments.rejectPlaceholder' | t"
             class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showRejectModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
-            <ui-button (click)="onRejectSubmit()" [disabled]="!rejectReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">تأكيد الرفض</ui-button>
+            <ui-button (click)="showRejectModal.set(false)" size="sm" variant="ghost">{{ 'actions.undo.traja' | t }}</ui-button>
+            <ui-button (click)="onRejectSubmit()" [disabled]="!rejectReason().trim()" [loading]="store.isActionLoading()" size="sm" variant="danger">{{ 'specialist.appointments.rejectConfirm' | t }}</ui-button>
           </div>
         </div>
       </div>
@@ -521,13 +513,13 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">تقييم المختص</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">شاركنا رأيك في الجلسة مع المختص</p>
+              <h3 class="text-lg font-bold text-bosla-charcoal">{{ 'specialist.appointments.rateSession' | t }}</h3>
+              <p class="text-xs text-bosla-grey mt-0.5">{{ 'specialist.appointments.rateSession' | t }}</p>
             </div>
           </div>
 
           <div class="text-center py-4">
-            <p class="text-sm text-bosla-charcoal/70 mb-3">ما تقييمك لهذه الجلسة؟</p>
+            <p class="text-sm text-bosla-charcoal/70 mb-3">{{ 'specialist.appointments.rateQuestion' | t }}</p>
             <div class="flex items-center justify-center gap-1.5">
               @for (star of [1, 2, 3, 4, 5]; track star) {
                 <button
@@ -550,25 +542,25 @@
               }
             </div>
             <p class="text-sm text-bosla-grey mt-2">
-              @if (reviewRating() === 1) { سيئ }
-              @else if (reviewRating() === 2) { مقبول }
-              @else if (reviewRating() === 3) { جيد }
-              @else if (reviewRating() === 4) { جيد جداً }
-              @else if (reviewRating() === 5) { ممتاز }
-              @else { اختر تقييمك }
+              @if (reviewRating() === 1) { {{ 'specialist.appointments.ratePoor' | t }} }
+              @else if (reviewRating() === 2) { {{ 'specialist.appointments.rateFair' | t }} }
+              @else if (reviewRating() === 3) { {{ 'specialist.appointments.rateGood' | t }} }
+              @else if (reviewRating() === 4) { {{ 'specialist.appointments.rateVeryGood' | t }} }
+              @else if (reviewRating() === 5) { {{ 'specialist.appointments.rateExcellent' | t }} }
+              @else { {{ 'specialist.appointments.rateSelect' | t }} }
             </p>
           </div>
 
           <textarea
             [value]="reviewComment()"
             (input)="reviewComment.set($any($event.target).value)"
-            placeholder="أضف تعليقاً (اختياري)..."
+            [placeholder]="'specialist.appointments.rateCommentPlaceholder' | t"
             class="w-full h-24 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showReviewModal.set(false); reviewRating.set(0); reviewComment.set('')" size="sm" variant="ghost">إلغاء</ui-button>
-            <ui-button (click)="onReviewSubmit()" [disabled]="reviewRating() === 0" [loading]="store.isActionLoading()" size="sm" variant="primary">إرسال التقييم</ui-button>
+            <ui-button (click)="showReviewModal.set(false); reviewRating.set(0); reviewComment.set('')" size="sm" variant="ghost">{{ 'appointments.book.cancel' | t }}</ui-button>
+            <ui-button (click)="onReviewSubmit()" [disabled]="reviewRating() === 0" [loading]="store.isActionLoading()" size="sm" variant="primary">{{ 'specialist.appointments.rateSubmit' | t }}</ui-button>
           </div>
         </div>
       </div>
@@ -585,21 +577,21 @@
               </svg>
             </div>
             <div>
-              <h3 class="text-lg font-bold text-bosla-charcoal">تعديل الملاحظات</h3>
-              <p class="text-xs text-bosla-grey mt-0.5">قم بتحديث ملاحظات الطلب</p>
+              <h3 class="text-lg font-bold text-bosla-charcoal">{{ 'specialist.appointments.updateNotesTitle' | t }}</h3>
+              <p class="text-xs text-bosla-grey mt-0.5">{{ 'specialist.appointments.updateNotesTitle' | t }}</p>
             </div>
           </div>
 
           <textarea
             [value]="editNotesText()"
             (input)="editNotesText.set($any($event.target).value)"
-            placeholder="أضف ملاحظات حول الجلسة..."
+            [placeholder]="'specialist.appointments.notesPlaceholder' | t"
             class="w-full h-32 p-3 text-sm bg-bosla-offwhite border border-bosla-charcoal/10 rounded-xl outline-none focus:border-bosla-blue resize-none transition-colors"
           ></textarea>
 
           <div class="flex justify-end gap-2 mt-5">
-            <ui-button (click)="showNotesModal.set(false)" size="sm" variant="ghost">تراجع</ui-button>
-            <ui-button (click)="onNotesSubmit()" [loading]="store.isActionLoading()" size="sm" variant="primary">حفظ التعديلات</ui-button>
+            <ui-button (click)="showNotesModal.set(false)" size="sm" variant="ghost">{{ 'actions.undo.traja' | t }}</ui-button>
+            <ui-button (click)="onNotesSubmit()" [loading]="store.isActionLoading()" size="sm" variant="primary">{{ 'specialist.appointments.saveNotes' | t }}</ui-button>
           </div>
         </div>
       </div>

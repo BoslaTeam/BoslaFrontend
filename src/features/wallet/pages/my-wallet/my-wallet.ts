@@ -1,17 +1,21 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { WalletApiService } from '../../services/wallet-api.service';
 import { WalletResponseDto, TransactionDto } from '../../contracts/wallet.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-my-wallet',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, TranslatePipe],
   templateUrl: './my-wallet.html',
 })
 export class MyWallet implements OnInit {
   private readonly walletApi = inject(WalletApiService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly wallet = signal<WalletResponseDto | null>(null);
   readonly transactions = signal<TransactionDto[]>([]);
   readonly loading = signal(true);

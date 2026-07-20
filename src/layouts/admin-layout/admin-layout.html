@@ -1,4 +1,4 @@
-<div class="admin-layout">
+<div class="admin-layout" [dir]="direction()">
   <!-- Sidebar -->
   <app-admin-sidebar [isCollapsed]="sidebarCollapsed()" [isMobileOpen]="sidebarMobileOpen()"
     (toggleCollapse)="toggleSidebar()" (closeMobile)="closeMobileSidebar()" />

@@ -1,4 +1,4 @@
-<div class="relative w-full text-right" dir="rtl">
+<div class="relative w-full" [dir]="direction()" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
 
     @if (label()) {
     <label class="block text-sm font-medium text-bosla-charcoal mb-1.5 select-none">

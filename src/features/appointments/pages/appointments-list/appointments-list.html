@@ -1,22 +1,20 @@
-<div class="min-h-screen bg-bosla-offwhite" dir="rtl">
+<div class="min-h-screen bg-bosla-offwhite">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
         <h1
           class="text-3xl sm:text-4xl font-black bg-gradient-to-l from-[#F39C12] to-[#e67e22] text-transparent bg-clip-text font-sans drop-shadow-sm tracking-tight"
-        >
-          المواعيد
-        </h1>
-        <p class="text-sm text-bosla-grey mt-1.5">تابع وجدول جميع جلساتك الاستشارية</p>
+        >{{ 'nav.appointments' | t }}</h1>
+        <p class="text-sm text-bosla-grey mt-1.5">{{ 'appointments.list.subtitle' | t }}</p>
       </div>
       <div class="flex items-center gap-2 text-sm text-bosla-grey">
-        <span>إجمالي</span>
+        <span>{{ 'appointments.list.total' | t }}</span>
         <span
           class="font-semibold text-bosla-charcoal bg-white border border-bosla-charcoal/10 px-3 py-1 rounded-lg"
           >{{ store.items().length }}</span
         >
-        <span>موعد</span>
+        <span>{{ 'appointments.list.appointment' | t }}</span>
       </div>
     </div>
 
@@ -40,7 +38,7 @@
           #searchBox
           type="text"
           (input)="onSearchInput($event)"
-          placeholder="ابحث عن موعد حسب اسم الجلسة أو المختص..."
+          [placeholder]="'appointments.list.searchPlaceholder' | t"
           autocomplete="off"
           class="w-full pr-10 pl-4 py-2.5 text-sm bg-white border border-bosla-charcoal/10 rounded-xl outline-none transition-all duration-200 placeholder:text-bosla-grey/60 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
         />
@@ -62,8 +60,8 @@
           (change)="setSort($any($event.target).value)"
           class="appearance-none bg-white border border-bosla-charcoal/10 rounded-xl px-4 pr-4 pl-10 py-2.5 text-sm text-bosla-charcoal outline-none cursor-pointer transition-all duration-200 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
         >
-          <option value="asc">من الأقدم إلى الأحدث</option>
-          <option value="desc">من الأحدث إلى الأقدم</option>
+          <option value="asc">{{ 'appointments.list.oldestFirst' | t }}</option>
+          <option value="desc">{{ 'appointments.list.newestFirst' | t }}</option>
         </select>
         <svg
           class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bosla-grey pointer-events-none"
@@ -96,7 +94,7 @@
               : 'text-bosla-grey hover:text-bosla-charcoal hover:bg-bosla-charcoal/[0.03]'
           "
         >
-          {{ tab.label }}
+           {{ tab.label | t }}
           @if (count > 0) {
             <span
               class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
@@ -118,7 +116,7 @@
         <div
           class="w-10 h-10 border-[3px] border-bosla-primary/20 border-t-bosla-primary rounded-full animate-spin"
         ></div>
-        <p class="text-sm text-bosla-grey mt-5">جاري تحميل المواعيد...</p>
+        <p class="text-sm text-bosla-grey mt-5">{{ 'appointments.list.loading' | t }}</p>
       </div>
     } @else {
       @if (getFilteredAppointments().length > 0) {
@@ -166,10 +164,10 @@
                       [routerLink]="['/appointments', appointment.id]"
                       class="text-sm font-bold text-gray-900 truncate block leading-snug group-hover:text-bosla-primary transition-colors cursor-pointer"
                     >
-                      {{ appointment.specialistName || 'مختص' }}
+                      {{ appointment.specialistName || ('appointments.list.specialist' | t) }}
                     </a>
                     <p class="text-[12px] text-gray-400 truncate mt-0.5 leading-snug">
-                      {{ appointment.sessionTopic || 'جلسة استشارية' }}
+                      {{ appointment.sessionTopic || ('appointments.list.consultationSession' | t) }}
                     </p>
                   </div>
                 </div>
@@ -222,11 +220,11 @@
                     }}"
                   >
                     <span class="w-1.5 h-1.5 rounded-full {{ meta.dot }}"></span>
-                    {{ meta.label }}
+                    {{ meta.label | t }}
                   </span>
                   @if (appointment.sessionPrice) {
                     <span class="text-sm font-bold text-gray-900 leading-snug"
-                      >{{ appointment.sessionPrice }} ج.م</span
+                      >{{ appointment.sessionPrice }} {{ 'appointments.currency' | t }}</span
                     >
                   }
                 </div>
@@ -250,7 +248,7 @@
                             >⏱ {{ ct }}</span
                           >
                           <span class="text-[10px] text-red-500 leading-tight whitespace-nowrap"
-                            >يلغي الحجز عند انتهاء الوقت</span
+                            >{{ 'appointments.list.expiryWarningDesktop' | t }}</span
                           >
                         </span>
                       }
@@ -275,9 +273,7 @@
                             stroke-linejoin="round"
                             d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
                           />
-                        </svg>
-                        دفع
-                      </a>
+                        </svg>{{ 'wallet.transaction.payment' | t }}</a>
                     }
                     @if (canJoinAppointment(appointment)) {
                       <button
@@ -286,14 +282,12 @@
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                        انضم للجلسة
-                      </button>
+                        </svg>{{ 'appointments.join' | t }}</button>
                     }
                     <a
                       [routerLink]="['/appointments', appointment.id]"
                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
-                      title="التفاصيل"
+                      [title]="'admin.details.altfasyl' | t"
                     >
                       <svg
                         class="w-4 h-4"
@@ -312,7 +306,7 @@
                     <a
                       [routerLink]="['/appointments', appointment.id, 'track']"
                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
-                      title="تتبع الحالة"
+                      [title]="'appointments.list.trackStatus' | t"
                     >
                       <svg
                         class="w-4 h-4"
@@ -357,10 +351,10 @@
                       [routerLink]="['/appointments', appointment.id]"
                       class="text-sm font-bold text-gray-900 truncate block leading-snug cursor-pointer"
                     >
-                      {{ appointment.specialistName || 'مختص' }}
+                      {{ appointment.specialistName || ('appointments.list.specialist' | t) }}
                     </a>
                     <p class="text-[12px] text-gray-400 truncate mt-0.5 leading-snug">
-                      {{ appointment.sessionTopic || 'جلسة استشارية' }}
+                      {{ appointment.sessionTopic || ('appointments.list.consultationSession' | t) }}
                     </p>
                   </div>
                   <span
@@ -369,7 +363,7 @@
                     }}"
                   >
                     <span class="w-1.5 h-1.5 rounded-full {{ meta.dot }}"></span>
-                    {{ meta.label }}
+                    {{ meta.label | t }}
                   </span>
                 </div>
 
@@ -411,7 +405,7 @@
                 <div class="flex items-center justify-between pt-2.5 border-t border-gray-50/80">
                   @if (appointment.sessionPrice) {
                     <span class="text-sm font-bold text-gray-900"
-                      >{{ appointment.sessionPrice }} ج.م</span
+                      >{{ appointment.sessionPrice }} {{ 'appointments.currency' | t }}</span
                     >
                   }
                   <div class="flex items-center gap-2 mr-auto">
@@ -429,7 +423,7 @@
                             >⏱ {{ ct }}</span
                           >
                           <span class="text-[10px] text-red-500 leading-tight whitespace-nowrap"
-                            >الإلغاء بعد انتهاء المدة</span
+                            >{{ 'appointments.list.expiryWarningMobile' | t }}</span
                           >
                         </span>
                       }
@@ -455,9 +449,7 @@
                               stroke-linejoin="round"
                               d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
                             />
-                          </svg>
-                          دفع
-                        </a>
+                          </svg>{{ 'wallet.transaction.payment' | t }}</a>
                       }
                       @if (canJoinAppointment(appointment)) {
                         <button
@@ -466,14 +458,12 @@
                         >
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
-                          </svg>
-                          انضم للجلسة
-                        </button>
+                          </svg>{{ 'appointments.join' | t }}</button>
                       }
                       <a
                         [routerLink]="['/appointments', appointment.id]"
                         class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
-                        title="التفاصيل"
+                        [title]="'admin.details.altfasyl' | t"
                       >
                         <svg
                           class="w-4 h-4"
@@ -492,7 +482,7 @@
                       <a
                         [routerLink]="['/appointments', appointment.id, 'track']"
                         class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
-                        title="تتبع الحالة"
+                        [title]="'appointments.list.trackStatus' | t"
                       >
                         <svg
                           class="w-4 h-4"
@@ -538,28 +528,28 @@
           </div>
           <h3 class="text-lg font-bold text-bosla-charcoal">
             @if (activeTab() === 'all') {
-              لا توجد مواعيد مسجلة
+              {{ 'appointments.list.emptyAll' | t }}
             } @else if (activeTab() === 'pending') {
-              لا توجد مواعيد قيد الانتظار
+              {{ 'appointments.list.emptyPending' | t }}
             } @else if (activeTab() === 'awaiting_payment') {
-              لا توجد مواعيد بانتظار الدفع
+              {{ 'appointments.list.emptyAwaitingPayment' | t }}
             } @else if (activeTab() === 'paid') {
-              لا توجد مواعيد مؤكدة ومدفوعة
+              {{ 'appointments.list.emptyPaid' | t }}
             } @else if (activeTab() === 'completed') {
-              لا توجد مواعيد مكتملة
+              {{ 'appointments.list.emptyCompleted' | t }}
             } @else {
-              لا توجد مواعيد ملغية
+              {{ 'appointments.list.emptyCancelled' | t }}
             }
           </h3>
           <p class="text-sm text-bosla-grey max-w-sm mt-2 leading-relaxed">
             @if (searchQuery()) {
-              لا توجد نتائج تطابق بحثك. جرب كلمات بحث مختلفة.
+              {{ 'appointments.list.emptySearch' | t }}
             } @else if (activeTab() === 'all') {
-              ابدأ رحلتك الاستشارية واحجز جلستك الأولى مع أحد المختصين المعتمدين.
+              {{ 'appointments.list.emptyAllDesc' | t }}
             } @else if (activeTab() === 'pending') {
-              عندما يقوم مستخدم بحجز موعد، سيظهر هنا بانتظار موافقتك.
+              {{ 'appointments.list.emptyPendingDesc' | t }}
             } @else {
-              لم يتم تسجيل أي مواعيد سابقة بعد في سجلك. لا يوجد أي مواعيد في هذا القسم حالياً.
+              {{ 'appointments.list.emptyDefaultDesc' | t }}
             }
           </p>
           @if (!searchQuery() && activeTab() === 'all') {
@@ -573,7 +563,7 @@
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
-                احجز جلستك الأولى
+                {{ 'appointments.list.bookFirst' | t }}
               </span>
             </ui-button>
           }

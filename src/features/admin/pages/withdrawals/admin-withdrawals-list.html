@@ -1,7 +1,7 @@
 <div class="withdrawals-page">
   <div class="page-header">
-    <h1>إدارة السحوبات</h1>
-    <p class="page-subtitle">إدارة طلبات السحب المقدمة من المتخصصين</p>
+    <h1>{{ 'admin.withdrawalManagement.adarh_alshwbat' | t }}</h1>
+    <p class="page-subtitle">{{ 'admin.withdrawals.subtitle' | t }}</p>
   </div>
 
   <!-- Filters -->
@@ -22,7 +22,7 @@
   @if (isLoading()) {
     <div class="loading-state">
       <div class="spinner"></div>
-      <p>جاري التحميل...</p>
+      <p>{{ 'common.loading' | t }}</p>
     </div>
   } @else if (withdrawals().length === 0) {
     <div class="empty-state">
@@ -31,20 +31,20 @@
         <path d="M15 7h-8v8"/>
         <circle cx="12" cy="12" r="10"/>
       </svg>
-      <h3>لا توجد سحوبات</h3>
-      <p>لم يتم تقديم أي طلبات سحب بعد.</p>
+      <h3>{{ 'admin.withdrawals.noWithdrawals' | t }}</h3>
+      <p>{{ 'admin.withdrawals.noWithdrawalsDesc' | t }}</p>
     </div>
   } @else {
     <div class="table-container">
       <table class="data-table">
         <thead>
           <tr>
-            <th>المتخصص</th>
-            <th>المبلغ</th>
-            <th>طريقة الدفع</th>
-            <th>الحالة</th>
-            <th>تاريخ الطلب</th>
-            <th>تاريخ المعالجة</th>
+            <th>{{ 'admin.specialistLabel.almtkhss' | t }}</th>
+            <th>{{ 'payments.amount' | t }}</th>
+            <th>{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</th>
+            <th>{{ 'payments.status' | t }}</th>
+            <th>{{ 'withdrawals.requestDate.tarykh_altlb' | t }}</th>
+            <th>{{ 'admin.withdrawals.processDate' | t }}</th>
             <th></th>
           </tr>
         </thead>
@@ -72,7 +72,7 @@
               <td>{{ w.requestedAt | date:'yyyy/MM/dd' }}</td>
               <td>{{ w.processedAt ? (w.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
               <td>
-                <a [routerLink]="['/admin/withdrawals', w.id]" class="btn btn-sm">تفاصيل</a>
+                <a [routerLink]="['/admin/withdrawals', w.id]" class="btn btn-sm">{{ 'common.details.tfasyl' | t }}</a>
               </td>
             </tr>
           }

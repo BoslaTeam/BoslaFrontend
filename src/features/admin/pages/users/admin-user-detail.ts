@@ -3,16 +3,19 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
 import { AdminUserDetailDto } from '../../contracts/admin.contracts';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-user-detail',
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   templateUrl: './admin-user-detail.html',
   styleUrl: './admin-user-detail.css',
 })
 export class AdminUserDetail implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly id = input.required<string>();
 
@@ -86,11 +89,11 @@ export class AdminUserDetail implements OnInit {
 
   getRoleName(role: number): string {
     const names: Record<number, string> = {
-      0: 'مستخدم',
-      1: 'متخصص',
-      2: 'مدير',
+      0: this.translationService.translate('admin.userRole.user'),
+      1: this.translationService.translate('admin.userRole.specialist'),
+      2: this.translationService.translate('admin.userRole.admin'),
     };
-    return names[role] ?? 'غير معروف';
+    return names[role] ?? this.translationService.translate('admin.userRole.unknown');
   }
 
   getRoleClass(role: number): string {

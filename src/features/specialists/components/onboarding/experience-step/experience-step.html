@@ -3,8 +3,8 @@
     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-blue/10 text-bosla-blue mb-4">
       <i class="fa-solid fa-briefcase text-lg"></i>
     </div>
-    <h3 class="text-2xl font-bold text-bosla-primary mb-2">الخبرات السابقة</h3>
-    <p class="text-bosla-grey">شارك مسيرتك المهنية — كل خبرة تضيف مصداقية لملفك التعريفي</p>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">{{ 'onboarding.experience.title' | t }}</h3>
+    <p class="text-bosla-grey">{{ 'onboarding.experience.subtitle' | t }}</p>
   </div>
 
   @if (errorMessage()) {
@@ -21,36 +21,34 @@
           <div class="flex justify-between items-center">
             <span class="text-sm font-bold text-bosla-charcoal">
               <i class="fa-solid fa-briefcase text-bosla-blue ml-1"></i>
-              خبرة #{{ $index + 1 }}
+              {{ 'onboarding.experience.entryLabel' | t }} #{{ $index + 1 }}
             </span>
             @if (experiences.length > 1) {
               <button type="button" (click)="removeEntry($index)"
                 class="text-bosla-error/60 hover:text-bosla-error text-sm cursor-pointer">
-                <i class="fa-solid fa-trash-can"></i>
-                حذف
-              </button>
+                <i class="fa-solid fa-trash-can"></i>{{ 'admin.users.delete' | t }}</button>
             }
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <ui-input formControlName="jobTitle" label="المسمى الوظيفي" placeholder="مثال: مهندس برمجيات" [required]="true" />
-            <ui-input formControlName="companyName" label="اسم الشركة" placeholder="مثال: شركة تقنية" [required]="true" />
+            <ui-input formControlName="jobTitle" [label]="'onboarding.experience.jobTitle' | t" [placeholder]="'onboarding.experience.jobPlaceholder' | t" [required]="true" />
+            <ui-input formControlName="companyName" [label]="'onboarding.experience.company' | t" [placeholder]="'onboarding.experience.companyPlaceholder' | t" [required]="true" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <ui-input formControlName="fromDate" label="تاريخ البداية" type="date" [required]="true" />
+            <ui-input formControlName="fromDate" [label]="'onboarding.experience.fromDate' | t" type="date" [required]="true" />
             <div>
-              <ui-input formControlName="toDate" label="تاريخ النهاية" type="date" />
+              <ui-input formControlName="toDate" [label]="'onboarding.experience.toDate' | t" type="date" />
               <label class="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" [checked]="isCurrent()[$index]"
                   (change)="toggleCurrent($index)"
                   class="w-4 h-4 rounded border-slate-300 text-bosla-primary focus:ring-bosla-primary/30 cursor-pointer" />
-                <span class="text-xs text-slate-500 font-medium">حتى الآن</span>
+                <span class="text-xs text-slate-500 font-medium">{{ 'onboarding.experience.current' | t }}</span>
               </label>
             </div>
           </div>
 
-          <ui-textarea formControlName="description" label="الوصف" placeholder="صف مهامك وإنجازاتك في هذه الخبرة" [rows]="2" />
+          <ui-textarea formControlName="description" [label]="'onboarding.experience.description' | t" [placeholder]="'onboarding.experience.descPlaceholder' | t" [rows]="2" />
         </div>
       }
     </div>
@@ -58,16 +56,14 @@
     <button type="button" (click)="addEntry()"
       class="w-full py-3 border-2 border-dashed border-bosla-charcoal/20 rounded-2xl text-bosla-grey hover:border-bosla-blue hover:text-bosla-blue transition-colors cursor-pointer font-sans font-medium text-sm">
       <i class="fa-solid fa-plus ml-1"></i>
-      إضافة خبرة أخرى
+      {{ 'onboarding.experience.addMore' | t }}
     </button>
 
     <div class="flex justify-between pt-4">
       <ui-button variant="ghost" type="button" (btnClick)="back.emit()">
-        <i class="fa-solid fa-chevron-right"></i>
-        السابق
-      </ui-button>
+        <i class="fa-solid fa-chevron-right"></i>{{ 'pagination.prev' | t }}</ui-button>
       <ui-button type="submit" [loading]="isSaving()">
-        حفظ ومتابعة
+        {{ 'onboarding.experience.saveNext' | t }}
         <i class="fa-solid fa-arrow-left"></i>
       </ui-button>
     </div>

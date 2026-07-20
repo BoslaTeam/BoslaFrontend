@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
+import { TranslationService } from '@core/services/translation.service';
 import { AdminPaymentDto } from '../../contracts/admin.contracts';
 import { PaginationMetadata } from '@core/models/paginated-response.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 type PaymentStatus = 'Pending' | 'Completed' | 'Failed' | 'Refunded';
 
 interface StatusOption {
@@ -15,12 +17,13 @@ interface StatusOption {
 
 @Component({
   selector: 'app-admin-payments-list',
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, TranslatePipe],
   templateUrl: './admin-payments-list.html',
   styleUrl: './admin-payments-list.css',
 })
 export class AdminPaymentsList implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly payments = signal<AdminPaymentDto[]>([]);
   readonly isLoading = signal(true);
@@ -34,13 +37,15 @@ export class AdminPaymentsList implements OnInit {
   readonly totalPayments = computed(() => this.metadata()?.totalCount ?? 0);
   readonly totalPages = computed(() => this.metadata()?.totalPages ?? 0);
 
-  readonly statusOptions: StatusOption[] = [
-    { value: null, label: 'الكل' },
-    { value: 'Completed', label: 'مكتمل' },
-    { value: 'Pending', label: 'قيد الانتظار' },
-    { value: 'Failed', label: 'فشل' },
-    { value: 'Refunded', label: 'مسترجع' },
-  ];
+  get statusOptions(): StatusOption[] {
+    return [
+      { value: null, label: this.translationService.translate('admin.filter.all') },
+      { value: 'Completed', label: this.translationService.translate('admin.status.completed') },
+      { value: 'Pending', label: this.translationService.translate('admin.status.pending') },
+      { value: 'Failed', label: this.translationService.translate('admin.status.failed') },
+      { value: 'Refunded', label: this.translationService.translate('admin.status.refunded') },
+    ];
+  }
 
   ngOnInit(): void {
     this.loadPayments();
@@ -102,10 +107,10 @@ export class AdminPaymentsList implements OnInit {
 
   getMethodLabel(method: string): string {
     const labels: Record<string, string> = {
-      stripe: 'Stripe',
-      card: 'بطاقة ائتمان',
-      wallet: 'محفظة',
-      bank: 'تحويل بنكي',
+      stripe: this.translationService.translate('admin.method.stripe'),
+      card: this.translationService.translate('admin.method.card'),
+      wallet: this.translationService.translate('admin.method.wallet'),
+      bank: this.translationService.translate('admin.method.bank'),
     };
     return labels[method.toLowerCase()] ?? method;
   }

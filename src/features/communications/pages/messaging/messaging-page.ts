@@ -7,11 +7,12 @@ import { ChatSignalrService } from '../../services/chat-signalr.service';
 import { LeftSidebar } from '../../components/left-sidebar/left-sidebar';
 import { ChatArea } from '../../components/chat-area/chat-area';
 import { ConversationSidebar } from '../../components/conversation-sidebar/conversation-sidebar';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-messaging-page',
   standalone: true,
-  imports: [LeftSidebar, ChatArea, ConversationSidebar],
+  imports: [LeftSidebar, ChatArea, ConversationSidebar, TranslatePipe],
   templateUrl: './messaging-page.html',
   styleUrl: './messaging-page.css',
 })

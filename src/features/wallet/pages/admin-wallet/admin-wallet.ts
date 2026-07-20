@@ -1,16 +1,20 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { WalletApiService } from '../../services/wallet-api.service';
 import { AdminWalletStatsDto, WalletResponseDto, TransactionDto } from '../../contracts/wallet.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-admin-wallet',
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   templateUrl: './admin-wallet.html',
 })
 export class AdminWallet implements OnInit {
   private readonly walletApi = inject(WalletApiService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly stats = signal<AdminWalletStatsDto | null>(null);
   readonly wallet = signal<WalletResponseDto | null>(null);
   readonly transactions = signal<TransactionDto[]>([]);

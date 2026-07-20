@@ -1,10 +1,11 @@
 import { Component, input, computed } from '@angular/core';
 import { Message, VideoSessionData } from '../../models/message.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-video-invitation-message',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './video-invitation-message.html',
   styleUrl: '../../chat.css',
 })

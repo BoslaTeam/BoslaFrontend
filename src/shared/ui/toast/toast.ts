@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { ToastService } from '@core/services/toast.service';
+import { TranslationService } from '@core/services/translation.service';
 
 @Component({
   selector: 'ui-toast',
@@ -10,6 +11,8 @@ import { ToastService } from '@core/services/toast.service';
 })
 export class UiToast {
   readonly toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   getVariantClasses(variant: string): string {
     const variants: Record<string, string> = {

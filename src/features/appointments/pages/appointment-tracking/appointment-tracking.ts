@@ -9,6 +9,8 @@ import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { VideoSessionService } from '@features/video/services/video-session.service';
 import { ToastService } from '@core/services/toast.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 export interface TrackingStep {
   key: string;
   label: string;
@@ -20,7 +22,7 @@ export interface TrackingStep {
 @Component({
   selector: 'app-appointment-tracking',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiSpinner],
+  imports: [CommonModule, RouterLink, UiSpinner, TranslatePipe],
   templateUrl: './appointment-tracking.html',
 })
 export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
@@ -32,7 +34,9 @@ export class AppointmentTracking implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly videoSessionService = inject(VideoSessionService);
   private readonly toast = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly newConversationId = signal<string | null>(null);
 
   readonly hasConversation = computed(() => {

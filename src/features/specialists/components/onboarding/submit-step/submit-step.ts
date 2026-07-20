@@ -1,18 +1,21 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { TranslationService } from '@core/services/translation.service';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
 import { UiButton } from '@shared/ui/button/button';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'submit-step',
   standalone: true,
-  imports: [UiButton],
+  imports: [UiButton, TranslatePipe],
   templateUrl: './submit-step.html',
 })
 export class SubmitStep {
   private readonly authService = inject(AuthService);
   private readonly navigationService = inject(NavigationService);
+  private readonly translationService = inject(TranslationService);
   readonly onboardingStore = inject(SpecialistOnboardingStore);
 
   readonly isSubmitting = signal(false);
@@ -69,7 +72,7 @@ export class SubmitStep {
           this.errorMessage.set(msgs.join(' • '));
         } else {
           this.errorMessage.set(
-            apiError?.title ?? 'فشل في إرسال الطلب. يرجى المحاولة مرة أخرى.'
+            apiError?.title ?? this.translationService.translate('onboarding.submit.error')
           );
         }
       },

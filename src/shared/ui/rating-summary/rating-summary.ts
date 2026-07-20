@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface RatingDistribution {
   stars: number;     // من 1 إلى 5
@@ -19,6 +20,9 @@ export class UiRatingSummary {
 
   // توزيع النسب لكل نجمة (تأتي مرتبة من 5 نجوم نزولاً إلى 1 نجمة)
   readonly distribution = input.required<RatingDistribution[]>();
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   // حساب النجوم الكاملة للمتوسط الرقمي الكبير
   readonly fullStars = computed(() => {

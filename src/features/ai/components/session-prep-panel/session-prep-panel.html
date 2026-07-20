@@ -1,4 +1,4 @@
-<div class="session-prep-overlay" dir="rtl" role="dialog" aria-modal="true" aria-label="تحضير الجلسة">
+<div class="session-prep-overlay" [dir]="direction()" role="dialog" aria-modal="true" aria-label="تحضير الجلسة">
   <div class="session-prep-card">
 
     <!-- Header -->
@@ -123,7 +123,7 @@
                       @if (apt.summary) {
                         <p class="past-apt-summary">{{ apt.summary }}</p>
                       } @else {
-                        <p class="past-apt-no-summary">لا يوجد ملخص</p>
+                        <p class="past-apt-no-summary">{{ 'common.no' | t }} يوجد ملخص</p>
                       }
                     </div>
                   </div>
@@ -146,9 +146,7 @@
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>
-        رجوع
-      </button>
+        </svg>{{ 'common.back' | t }}</button>
 
       <button
         id="session-prep-enter-btn"

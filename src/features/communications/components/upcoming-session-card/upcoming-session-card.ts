@@ -17,6 +17,7 @@ import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { ApiResponse } from '@core/models/api-response.model';
 import { AgoraTokenResponse } from '../../../video/models/video-session.model';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import {
   formatArabicDate,
   formatArabicTime,
@@ -42,7 +43,7 @@ interface UpcomingSessionData {
 @Component({
   selector: 'chat-upcoming-session-card',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './upcoming-session-card.html',
 })
 export class UpcomingSessionCard implements OnDestroy {

@@ -1,4 +1,4 @@
-<div class="relative w-full text-right" dir="rtl">
+<div class="relative w-full" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'" [dir]="direction()">
 
     @if (label()) {
     <label class="block text-sm font-medium text-bosla-charcoal mb-1.5 selection:bg-transparent">
@@ -7,7 +7,7 @@
     }
 
     <button type="button" (click)="toggleDropdown()" [disabled]="disabled()"
-        class="w-full h-11 px-4 bg-bosla-offwhite border rounded-xl flex items-center justify-between gap-3 text-right cursor-pointer select-none transition-all duration-200 outline-hidden font-sans text-[15px]"
+        class="w-full h-11 px-4 bg-bosla-offwhite border rounded-xl flex items-center justify-between gap-3 cursor-pointer select-none transition-all duration-200 outline-hidden font-sans text-[15px]" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'"
         [class.border-bosla-charcoal/10]="!isOpen() && !disabled()"
         [class.text-bosla-charcoal/40]="selectedValue() === null && !disabled()"
         [class.text-bosla-charcoal]="selectedValue() !== null && !disabled()"

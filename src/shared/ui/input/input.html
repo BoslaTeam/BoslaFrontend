@@ -1,9 +1,9 @@
-<div class="w-full flex flex-col space-y-1 text-right" dir="rtl">
+<div class="w-full flex flex-col space-y-1" [dir]="direction()" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
   @if (label()) {
   <label [for]="inputId()" class="text-[13px] font-medium text-bosla-charcoal/80 font-sans block">
     {{ label() }}
     @if (required()) {
-    <span class="text-bosla-error mr-0.5" aria-hidden="true">*</span>
+    <span class="text-bosla-error me-0.5" aria-hidden="true">*</span>
     }
   </label>
   }

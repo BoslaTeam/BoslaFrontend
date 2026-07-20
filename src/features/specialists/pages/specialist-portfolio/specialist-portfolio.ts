@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, computed, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -6,16 +6,20 @@ import { SpecialistsApiService } from '../../data-access/specialist-api.service'
 import { PortfolioItemDto, CreatePortfolioItemRequest, UpdatePortfolioItemRequest } from '../../contracts/specialist-portfolio.contract';
 import { ToastService } from '@core/services/toast.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-specialist-portfolio',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './specialist-portfolio.html',
 })
 export class SpecialistPortfolio implements OnInit {
   private api = inject(SpecialistsApiService);
   private toast = inject(ToastService);
+  private translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly items = signal<PortfolioItemDto[]>([]);
   readonly loading = signal(true);
   readonly showForm = signal(false);
@@ -200,11 +204,8 @@ export class SpecialistPortfolio implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'Approved': return 'مقبول';
-      case 'Rejected': return 'مرفوض';
-      case 'Pending': return 'قيد المراجعة';
-      default: return 'مسودة';
-    }
+    const key = `specialist.portfolio.status${status}`;
+    const t = this.translationService.translate(key);
+    return t === key ? status : t;
   }
 }

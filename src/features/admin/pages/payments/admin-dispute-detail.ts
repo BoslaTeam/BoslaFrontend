@@ -4,16 +4,19 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { ComplaintDetailDto, ResolveDisputeRequest } from '@features/payments/contracts/payment.contracts';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-dispute-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, TranslatePipe],
   templateUrl: './admin-dispute-detail.html',
 })
 export class AdminDisputeDetail implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly id = input.required<string>();
 
@@ -40,9 +43,7 @@ export class AdminDisputeDetail implements OnInit {
   }
 
   resolveDispute(approveRefund: boolean): void {
-    if (!confirm(approveRefund
-      ? 'هل أنت متأكد من رد المبلغ للمستخدم؟'
-      : 'هل أنت متأكد من رفض الشكوى؟')) return;
+    if (!this.confirmResolve(approveRefund)) return;
 
     this.isResolving.set(true);
     this.errorMessage.set(null);
@@ -59,18 +60,25 @@ export class AdminDisputeDetail implements OnInit {
       },
       error: (err) => {
         this.isResolving.set(false);
-        this.errorMessage.set(err?.error?.message || 'حدث خطأ');
+        this.errorMessage.set(err?.error?.message || this.translationService.translate('errors.unknownError'));
       },
     });
   }
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Reviewed: 'تمت المراجعة',
-      ResolvedRefunded: 'تم الرد (استرجاع)',
-      ResolvedRejected: 'تم الرد (رفض)',
+      Pending: this.translationService.translate('dispute.status.Pending'),
+      Reviewed: this.translationService.translate('dispute.status.Reviewed'),
+      ResolvedRefunded: this.translationService.translate('dispute.status.ResolvedRefunded'),
+      ResolvedRejected: this.translationService.translate('dispute.status.ResolvedRejected'),
     };
     return labels[status] ?? status;
   }
+
+  confirmResolve(approveRefund: boolean): boolean {
+    return confirm(approveRefund
+      ? this.translationService.translate('admin.disputes.confirmRefund')
+      : this.translationService.translate('admin.disputes.confirmReject'));
+  }
+
 }

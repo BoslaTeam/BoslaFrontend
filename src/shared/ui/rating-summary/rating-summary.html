@@ -1,4 +1,4 @@
-<div class="w-full bg-white border border-slate-100 p-8 md:p-10 rounded-3xl shadow-[0_8px_32px_rgba(27,79,114,0.06)] flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden group" dir="rtl">
+<div class="w-full bg-white border border-slate-100 p-8 md:p-10 rounded-3xl shadow-[0_8px_32px_rgba(27,79,114,0.06)] flex flex-col md:flex-row items-center justify-between gap-10 relative overflow-hidden group" [dir]="direction()">
     
     <!-- Background flare -->
     <div class="absolute -top-16 -right-16 w-48 h-48 bg-bosla-orange/5 rounded-full blur-3xl group-hover:bg-bosla-orange/10 transition-colors duration-700"></div>
@@ -31,7 +31,7 @@
     <div class="block md:hidden w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-2"></div>
 
     <!-- Progress Bars -->
-    <div class="flex flex-col gap-4 flex-1 w-full z-10" dir="rtl">
+    <div class="flex flex-col gap-4 flex-1 w-full z-10" [dir]="direction()">
         @for (item of distribution(); track item.stars) {
         <div class="flex items-center gap-4 w-full group/bar">
             

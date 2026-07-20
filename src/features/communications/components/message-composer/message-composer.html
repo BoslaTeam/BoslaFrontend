@@ -9,8 +9,8 @@
       type="button"
       (click)="send()"
       [disabled]="!message().trim() || store.isSendingMessage()"
-      aria-label="إرسال الرسالة"
-      title="إرسال الرسالة (Enter)"
+      [attr.aria-label]="'messaging.sendMessage' | t"
+      [title]="'messaging.sendMessage' | t"
     >
       @if (store.isSendingMessage()) {
         <svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
@@ -28,7 +28,7 @@
       #textarea
       id="chat-message-input"
       class="flex-1 resize-none bg-transparent py-2 px-2 text-sm text-[#1B4F72] font-semibold placeholder-slate-400 focus:outline-none min-h-[36px] max-h-[120px] overflow-y-auto leading-relaxed font-sans"
-      placeholder="اكتب رسالة..."
+      [placeholder]="'messaging.placeholder.aktb_rsalh' | t"
       rows="1"
       [value]="message()"
       (input)="onInput($event)"
@@ -58,8 +58,8 @@
       <!-- Attachment button (future) — hidden on very small screens -->
       <button
         class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-[#1B4F72]/40 cursor-default focus:outline-none"
-        aria-label="إرفاق ملف"
-        title="إرفاق ملف"
+        [attr.aria-label]="'messaging.attachFile' | t"
+        [title]="'messaging.attachFile' | t"
         type="button"
         [disabled]="true"
       >
@@ -73,7 +73,7 @@
   <!-- Keyboard hint: hidden on mobile -->
   <div class="hidden md:flex justify-center mt-3 opacity-60">
     <p class="text-[10px] text-[#1B4F72] font-sans flex items-center gap-1.5 select-none font-bold">
-      اضغط <kbd class="px-2 py-0.5 rounded-md bg-white/50 border border-white text-[9px] font-black text-[#1B4F72] font-mono shadow-sm">Enter</kbd> للإرسال · <kbd class="px-2 py-0.5 rounded-md bg-white/50 border border-white text-[9px] font-black text-[#1B4F72] font-mono shadow-sm">Shift+Enter</kbd> لسطر جديد
+      {{ 'messaging.keyboardHint' | t }}
     </p>
   </div>
 </div>

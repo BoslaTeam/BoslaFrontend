@@ -1,6 +1,7 @@
 import { Component, inject, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface ExpertData {
   id: string;
@@ -16,7 +17,7 @@ export interface ExpertData {
 @Component({
   selector: 'ui-expert-card',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, TranslatePipe],
   templateUrl: './expert-card.html',
   styleUrls: ['./expert-card.css']
 })

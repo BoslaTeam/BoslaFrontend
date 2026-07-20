@@ -2,19 +2,22 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '@core/services/auth.service';
+import { TranslationService } from '@core/services/translation.service';
 import { AdminDashboardDto, AdminUserDto, AdminAppointmentDto } from '../../contracts/admin.contracts';
 import { UiDashboardStatCard } from '@shared/ui/dashboard-stat-card/dashboard-stat-card';
 import { DatePipe } from '@angular/common';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [RouterLink, UiDashboardStatCard, DatePipe],
+  imports: [RouterLink, UiDashboardStatCard, DatePipe, TranslatePipe],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
 export class AdminDashboard implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly authService = inject(AuthService);
+  private readonly translationService = inject(TranslationService);
 
   readonly currentUser = this.authService.currentUser;
   readonly isLoading = signal(true);
@@ -57,14 +60,14 @@ export class AdminDashboard implements OnInit {
 
   getStatusLabel(status: number): string {
     const labels: Record<number, string> = {
-      0: 'معلق',
-      1: 'مؤكد',
-      2: 'مكتمل',
-      3: 'ملغي',
-      4: 'معاد جدولته',
-      5: 'مدفوع',
+      0: this.translationService.translate('admin.status.pending'),
+      1: this.translationService.translate('admin.status.confirmed'),
+      2: this.translationService.translate('admin.status.completed'),
+      3: this.translationService.translate('admin.status.cancelled'),
+      4: this.translationService.translate('admin.status.rescheduled'),
+      5: this.translationService.translate('admin.status.paid'),
     };
-    return labels[status] ?? 'غير معروف';
+    return labels[status] ?? this.translationService.translate('admin.status.unknown');
   }
 
   getStatusClass(status: number): string {
@@ -81,10 +84,10 @@ export class AdminDashboard implements OnInit {
 
   getRoleName(role: number): string {
     const names: Record<number, string> = {
-      0: 'مستخدم',
-      1: 'متخصص',
-      2: 'مدير',
+      0: this.translationService.translate('admin.userRole.user'),
+      1: this.translationService.translate('admin.userRole.specialist'),
+      2: this.translationService.translate('admin.userRole.admin'),
     };
-    return names[role] ?? 'غير معروف';
+    return names[role] ?? this.translationService.translate('admin.userRole.unknown');
   }
 }

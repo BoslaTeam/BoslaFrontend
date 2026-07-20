@@ -1,4 +1,4 @@
-<div dir="rtl" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
 
   <div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-bosla-orange/5 blur-[100px] pointer-events-none z-0"></div>
   <div class="fixed bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-bosla-blue/5 blur-[120px] pointer-events-none z-0"></div>
@@ -8,8 +8,8 @@
 
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
         <div>
-          <h1 class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">المعاملات المالية</h1>
-          <p class="text-sm text-slate-500">تتبع فواتيرك ومدفوعاتك السابقة.</p>
+          <h1 class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">{{ 'payments.myPayments.title' | t }}</h1>
+          <p class="text-sm text-slate-500">{{ 'payments.myPayments.subtitle' | t }}</p>
         </div>
       </div>
 
@@ -20,7 +20,7 @@
       } @else if (payments().length === 0) {
         <div class="text-center py-20 text-slate-400">
           <i class="fa-solid fa-receipt text-5xl mb-4 opacity-30"></i>
-          <p class="text-lg font-bold">لا توجد معاملات مالية بعد</p>
+          <p class="text-lg font-bold">{{ 'payments.myPayments.noTransactions' | t }}</p>
         </div>
       } @else {
         <div class="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-xl border border-white overflow-hidden">
@@ -28,11 +28,11 @@
             <table class="w-full text-right whitespace-nowrap">
               <thead class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-[13px] uppercase tracking-wider">
                 <tr>
-                  <th class="px-6 py-5 font-black">التاريخ</th>
-                  <th class="px-6 py-5 font-black">المبلغ</th>
-                  <th class="px-6 py-5 font-black">الحالة</th>
-                  <th class="px-6 py-5 font-black">حالة الحجز</th>
-                  <th class="px-6 py-5 font-black">تاريخ الإفراج</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.date' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.amount' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.status' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.escrowStatus' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.releaseDate' | t }}</th>
                   <th class="px-6 py-5 font-black"></th>
                 </tr>
               </thead>
@@ -59,9 +59,9 @@
                     @if (pay.escrowStatus === 'Held' && pay.heldUntil) {
                       {{ pay.heldUntil | date:'dd MMM yyyy' }}
                     } @else if (pay.escrowStatus === 'Released') {
-                      <span class="text-emerald-600">مفرج عنه</span>
+                      <span class="text-emerald-600">{{ 'payments.escrowStatus.released' | t }}</span>
                     } @else if (pay.escrowStatus === 'Disputed') {
-                      <span class="text-red-600">في نزاع</span>
+                      <span class="text-red-600">{{ 'payments.escrowStatus.disputed' | t }}</span>
                     } @else {
                       —
                     }
@@ -70,7 +70,7 @@
                     @if (canFileDispute(pay)) {
                       <a [routerLink]="['/payments/dispute', pay.id]"
                          class="text-xs text-red-500 hover:text-red-700 font-bold underline">
-                        تقديم شكوى
+                        {{ 'payments.fileDispute' | t }}
                       </a>
                     }
                   </td>

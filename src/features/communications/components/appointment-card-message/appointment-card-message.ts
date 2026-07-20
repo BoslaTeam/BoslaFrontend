@@ -1,10 +1,11 @@
 import { Component, input, computed } from '@angular/core';
 import { Message, AppointmentData } from '../../models/message.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-appointment-card-message',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './appointment-card-message.html',
   styleUrl: '../../chat.css',
 })

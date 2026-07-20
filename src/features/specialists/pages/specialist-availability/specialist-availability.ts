@@ -9,6 +9,8 @@ import { ApiResponse } from '@core/models/api-response.model';
 import { ToastService } from '@core/services/toast.service';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 // ─── Types ────────────────────────────────────────────────────────
 type SlotStatus = 'available' | 'booked' | 'ended' | 'cancelled';
 
@@ -53,10 +55,16 @@ const MIN_SESSION_MINUTES = 15;
 const MAX_GENERATION_DAYS = 15;
 
 const WEEKDAY_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const WEEKDAY_KEYS = ['specialist.availability.sunday', 'specialist.availability.monday', 'specialist.availability.tuesday', 'specialist.availability.wednesday', 'specialist.availability.thursday', 'specialist.availability.friday', 'specialist.availability.saturday'];
 
 const MONTH_NAMES = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+];
+
+const MONTH_KEYS = [
+  'specialist.availability.january', 'specialist.availability.february', 'specialist.availability.march', 'specialist.availability.april', 'specialist.availability.may', 'specialist.availability.june',
+  'specialist.availability.july', 'specialist.availability.august', 'specialist.availability.september', 'specialist.availability.october', 'specialist.availability.november', 'specialist.availability.december',
 ];
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
@@ -66,6 +74,13 @@ const STATUS_META: Record<SlotStatus, { label: string }> = {
   booked: { label: 'محجوز' },
   ended: { label: 'منتهي' },
   cancelled: { label: 'ملغي' },
+};
+
+const STATUS_META_KEYS: Record<SlotStatus, string> = {
+  available: 'specialist.availability.statusAvailable',
+  booked: 'specialist.availability.statusBooked',
+  ended: 'specialist.availability.statusEnded',
+  cancelled: 'specialist.availability.statusCancelled',
 };
 
 // ─── Pure Helpers ──────────────────────────────────────────────────
@@ -82,9 +97,9 @@ function formatDuration(ms: number): string {
   if (totalMin >= 60) {
     const h = Math.floor(totalMin / 60);
     const m = totalMin % 60;
-    return m > 0 ? `${h}s ${m}d` : `${h}s`;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
   }
-  return `${totalMin}d`;
+  return `${totalMin}min`;
 }
 
 function slotsOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {
@@ -96,7 +111,7 @@ function timeOptions(): { value: string; label: string }[] {
   for (let h = 0; h < 24; h++) {
     for (const m of [0, 30]) {
       const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      const period = h >= 12 ? 'م' : 'ص';
+      const period = h >= 12 ? 'PM' : 'AM';
       const hour12 = h % 12 || 12;
       opts.push({ value: v, label: `${hour12}:${String(m).padStart(2, '0')} ${period}` });
     }
@@ -191,34 +206,52 @@ function formatSessionDuration(minutes: number): string {
   if (minutes >= 60) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
-    return m > 0 ? `${h}س ${m}د` : `${h} ساعات`;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
   }
-  return `${minutes} دقيقة`;
+  return `${minutes}min`;
 }
 
 // ─── Component ─────────────────────────────────────────────────────
 @Component({
   selector: 'app-specialist-availability',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, TranslatePipe],
   templateUrl: './specialist-availability.html',
   styleUrl: './specialist-availability.css',
 })
 export class SpecialistAvailability implements OnInit {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
+  private translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly allTimeOptions = timeOptions();
   readonly durationOptions = DURATION_OPTIONS;
   readonly weekdayNames = WEEKDAY_NAMES;
+  readonly weekdayKeys = WEEKDAY_KEYS;
+  readonly monthKeys = MONTH_KEYS;
   readonly STATUS_META = STATUS_META;
+  readonly ST_META = STATUS_META_KEYS;
   readonly formatTimeShort = formatTimeShort;
   readonly formatSessionDuration = formatSessionDuration;
-  readonly formatDateLong = formatDateLong;
   readonly formatDuration = formatDuration;
   readonly formatTime = formatTime;
   readonly dayNameEn = dayNameEn;
   readonly todayStr = new Date().toISOString().slice(0, 10);
+
+  formatDateLong(d: Date): string {
+    const wd = this.translationService.translate(this.weekdayKeys[d.getDay()]);
+    const mn = this.translationService.translate(this.monthKeys[d.getMonth()]);
+    if (this.translationService.currentLang() === 'ar') {
+      return `${wd}، ${d.getDate()} ${mn} ${d.getFullYear()}`;
+    }
+    return `${wd}, ${mn} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  formatWeekdays(days: number[]): string {
+    const sep = this.translationService.currentLang() === 'ar' ? '، ' : ', ';
+    return days.map(d => this.translationService.translate(this.weekdayKeys[d])).join(sep);
+  }
 
   // Schedule form
   readonly editingScheduleId = signal<string | null>(null);
@@ -390,10 +423,9 @@ export class SpecialistAvailability implements OnInit {
 
   readonly scheduleFilterOptions = computed(() => {
     const all = this.schedules();
-    const current = this.slotScheduleFilter();
-    return [{ id: null, label: 'كل الجداول' }, ...all.map(s => ({
+    return [{ id: null, label: this.translationService.translate('specialist.availability.allSchedules') }, ...all.map(s => ({
       id: s.id,
-      label: `${s.days.map(d => WEEKDAY_NAMES[d]).join('، ')} — ${formatTimeShort(s.startTime)}-${formatTimeShort(s.endTime)}`,
+      label: `${s.days.map(d => this.translationService.translate(this.weekdayKeys[d])).join(', ')} — ${formatTimeShort(s.startTime)}-${formatTimeShort(s.endTime)}`,
     }))];
   });
 
@@ -472,11 +504,11 @@ export class SpecialistAvailability implements OnInit {
   });
 
   // ─── Filter options for template ──────────────────────────────
-  readonly filterOptions: { key: 'all' | 'available' | 'booked' | 'ended'; label: string }[] = [
-    { key: 'all', label: 'الكل' },
-    { key: 'available', label: 'المتاحة' },
-    { key: 'booked', label: 'المحجوزة' },
-    { key: 'ended', label: 'المنتهية' },
+  readonly filterOptions: { key: 'all' | 'available' | 'booked' | 'ended'; labelKey: string }[] = [
+    { key: 'all', labelKey: 'specialist.availability.filterAll' },
+    { key: 'available', labelKey: 'specialist.availability.filterAvailable' },
+    { key: 'booked', labelKey: 'specialist.availability.filterBooked' },
+    { key: 'ended', labelKey: 'specialist.availability.filterEnded' },
   ];
 
   // ─── Lifecycle ────────────────────────────────────────────────
@@ -508,7 +540,7 @@ export class SpecialistAvailability implements OnInit {
           this.loadAppointments();
         },
         error: (err: any) => {
-          const title = err?.title || err?.error?.title || err?.message || 'فشل تحميل المواعيد.';
+          const title = err?.title || err?.error?.title || err?.message || this.translationService.translate('specialist.availability.errorUnknown');
           this.error.set(title);
         },
       });
@@ -605,22 +637,22 @@ export class SpecialistAvailability implements OnInit {
 
     const selectedDays = this.formDays().map((sel, i) => (sel ? i : -1)).filter((i) => i >= 0);
     if (selectedDays.length === 0) {
-      this.formError.set('يرجى اختيار يوم واحد على الأقل.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorSelectDay'));
       return;
     }
 
     if (!this.formStartTime() || !this.formEndTime()) {
-      this.formError.set('يرجى تحديد وقت البداية والنهاية.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorSelectTime'));
       return;
     }
 
     if (this.formStartTime() >= this.formEndTime()) {
-      this.formError.set('وقت النهاية يجب أن يكون بعد وقت البداية.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorEndAfterStart'));
       return;
     }
 
     if (!this.formStartDate()) {
-      this.formError.set('يرجى تحديد تاريخ البداية.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorSelectStartDate'));
       return;
     }
 
@@ -628,13 +660,13 @@ export class SpecialistAvailability implements OnInit {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (new Date(startDate + 'T00:00:00') < today) {
-      this.formError.set('تاريخ البداية يجب أن يكون اليوم أو بعده.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorStartToday'));
       return;
     }
 
     const endDate = this.formEndDate();
     if (endDate && endDate < startDate) {
-      this.formError.set('تاريخ النهاية يجب أن يكون بعد تاريخ البداية أو يساويه.');
+      this.formError.set(this.translationService.translate('specialist.availability.errorEndAfterStartDate'));
       return;
     }
 
@@ -658,7 +690,7 @@ export class SpecialistAvailability implements OnInit {
     for (const s of allSchedules) {
       if (s.id === editId) continue;
       if (schedulesConflict(draft, s)) {
-        this.formError.set('هذا الجدول يتعارض مع جدول موجود مسبقاً.');
+        this.formError.set(this.translationService.translate('specialist.availability.errorConflict'));
         return;
       }
     }
@@ -730,8 +762,8 @@ export class SpecialistAvailability implements OnInit {
         },
         error: (err: any) => {
           this.isSyncing.set(false);
-          const title = err?.title || err?.error?.title || err?.message || 'خطأ غير معروف';
-          this.toast.danger('خطأ في مزامنة المواعيد: ' + title);
+          const title = err?.title || err?.error?.title || err?.message || this.translationService.translate('specialist.availability.errorUnknown');
+          this.toast.danger(this.translationService.translate('specialist.availability.errorSync') + title);
         },
       });
     };
@@ -743,7 +775,7 @@ export class SpecialistAvailability implements OnInit {
   private finishSync(isEdit: boolean): void {
     this.isSyncing.set(false);
     this.closeForm();
-    this.toast.success(isEdit ? 'تم تحديث الجدول بنجاح' : 'تم إنشاء الجدول بنجاح');
+    this.toast.success(isEdit ? this.translationService.translate('specialist.availability.successUpdate') : this.translationService.translate('specialist.availability.successCreate'));
   }
 
   private deleteSlotsForSchedule(schedule: ScheduleDefinition, silent: boolean): void {
@@ -774,7 +806,7 @@ export class SpecialistAvailability implements OnInit {
     idsToDelete.forEach((id) => {
       this.http.delete(API_ENDPOINTS.specialists.availabilityById(id)).subscribe({
         error: () => {
-          if (!silent) this.toast.danger(`فشل حذف الموعد ${id}`);
+          if (!silent) this.toast.danger(this.translationService.translate('specialist.availability.failedToDeleteSlot') + ` ${id}`);
         },
       });
     });
@@ -805,7 +837,7 @@ export class SpecialistAvailability implements OnInit {
     this.schedules.update((list) => list.filter((s) => s.id !== schedule.id));
     this.showDeleteConfirm.set(false);
     this.scheduleToDelete.set(null);
-    this.toast.success('تم حذف الجدول وجميع مواعيده المرتبطة');
+    this.toast.success(this.translationService.translate('specialist.availability.successDelete'));
     this.loadData();
   }
 
@@ -820,11 +852,11 @@ export class SpecialistAvailability implements OnInit {
     if (updated.enabled) {
       // Re-enable — re-create slots
       this.syncScheduleSlots(updated);
-      this.toast.success('تم تفعيل الجدول');
+      this.toast.success(this.translationService.translate('specialist.availability.successEnable'));
     } else {
       // Disable — delete slots
       this.deleteSlotsForSchedule(schedule, false);
-      this.toast.success('تم تعطيل الجدول');
+      this.toast.success(this.translationService.translate('specialist.availability.successDisable'));
       this.loadData();
     }
   }
@@ -835,7 +867,7 @@ export class SpecialistAvailability implements OnInit {
 
   requestDeleteSlot(slot: SlotDisplay): void {
     if (slot.status === 'booked') {
-      this.toast.danger('لا يمكن حذف موعد مرتبط بحجز نشط.');
+      this.toast.danger(this.translationService.translate('specialist.availability.errorBookedSlot'));
       return;
     }
     if (slot.source === 'manual' || slot.status === 'ended' || slot.status === 'cancelled') {
@@ -843,7 +875,7 @@ export class SpecialistAvailability implements OnInit {
       this.showDeleteSlotConfirm.set(true);
       return;
     }
-    this.toast.danger('هذا الموعد ناتج عن جدول عمل. قم بتعطيل أو حذف الجدول لإزالته.');
+    this.toast.danger(this.translationService.translate('specialist.availability.errorScheduleSlot'));
   }
 
   cancelDeleteSlot(): void {
@@ -859,7 +891,7 @@ export class SpecialistAvailability implements OnInit {
     this.slotToDelete.set(null);
 
     if (slot.id.startsWith('gen_')) {
-      this.toast.success('تم حذف الموعد');
+      this.toast.success(this.translationService.translate('specialist.availability.successSlotDelete'));
       this.loadData();
       return;
     }
@@ -869,10 +901,10 @@ export class SpecialistAvailability implements OnInit {
       .pipe(finalize(() => this.loadData()))
       .subscribe({
         next: () => {
-          this.toast.success('تم حذف الموعد');
+          this.toast.success(this.translationService.translate('specialist.availability.successSlotDelete'));
         },
         error: (err: any) => {
-          const msg = err?.title || err?.error?.title || err?.message || 'فشل حذف الموعد.';
+          const msg = err?.title || err?.error?.title || err?.message || this.translationService.translate('specialist.availability.failedToDeleteSlot');
           this.toast.danger(msg);
         },
       });

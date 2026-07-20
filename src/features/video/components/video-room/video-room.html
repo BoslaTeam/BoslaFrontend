@@ -38,7 +38,7 @@
           <path d="M12 9v4M12 17h.01" />
           <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
         </svg>
-        <span>جودة الشبكة منخفضة، قد تتأثر جودة المكالمة.</span>
+        <span>{{ 'video.networkQualityWarning' | t }}</span>
       </div>
       }
 
@@ -65,13 +65,13 @@
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
-            <span class="vr-placeholder-text">الكاميرا متوقفة</span>
+            <span class="vr-placeholder-text">{{ 'video.cameraOff' | t }}</span>
           </div>
           }
 
           <div class="vr-video-label" aria-hidden="true">
             <span class="vr-video-label-dot"></span>
-            <span class="vr-video-label-text">أنت</span>
+            <span class="vr-video-label-text">{{ 'video.you' | t }}</span>
           </div>
         </div>
 
@@ -89,7 +89,7 @@
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
-            <span class="vr-placeholder-text">الكاميرا متوقفة</span>
+            <span class="vr-placeholder-text">{{ 'video.cameraOff' | t }}</span>
           </div>
           }
 
@@ -111,7 +111,7 @@
                 <path d="M16 3.13a4 4 0 010 7.75" />
               </svg>
             </div>
-            <p class="vr-waiting-tile-text">في انتظار المشاركين…</p>
+            <p class="vr-waiting-tile-text">{{ 'video.waitingForParticipants' | t }}</p>
             <div class="vr-waiting-tile-dots" aria-hidden="true">
               <span></span><span></span><span></span>
             </div>
@@ -134,8 +134,8 @@
               <polyline points="8 8 16 16" />
             </svg>
           </div>
-          <h2 class="vr-state-title">انتهت الجلسة</h2>
-          <p class="vr-state-subtitle">لقد انتهت هذه الجلسة. شكراً لاستخدامك بصلة.</p>
+          <h2 class="vr-state-title">{{ 'video.sessionEnded' | t }}</h2>
+          <p class="vr-state-subtitle">{{ 'video.sessionEndedDesc' | t }}</p>
         </div>
 
         } @else if (isWaitingForSpecialist()) {
@@ -150,16 +150,14 @@
                 <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2" stroke-linecap="round" />
               </svg>
             </div>
-            <h2 class="vr-state-title">تعذر الاتصال</h2>
-            <p class="vr-state-subtitle">تعذر الاتصال بخادم الجلسة. يرجى التحقق من اتصالك بالإنترنت.</p>
+            <h2 class="vr-state-title">{{ 'video.connectionFailed' | t }}</h2>
+            <p class="vr-state-subtitle">{{ 'video.connectionFailedDesc' | t }}</p>
             <button class="vr-retry-btn" (click)="retryJoin()" type="button" aria-label="Retry connection">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
                 aria-hidden="true">
                 <polyline points="23 4 23 10 17 10" />
                 <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
-              </svg>
-              إعادة المحاولة
-            </button>
+              </svg>{{ 'common.retry' | t }}</button>
           </div>
           } @else {
           <div class="vr-state-card vr-state-card--waiting" role="status" aria-live="polite">
@@ -169,8 +167,8 @@
                 <polyline points="12 6 12 12 16 14" />
               </svg>
             </div>
-            <h2 class="vr-state-title">في انتظار المتخصص</h2>
-            <p class="vr-state-subtitle">سيتم الانضمام إلى الجلسة تلقائياً عند بدء المتخصص.</p>
+            <h2 class="vr-state-title">{{ 'video.waitingForSpecialist' | t }}</h2>
+            <p class="vr-state-subtitle">{{ 'video.waitingForSpecialistDesc' | t }}</p>
             <div class="vr-waiting-dots" aria-hidden="true">
               <span class="vr-waiting-dot"></span>
               <span class="vr-waiting-dot"></span>
@@ -192,10 +190,10 @@
             </svg>
           </div>
           <h2 class="vr-state-title">
-            {{ isRejoining() ? 'العودة للجلسة؟' : 'جاهز للانضمام؟' }}
+            {{ isRejoining() ? ('video.rejoinQuestion' | t) : ('video.readyToJoin' | t) }}
           </h2>
           <p class="vr-state-subtitle">
-            {{ isRejoining() ? 'انقر للعودة ومتابعة الاستشارة الخاصة بك.' : 'انقر على الزر أدناه للانضمام إلى جلسة الاستشارة.' }}
+            {{ isRejoining() ? ('video.rejoinDesc' | t) : ('video.joinDesc' | t) }}
           </p>
           <button id="btn-join-session" class="vr-join-btn" (click)="handleJoinClick()"
             [disabled]="agoraService.joining()" type="button"
@@ -205,7 +203,7 @@
               aria-hidden="true" class="vr-spin">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
             </svg>
-            جارٍ الانضمام...
+            {{ 'video.joining' | t }}
             } @else {
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
               aria-hidden="true">
@@ -216,7 +214,7 @@
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
               }
             </svg>
-            {{ isRejoining() ? 'العودة للجلسة' : 'انضمام للجلسة' }}
+            {{ isRejoining() ? ('video.rejoin' | t) : ('video.join' | t) }}
             }
           </button>
         </div>
@@ -239,26 +237,26 @@
             <!-- Leave -->
             <button id="btn-leave-session" class="vr-tb-btn vr-tb-btn--leave"
               (click)="confirmLeave()" type="button"
-              aria-label="مغادرة الجلسة" title="مغادرة الجلسة">
+              [attr.aria-label]="'video.leaveSession' | t" [title]="'video.leaveSession' | t">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" aria-hidden="true">
                 <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
                 <polyline points="17 8 21 12 17 16" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              <span class="vr-tb-label">مغادرة</span>
+              <span class="vr-tb-label">{{ 'video.leave' | t }}</span>
             </button>
 
             <!-- Finish (specialist only) -->
             @if (isSpecialist) {
             <button id="btn-finish-session" class="vr-tb-btn vr-tb-btn--finish"
               (click)="confirmFinish()" type="button"
-              aria-label="إنهاء الاستشارة" title="إنهاء الاستشارة">
+              [attr.aria-label]="'video.finishConsultation' | t" [title]="'video.finishConsultation' | t">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" aria-hidden="true">
                 <path d="M5 12l5 5l10 -10" />
               </svg>
-              <span class="vr-tb-label">إنهاء</span>
+              <span class="vr-tb-label">{{ 'video.finish' | t }}</span>
             </button>
             }
           </div>
@@ -273,9 +271,9 @@
               <button id="btn-toggle-mic" class="vr-tb-btn"
                 [class.vr-tb-btn--off]="!agoraService.microphoneEnabled()"
                 (click)="toggleMicrophone()" type="button"
-                [attr.aria-label]="agoraService.microphoneEnabled() ? 'كتم الميكروفون' : 'تشغيل الميكروفون'"
+                [attr.aria-label]="(agoraService.microphoneEnabled() ? 'video.muteMicrophone' : 'video.unmuteMicrophone') | t"
                 [attr.aria-pressed]="!agoraService.microphoneEnabled()"
-                [title]="agoraService.microphoneEnabled() ? 'كتم الميكروفون' : 'تشغيل الميكروفون'">
+                [title]="(agoraService.microphoneEnabled() ? 'video.muteMicrophone' : 'video.unmuteMicrophone') | t">
                 @if (agoraService.microphoneEnabled()) {
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -296,7 +294,7 @@
                 </svg>
                 }
               </button>
-              <span class="vr-tb-tooltip">{{ agoraService.microphoneEnabled() ? 'كتم' : 'تشغيل' }}</span>
+              <span class="vr-tb-tooltip">{{ (agoraService.microphoneEnabled() ? 'video.mute' : 'video.unmute') | t }}</span>
             </div>
 
             <!-- Camera -->
@@ -304,9 +302,9 @@
               <button id="btn-toggle-camera" class="vr-tb-btn"
                 [class.vr-tb-btn--off]="!agoraService.cameraEnabled()"
                 (click)="toggleCamera()" type="button"
-                [attr.aria-label]="agoraService.cameraEnabled() ? 'إيقاف الكاميرا' : 'تشغيل الكاميرا'"
+                [attr.aria-label]="(agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t"
                 [attr.aria-pressed]="!agoraService.cameraEnabled()"
-                [title]="agoraService.cameraEnabled() ? 'إيقاف الكاميرا' : 'تشغيل الكاميرا'">
+                [title]="(agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t">
                 @if (agoraService.cameraEnabled()) {
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -323,19 +321,19 @@
                 </svg>
                 }
               </button>
-              <span class="vr-tb-tooltip">{{ agoraService.cameraEnabled() ? 'إيقاف الكاميرا' : 'تشغيل الكاميرا' }}</span>
+              <span class="vr-tb-tooltip">{{ (agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t }}</span>
             </div>
 
             <!-- Screen Share -->
             <div class="vr-tb-wrap">
               <app-screen-share-button />
-              <span class="vr-tb-tooltip">مشاركة الشاشة</span>
+              <span class="vr-tb-tooltip">{{ 'video.screenShare' | t }}</span>
             </div>
 
             <!-- Recording (specialist only) -->
             <div class="vr-tb-wrap">
               <app-recording-button [sessionId]="sessionId" />
-              <span class="vr-tb-tooltip">{{ recordingTimerService.isActive() ? 'إيقاف التسجيل' : 'تسجيل' }}</span>
+              <span class="vr-tb-tooltip">{{ (recordingTimerService.isActive() ? 'video.stopRecording' : 'video.record') | t }}</span>
             </div>
           </div>
 
@@ -409,7 +407,7 @@
           </svg>
         </div>
         <div class="vr-info-body">
-          <span class="vr-info-label">الاتصال</span>
+          <span class="vr-info-label">{{ 'video.connection' | t }}</span>
           <app-connection-status-badge />
         </div>
       </div>
@@ -422,7 +420,7 @@
           </svg>
         </div>
         <div class="vr-info-body">
-          <span class="vr-info-label">التسجيل</span>
+          <span class="vr-info-label">{{ 'video.recordingStatus' | t }}</span>
           <app-recording-indicator />
         </div>
       </div>
@@ -437,7 +435,7 @@
           </svg>
         </div>
         <div class="vr-info-body">
-          <span class="vr-info-label">الشبكة</span>
+          <span class="vr-info-label">{{ 'video.network' | t }}</span>
           <app-network-quality-badge />
         </div>
       </div>
@@ -454,7 +452,7 @@
             <path d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
           </svg>
         </span>
-        <h2 class="vr-devices-title">إعدادات الجهاز</h2>
+        <h2 class="vr-devices-title">{{ 'video.deviceSettings' | t }}</h2>
       </div>
 
       <div class="vr-devices-grid">
@@ -467,7 +465,7 @@
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
               </svg>
             </div>
-            <span class="vr-device-card-title">الكاميرا</span>
+            <span class="vr-device-card-title">{{ 'video.camera' | t }}</span>
           </div>
           <div class="vr-device-card-body">
             <app-camera-selector />
@@ -484,7 +482,7 @@
                 <line x1="8" y1="23" x2="16" y2="23" />
               </svg>
             </div>
-            <span class="vr-device-card-title">الميكروفون</span>
+            <span class="vr-device-card-title">{{ 'video.microphone' | t }}</span>
           </div>
           <div class="vr-device-card-body">
             <app-microphone-selector />
@@ -501,7 +499,7 @@
                 <path d="M15.54 8.46a5 5 0 010 7.07" />
               </svg>
             </div>
-            <span class="vr-device-card-title">السماعة</span>
+            <span class="vr-device-card-title">{{ 'video.speaker' | t }}</span>
           </div>
           <div class="vr-device-card-body">
             <app-speaker-selector />
@@ -522,7 +520,7 @@
     <div class="vrm-status-card vr-mobile-only" role="region" aria-label="Meeting status">
       <!-- Connection -->
       <div class="vrm-status-item">
-        <span class="vrm-status-label">الاتصال</span>
+        <span class="vrm-status-label">{{ 'video.connection' | t }}</span>
         <app-connection-status-badge />
       </div>
 
@@ -530,7 +528,7 @@
 
       <!-- Recording -->
       <div class="vrm-status-item">
-        <span class="vrm-status-label">التسجيل</span>
+        <span class="vrm-status-label">{{ 'video.recordingStatus' | t }}</span>
         <app-recording-indicator />
       </div>
 
@@ -538,7 +536,7 @@
 
       <!-- Network -->
       <div class="vrm-status-item">
-        <span class="vrm-status-label">الشبكة</span>
+        <span class="vrm-status-label">{{ 'video.network' | t }}</span>
         <app-network-quality-badge />
       </div>
     </div>
@@ -555,7 +553,7 @@
               <path d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
             </svg>
           </span>
-          <span class="vrm-accordion-label">إعدادات الجهاز</span>
+          <span class="vrm-accordion-label">{{ 'video.deviceSettings' | t }}</span>
         </span>
         <svg class="vrm-accordion-chevron" [class.vrm-accordion-chevron--open]="deviceSettingsOpen()"
           viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -576,7 +574,7 @@
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
               </svg>
             </div>
-            <span class="vrm-device-row-label">الكاميرا</span>
+            <span class="vrm-device-row-label">{{ 'video.camera' | t }}</span>
           </div>
           <app-camera-selector />
         </div>
@@ -592,7 +590,7 @@
                 <line x1="8" y1="23" x2="16" y2="23" />
               </svg>
             </div>
-            <span class="vrm-device-row-label">الميكروفون</span>
+            <span class="vrm-device-row-label">{{ 'video.microphone' | t }}</span>
           </div>
           <app-microphone-selector />
           <app-microphone-level-indicator />
@@ -608,7 +606,7 @@
                 <path d="M15.54 8.46a5 5 0 010 7.07" />
               </svg>
             </div>
-            <span class="vrm-device-row-label">السماعة</span>
+            <span class="vrm-device-row-label">{{ 'video.speaker' | t }}</span>
           </div>
           <app-speaker-selector />
           <app-speaker-test-button />
@@ -632,11 +630,11 @@
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
         </div>
-        <h3 class="vr-dialog-title" id="dlg-leave-title">هل تريد مغادرة الجلسة؟</h3>
-        <p class="vr-dialog-text">يمكنك العودة مرة أخرى طالما لم تنتهِ مدة الجلسة.</p>
+        <h3 class="vr-dialog-title" id="dlg-leave-title">{{ 'video.confirmLeave' | t }}</h3>
+        <p class="vr-dialog-text">{{ 'video.confirmLeaveDesc' | t }}</p>
         <div class="vr-dialog-actions">
-          <button class="vr-btn-cancel" (click)="cancelLeave()" type="button">إلغاء</button>
-          <button class="vr-btn-confirm" (click)="leaveSession()" type="button">مغادرة</button>
+          <button class="vr-btn-cancel" (click)="cancelLeave()" type="button">{{ 'appointments.book.cancel' | t }}</button>
+          <button class="vr-btn-confirm" (click)="leaveSession()" type="button">{{ 'video.leave' | t }}</button>
         </div>
       </div>
     </div>
@@ -653,11 +651,11 @@
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         </div>
-        <h3 class="vr-dialog-title" id="dlg-finish-title">إنهاء الاستشارة نهائياً؟</h3>
-        <p class="vr-dialog-text">بمجرد الإنهاء، سيتم إغلاق الجلسة لكافة الأطراف ولن يمكن العودة إليها مجدداً.</p>
+        <h3 class="vr-dialog-title" id="dlg-finish-title">{{ 'video.confirmFinish' | t }}</h3>
+        <p class="vr-dialog-text">{{ 'video.confirmFinishDesc' | t }}</p>
         <div class="vr-dialog-actions">
-          <button class="vr-btn-cancel" (click)="cancelFinish()" type="button">إلغاء</button>
-          <button class="vr-btn-finish" (click)="finishConsultation()" type="button">تأكيد الإنهاء</button>
+          <button class="vr-btn-cancel" (click)="cancelFinish()" type="button">{{ 'appointments.book.cancel' | t }}</button>
+          <button class="vr-btn-finish" (click)="finishConsultation()" type="button">{{ 'common.confirm' | t }} {{ 'video.finish' | t }}</button>
         </div>
       </div>
     </div>

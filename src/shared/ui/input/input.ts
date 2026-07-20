@@ -1,5 +1,6 @@
-import { Component, forwardRef, input, signal } from '@angular/core';
+import { Component, forwardRef, input, signal, computed, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { TranslationService } from '@core/services/translation.service';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date' | 'time';
 
@@ -17,6 +18,9 @@ export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'date
   ],
 })
 export class UiInput implements ControlValueAccessor {
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly label = input<string>('');
   readonly type = input<InputType>('text');

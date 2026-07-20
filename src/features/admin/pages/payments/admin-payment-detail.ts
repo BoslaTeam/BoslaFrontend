@@ -4,16 +4,19 @@ import { DatePipe, SlicePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { AdminPaymentDetailDto } from '../../contracts/admin.contracts';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-payment-detail',
-  imports: [DatePipe, SlicePipe, FormsModule],
+  imports: [DatePipe, SlicePipe, FormsModule, TranslatePipe],
   templateUrl: './admin-payment-detail.html',
   styleUrl: './admin-payment-detail.css',
 })
 export class AdminPaymentDetail implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   readonly id = input.required<string>();
 
@@ -62,10 +65,10 @@ export class AdminPaymentDetail implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Completed: 'مكتمل',
-      Failed: 'فشل',
-      Refunded: 'مسترجع',
+      Pending: this.translationService.translate('admin.status.pending'),
+      Completed: this.translationService.translate('admin.status.completed'),
+      Failed: this.translationService.translate('admin.status.failed'),
+      Refunded: this.translationService.translate('admin.status.refunded'),
     };
     return labels[status] ?? status;
   }
@@ -82,10 +85,10 @@ export class AdminPaymentDetail implements OnInit {
 
   getMethodLabel(method: string): string {
     const labels: Record<string, string> = {
-      stripe: 'Stripe',
-      card: 'بطاقة ائتمان',
-      wallet: 'محفظة',
-      bank: 'تحويل بنكي',
+      stripe: this.translationService.translate('admin.method.stripe'),
+      card: this.translationService.translate('admin.method.card'),
+      wallet: this.translationService.translate('admin.method.wallet'),
+      bank: this.translationService.translate('admin.method.bank'),
     };
     return labels[method.toLowerCase()] ?? method;
   }

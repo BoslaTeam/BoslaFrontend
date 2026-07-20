@@ -1,4 +1,4 @@
-<div dir="rtl" class="min-h-screen bg-bosla-offwhite font-cairo p-6">
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-cairo p-6">
   <div class="max-w-lg mx-auto pt-20">
 
     @if (submitted()) {
@@ -45,9 +45,7 @@
               }
             </button>
             <a routerLink="/payments"
-               class="px-6 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all">
-              إلغاء
-            </a>
+               class="px-6 py-3 border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all">{{ 'appointments.book.cancel' | t }}</a>
           </div>
         </div>
       </div>

@@ -7,15 +7,18 @@ import { AdminUserDto } from '../../contracts/admin.contracts';
 import { PaginationMetadata } from '@core/models/paginated-response.model';
 import { DEFAULT_PAGINATION_REQUEST } from '@core/models/pagination.model';
 import { UserRole } from '@core/enums/user-role.enum';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-users-list',
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, TranslatePipe],
   templateUrl: './admin-users-list.html',
   styleUrl: './admin-users-list.css',
 })
 export class AdminUsersList implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly users = signal<AdminUserDto[]>([]);
   readonly isLoading = signal(true);
@@ -98,11 +101,11 @@ export class AdminUsersList implements OnInit {
 
   getRoleName(role: number): string {
     const names: Record<number, string> = {
-      0: 'مستخدم',
-      1: 'متخصص',
-      2: 'مدير',
+      0: this.translationService.translate('admin.userRole.user'),
+      1: this.translationService.translate('admin.userRole.specialist'),
+      2: this.translationService.translate('admin.userRole.admin'),
     };
-    return names[role] ?? 'غير معروف';
+    return names[role] ?? this.translationService.translate('admin.userRole.unknown');
   }
 
   getRoleClass(role: number): string {

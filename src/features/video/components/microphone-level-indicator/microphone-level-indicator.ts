@@ -1,8 +1,10 @@
 import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-microphone-level-indicator',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './microphone-level-indicator.html',
   styleUrl: './microphone-level-indicator.css',
 })

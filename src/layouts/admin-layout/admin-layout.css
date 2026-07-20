@@ -2,7 +2,6 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  direction: rtl;
   background: #F7F9FA;
 }
 

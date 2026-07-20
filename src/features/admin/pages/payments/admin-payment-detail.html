@@ -4,7 +4,7 @@
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
     </svg>
-    العودة للمدفوعات
+    {{ 'admin.payments.backToPayments' | t }}
   </button>
 
   @if (isLoading()) {
@@ -23,9 +23,9 @@
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h3>خطأ في تحميل بيانات الدفع</h3>
-      <p>حدث خطأ أثناء محاولة جلب التفاصيل.</p>
-      <button class="retry-btn" (click)="loadPayment()">إعادة المحاولة</button>
+      <h3>{{ 'common.errorLabel.khta' | t }} في تحميل بيانات الدفع</h3>
+      <p>{{ 'common.error.hdth_khta' | t }} أثناء محاولة جلب التفاصيل.</p>
+      <button class="retry-btn" (click)="loadPayment()">{{ 'common.retry' | t }}</button>
     </div>
   } @else {
     @let p = payment()!;
@@ -34,7 +34,7 @@
     <div class="detail-header">
       <div class="header-row">
         <div>
-          <h2 class="header-title">تفاصيل الدفع</h2>
+          <h2 class="header-title">{{ 'admin.payments.paymentDetails' | t }}</h2>
           <div class="header-meta">
             <span class="status-badge" [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span>
             <span class="header-id">#{{ p.id | slice:0:8 }}</span>
@@ -46,7 +46,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
               </svg>
-              استرجاع المبلغ
+              استرجاع {{ 'admin.payments.amount' | t }}
             </button>
           }
         </div>
@@ -62,19 +62,19 @@
     <div class="detail-grid">
       <!-- User Info -->
       <div class="detail-card">
-        <h3 class="card-title">المستخدم</h3>
+        <h3 class="card-title">{{ 'admin.audit.user' | t }}</h3>
         <div class="person-info">
           <div class="person-avatar">{{ p.userName.substring(0, 2) }}</div>
           <div>
             <div class="person-name">{{ p.userName }}</div>
-            <div class="person-email" [class.empty]="!p.userEmail">{{ p.userEmail || 'بريد غير متاح' }}</div>
+            <div class="person-email" [class.empty]="!p.userEmail">{{ p.userEmail || ('common.emailNotAvailable' | t) }}</div>
           </div>
         </div>
       </div>
 
       <!-- Specialist Info -->
       <div class="detail-card">
-        <h3 class="card-title">المتخصص</h3>
+        <h3 class="card-title">{{ 'admin.specialistLabel.almtkhss' | t }}</h3>
         <div class="person-info">
           <div class="person-avatar secondary">{{ p.specialistName.substring(0, 2) }}</div>
           <div>
@@ -85,22 +85,22 @@
 
       <!-- Payment Breakdown -->
       <div class="detail-card">
-        <h3 class="card-title">تفاصيل الدفع</h3>
+        <h3 class="card-title">{{ 'admin.payments.paymentDetails' | t }}</h3>
         <div class="info-grid compact">
           <div class="info-item">
-            <span class="info-label">المبلغ الإجمالي</span>
+            <span class="info-label">{{ 'admin.payments.totalAmount' | t }}</span>
             <span class="info-value amount">{{ p.amount.toFixed(2) }} {{ p.currency.toUpperCase() }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">رسوم المنصة (10%)</span>
+            <span class="info-label">{{ 'admin.payments.platformFee' | t }} (10%)</span>
             <span class="info-value">- {{ p.platformFeeAmount.toFixed(2) }} {{ p.currency.toUpperCase() }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">الضريبة (5%)</span>
+            <span class="info-label">{{ 'payments.tax.aldrybh' | t }} (5%)</span>
             <span class="info-value">{{ p.taxAmount.toFixed(2) }} {{ p.currency.toUpperCase() }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">صافي المختص</span>
+            <span class="info-label">{{ 'admin.payments.specialistNet' | t }}</span>
             <span class="info-value specialist-amount">{{ p.specialistAmount.toFixed(2) }} {{ p.currency.toUpperCase() }}</span>
           </div>
         </div>
@@ -108,37 +108,37 @@
 
       <!-- Payment Info -->
       <div class="detail-card">
-        <h3 class="card-title">معلومات الدفع</h3>
+        <h3 class="card-title">{{ 'admin.payments.paymentInfo' | t }}</h3>
         <div class="info-grid compact">
           <div class="info-item">
-            <span class="info-label">طريقة الدفع</span>
+            <span class="info-label">{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</span>
             <span class="info-value">{{ getMethodLabel(p.paymentMethod) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">الحالة</span>
+            <span class="info-label">{{ 'payments.status' | t }}</span>
             <span class="info-value">
               <span class="status-badge" [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span>
             </span>
           </div>
           @if (p.paidAt) {
             <div class="info-item">
-              <span class="info-label">تاريخ الدفع</span>
+              <span class="info-label">{{ 'admin.paymentDate.tarykh_aldfa' | t }}</span>
               <span class="info-value">{{ p.paidAt | date:'yyyy/MM/dd hh:mm a' }}</span>
             </div>
           }
           <div class="info-item">
-            <span class="info-label">تاريخ الإنشاء</span>
+            <span class="info-label">{{ 'admin.payments.createdDate' | t }}</span>
             <span class="info-value">{{ p.createdAt | date:'yyyy/MM/dd hh:mm a' }}</span>
           </div>
           @if (p.externalPaymentId) {
             <div class="info-item full-width">
-              <span class="info-label">معرف العملية</span>
+              <span class="info-label">{{ 'admin.payments.transactionId' | t }}</span>
               <span class="info-value mono">{{ p.externalPaymentId }}</span>
             </div>
           }
           @if (p.refundReason) {
             <div class="info-item full-width">
-              <span class="info-label">سبب الاسترجاع</span>
+              <span class="info-label">{{ 'admin.payments.refundReason' | t }}</span>
               <span class="info-value cancel-reason">{{ p.refundReason }}</span>
             </div>
           }
@@ -151,27 +151,27 @@
       <div class="modal-overlay" (click)="showRefundModal.set(false)">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h3>استرجاع المبلغ</h3>
+            <h3>{{ 'admin.payments.refundTitle' | t }}</h3>
             <button class="modal-close" (click)="showRefundModal.set(false)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
           <div class="modal-body">
-            <p>هل أنت متأكد من استرجاع مبلغ {{ p.amount.toFixed(2) }} {{ p.currency.toUpperCase() }}؟</p>
+            <p>{{ 'admin.payments.refundConfirmMessage' | t }} {{ p.amount.toFixed(2) }} {{ p.currency.toUpperCase() }}؟</p>
             <textarea
               class="modal-textarea"
-              placeholder="سبب الاسترجاع (اختياري)..."
+              placeholder="{{ 'admin.payments.refundReason' | t }} ({{ 'common.optional' | t }})..."
               [(ngModel)]="refundReason"
               rows="3"
             ></textarea>
           </div>
           <div class="modal-footer">
-            <button class="modal-btn cancel" (click)="showRefundModal.set(false)">تراجع</button>
+            <button class="modal-btn cancel" (click)="showRefundModal.set(false)">{{ 'actions.undo.traja' | t }}</button>
             <button class="modal-btn confirm" [disabled]="isRefunding()" (click)="confirmRefund()">
               @if (isRefunding()) {
-                جاري الاسترجاع...
+                {{ 'admin.payments.refunding' | t }}
               } @else {
-                تأكيد الاسترجاع
+                {{ 'admin.payments.confirmRefund' | t }}
               }
             </button>
           </div>

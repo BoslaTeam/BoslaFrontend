@@ -5,7 +5,7 @@
       <div class="w-1.5 h-4 bg-gradient-to-b from-[#F39C12] to-[#e67e22] rounded-full"></div>
       <h4 class="text-[11px] font-black text-[#1B4F72] uppercase tracking-widest">{{ sectionTitle() }}</h4>
       @if (isActiveSession()) {
-        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse ml-auto" aria-label="جلسة نشطة shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse ml-auto shadow-[0_0_8px_rgba(16,185,129,0.5)]" aria-label="{{ 'video.activeSession' | t }}"></span>
       }
     </div>
 
@@ -40,11 +40,11 @@
           <div class="flex flex-col gap-1.5 min-w-0 pr-2">
             <span class="text-[10px] font-black text-[#F39C12] uppercase tracking-widest drop-shadow-md">
               @if (isActiveSession()) {
-                مستمرة الآن
+                {{ 'video.ongoingNow' | t }}
               } @else if (sessionData()!.isToday) {
-                اليوم
+                {{ 'time.today' | t }}
               } @else if (sessionData()!.isTomorrow) {
-                غداً
+                {{ 'time.tomorrow' | t }}
               } @else {
                 {{ sessionData()!.dateLabel }}
               }
@@ -82,7 +82,7 @@
           } @else {
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wide uppercase bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/30 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
               <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
-              مباشر
+              {{ 'video.live' | t }}
             </span>
           }
 
@@ -106,7 +106,7 @@
         <!-- Notes if present -->
         @if (sessionData()!.notes) {
           <div class="bg-white/5 border-r-2 border-[#F39C12] rounded-l-xl p-3 flex flex-col gap-1 relative z-10 backdrop-blur-sm mt-1">
-            <span class="text-[9px] uppercase font-black text-[#F39C12] tracking-widest">ملاحظات الجلسة</span>
+            <span class="text-[9px] uppercase font-black text-[#F39C12] tracking-widest">{{ 'appointments.sessionNotes' | t }}</span>
             <p class="text-xs text-white/80 leading-relaxed font-normal">
               {{ sessionData()!.notes }}
             </p>
@@ -123,9 +123,7 @@
             <div class="absolute top-0 -left-[100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] group-hover:animate-shine"></div>
             <svg class="shrink-0 group-hover:scale-110 transition-transform duration-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-            انضم للجلسة
-          </button>
+            </svg>{{ 'appointments.join' | t }}</button>
         } @else {
           <div
             class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl mt-2 bg-white/10 border border-white/20 text-white/90 font-bold text-sm transition-all duration-300"

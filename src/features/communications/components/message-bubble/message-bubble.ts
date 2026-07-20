@@ -3,10 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Message } from '../../models/message.model';
 import { ChatStore } from '../../store/chat.store';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-message-bubble',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './message-bubble.html',
   styleUrl: '../../chat.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

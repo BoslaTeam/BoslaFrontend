@@ -6,10 +6,12 @@ import { AppointmentsStore } from '../../store/appointments.store';
 import { CreateAppointmentRequest } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, UiButton],
+  imports: [CommonModule, RouterLink, FormsModule, UiButton, TranslatePipe],
   templateUrl: './book-appointment.html'
 })
 export class BookAppointment implements OnInit {
@@ -18,7 +20,9 @@ export class BookAppointment implements OnInit {
   public store = inject(AppointmentsStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly Math = Math;
   readonly specialistId = signal('');
   readonly sessionTopic = signal('');

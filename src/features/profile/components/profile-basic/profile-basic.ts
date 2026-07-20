@@ -4,10 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ProfileStore } from '../../stores/profile.store';
 import { SelectOption } from '@shared/types/select-option.type';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-profile-basic',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './profile-basic.html',
 })
 export class ProfileBasic {
@@ -17,34 +18,34 @@ export class ProfileBasic {
   basicInfoForm: FormGroup;
 
   readonly genderOptions: SelectOption[] = [
-    { value: 'ذكر', label: 'ذكر' },
-    { value: 'أنثى', label: 'أنثى' },
+    { value: 'ذكر', label: 'gender.male' },
+    { value: 'أنثى', label: 'gender.female' },
   ];
 
   readonly languageOptions: SelectOption[] = [
-    { value: 'العربية', label: 'العربية' },
-    { value: 'English', label: 'English' },
+    { value: 'العربية', label: 'language.arabic' },
+    { value: 'English', label: 'language.english' },
   ];
 
   readonly countryOptions: SelectOption[] = [
-    { value: 'مصر', label: 'مصر' },
-    { value: 'السعودية', label: 'السعودية' },
-    { value: 'الإمارات', label: 'الإمارات' },
-    { value: 'قطر', label: 'قطر' },
-    { value: 'الكويت', label: 'الكويت' },
-    { value: 'البحرين', label: 'البحرين' },
-    { value: 'عمان', label: 'عُمان' },
-    { value: 'الأردن', label: 'الأردن' },
-    { value: 'العراق', label: 'العراق' },
-    { value: 'سوريا', label: 'سوريا' },
-    { value: 'لبنان', label: 'لبنان' },
-    { value: 'فلسطين', label: 'فلسطين' },
-    { value: 'تونس', label: 'تونس' },
-    { value: 'الجزائر', label: 'الجزائر' },
-    { value: 'المغرب', label: 'المغرب' },
-    { value: 'ليبيا', label: 'ليبيا' },
-    { value: 'السودان', label: 'السودان' },
-    { value: 'اليمن', label: 'اليمن' },
+    { value: 'مصر', label: 'country.egypt' },
+    { value: 'السعودية', label: 'country.saudiArabia' },
+    { value: 'الإمارات', label: 'country.uae' },
+    { value: 'قطر', label: 'country.qatar' },
+    { value: 'الكويت', label: 'country.kuwait' },
+    { value: 'البحرين', label: 'country.bahrain' },
+    { value: 'عمان', label: 'country.oman' },
+    { value: 'الأردن', label: 'country.jordan' },
+    { value: 'العراق', label: 'country.iraq' },
+    { value: 'سوريا', label: 'country.syria' },
+    { value: 'لبنان', label: 'country.lebanon' },
+    { value: 'فلسطين', label: 'country.palestine' },
+    { value: 'تونس', label: 'country.tunisia' },
+    { value: 'الجزائر', label: 'country.algeria' },
+    { value: 'المغرب', label: 'country.morocco' },
+    { value: 'ليبيا', label: 'country.libya' },
+    { value: 'السودان', label: 'country.sudan' },
+    { value: 'اليمن', label: 'country.yemen' },
   ];
 
   constructor() {

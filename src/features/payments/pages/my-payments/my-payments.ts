@@ -1,19 +1,23 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PaymentService } from '../../services/payment.service';
 import { PaymentResponseDto } from '../../contracts/payment.contracts';
-import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-my-payments',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiSpinner],
+  imports: [CommonModule, RouterLink, UiSpinner, TranslatePipe],
   templateUrl: './my-payments.html',
 })
 export class MyPayments implements OnInit {
   private readonly paymentService = inject(PaymentService);
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly payments = signal<PaymentResponseDto[]>([]);
   readonly isLoading = signal(true);
@@ -35,10 +39,10 @@ export class MyPayments implements OnInit {
 
   getEscrowLabel(status: string): string {
     const labels: Record<string, string> = {
-      Held: 'محجوز',
-      Released: 'مفرج عنه',
-      Disputed: 'في نزاع',
-      Refunded: 'مسترجع',
+      Held: this.translationService.translate('payments.escrowStatus.held'),
+      Released: this.translationService.translate('payments.escrowStatus.released'),
+      Disputed: this.translationService.translate('payments.escrowStatus.disputed'),
+      Refunded: this.translationService.translate('payments.escrowStatus.refunded'),
     };
     return labels[status] ?? status;
   }
@@ -55,10 +59,10 @@ export class MyPayments implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      Pending: 'قيد الانتظار',
-      Completed: 'مكتمل',
-      Failed: 'فشل',
-      Refunded: 'مسترجع',
+      Pending: this.translationService.translate('payments.status.pending'),
+      Completed: this.translationService.translate('payments.status.completed'),
+      Failed: this.translationService.translate('payments.status.failed'),
+      Refunded: this.translationService.translate('payments.status.refunded'),
     };
     return labels[status] ?? status;
   }

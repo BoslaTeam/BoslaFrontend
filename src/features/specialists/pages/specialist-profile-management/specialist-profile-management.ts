@@ -18,7 +18,9 @@ import { UiTextarea } from '@shared/ui/textarea/textarea';
 import { Select as UiSelect } from '@shared/ui/select/select';
 import { SelectOption } from '@shared/types/select-option.type';
 
-const LEVEL_LABELS = ['مبتدئ', 'متوسط', 'متقدم', 'خبير'];
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
+const LEVEL_LABELS = ['specialist.profile.levelBeginner', 'specialist.profile.levelIntermediate', 'specialist.profile.levelAdvanced', 'specialist.profile.levelExpert'];
 
 function dateRangeValidator(group: AbstractControl): ValidationErrors | null {
   const from = group.get('fromDate')?.value;
@@ -32,10 +34,12 @@ function dateRangeValidator(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-specialist-profile-management',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, UiButton, UiInput, UiTextarea, TranslatePipe],
   templateUrl: './specialist-profile-management.html',
 })
 export class SpecialistProfileManagement implements OnInit {
+  private translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   private fb = inject(FormBuilder);
   private specialistApi = inject(SpecialistApiService);
   private specialistsApi = inject(SpecialistsApiService);
@@ -49,7 +53,7 @@ export class SpecialistProfileManagement implements OnInit {
   readonly profile = signal<SpecialistProfileResponse | null>(null);
   readonly profileImageError = signal(false);
   readonly experienceLevel = signal(0);
-  readonly levelLabel = computed(() => LEVEL_LABELS[this.experienceLevel()]);
+  readonly levelLabel = computed(() => this.translationService.translate(LEVEL_LABELS[this.experienceLevel()]));
 
   readonly mySkills = signal<LookupResponse[]>([]);
   readonly myTools = signal<LookupResponse[]>([]);
@@ -459,14 +463,14 @@ export class SpecialistProfileManagement implements OnInit {
     const group = this.experienceItems.at(index);
     const c = group.get(field);
     if (!c || !c.invalid || !c.touched) return '';
-    if (c.errors?.['required']) return 'هذا الحقل مطلوب';
+    if (c.errors?.['required']) return this.translationService.translate('validation.required');
     return '';
   }
 
   getDateError(index: number): string {
     const group = this.experienceItems.at(index);
     if (!group || !group.invalid || !group.touched) return '';
-    if (group.errors?.['dateRange']) return 'تاريخ النهاية لا يمكن أن يكون قبل تاريخ البداية';
+    if (group.errors?.['dateRange']) return this.translationService.translate('specialist.profile.dateRangeError');
     return '';
   }
 

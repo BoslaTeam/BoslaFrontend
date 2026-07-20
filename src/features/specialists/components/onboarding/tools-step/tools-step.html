@@ -3,8 +3,8 @@
     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bosla-primary/10 text-bosla-primary mb-4">
       <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
     </div>
-    <h3 class="text-2xl font-bold text-bosla-primary mb-2">الأدوات</h3>
-    <p class="text-bosla-grey">ما هي أدواتك؟ اختر ما تستخدمه في عملك اليومي</p>
+    <h3 class="text-2xl font-bold text-bosla-primary mb-2">{{ 'onboarding.tools.title' | t }}</h3>
+    <p class="text-bosla-grey">{{ 'onboarding.tools.subtitle' | t }}</p>
   </div>
 
   @if (errorMessage()) {
@@ -15,9 +15,9 @@
   }
 
   <ui-multi-select-filter
-    label="الأدوات"
-    placeholder="اختر الأدوات..."
-    searchPlaceholder="ابحث عن أداة..."
+    [label]="'onboarding.tools.field' | t"
+    [placeholder]="'onboarding.tools.placeholder' | t"
+    [searchPlaceholder]="'onboarding.tools.searchPlaceholder' | t"
     [options]="toolOptions()"
     [ngModel]="onboardingStore.draft().tools"
     (ngModelChange)="onSelectionChange($event)"
@@ -25,11 +25,9 @@
 
   <div class="flex justify-between pt-8">
     <ui-button variant="ghost" (btnClick)="back.emit()">
-      <i class="fa-solid fa-chevron-right"></i>
-      السابق
-    </ui-button>
+      <i class="fa-solid fa-chevron-right"></i>{{ 'pagination.prev' | t }}</ui-button>
     <ui-button [loading]="isSaving()" (btnClick)="onSubmit()">
-      حفظ ومتابعة
+      {{ 'onboarding.tools.saveNext' | t }}
       <i class="fa-solid fa-arrow-left"></i>
     </ui-button>
   </div>

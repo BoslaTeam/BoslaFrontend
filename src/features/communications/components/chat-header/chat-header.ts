@@ -2,10 +2,11 @@ import { Component, inject, computed, input, output } from '@angular/core';
 import { ChatStore } from '../../store/chat.store';
 import { PresenceStore } from '../../store/presence.store';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-chat-header',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './chat-header.html',
   styleUrl: '../../chat.css',
   host: {

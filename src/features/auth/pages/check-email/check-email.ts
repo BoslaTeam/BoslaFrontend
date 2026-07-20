@@ -1,16 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-
+import { TranslationService } from '../../../../core/services/translation.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-check-email',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './check-email.html',
-  styleUrl: '../../auth.css'
 })
 export class CheckEmail {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private translationService = inject(TranslationService);
 
   email = this.route.snapshot.queryParamMap.get('email') || 'your email';
 
@@ -31,7 +32,7 @@ export class CheckEmail {
       error: (err) => {
         this.resending.set(false);
         this.resendError.set(
-          err.error?.title ?? err.title ?? 'فشل إعادة إرسال الرابط. يرجى المحاولة مرة أخرى.'
+          err.error?.title ?? err.title ?? this.translationService.translate('auth.checkEmail.resendError')
         );
       },
     });

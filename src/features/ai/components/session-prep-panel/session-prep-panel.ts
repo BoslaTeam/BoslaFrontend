@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   inject,
   input,
   output,
@@ -10,10 +11,12 @@ import { DatePipe } from '@angular/common';
 import { SpecialistAiService } from '@features/ai/services/specialist-ai.service';
 import { SessionPrepDto } from '@features/ai/contracts/specialist-ai.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'session-prep-panel',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   templateUrl: './session-prep-panel.html',
   styleUrl: './session-prep-panel.css',
 })
@@ -28,7 +31,9 @@ export class SessionPrepPanel implements OnInit {
   back = output<void>();
 
   private readonly specialistAi = inject(SpecialistAiService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   readonly sessionPrep = signal<SessionPrepDto | null>(null);
   readonly isLoading = signal(true);
   readonly hasError = signal(false);

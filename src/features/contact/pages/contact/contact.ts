@@ -1,20 +1,22 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../services/contact.service';
 import { ToastService } from '@core/services/toast.service';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './contact.html',
 })
 export class ContactPage {
   private fb = inject(FormBuilder);
   private contactService = inject(ContactService);
   private toast = inject(ToastService);
+  private translationService = inject(TranslationService);
 
   contactForm: FormGroup;
   isSubmitting = false;
@@ -33,12 +35,12 @@ export class ContactPage {
     this.isSubmitting = true;
     this.contactService.sendMessage(this.contactForm.value).subscribe({
       next: () => {
-        this.toast.success('تم إرسال رسالتك بنجاح. سنتواصل معك قريباً.');
+        this.toast.success(this.translationService.translate('contact.success'));
         this.contactForm.reset();
         this.isSubmitting = false;
       },
       error: () => {
-        this.toast.danger('حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+        this.toast.danger(this.translationService.translate('contact.error'));
         this.isSubmitting = false;
       },
     });

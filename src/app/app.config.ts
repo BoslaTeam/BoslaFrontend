@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, LOCALE_ID, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';
@@ -9,8 +9,14 @@ import { loadingInterceptor } from '@core/interceptors/loading.interceptor';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
 import { refreshTokenInterceptor } from '@core/interceptors/refresh-token.interceptor';
 import { errorInterceptor } from '@core/interceptors/error.interceptor';
+import { TranslationService } from '@core/services/translation.service';
 
 registerLocaleData(localeAr);
+
+function initializeTranslations(service: TranslationService) {
+  return (): Promise<void> =>
+    service.loadTranslations().catch(() => console.error('Translation load failed'));
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,5 +37,11 @@ export const appConfig: ApplicationConfig = {
         loadingInterceptor,
       ]),
     ),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeTranslations,
+      deps: [TranslationService],
+      multi: true,
+    },
   ],
 };

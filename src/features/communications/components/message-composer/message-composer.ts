@@ -6,11 +6,12 @@ import { ChatSignalrService } from '../../services/chat-signalr.service';
 import { AuthService } from '@core/services/auth.service';
 import { AiSmartReply } from '@features/ai/components/ai-smart-reply/ai-smart-reply';
 import { EmojiPickerComponent } from '@shared/components/emoji-picker/emoji-picker.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'chat-message-composer',
   standalone: true,
-  imports: [AiSmartReply, EmojiPickerComponent],
+  imports: [AiSmartReply, EmojiPickerComponent, TranslatePipe],
   templateUrl: './message-composer.html',
   styleUrl: '../../chat.css',
   host: {

@@ -1,23 +1,26 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, DestroyRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, DestroyRef, NgZone, effect } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LookupService } from '@core/services/lookup.service';
+import { TranslationService } from '@core/services/translation.service';
 import { SpecialistService } from '@features/specialists/services/specialist.service';
 import { AiSearchService } from '@features/ai/services/ai-search.service';
 import { LookupItemDto } from '@core/contracts/lookup.contracts';
 import { SpecialistListItemDto } from '@features/specialists/contracts/specialist.contracts';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 import { UiDomainIcon } from '@shared/ui/domain-icon/domain-icon';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, CommonModule, UiDomainIcon],
+  imports: [RouterLink, FormsModule, CommonModule, UiDomainIcon, TranslatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class Home implements OnInit, AfterViewInit {
   private lookupService = inject(LookupService);
+  readonly translationService = inject(TranslationService);
   private specialistService = inject(SpecialistService);
   private aiSearchService = inject(AiSearchService);
   private router = inject(Router);
@@ -32,11 +35,17 @@ export class Home implements OnInit, AfterViewInit {
   searchQuery = '';
 
   // Typewriter
-  typewriterText = 'الخبير المناسب';
-  private typewriterWords = ['الخبير المناسب', 'الاستشارة المناسبة', 'المستقبل المناسب'];
+  typewriterText = '';
+  typewriterWords: string[] = [];
   private typewriterIndex = 0;
   private charIndex = 0;
   private isDeleting = true;
+  private typewriterTimer: any = null;
+  private readonly langEffect = effect(() => {
+    this.translationService.currentLang();
+    this.loadTypewriterWords();
+    this.resetTypewriter();
+  });
 
   // Animated counters
   counters = { specialists: 0, consultations: 0, fields: 0 };
@@ -48,7 +57,6 @@ export class Home implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.generateParticles();
-    this.startTypewriter();
 
     this.lookupService.getExpertise().subscribe({
       next: (res) => {
@@ -91,13 +99,38 @@ export class Home implements OnInit, AfterViewInit {
     }));
   }
 
+  /* ── Typewriter Words (translatable) ── */
+  private loadTypewriterWords(): void {
+    this.typewriterWords = [
+      this.translationService.translate('home.typewriter.rightExpert'),
+      this.translationService.translate('home.typewriter.rightConsultation'),
+      this.translationService.translate('home.typewriter.rightFuture'),
+    ];
+  }
+
+  private resetTypewriter(): void {
+    if (this.typewriterTimer) {
+      clearTimeout(this.typewriterTimer);
+      this.typewriterTimer = null;
+    }
+    this.typewriterIndex = 0;
+    this.charIndex = 0;
+    this.isDeleting = true;
+    this.typewriterText = '';
+    this.startTypewriter();
+  }
+
   /* ── Typewriter ── */
   private startTypewriter() {
+    if (!this.typewriterWords.length) {
+      this.typewriterText = '';
+      return;
+    }
     this.charIndex = this.typewriterWords[0].length;
     this.isDeleting = true;
 
     const tick = () => {
-      const word = this.typewriterWords[this.typewriterIndex];
+      const word = this.typewriterWords[this.typewriterIndex] || '';
       if (this.isDeleting) {
         this.typewriterText = word.substring(0, this.charIndex--);
       } else {
@@ -108,19 +141,24 @@ export class Home implements OnInit, AfterViewInit {
 
       if (!this.isDeleting && this.charIndex > word.length) {
         this.isDeleting = true;
-        this.ngZone.runOutsideAngular(() => setTimeout(tick, 2000));
+        this.typewriterTimer = setTimeout(tick, 2000);
         return;
       }
       if (this.isDeleting && this.charIndex < 0) {
         this.isDeleting = false;
         this.typewriterIndex = (this.typewriterIndex + 1) % this.typewriterWords.length;
-        this.ngZone.runOutsideAngular(() => setTimeout(tick, 400));
+        this.typewriterTimer = setTimeout(tick, 400);
         return;
       }
 
-      this.ngZone.runOutsideAngular(() => setTimeout(tick, this.isDeleting ? 40 : 80));
+      this.typewriterTimer = setTimeout(tick, this.isDeleting ? 40 : 80);
     };
-    this.ngZone.runOutsideAngular(tick);
+    tick();
+  }
+
+  /* ── Domain name translation ── */
+  getDomainName(name: string): string {
+    return this.translationService.domainName(name);
   }
 
   /* ── Intersection Observer ── */
@@ -136,7 +174,6 @@ export class Home implements OnInit, AfterViewInit {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
 
-            // Trigger counters when stats section appears
             if (entry.target.classList.contains('stats-trigger') && !this.countersAnimated) {
               this.animateCounters();
             }

@@ -1,41 +1,41 @@
-<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+<div [dir]="direction()" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
   <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">{{ 'nav.home' | t }}</a>
     <i class="fa-solid fa-chevron-left text-[10px]"></i>
-    <span class="text-bosla-primary font-bold">معرض الأعمال</span>
+    <span class="text-bosla-primary font-bold">{{ 'specialist.portfolio.mard_alaamal' | t }}</span>
   </header>
 
   <div class="max-w-4xl mx-auto">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-black text-slate-800">معرض الأعمال</h1>
-        <p class="text-sm text-slate-500 mt-1">أضف أعمالك وإنجازاتك ليطلع عليها العملاء قبل الحجز</p>
+        <h1 class="text-2xl font-black text-slate-800">{{ 'specialist.portfolio.mard_alaamal' | t }}</h1>
+        <p class="text-sm text-slate-500 mt-1">{{ 'specialist.portfolio.subtitle' | t }}</p>
       </div>
       <button (click)="openAddForm()" class="px-5 py-2.5 bg-bosla-primary hover:bg-bosla-primary/90 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm">
         <i class="fa-solid fa-plus"></i>
-        إضافة عمل
+        {{ 'specialist.portfolio.addWork' | t }}
       </button>
     </div>
 
     <!-- Add/Edit Form -->
     @if (showForm()) {
       <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-sm">
-        <h3 class="font-bold text-slate-800 mb-4">{{ editId() ? 'تعديل العمل' : 'إضافة عمل جديد' }}</h3>
+        <h3 class="font-bold text-slate-800 mb-4">{{ editId() ? ('specialist.portfolio.editWork' | t) : ('specialist.portfolio.addNewWork' | t) }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-slate-600 mb-1.5">العنوان *</label>
-            <input [(ngModel)]="formTitle" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" placeholder="عنوان العمل" />
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">{{ 'contact.address.alanwan' | t }} *</label>
+            <input [(ngModel)]="formTitle" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" [placeholder]="'specialist.portfolio.workTitlePlaceholder' | t" />
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-slate-600 mb-1.5">الوصف</label>
-            <textarea [(ngModel)]="formDescription" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" rows="3" placeholder="وصف مختصر للعمل"></textarea>
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">{{ 'wallet.description.alwsf' | t }}</label>
+            <textarea [(ngModel)]="formDescription" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" rows="3" [placeholder]="'specialist.portfolio.descriptionPlaceholder' | t"></textarea>
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-slate-600 mb-1.5">الصورة الرئيسية *</label>
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">{{ 'specialist.portfolio.coverImage' | t }} *</label>
             <div class="flex items-center gap-3">
               <label class="cursor-pointer px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-sm text-slate-600 transition-all">
                 <i class="fa-solid fa-upload ml-1.5"></i>
-                اختر صورة
+                {{ 'specialist.portfolio.chooseImage' | t }}
                 <input type="file" accept="image/*" class="hidden" (change)="onCoverImageSelected($event)" />
               </label>
               @if (formCoverImageUploading) {
@@ -47,11 +47,11 @@
             </div>
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-slate-600 mb-1.5">صور إضافية</label>
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">{{ 'specialist.portfolio.additionalImages' | t }}</label>
             <div class="flex items-center gap-3">
               <label class="cursor-pointer px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-sm text-slate-600 transition-all">
                 <i class="fa-solid fa-plus ml-1.5"></i>
-                إضافة صور
+                {{ 'specialist.portfolio.addImages' | t }}
                 <input type="file" accept="image/*" multiple class="hidden" (change)="onImagesSelected($event)" />
               </label>
               @if (formImagesUploading) {
@@ -72,18 +72,18 @@
             }
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-slate-600 mb-1.5">رابط العمل (اختياري)</label>
-            <input [(ngModel)]="formWorkUrl" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" placeholder="https://..." />
-            <p class="text-xs text-slate-400 mt-1.5">يمكنك إضافة رابط للمشروع إذا كان منشوراً على الإنترنت</p>
+            <label class="block text-sm font-bold text-slate-600 mb-1.5">{{ 'specialist.portfolio.workUrl' | t }}</label>
+            <input [(ngModel)]="formWorkUrl" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all text-sm" [placeholder]="'specialist.portfolio.workUrlPlaceholder' | t" />
+            <p class="text-xs text-slate-400 mt-1.5">{{ 'specialist.portfolio.workUrlHint' | t }}</p>
           </div>
           <div class="md:col-span-2 flex items-center gap-3 pt-2">
             <button (click)="submitForm()" [disabled]="saving()" class="px-6 py-2.5 bg-bosla-primary hover:bg-bosla-primary/90 disabled:opacity-50 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
               @if (saving()) {
                 <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               }
-              {{ editId() ? 'تحديث' : 'إضافة' }}
+              {{ editId() ? ('specialist.portfolio.update' | t) : ('specialist.portfolio.add' | t) }}
             </button>
-            <button (click)="cancelForm()" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all">إلغاء</button>
+            <button (click)="cancelForm()" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all">{{ 'appointments.book.cancel' | t }}</button>
           </div>
         </div>
       </div>
@@ -97,9 +97,9 @@
     } @else if (items().length === 0) {
       <div class="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
         <i class="fa-regular fa-images text-5xl text-slate-300 mb-4 block"></i>
-        <h3 class="text-lg font-bold text-slate-500">لم تضف أي أعمال بعد</h3>
-        <p class="text-sm text-slate-400 mt-2">أضف أعمالك وإنجازاتك ليطلع عليها العملاء</p>
-        <button (click)="openAddForm()" class="mt-4 px-5 py-2.5 bg-bosla-primary text-white rounded-xl font-bold text-sm">إضافة أول عمل</button>
+        <h3 class="text-lg font-bold text-slate-500">{{ 'specialist.portfolio.emptyTitle' | t }}</h3>
+        <p class="text-sm text-slate-400 mt-2">{{ 'specialist.portfolio.emptyDesc' | t }}</p>
+        <button (click)="openAddForm()" class="mt-4 px-5 py-2.5 bg-bosla-primary text-white rounded-xl font-bold text-sm">{{ 'specialist.portfolio.addFirstWork' | t }}</button>
       </div>
     } @else {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -110,7 +110,7 @@
               @if (item.images.length > 0) {
                 <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm">
                   <i class="fa-regular fa-images ml-1"></i>
-                  {{ item.images.length + 1 }} صور
+                  {{ item.images.length + 1 }} {{ 'specialist.portfolio.images' | t }}
                 </div>
               }
             </div>
@@ -130,29 +130,25 @@
                 <div class="mt-2">
                   <a [href]="item.workUrl" target="_blank" rel="noopener noreferrer" class="text-xs text-bosla-primary font-bold hover:underline flex items-center gap-1">
                     <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    رابط العمل
+                    {{ 'specialist.portfolio.workLink' | t }}
                   </a>
                 </div>
               }
               <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
                 <span class="text-xs text-slate-400 flex items-center gap-1">
                   <i class="fa-regular fa-image"></i>
-                  {{ item.images.length + 1 }} صور
+                  {{ item.images.length + 1 }} {{ 'specialist.portfolio.images' | t }}
                 </span>
                 <div class="flex items-center gap-2">
                   <button (click)="openEditForm(item)" class="text-xs text-bosla-primary hover:text-bosla-primary/70 transition-colors font-bold flex items-center gap-1">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                    تعديل
-                  </button>
+                    <i class="fa-regular fa-pen-to-square"></i>{{ 'admin.users.edit' | t }}</button>
                   <button (click)="deleteItem(item.id)" class="text-xs text-red-400 hover:text-red-600 transition-colors font-bold flex items-center gap-1">
-                    <i class="fa-regular fa-trash-can"></i>
-                    حذف
-                  </button>
+                    <i class="fa-regular fa-trash-can"></i>{{ 'admin.users.delete' | t }}</button>
                 </div>
               </div>
               @if (item.adminNotes) {
                 <div class="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
-                  <span class="font-bold">ملاحظة الإدارة:</span> {{ item.adminNotes }}
+                  <span class="font-bold">{{ 'specialist.portfolio.adminNotes' | t }}:</span> {{ item.adminNotes }}
                 </div>
               }
             </div>

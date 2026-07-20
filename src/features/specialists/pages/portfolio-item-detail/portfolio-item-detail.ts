@@ -1,13 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, computed, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SpecialistsApiService } from '../../data-access/specialist-api.service';
 import { PortfolioItemDto } from '../../contracts/specialist-portfolio.contract';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-portfolio-item-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './portfolio-item-detail.html',
   styles: [`
     @keyframes fadeUp {
@@ -53,6 +55,9 @@ export class PortfolioItemDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly api = inject(SpecialistsApiService);
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly item = signal<PortfolioItemDto | null>(null);
   readonly loading = signal(true);

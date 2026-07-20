@@ -2,12 +2,12 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
+import { TranslationService } from '../../../../core/services/translation.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-reset-password',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './reset-password.html',
-  styleUrl: '../../auth.css'
 })
 export class ResetPassword implements OnInit {
   private fb = inject(FormBuilder);
@@ -15,6 +15,7 @@ export class ResetPassword implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private translationService = inject(TranslationService);
 
   email = '';
   token = '';
@@ -32,7 +33,7 @@ export class ResetPassword implements OnInit {
     this.token = this.route.snapshot.queryParamMap.get('token') || '';
 
     if (!this.email || !this.token) {
-      this.message = 'Invalid password reset link.';
+      this.message = this.translationService.translate('auth.resetPassword.invalidLink');
     }
   }
 
@@ -49,13 +50,13 @@ export class ResetPassword implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSuccess = true;
-        this.message = res.message || 'Password reset successfully.';
+        this.message = res.message || this.translationService.translate('auth.resetPassword.successMessage');
         this.isLoading = false;
         this.cdr.markForCheck();
         setTimeout(() => this.router.navigate(['/auth/login']), 3000);
       },
       error: (err: any) => {
-        this.message = err.title || 'An error occurred while resetting password.';
+        this.message = err.title || this.translationService.translate('auth.resetPassword.errorMessage');
         this.isLoading = false;
         this.cdr.markForCheck();
       }

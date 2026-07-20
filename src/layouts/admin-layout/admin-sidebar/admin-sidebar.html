@@ -9,12 +9,12 @@
         <polygon points="12 2 19 21 12 17 5 21 12 2"/>
       </svg>
     </div>
-    <span class="sidebar-logo-text">بوصلة</span>
+    <span class="sidebar-logo-text">{{ 'admin.sidebar.bosla' | t }}</span>
   </div>
 
   <!-- Navigation -->
   <nav class="sidebar-nav">
-    @for (section of navSections; track section.title) {
+    @for (section of navSections(); track section.title) {
       <div class="sidebar-nav-section">
         <div class="sidebar-nav-section-title">{{ section.title }}</div>
         @for (item of section.items; track item.route) {
@@ -118,8 +118,8 @@
         {{ userInitials() }}
       </div>
       <div class="sidebar-user-details">
-        <div class="sidebar-user-name">{{ currentUser()?.fullName ?? 'مدير النظام' }}</div>
-        <div class="sidebar-user-role">مدير</div>
+        <div class="sidebar-user-name">{{ currentUser()?.fullName ?? ('admin.sidebar.admin' | t) }}</div>
+        <div class="sidebar-user-role">{{ 'admin.sidebar.role' | t }}</div>
       </div>
     </div>
     <button class="sidebar-logout" (click)="onLogout()">
@@ -128,7 +128,7 @@
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>تسجيل الخروج</span>
+      <span>{{ 'nav.logout' | t }}</span>
     </button>
   </div>
 </aside>

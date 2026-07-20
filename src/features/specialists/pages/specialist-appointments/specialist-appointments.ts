@@ -12,6 +12,8 @@ import { ToastService } from '@core/services/toast.service';
 import { NotificationService } from '@core/services/notification.service';
 import { NotificationType } from '@core/enums/notification-type.enum';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 export enum ApptStatus {
   Pending = 0,
   Confirmed = 1,
@@ -63,13 +65,13 @@ function clientNumber(userId: string): string {
   return `CLT-${num.toString().padStart(3, '0')}`;
 }
 
-const STATUS_LABELS: Record<ApptStatus, string> = {
-  [ApptStatus.Pending]: 'قيد الانتظار',
-  [ApptStatus.Confirmed]: 'بانتظار الدفع',
-  [ApptStatus.Completed]: 'مكتمل',
-  [ApptStatus.Cancelled]: 'ملغي',
-  [ApptStatus.Rejected]: 'مرفوض',
-  [ApptStatus.Paid]: 'مؤكد ومدفوع',
+const STATUS_KEYS: Record<ApptStatus, string> = {
+  [ApptStatus.Pending]: 'specialist.appointments.statusPending',
+  [ApptStatus.Confirmed]: 'specialist.appointments.statusAwaitingPayment',
+  [ApptStatus.Completed]: 'specialist.appointments.statusCompleted',
+  [ApptStatus.Cancelled]: 'specialist.appointments.statusCancelled',
+  [ApptStatus.Rejected]: 'specialist.appointments.statusRejected',
+  [ApptStatus.Paid]: 'specialist.appointments.statusPaid',
 };
 
 const STATUS_CLASSES: Record<ApptStatus, string> = {
@@ -93,7 +95,7 @@ const STATUS_DOTS: Record<ApptStatus, string> = {
 @Component({
   selector: 'app-specialist-appointments',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink, FormsModule],
+  imports: [CommonModule, DatePipe, RouterLink, FormsModule, TranslatePipe],
   templateUrl: './specialist-appointments.html',
 })
 export class SpecialistAppointments implements OnInit, OnDestroy {
@@ -102,7 +104,9 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
   private appointmentService = inject(AppointmentService);
   readonly store = inject(AppointmentsStore);
   private notificationService = inject(NotificationService);
+  private translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   private router = inject(Router);
 
   constructor() {
@@ -554,7 +558,7 @@ export class SpecialistAppointments implements OnInit, OnDestroy {
     this.activeTab.set(status);
   }
 
-  statusLabel(s: ApptStatus): string { return STATUS_LABELS[s] ?? 'غير معروف'; }
+  statusLabel(s: ApptStatus): string { return this.translationService.translate(STATUS_KEYS[s] ?? 'specialist.appointments.statusUnknown'); }
   statusClass(s: ApptStatus): string { return STATUS_CLASSES[s] ?? 'bg-slate-50 text-slate-600 border-slate-200'; }
   statusDot(s: ApptStatus): string { return STATUS_DOTS[s] ?? 'bg-slate-400'; }
 

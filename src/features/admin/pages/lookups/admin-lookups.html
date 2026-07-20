@@ -3,8 +3,8 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-header-info">
-      <h1>إدارة البيانات الأساسية</h1>
-      <p>إضافة وتعديل وحذف مجالات الخبراء والمهارات والأدوات</p>
+      <h1>{{ 'admin.lookups.title' | t }}</h1>
+      <p>{{ 'admin.lookups.subtitle' | t }}</p>
     </div>
     <div class="count-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -16,36 +16,36 @@
 
   <!-- Tabs -->
   <div class="lookups-tabs">
-    <button class="tab-btn" [class.active]="activeTab() === 'expertise'" (click)="setTab('expertise')">مجالات الخبراء</button>
-    <button class="tab-btn" [class.active]="activeTab() === 'skills'" (click)="setTab('skills')">المهارات</button>
-    <button class="tab-btn" [class.active]="activeTab() === 'tools'" (click)="setTab('tools')">الأدوات</button>
-    <button class="tab-btn" [class.active]="activeTab() === 'industries'" (click)="setTab('industries')">الصناعات</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'expertise'" (click)="setTab('expertise')">{{ 'admin.lookups.expertiseAreas' | t }}</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'skills'" (click)="setTab('skills')">{{ 'admin.specialists.skills' | t }}</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'tools'" (click)="setTab('tools')">{{ 'admin.specialists.tools' | t }}</button>
+    <button class="tab-btn" [class.active]="activeTab() === 'industries'" (click)="setTab('industries')">{{ 'admin.specialists.industries' | t }}</button>
   </div>
 
   <!-- Add Button -->
   <div class="lookups-toolbar">
     <button class="add-btn" (click)="openAdd()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      إضافة {{ activeTab() === 'expertise' ? 'مجال' : activeTab() === 'skills' ? 'مهارة' : 'أداة' }}
+      {{ activeTab() === 'expertise' ? ('admin.lookups.addExpertise' | t) : activeTab() === 'skills' ? ('admin.lookups.addSkill' | t) : ('admin.lookups.addTool' | t) }}
     </button>
   </div>
 
   <!-- Form Card -->
   @if (showForm()) {
     <div class="form-card">
-      <h3 class="form-title">{{ isEditing() ? 'تعديل' : 'إضافة' }} {{ getTabTitle() }}</h3>
+      <h3 class="form-title">{{ (isEditing() ? 'admin.lookups.edit' : 'admin.lookups.add') | t }} {{ getTabTitle() }}</h3>
       <div class="form-row">
         <input
           class="form-input"
           type="text"
           [(ngModel)]="formName"
-          placeholder="الاسم"
+          [placeholder]="'contact.name' | t"
           (keyup.enter)="save()"
         >
         <button class="btn-save" [disabled]="!formName.trim() || isSaving()" (click)="save()">
-          @if (isSaving()) { جاري الحفظ... } @else { حفظ }
+          @if (isSaving()) { {{ 'common.saving' | t }} } @else { {{ 'common.save' | t }} }
         </button>
-        <button class="btn-cancel" (click)="closeForm()">إلغاء</button>
+        <button class="btn-cancel" (click)="closeForm()">{{ 'appointments.book.cancel' | t }}</button>
       </div>
     </div>
   }
@@ -68,8 +68,8 @@
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <h3>لا توجد بيانات</h3>
-        <p>لم يتم إضافة أي {{ activeTab() === 'expertise' ? 'مجالات' : activeTab() === 'skills' ? 'مهارات' : 'أدوات' }} بعد</p>
+        <h3>{{ 'common.noData' | t }}</h3>
+        <p>{{ activeTab() === 'expertise' ? ('admin.lookups.noExpertise' | t) : activeTab() === 'skills' ? ('admin.lookups.noSkills' | t) : ('admin.lookups.noTools' | t) }}</p>
       </div>
     } @else {
       <div class="lookups-list">
@@ -77,10 +77,10 @@
           <div class="lookup-item">
             <span class="lookup-name">{{ item.name }}</span>
             <div class="lookup-actions">
-              <button class="icon-btn edit" (click)="openEdit(item)" title="تعديل">
+              <button class="icon-btn edit" (click)="openEdit(item)" [title]="'admin.users.edit' | t">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
               </button>
-              <button class="icon-btn delete" (click)="deleteItem(item)" title="حذف">
+              <button class="icon-btn delete" (click)="deleteItem(item)" [title]="'admin.users.delete' | t">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>

@@ -1,11 +1,9 @@
-<section class="bg-bosla-offwhite min-h-screen py-8 md:py-12" dir="rtl">
+<section class="bg-bosla-offwhite min-h-screen py-8 md:py-12" [dir]="direction()">
   <div class="container mx-auto px-4 max-w-5xl">
     <div class="text-center mb-8">
       <h1 class="text-2xl md:text-3xl font-black text-bosla-primary">
-        <i class="fa-solid fa-heart text-red-500 ml-2"></i>
-        المفضلة
-      </h1>
-      <p class="text-slate-500 mt-2">المتخصصون المفضلون لديك</p>
+        <i class="fa-solid fa-heart text-red-500 ml-2"></i>{{ 'nav.favorites' | t }}</h1>
+      <p class="text-slate-500 mt-2">{{ 'favorites.yourFavorites' | t }}</p>
     </div>
 
     @if (loading()) {
@@ -15,10 +13,10 @@
     } @else if (favorites().length === 0) {
       <ui-empty-state
         icon="fa-regular fa-heart"
-        title="لا يوجد متخصصون مفضلون"
-        description="يمكنك حفظ المتخصصين المفضلين لديك للعودة إليهم لاحقاً">
+        [title]="'favorites.empty' | t"
+        [description]="'favorites.emptyDesc' | t">
         <ui-button variant="primary" size="sm" [routerLink]="['/specialists']">
-          تصفح المتخصصين
+          {{ 'favorites.browseSpecialists' | t }}
         </ui-button>
       </ui-empty-state>
     } @else {
@@ -37,12 +35,12 @@
               </a>
               <button (click)="remove(item.specialistId)"
                 class="absolute top-2 left-2 w-9 h-9 rounded-full bg-white/90 hover:bg-white shadow-sm flex items-center justify-center text-red-500 hover:text-red-600 transition-all"
-                title="إزالة من المفضلة">
+                [title]="'favorites.remove' | t">
                 <i class="fa-solid fa-heart"></i>
               </button>
               @if (item.isVerified) {
                 <span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
-                  <i class="fa-solid fa-circle-check ml-1"></i>موثق
+                  <i class="fa-solid fa-circle-check ml-1"></i>{{ 'expertCard.verified' | t }}
                 </span>
               }
             </div>
@@ -59,7 +57,7 @@
                   <i class="fa-solid fa-star text-amber-400 text-xs"></i>
                   <span class="font-bold text-slate-700">{{ item.rating | number:'1.1-1' }}</span>
                 </div>
-                <span class="text-sm font-bold text-bosla-primary">ج.م {{ item.hourlyRate }}</span>
+                <span class="text-sm font-bold text-bosla-primary">{{ 'home.specialists.currency' | t }} {{ item.hourlyRate }}</span>
               </div>
 
               <div class="flex items-center gap-2 mt-2">

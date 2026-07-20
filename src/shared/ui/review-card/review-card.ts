@@ -1,4 +1,5 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface ReviewItem {
   id: string | number;
@@ -18,6 +19,9 @@ export interface ReviewItem {
 })
 export class UiReviewCard {
   readonly review = input.required<ReviewItem>();
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly stars = computed(() => {
     const count = Math.min(5, Math.max(1, this.review().rating));

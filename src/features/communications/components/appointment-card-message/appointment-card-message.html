@@ -18,7 +18,7 @@
       >
         <!-- Card Header -->
         <div class="bg-bosla-primary px-4 py-2.5 text-white flex items-center justify-between">
-          <span class="text-[10px] font-bold tracking-wider uppercase opacity-90">دعوة جلسة</span>
+          <span class="text-[10px] font-bold tracking-wider uppercase opacity-90">{{ 'appointments.sessionInvitation' | t }}</span>
           <span 
             class="text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase"
             [class]="appointment()!.status === 'confirmed'
@@ -65,10 +65,10 @@
         <!-- Card Footer -->
         <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <button class="text-[10px] font-bold text-bosla-blue hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">عرض التفاصيل</button>
+            <button class="text-[10px] font-bold text-bosla-blue hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">{{ 'common.details.tfasyl' | t }}</button>
             @if (appointment()!.status !== 'cancelled' && appointment()!.status !== 'completed') {
               <span class="w-px h-2.5 bg-slate-200"></span>
-              <button class="text-[10px] font-bold text-bosla-grey hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">إعادة جدولة</button>
+              <button class="text-[10px] font-bold text-bosla-grey hover:text-bosla-primary transition cursor-pointer bg-transparent border-none">{{ 'appointments.reschedule' | t }}</button>
             }
           </div>
           <span class="text-[9px] text-bosla-grey/80 font-medium">{{ formattedTime() }}</span>

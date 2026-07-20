@@ -1,16 +1,16 @@
-<div dir="rtl" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+<div [dir]="direction()" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
   <!-- Breadcrumb -->
   <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-    <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">الرئيسية</a>
+    <a routerLink="/" class="cursor-pointer hover:text-bosla-primary transition-colors">{{ 'nav.home' | t }}</a>
     <i class="fa-solid fa-chevron-left text-[10px]"></i>
-    <span class="text-bosla-primary font-bold">محفظتي</span>
+    <span class="text-bosla-primary font-bold">{{ 'wallet.myWallet.mhfdhty' | t }}</span>
   </header>
 
   @if (loading()) {
     <div class="flex justify-center py-20">
       <div class="flex flex-col items-center gap-4">
         <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm text-slate-400 font-medium">جاري التحميل...</p>
+        <p class="text-sm text-slate-400 font-medium">{{ 'common.loading' | t }}</p>
       </div>
     </div>
   } @else if (wallet(); as w) {
@@ -21,13 +21,13 @@
       <div class="relative z-10">
         <div class="flex items-center gap-2 text-white/70 mb-4">
           <i class="fa-solid fa-wallet"></i>
-          <span class="text-sm font-medium">الرصيد الحالي</span>
+          <span class="text-sm font-medium">{{ 'wallet.balance' | t }}</span>
         </div>
-        <p class="text-4xl md:text-5xl font-black text-white mb-2">{{ formatAmount(w.balance) }} <span class="text-lg font-bold text-white/60">ج.م</span></p>
+        <p class="text-4xl md:text-5xl font-black text-white mb-2">{{ formatAmount(w.balance) }} <span class="text-lg font-bold text-white/60">{{ 'home.specialists.currency' | t }}</span></p>
         @if (w.holdBalance > 0) {
           <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur rounded-2xl px-4 py-2 text-white/80 text-sm">
             <i class="fa-solid fa-lock text-xs"></i>
-            <span>مبلغ مجمد: {{ formatAmount(w.holdBalance) }} ج.م</span>
+            <span>{{ 'wallet.frozenAmount' | t }}: {{ formatAmount(w.holdBalance) }} {{ 'home.specialists.currency' | t }}</span>
           </div>
         }
       </div>
@@ -37,11 +37,11 @@
     <div class="mb-8 grid grid-cols-2 gap-4">
       <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm text-center">
         <p class="text-2xl font-black text-green-600">{{ formatAmount(w.balance - w.holdBalance) }}</p>
-        <p class="text-xs text-slate-500 mt-1">المتاح</p>
+        <p class="text-xs text-slate-500 mt-1">{{ 'wallet.available' | t }}</p>
       </div>
       <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-sm text-center">
         <p class="text-2xl font-black text-amber-600">{{ formatAmount(w.holdBalance) }}</p>
-        <p class="text-xs text-slate-500 mt-1">المجمد</p>
+        <p class="text-xs text-slate-500 mt-1">{{ 'wallet.frozen' | t }}</p>
       </div>
     </div>
 
@@ -53,8 +53,8 @@
             <i class="fa-solid fa-clock-rotate-left"></i>
           </div>
           <div>
-            <h2 class="text-lg font-black text-slate-800">آخر الحركات</h2>
-            <p class="text-xs text-slate-400">أحدث المعاملات على محفظتك</p>
+            <h2 class="text-lg font-black text-slate-800">{{ 'wallet.recentTransactions' | t }}</h2>
+            <p class="text-xs text-slate-400">{{ 'wallet.recentTransactionsDesc' | t }}</p>
           </div>
         </div>
       </div>
@@ -64,18 +64,18 @@
           <div class="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-4">
             <i class="fa-regular fa-receipt text-2xl text-slate-300"></i>
           </div>
-          <p class="text-slate-500 font-medium">لا توجد حركات بعد.</p>
+          <p class="text-slate-500 font-medium">{{ 'wallet.noTransactions.la_twjd_maamlat' | t }}</p>
         </div>
       } @else {
         <!-- Desktop table -->
         <div class="hidden md:block overflow-x-auto">
-          <table class="w-full text-right">
+          <table class="w-full" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
             <thead class="bg-bosla-offwhite text-slate-500 text-xs font-bold">
               <tr>
-                <th class="px-6 py-4">البيان</th>
-                <th class="px-6 py-4">المبلغ</th>
-                <th class="px-6 py-4">النوع</th>
-                <th class="px-6 py-4">التاريخ</th>
+                <th class="px-6 py-4">{{ 'wallet.description.alwsf' | t }}</th>
+                <th class="px-6 py-4">{{ 'payments.amount' | t }}</th>
+                <th class="px-6 py-4">{{ 'wallet.type' | t }}</th>
+                <th class="px-6 py-4">{{ 'payments.date' | t }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-50">
@@ -111,7 +111,7 @@
               </div>
               <div class="flex items-center justify-between">
                 <p class="text-lg font-black" [class.text-green-600]="t.type === 'Credit' || t.type === 'Release'" [class.text-red-600]="t.type === 'Debit'">
-                  {{ t.type === 'Credit' || t.type === 'Release' ? '+' : '-' }}{{ formatAmount(t.amount) }} ج.م
+                  {{ t.type === 'Credit' || t.type === 'Release' ? '+' : '-' }}{{ formatAmount(t.amount) }} {{ 'home.specialists.currency' | t }}
                 </p>
                 <span class="text-xs text-slate-400">{{ t.createdAtUtc | date:'yyyy/MM/dd HH:mm' }}</span>
               </div>

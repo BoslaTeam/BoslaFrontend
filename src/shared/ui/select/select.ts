@@ -1,6 +1,7 @@
-import { Component, forwardRef, input, signal } from '@angular/core';
+import { Component, forwardRef, input, signal, computed, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SelectOption } from '@shared/types/select-option.type';
+import { TranslationService } from '@core/services/translation.service';
 
 @Component({
   selector: 'ui-select',
@@ -17,6 +18,9 @@ import { SelectOption } from '@shared/types/select-option.type';
 })
 
 export class Select implements ControlValueAccessor {
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly label = input<string>('');
   readonly options = input<SelectOption[]>([]);

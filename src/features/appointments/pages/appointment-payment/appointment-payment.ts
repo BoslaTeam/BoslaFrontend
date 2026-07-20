@@ -10,10 +10,12 @@ import { UiSpinner } from '@shared/ui/spinner/spinner';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-appointment-payment',
   standalone: true,
-  imports: [CommonModule, RouterLink, UiButton, UiSpinner, StripePaymentForm],
+  imports: [CommonModule, RouterLink, UiButton, UiSpinner, StripePaymentForm, TranslatePipe],
   templateUrl: './appointment-payment.html',
 })
 export class AppointmentPayment implements OnInit, OnDestroy {
@@ -22,7 +24,9 @@ export class AppointmentPayment implements OnInit, OnDestroy {
   readonly store = inject(AppointmentsStore);
   private readonly paymentService = inject(PaymentService);
   private readonly toast = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
 
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
   private readonly appointmentId = this.route.snapshot.paramMap.get('id') ?? '';
 
   readonly isInitiating = signal(false);

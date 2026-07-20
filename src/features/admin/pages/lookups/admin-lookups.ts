@@ -1,7 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 interface LookupItem {
   id: string;
   name: string;
@@ -9,12 +11,13 @@ interface LookupItem {
 
 @Component({
   selector: 'app-admin-lookups',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './admin-lookups.html',
   styleUrl: './admin-lookups.css',
 })
 export class AdminLookups implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly translationService = inject(TranslationService);
 
   readonly activeTab = signal<'expertise' | 'skills' | 'tools' | 'industries'>('expertise');
   readonly items = signal<LookupItem[]>([]);
@@ -111,7 +114,7 @@ export class AdminLookups implements OnInit {
   }
 
   deleteItem(item: LookupItem): void {
-    if (!confirm(`هل أنت متأكد من حذف "${item.name}"؟`)) return;
+    if (!confirm(this.translationService.translate('admin.lookups.confirmDelete') + " " + item.name + "?")) return;
 
     const tab = this.activeTab();
     const obs = tab === 'expertise'
@@ -126,13 +129,23 @@ export class AdminLookups implements OnInit {
   }
 
   getTabTitle(): string {
-    const titles: Record<string, string> = { expertise: 'مجالات الخبراء', skills: 'المهارات', tools: 'الأدوات', industries: 'الصناعات' };
+    const titles: Record<string, string> = {
+      expertise: this.translationService.translate('admin.lookupType.expertise'),
+      skills: this.translationService.translate('admin.lookupType.skills'),
+      tools: this.translationService.translate('admin.lookupType.tools'),
+      industries: this.translationService.translate('admin.lookupType.industries'),
+    };
     return titles[this.activeTab()] ?? '';
   }
 
   getItemCountLabel(): string {
     const count = this.items().length;
-    const titles: Record<string, string> = { expertise: 'مجال', skills: 'مهارة', tools: 'أداة', industries: 'صناعة' };
+    const titles: Record<string, string> = {
+      expertise: this.translationService.translate('admin.lookupType.expertise_singular'),
+      skills: this.translationService.translate('admin.lookupType.skill_singular'),
+      tools: this.translationService.translate('admin.lookupType.tool_singular'),
+      industries: this.translationService.translate('admin.lookupType.industry_singular'),
+    };
     return `${count} ${titles[this.activeTab()] ?? ''}`;
   }
 }

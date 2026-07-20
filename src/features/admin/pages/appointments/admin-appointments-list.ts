@@ -7,15 +7,18 @@ import { AdminAppointmentDto } from '../../contracts/admin.contracts';
 import { PaginationMetadata } from '@core/models/paginated-response.model';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 @Component({
   selector: 'app-admin-appointments-list',
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, TranslatePipe],
   templateUrl: './admin-appointments-list.html',
   styleUrl: './admin-appointments-list.css',
 })
 export class AdminAppointmentsList implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
+  private readonly translationService = inject(TranslationService);
 
   readonly appointments = signal<AdminAppointmentDto[]>([]);
   readonly isLoading = signal(true);
@@ -31,14 +34,17 @@ export class AdminAppointmentsList implements OnInit {
 
   readonly AppointmentStatus = AppointmentStatus;
 
-  readonly statusOptions = [
-    { value: null, label: 'الكل' },
-    { value: AppointmentStatus.Pending, label: 'قيد الانتظار' },
-    { value: AppointmentStatus.Confirmed, label: 'مؤكد' },
-    { value: AppointmentStatus.Completed, label: 'مكتمل' },
-    { value: AppointmentStatus.Cancelled, label: 'ملغي' },
-    { value: AppointmentStatus.Rescheduled, label: 'معاد جدولته' },
-  ];
+  get statusOptions() {
+    const { AppointmentStatus } = this;
+    return [
+      { value: null, label: this.translationService.translate('admin.filter.all') },
+      { value: AppointmentStatus.Pending, label: this.translationService.translate('admin.status.pending') },
+      { value: AppointmentStatus.Confirmed, label: this.translationService.translate('admin.status.confirmed') },
+      { value: AppointmentStatus.Completed, label: this.translationService.translate('admin.status.completed') },
+      { value: AppointmentStatus.Cancelled, label: this.translationService.translate('admin.status.cancelled') },
+      { value: AppointmentStatus.Rescheduled, label: this.translationService.translate('admin.status.rescheduled') },
+    ];
+  }
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
@@ -94,7 +100,14 @@ export class AdminAppointmentsList implements OnInit {
   }
 
   getStatusLabel(status: number): string {
-    return this.statusOptions.find((o) => o.value === status)?.label ?? 'غير معروف';
+    const labels: Record<number, string> = {
+      [AppointmentStatus.Pending]: this.translationService.translate('admin.status.pending'),
+      [AppointmentStatus.Confirmed]: this.translationService.translate('admin.status.confirmed'),
+      [AppointmentStatus.Completed]: this.translationService.translate('admin.status.completed'),
+      [AppointmentStatus.Cancelled]: this.translationService.translate('admin.status.cancelled'),
+      [AppointmentStatus.Rescheduled]: this.translationService.translate('admin.status.rescheduled'),
+    };
+    return labels[status] ?? this.translationService.translate('admin.status.unknown');
   }
 
   getStatusClass(status: number): string {

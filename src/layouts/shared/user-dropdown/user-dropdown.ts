@@ -2,10 +2,11 @@ import { Component, HostListener, inject, effect, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-user-dropdown',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './user-dropdown.html'
 })
 export class UserDropdown {

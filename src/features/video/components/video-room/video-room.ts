@@ -36,10 +36,11 @@ import { RecordingButton } from '../recording-button/recording-button';
 import { RecordingIndicator } from '../recording-indicator/recording-indicator';
 import { AppHeader } from '@layouts/shared/app-header/app-header';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-video-room',
   standalone: true,
-  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator, AppHeader],
+  imports: [ConnectionStatusBadge, NetworkQualityBadge, CameraSelector, MicrophoneSelector, SpeakerSelector, MicrophoneLevelIndicator, SpeakerTestButton, ScreenShareButton, ScreenShareIndicator, RecordingButton, RecordingIndicator, AppHeader, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './video-room.html',
   styleUrl: './video-room.css',

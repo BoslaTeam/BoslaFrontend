@@ -4,7 +4,7 @@
   <!-- Back button (mobile) -->
   <button
     class="flex lg:hidden items-center justify-center w-10 h-10 rounded-2xl bg-white/50 text-[#1B4F72] hover:bg-white/80 hover:shadow-sm transition-all shrink-0 cursor-pointer"
-    (click)="goBack()" aria-label="العودة إلى المحادثات" id="chat-back-btn">
+    (click)="goBack()" [attr.aria-label]="'messaging.backToConversations' | t" id="chat-back-btn">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <path d="m15 18-6-6 6-6" />
     </svg>
@@ -22,7 +22,7 @@
     </div>
     @if (isOnline()) {
     <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#10B981] border-[3px] border-white shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"
-      aria-label="متصل"></span>
+      [attr.aria-label]="'status.online' | t"></span>
     }
   </div>
 
@@ -38,9 +38,9 @@
       }
       <div class="text-[10px] font-bold flex items-center gap-1.5">
         @if (isOnline()) {
-        <span class="text-[#10B981]">متصل الآن</span>
+        <span class="text-[#10B981]">{{ 'status.online' | t }} {{ 'time.now' | t }}</span>
         } @else {
-        <span class="text-slate-400">غير متصل</span>
+        <span class="text-slate-400">{{ 'status.offline' | t }}</span>
         }
       </div>
     </div>
@@ -52,8 +52,8 @@
     <button
       class="hidden md:flex w-10 h-10 rounded-2xl items-center justify-center hover:bg-white hover:text-[#1B4F72] hover:shadow-sm transition-all cursor-pointer"
       [class.text-[#1B4F72]]="isOpen()" [class.text-slate-400]="!isOpen()" [class.bg-white]="isOpen()" [class.shadow-sm]="isOpen()"
-      (click)="onTogglePanel()" [attr.aria-expanded]="isOpen()" aria-label="إظهار/إخفاء قائمة المحادثات"
-      title="إظهار/إخفاء قائمة المحادثات">
+      (click)="onTogglePanel()" [attr.aria-expanded]="isOpen()" [attr.aria-label]="'messaging.toggleConversationList' | t"
+      [title]="'messaging.toggleConversationList' | t">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
@@ -64,7 +64,7 @@
       class="w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-white hover:text-[#1B4F72] hover:shadow-sm transition-all cursor-pointer"
       [class.text-[#1B4F72]]="isDetailsOpen()" [class.text-slate-400]="!isDetailsOpen()"
       [class.bg-white]="isDetailsOpen()" [class.shadow-sm]="isDetailsOpen()" (click)="onToggleDetailsPanel()"
-      [attr.aria-expanded]="isDetailsOpen()" aria-label="إظهار/إخفاء التفاصيل" title="إظهار/إخفاء التفاصيل">
+      [attr.aria-expanded]="isDetailsOpen()" [attr.aria-label]="'messaging.toggleDetails' | t" [title]="'messaging.toggleDetails' | t">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="16" x2="12" y2="12" />
@@ -75,7 +75,7 @@
     <!-- More Menu -->
     <button
       class="w-10 h-10 rounded-2xl flex items-center justify-center hover:bg-white hover:text-[#1B4F72] hover:shadow-sm transition-all cursor-pointer"
-      aria-label="خيارات أكثر" title="خيارات أكثر">
+      [attr.aria-label]="'common.more.almzyd' | t" [title]="'common.more.almzyd' | t">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="12" cy="5" r="1.5" />
         <circle cx="12" cy="12" r="1.5" />

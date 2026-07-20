@@ -1,4 +1,5 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 export type StatCardVariant = 'blue' | 'orange';
 
@@ -15,6 +16,9 @@ export class UiStatCard {
   readonly variant = input<StatCardVariant>('blue');
 
   // تخصيص الألوان الناعمة للأيقونة بناءً على الواجهة المرفقة
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
+
   readonly iconClasses = computed(() => {
     const base = 'w-12 h-12 flex items-center justify-center rounded-[12px] text-lg transition-all';
     const variants = {

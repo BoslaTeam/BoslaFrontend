@@ -2,15 +2,18 @@ import { Component, inject, OnInit, output, signal } from '@angular/core';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
 import { SpecialistDocumentResponse, SpecialistDocumentType } from '../../../contracts/specialist-document.contract';
 import { UiButton } from '@shared/ui/button/button';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'documents-step',
   standalone: true,
-  imports: [UiButton],
+  imports: [UiButton, TranslatePipe],
   templateUrl: './documents-step.html',
 })
 export class DocumentsStep implements OnInit {
   readonly onboardingStore = inject(SpecialistOnboardingStore);
+  private readonly translationService = inject(TranslationService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
@@ -52,7 +55,7 @@ export class DocumentsStep implements OnInit {
       error: (err) => {
         this.isUploading.set(false);
         this.errorMessage.set(
-          (err.error ?? err)?.title ?? 'فشل في رفع الملف. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? this.translationService.translate('onboarding.documents.errorUpload')
         );
         input.value = '';
       },
@@ -68,7 +71,7 @@ export class DocumentsStep implements OnInit {
       error: (err) => {
         this.isDeleting.update(d => ({ ...d, [doc.id]: false }));
         this.errorMessage.set(
-          (err.error ?? err)?.title ?? 'فشل في حذف الملف. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? this.translationService.translate('onboarding.documents.errorDelete')
         );
       },
     });

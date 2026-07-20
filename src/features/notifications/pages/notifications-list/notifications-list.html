@@ -1,4 +1,4 @@
-<section class="min-h-screen pt-28 pb-16 font-sans relative overflow-hidden" dir="rtl">
+<section class="min-h-screen pt-28 pb-16 font-sans relative overflow-hidden" [dir]="direction()">
   
   <!-- Ambient Blurred Orbs Background -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden bg-bosla-offwhite -z-10">
@@ -14,14 +14,12 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F39C12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-sm">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        الإشعارات
-      </span>
-      <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-l from-[#1B4F72] to-[#2E86AB] leading-tight tracking-tight drop-shadow-sm">تحديثات حسابك</h1>
+        </svg>{{ 'nav.notifications' | t }}</span>
+      <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-l from-[#1B4F72] to-[#2E86AB] leading-tight tracking-tight drop-shadow-sm">{{ 'notifications.accountUpdates' | t }}</h1>
       @if (unreadCount() > 0) {
-      <p class="text-[#F39C12] font-bold mt-3 text-sm md:text-base animate-pulse">لديك {{ unreadCount() }} إشعارات غير مقروءة</p>
+      <p class="text-[#F39C12] font-bold mt-3 text-sm md:text-base animate-pulse">{{ 'notifications.unreadCount' | t:unreadCount() }}</p>
       } @else {
-      <p class="text-slate-500 font-semibold mt-3 text-sm md:text-base">جميع الإشعارات والتحديثات الخاصة بحسابك.</p>
+      <p class="text-slate-500 font-semibold mt-3 text-sm md:text-base">{{ 'notifications.allUpdates' | t }}</p>
       }
     </div>
 
@@ -38,7 +36,7 @@
           [class.shadow-md]="activeTab() === tab.key"
           [class.text-slate-500]="activeTab() !== tab.key"
           [class.hover:bg-white/80]="activeTab() !== tab.key">
-          {{ tab.label }}
+          {{ tab.labelKey | t }}
           @if (tab.key === 'unread' && unreadCount() > 0) {
           <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-gradient-to-r from-[#F39C12] to-[#e67e22] text-white text-[11px] font-black leading-none shadow-sm animate-pulse">
             {{ unreadCount() }}
@@ -52,7 +50,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        تحديد الكل مقروء
+        {{ 'notifications.markAllRead' | t }}
       </button>
       }
     </div>
@@ -64,7 +62,7 @@
       @if (isLoading()) {
       <div class="flex flex-col items-center justify-center py-16">
         <div class="w-10 h-10 border-[3px] border-bosla-primary/20 border-t-bosla-primary rounded-full animate-spin"></div>
-        <p class="text-sm text-slate-400 mt-4">جاري تحميل الإشعارات...</p>
+        <p class="text-sm text-slate-400 mt-4">{{ 'notifications.loading' | t }}</p>
       </div>
       }
 
@@ -81,14 +79,14 @@
           </div>
         </div>
         <h3 class="text-xl font-black text-[#1B4F72] mb-2 tracking-tight">
-          @if (activeTab() === 'all') {لا توجد إشعارات بعد}
-          @else if (activeTab() === 'unread') {كل الإشعارات مقروءة}
-          @else {لا توجد إشعارات مقروءة}
+          @if (activeTab() === 'all') { {{ 'notifications.emptyAll' | t }} }
+          @else if (activeTab() === 'unread') { {{ 'notifications.allRead' | t }} }
+          @else { {{ 'notifications.noRead' | t }} }
         </h3>
         <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
-          @if (activeTab() === 'all') {عندما تصلك إشعارات جديدة، ستظهر هنا فوراً.}
-          @else if (activeTab() === 'unread') {أحسنت! أنت على اطلاع دائم، ليس لديك أي إشعارات غير مقروءة.}
-          @else {الإشعارات التي قمت بقراءتها ستظهر في هذا القسم.}
+          @if (activeTab() === 'all') { {{ 'notifications.emptyAllDesc' | t }} }
+          @else if (activeTab() === 'unread') { {{ 'notifications.allReadDesc' | t }} }
+          @else { {{ 'notifications.noReadDesc' | t }} }
         </p>
       </div>
       }
@@ -148,10 +146,10 @@
           <!-- Content -->
           <div class="flex-grow min-w-0 pr-1">
             <div class="flex justify-between items-start gap-3">
-              <h4 class="font-black text-[#1B4F72] text-[15px] truncate tracking-tight">{{ notif.title }}</h4>
-              <span class="text-[11px] font-bold text-slate-400 shrink-0 whitespace-nowrap">{{ notif.createdAtUtc | date:'short' }}</span>
+              <h4 class="font-black text-[#1B4F72] text-[15px] truncate tracking-tight">{{ notificationTitle(notif) }}</h4>
+              <span class="text-[11px] font-bold text-slate-400 shrink-0 whitespace-nowrap">{{ relativeTime(notif.createdAtUtc) }}</span>
             </div>
-            <p class="text-sm font-semibold text-slate-500 mt-1.5 leading-relaxed">{{ notif.message }}</p>
+            <p class="text-sm font-semibold text-slate-500 mt-1.5 leading-relaxed">{{ notificationMessage(notif) }}</p>
           </div>
 
           <!-- Actions -->
@@ -161,7 +159,7 @@
             }
             <button (click)="deleteNotification(notif.id, $event)"
               class="p-2 rounded-xl text-slate-300 hover:text-red-500 hover:bg-red-50 hover:shadow-sm transition-all mt-auto opacity-0 group-hover:opacity-100 focus:opacity-100"
-              title="حذف الإشعار">
+              [title]="'notifications.delete' | t">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>

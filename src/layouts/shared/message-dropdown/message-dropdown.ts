@@ -3,11 +3,13 @@ import { RouterLink } from '@angular/router';
 import { ConversationService } from '@features/communications/services/conversation.service';
 import { ConversationDto } from '@features/communications/models/chat.model';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-message-dropdown',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './message-dropdown.html',
   styleUrl: './message-dropdown.css',
 })
@@ -17,6 +19,7 @@ export class MessageDropdown implements OnInit {
 
   private conversationService = inject(ConversationService);
   private navigationService = inject(NavigationService);
+  private readonly translationService = inject(TranslationService);
 
   conversations: ConversationDto[] = [];
   readonly chatRoute = this.navigationService.chatRoute;
@@ -38,7 +41,7 @@ export class MessageDropdown implements OnInit {
   }
 
   getOtherName(conv: ConversationDto): string {
-    return conv.participants?.[0]?.fullName ?? 'محادثة';
+    return conv.participants?.[0]?.fullName ?? this.translationService.translate('messaging.conversation');
   }
 
   getOtherAvatar(conv: ConversationDto): string | null {

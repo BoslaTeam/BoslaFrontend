@@ -3,11 +3,12 @@ import { ChatStore } from '../../store/chat.store';
 import { ChatHeader } from '../chat-header/chat-header';
 import { MessageList } from '../message-list/message-list';
 import { MessageComposer } from '../message-composer/message-composer';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'chat-chat-area',
   standalone: true,
-  imports: [ChatHeader, MessageList, MessageComposer],
+  imports: [ChatHeader, MessageList, MessageComposer, TranslatePipe],
   templateUrl: './chat-area.html',
   styleUrl: '../../chat.css',
   host: {

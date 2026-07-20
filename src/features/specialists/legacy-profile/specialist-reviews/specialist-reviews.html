@@ -3,7 +3,7 @@
     <h2 class="text-xl font-bold text-slate-800">المراجعات والتقييمات</h2>
     <div class="bg-yellow-50 text-yellow-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-yellow-100">
       <i class="fa-solid fa-star"></i>
-      <span>التقييم العام: {{ reviews()?.averageRating || '0.0' }}</span>
+      <span>{{ 'specialists.sortBy.rating' | t }} العام: {{ reviews()?.averageRating || '0.0' }}</span>
     </div>
   </div>
 
@@ -31,7 +31,7 @@
     } @empty {
       <div class="text-center py-10">
         <i class="fa-regular fa-comment-dots text-4xl text-slate-300 mb-4 block"></i>
-        <p class="text-slate-500">لا توجد مراجعات حتى الآن.</p>
+        <p class="text-slate-500">{{ 'common.no' | t }} توجد مراجعات حتى الآن.</p>
       </div>
     }
   </div>

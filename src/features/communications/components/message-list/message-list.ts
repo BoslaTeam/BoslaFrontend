@@ -8,6 +8,7 @@ import { VideoInvitationMessage } from '../video-invitation-message/video-invita
 import { TypingIndicator } from '../typing-indicator/typing-indicator';
 import { Message } from '../../models/message.model';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 interface DatedGroup {
   dateLabel: string;
   messages: Message[];
@@ -16,7 +17,7 @@ interface DatedGroup {
 @Component({
   selector: 'chat-message-list',
   standalone: true,
-  imports: [MessageBubble, AppointmentCardMessage, VideoInvitationMessage, TypingIndicator],
+  imports: [MessageBubble, AppointmentCardMessage, VideoInvitationMessage, TypingIndicator, TranslatePipe],
   templateUrl: './message-list.html',
   styleUrl: '../../chat.css',
   host: {

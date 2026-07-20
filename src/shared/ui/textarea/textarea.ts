@@ -1,5 +1,6 @@
-import { Component, forwardRef, input, signal } from '@angular/core';
+import { Component, forwardRef, input, signal, computed, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { TranslationService } from '@core/services/translation.service';
 
 @Component({
   selector: 'ui-textarea',
@@ -16,6 +17,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 
 export class UiTextarea implements ControlValueAccessor {
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   readonly label = input<string>('');
   readonly placeholder = input<string>('');

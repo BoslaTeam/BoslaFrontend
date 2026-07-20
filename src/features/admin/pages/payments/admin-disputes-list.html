@@ -1,8 +1,8 @@
-<div dir="rtl" class="p-6">
+<div class="p-6">
   <div class="flex justify-between items-center mb-6">
     <div>
-      <h1 class="text-2xl font-black text-slate-800">الشكاوى</h1>
-      <p class="text-sm text-slate-500">إدارة شكاوى المدفوعات</p>
+      <h1 class="text-2xl font-black text-slate-800">{{ 'admin.sidebar.disputes' | t }}</h1>
+      <p class="text-sm text-slate-500">{{ 'admin.disputes.subtitle' | t }}</p>
     </div>
   </div>
 
@@ -10,18 +10,16 @@
   <div class="flex gap-2 mb-6">
     <button (click)="setTab('all')"
             class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
-            [class]="activeTab() === 'all' ? 'bg-bosla-primary text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
-      الكل
-    </button>
+            [class]="activeTab() === 'all' ? 'bg-bosla-primary text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">{{ 'home.domains.all' | t }}</button>
     <button (click)="setTab('Pending')"
             class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
             [class]="activeTab() === 'Pending' ? 'bg-amber-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
-      معلقة
+      {{ 'admin.disputes.pending' | t }}
     </button>
     <button (click)="setTab('Resolved')"
             class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
             [class]="activeTab() === 'Resolved' ? 'bg-green-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
-      تم الحل
+      {{ 'admin.disputes.resolved' | t }}
     </button>
   </div>
 
@@ -33,11 +31,11 @@
     <div class="text-center py-20 text-slate-400 bg-white rounded-2xl shadow-sm border border-slate-100">
       <i class="fa-solid fa-circle-check text-5xl mb-4 opacity-30"></i>
       @if (activeTab() === 'all') {
-        <p class="text-lg font-bold">لا توجد شكاوى</p>
+        <p class="text-lg font-bold">{{ 'admin.disputes.noDisputes' | t }}</p>
       } @else if (activeTab() === 'Pending') {
-        <p class="text-lg font-bold">لا توجد شكاوى معلقة</p>
+        <p class="text-lg font-bold">{{ 'admin.disputes.noPendingDisputes' | t }}</p>
       } @else {
-        <p class="text-lg font-bold">لا توجد شكاوى تم حلها</p>
+        <p class="text-lg font-bold">{{ 'admin.disputes.noResolvedDisputes' | t }}</p>
       }
     </div>
   } @else {
@@ -45,11 +43,11 @@
       <table class="w-full text-right">
         <thead class="bg-slate-50 text-slate-500 text-xs font-bold">
           <tr>
-            <th class="px-6 py-4">المستخدم</th>
-            <th class="px-6 py-4">السبب</th>
-            <th class="px-6 py-4">المبلغ</th>
-            <th class="px-6 py-4">الحالة</th>
-            <th class="px-6 py-4">تاريخ التقديم</th>
+            <th class="px-6 py-4">{{ 'admin.audit.user' | t }}</th>
+            <th class="px-6 py-4">{{ 'admin.disputes.reason' | t }}</th>
+            <th class="px-6 py-4">{{ 'payments.amount' | t }}</th>
+            <th class="px-6 py-4">{{ 'payments.status' | t }}</th>
+            <th class="px-6 py-4">{{ 'admin.disputes.submissionDate' | t }}</th>
             <th class="px-6 py-4"></th>
           </tr>
         </thead>
@@ -73,9 +71,7 @@
               <td class="px-6 py-4 text-slate-500 text-sm">{{ d.createdAtUtc | date:'yyyy/MM/dd' }}</td>
               <td class="px-6 py-4">
                 <a [routerLink]="['/admin/payments/disputes', d.id]"
-                   class="text-bosla-primary hover:underline font-bold text-sm">
-                  التفاصيل
-                </a>
+                   class="text-bosla-primary hover:underline font-bold text-sm">{{ 'admin.details.altfasyl' | t }}</a>
               </td>
             </tr>
           }

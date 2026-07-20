@@ -2,8 +2,8 @@
 
   <div class="page-header">
     <div class="page-header-info">
-      <h1>إدارة AI</h1>
-      <p>إدارة التضمينات (Embeddings) للبحث الذكي عن المتخصصين</p>
+      <h1>{{ 'admin.management.adarh' | t }} AI</h1>
+      <p>{{ 'admin.ai.embeddingsDescription' | t }}</p>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
         </div>
         <div class="stat-body">
           <span class="stat-value">{{ s.totalSpecialists }}</span>
-          <span class="stat-label">إجمالي المتخصصين</span>
+          <span class="stat-label">{{ 'dashboard.totalSpecialists.ajmaly_almtkhssyn' | t }}</span>
         </div>
       </div>
 
@@ -42,7 +42,7 @@
         </div>
         <div class="stat-body">
           <span class="stat-value">{{ s.embeddedCount }}</span>
-          <span class="stat-label">تم تضمينها</span>
+          <span class="stat-label">{{ 'admin.ai.embedded' | t }}</span>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
         </div>
         <div class="stat-body">
           <span class="stat-value">{{ s.pendingCount }}</span>
-          <span class="stat-label">بانتظار التضمين</span>
+          <span class="stat-label">{{ 'admin.ai.pendingEmbedding' | t }}</span>
         </div>
       </div>
 
@@ -67,19 +67,19 @@
         </div>
         <div class="stat-body">
           <span class="stat-value">{{ s.outdatedCount }}</span>
-          <span class="stat-label">بحاجة للتحديث</span>
+          <span class="stat-label">{{ 'admin.ai.needsUpdate' | t }}</span>
         </div>
       </div>
     </div>
 
     <div class="info-card">
       <div class="info-row">
-        <span class="info-label">الحالة</span>
+        <span class="info-label">{{ 'payments.status' | t }}</span>
         <span class="status-badge" [class]="getStatusClass(s.status)">{{ getStatusLabel(s.status) }}</span>
       </div>
       @if (s.lastRebuildAt) {
         <div class="info-row">
-          <span class="info-label">آخر تحديث</span>
+          <span class="info-label">{{ 'terms.lastUpdated' | t }}</span>
           <span class="info-value">{{ s.lastRebuildAt | date:'EEEE, yyyy/MM/dd hh:mm a' }}</span>
         </div>
       }
@@ -89,16 +89,16 @@
       <button class="rebuild-btn" (click)="rebuild()" [disabled]="isRebuilding()">
         @if (isRebuilding()) {
           <span class="spinner"></span>
-          جاري إعادة البناء...
+          {{ 'admin.ai.rebuilding' | t }}
         } @else {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 4 23 10 17 10"/>
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
           </svg>
-          إعادة بناء التضمينات
+          {{ 'admin.ai.rebuildEmbeddings' | t }}
         }
       </button>
-      <p class="actions-hint">سيتم إعادة إنشاء التضمينات لجميع المتخصصين باستخدام أحدث البيانات</p>
+      <p class="actions-hint">{{ 'admin.ai.rebuildHint' | t }}</p>
     </div>
   }
 </div>

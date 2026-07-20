@@ -7,7 +7,9 @@ import { ProfileSecurity } from '../../components/profile-security/profile-secur
 import { ProfileEducation } from '../../components/profile-education/profile-education';
 import { ProfileSocial } from '../../components/profile-social/profile-social';
 import { ProfileNotifications } from '../../components/profile-notifications/profile-notifications';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 export type ProfileSection = 'basic' | 'education' | 'social' | 'security' | 'notifications';
 
 interface NavItem {
@@ -19,19 +21,13 @@ interface NavItem {
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    ProfileBasic,
-    ProfileSecurity,
-    ProfileEducation,
-    ProfileSocial,
-    ProfileNotifications,
-  ],
+  imports: [CommonModule, ProfileBasic, ProfileSecurity, ProfileEducation, ProfileSocial, ProfileNotifications, TranslatePipe],
   templateUrl: './profile-page.html',
 })
 export class ProfilePage implements OnInit {
   private readonly profileStore = inject(ProfileStore);
   readonly authService = inject(AuthService);
+  private readonly translationService = inject(TranslationService);
 
   readonly activeSection = signal<ProfileSection>('basic');
   readonly profile = this.profileStore.profile;
@@ -40,11 +36,11 @@ export class ProfilePage implements OnInit {
   profileImageError = false;
 
   readonly navItems: NavItem[] = [
-    { key: 'basic', label: 'المعلومات الشخصية', icon: 'fa-solid fa-user' },
-    { key: 'education', label: 'التعليم', icon: 'fa-solid fa-graduation-cap' },
-    { key: 'social', label: 'الروابط الاجتماعية', icon: 'fa-solid fa-link' },
-    { key: 'security', label: 'الأمان', icon: 'fa-solid fa-lock' },
-    { key: 'notifications', label: 'الإشعارات', icon: 'fa-regular fa-bell' },
+    { key: 'basic', label: 'profile.nav.basic', icon: 'fa-solid fa-user' },
+    { key: 'education', label: 'profile.nav.education', icon: 'fa-solid fa-graduation-cap' },
+    { key: 'social', label: 'profile.nav.social', icon: 'fa-solid fa-link' },
+    { key: 'security', label: 'profile.nav.security', icon: 'fa-solid fa-lock' },
+    { key: 'notifications', label: 'profile.nav.notifications', icon: 'fa-regular fa-bell' },
   ];
 
   ngOnInit(): void {
@@ -83,7 +79,7 @@ export class ProfilePage implements OnInit {
   }
 
   get userName(): string {
-    return this.profile()?.name || this.authService.currentUser()?.fullName || 'مستخدم';
+    return this.profile()?.name || this.authService.currentUser()?.fullName || this.translationService.translate('profile.defaultName');
   }
 
   get userTitle(): string {

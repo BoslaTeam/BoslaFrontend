@@ -2,6 +2,7 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService, AppNotification } from '@core/services/notification.service';
 import { NotificationType } from '@core/enums/notification-type.enum';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 interface ToastItem {
   id: string;
@@ -15,7 +16,7 @@ interface ToastItem {
 @Component({
   selector: 'app-notification-toast',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './notification-toast.html',
   styleUrl: './notification-toast.css',
 })

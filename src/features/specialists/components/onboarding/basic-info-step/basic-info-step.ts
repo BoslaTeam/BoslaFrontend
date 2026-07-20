@@ -5,6 +5,8 @@ import { UiButton } from '@shared/ui/button/button';
 import { UiInput } from '@shared/ui/input/input';
 import { UiTextarea } from '@shared/ui/textarea/textarea';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
 function calcLevel(years: number): number {
   if (years <= 2) return 0;
   if (years <= 5) return 1;
@@ -12,22 +14,18 @@ function calcLevel(years: number): number {
   return 3;
 }
 
-const LEVEL_LABELS = ['مبتدئ', 'متوسط', 'متقدم', 'خبير'];
+const LEVEL_KEYS = ['onboarding.basicInfo.levelBeginner', 'onboarding.basicInfo.levelIntermediate', 'onboarding.basicInfo.levelAdvanced', 'onboarding.basicInfo.levelExpert'];
 
 @Component({
   selector: 'basic-info-step',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    UiButton,
-    UiInput,
-    UiTextarea,
-  ],
+  imports: [ReactiveFormsModule, UiButton, UiInput, UiTextarea, TranslatePipe],
   templateUrl: './basic-info-step.html',
 })
 export class BasicInfoStep {
   private readonly fb = inject(FormBuilder);
   private readonly onboardingStore = inject(SpecialistOnboardingStore);
+  private readonly translationService = inject(TranslationService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
@@ -44,7 +42,7 @@ export class BasicInfoStep {
     bookingPolicy: ['', Validators.required],
   });
 
-  readonly levelLabel = computed(() => LEVEL_LABELS[this.experienceLevel()]);
+  readonly levelLabel = computed(() => this.translationService.translate(LEVEL_KEYS[this.experienceLevel()]));
 
   constructor() {
     effect(() => {
@@ -96,7 +94,7 @@ export class BasicInfoStep {
       error: (err) => {
         this.isLoading.set(false);
         this.errorMessage.set(
-          (err.error ?? err)?.title ?? 'حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى.'
+          (err.error ?? err)?.title ?? this.translationService.translate('onboarding.basicInfo.error')
         );
       },
     });

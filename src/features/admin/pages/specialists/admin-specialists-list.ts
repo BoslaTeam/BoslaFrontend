@@ -5,16 +5,19 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { AdminSpecialistListItemDto } from '../../contracts/admin.contracts';
 import { PaginationMetadata } from '@core/models/paginated-response.model';
+import { TranslationService } from '@core/services/translation.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-specialists-list',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TranslatePipe],
   templateUrl: './admin-specialists-list.html',
   styleUrl: './admin-specialists-list.css',
 })
 export class AdminSpecialistsList implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
+  private readonly translationService = inject(TranslationService);
 
   readonly specialists = signal<AdminSpecialistListItemDto[]>([]);
   readonly isLoading = signal(true);
@@ -81,7 +84,7 @@ export class AdminSpecialistsList implements OnInit {
   }
 
   verifySpecialist(id: string, isApproved: boolean): void {
-    const adminNotes = isApproved ? undefined : (prompt('سبب الرفض:') || undefined);
+    const adminNotes = isApproved ? undefined : (prompt(this.translationService.translate('admin.specialists.rejectionReason')) || undefined);
     if (!isApproved && !adminNotes) return;
     this.adminService.verifySpecialist(id, { isVerified: isApproved, adminNotes }).subscribe({
       next: () => this.loadSpecialists(),
@@ -89,7 +92,12 @@ export class AdminSpecialistsList implements OnInit {
   }
 
   getVerificationStatusLabel(status: string): string {
-    const labels: Record<string, string> = { Draft: 'مسودة', Pending: 'معلق', Approved: 'مقبول', Rejected: 'مرفوض' };
+    const labels: Record<string, string> = {
+      Draft: this.translationService.translate('specialist.status.Draft'),
+      Pending: this.translationService.translate('specialist.status.Pending'),
+      Approved: this.translationService.translate('specialist.status.Approved'),
+      Rejected: this.translationService.translate('specialist.status.Rejected'),
+    };
     return labels[status] ?? status;
   }
 

@@ -3,15 +3,15 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-header-info">
-      <h1>المدفوعات</h1>
-      <p>عرض وإدارة جميع المدفوعات على المنصة</p>
+      <h1>{{ 'payments.title' | t }}</h1>
+      <p>{{ 'pagination.showing' | t }} وإدارة جميع {{ 'admin.payments.title' | t }} على المنصة</p>
     </div>
     <div class="count-badge">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
         <line x1="1" y1="10" x2="23" y2="10"/>
       </svg>
-      {{ totalPayments() }} عملية
+      {{ totalPayments() }} {{ 'admin.payments.operations' | t }}
     </div>
   </div>
 
@@ -23,7 +23,7 @@
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
       </div>
-      <input type="text" class="toolbar-search-input" placeholder="بحث باسم المستخدم أو المتخصص..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+      <input type="text" class="toolbar-search-input" placeholder="{{ 'admin.payments.searchPlaceholder' | t }}" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
     </div>
 
     <select class="toolbar-select" (change)="onStatusFilter($any($event.target).value === '' ? null : $any($event.target).value)">
@@ -56,20 +56,20 @@
             <line x1="1" y1="10" x2="23" y2="10"/>
           </svg>
         </div>
-        <h3>لا توجد مدفوعات</h3>
-        <p>لم يتم العثور على مدفوعات مطابقة لمعايير البحث</p>
+        <h3>{{ 'admin.payments.noPayments' | t }}</h3>
+        <p>{{ 'admin.payments.noResults' | t }}</p>
       </div>
     } @else {
       <table class="payments-table">
         <thead>
           <tr>
-            <th>المستخدم</th>
-            <th>المتخصص</th>
-            <th>المبلغ</th>
-            <th>طريقة الدفع</th>
-            <th>الحالة</th>
-            <th>التاريخ</th>
-            <th>الإجراءات</th>
+            <th>{{ 'admin.audit.user' | t }}</th>
+            <th>{{ 'admin.specialistLabel.almtkhss' | t }}</th>
+            <th>{{ 'payments.amount' | t }}</th>
+            <th>{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</th>
+            <th>{{ 'payments.status' | t }}</th>
+            <th>{{ 'payments.date' | t }}</th>
+            <th>{{ 'admin.audit.action' | t }}ات</th>
           </tr>
         </thead>
         <tbody>
@@ -100,7 +100,7 @@
               </td>
               <td>
                 <div class="action-btns">
-                  <a class="action-btn" [routerLink]="['/admin/payments', p.id]" title="عرض التفاصيل">
+                  <a class="action-btn" [routerLink]="['/admin/payments', p.id]" title="{{ 'admin.payments.viewDetails' | t }}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                     </svg>

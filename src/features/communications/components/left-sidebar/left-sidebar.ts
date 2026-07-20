@@ -4,10 +4,11 @@ import { ChatStore } from '../../store/chat.store';
 import { PresenceStore } from '../../store/presence.store';
 import { UpcomingSessionCard } from '../upcoming-session-card/upcoming-session-card';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'chat-left-sidebar',
   standalone: true,
-  imports: [UpcomingSessionCard],
+  imports: [UpcomingSessionCard, TranslatePipe],
   templateUrl: './left-sidebar.html',
   styleUrl: '../../chat.css',
   host: {

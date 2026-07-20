@@ -1,4 +1,4 @@
-<div class="min-h-screen" dir="rtl" style="background: linear-gradient(135deg, #F7F9FA 0%, #ffffff 40%, #f0f4f8 100%);">
+<div class="min-h-screen" [dir]="direction()" style="background: linear-gradient(135deg, #F7F9FA 0%, #ffffff 40%, #f0f4f8 100%);">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
 
     <!-- Back Button -->
@@ -7,7 +7,7 @@
       <svg class="w-4 h-4 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
       </svg>
-      العودة إلى المواعيد
+      {{ 'specialist.appointments.backToAppointments' | t }}
     </a>
 
     <!-- Specialist Not Found -->
@@ -19,9 +19,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">لم يتم تحديد مختص</h2>
-          <p class="text-sm text-gray-500 mb-8">يجب اختيار مختص أولاً قبل حجز موعد. يمكنك تصفح المختصين من صفحة المتخصصين.</p>
-          <ui-button variant="primary" size="md" [routerLink]="['/specialists']">تصفح المختصين</ui-button>
+          <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">{{ 'specialist.appointments.noSpecialist' | t }}</h2>
+          <p class="text-sm text-gray-500 mb-8">{{ 'specialist.appointments.noSpecialistDesc' | t }}</p>
+          <ui-button variant="primary" size="md" [routerLink]="['/specialists']">{{ 'specialist.appointments.browseSpecialists' | t }}</ui-button>
         </div>
       </div>
     } @else {
@@ -51,7 +51,7 @@
                 </div>
                 <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
                   [class]="currentStep() >= 1 ? 'text-bosla-primary' : 'text-gray-400'">
-                  اختر اليوم
+                  {{ 'specialist.appointments.selectDay' | t }}
                 </span>
               </div>
 
@@ -77,9 +77,7 @@
                   } @else { 2 }
                 </div>
                 <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
-                  [class]="currentStep() >= 2 ? 'text-bosla-primary' : 'text-gray-400'">
-                  اختر الوقت
-                </span>
+                  [class]="currentStep() >= 2 ? 'text-bosla-primary' : 'text-gray-400'">{{ 'appointments.book.selectTime' | t }}</span>
               </div>
 
               <!-- Line 2–3 -->
@@ -103,9 +101,7 @@
                   } @else { 3 }
                 </div>
                 <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
-                  [class]="currentStep() >= 3 ? 'text-bosla-primary' : 'text-gray-400'">
-                  التفاصيل
-                </span>
+                  [class]="currentStep() >= 3 ? 'text-bosla-primary' : 'text-gray-400'">{{ 'admin.details.altfasyl' | t }}</span>
               </div>
 
               <!-- Line 3–4 -->
@@ -130,7 +126,7 @@
                 </div>
                 <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
                   [class]="currentStep() >= 4 ? 'text-bosla-primary' : 'text-gray-400'">
-                  مراجعة
+                  {{ 'specialist.appointments.reviewBooking' | t }}
                 </span>
               </div>
 
@@ -153,9 +149,7 @@
                   } @else { 5 }
                 </div>
                 <span class="text-[11px] font-bold whitespace-nowrap transition-colors duration-300"
-                  [class]="store.bookingStep() !== 'form' ? 'text-bosla-primary' : 'text-gray-400'">
-                  تأكيد
-                </span>
+                  [class]="store.bookingStep() !== 'form' ? 'text-bosla-primary' : 'text-gray-400'">{{ 'common.confirm' | t }}</span>
               </div>
 
             </div>
@@ -172,9 +166,9 @@
                   <div>
                     <div class="flex items-center gap-3 mb-1">
                       <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">1</span>
-                      <h2 class="text-xl font-bold text-bosla-charcoal">اختر اليوم المناسب</h2>
+                      <h2 class="text-xl font-bold text-bosla-charcoal">{{ 'specialist.appointments.selectDay' | t }}</h2>
                     </div>
-                    <p class="text-sm text-gray-500 mr-10">اختر تاريخاً مناسباً من المواعيد المتاحة للمختص</p>
+                    <p class="text-sm text-gray-500 mr-10">{{ 'specialist.appointments.selectDay' | t }}</p>
                   </div>
                 </div>
 
@@ -191,8 +185,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-bosla-charcoal mb-1">لا توجد مواعيد متاحة</h3>
-                    <p class="text-sm text-gray-400">لم يقم المختص بإضافة مواعيد متاحة بعد، يرجى المحاولة لاحقاً</p>
+                    <h3 class="text-lg font-bold text-bosla-charcoal mb-1">{{ 'appointments.empty.la_twjd_mwaayd' | t }} {{ 'specialist.appointments.available' | t }}</h3>
+                    <p class="text-sm text-gray-400">{{ 'specialist.appointments.noSlots' | t }}</p>
                   </div>
                 } @else {
                   <div class="flex gap-4 overflow-x-auto pb-2" style="scrollbar-width:thin;scrollbar-color:#e5e7eb transparent">
@@ -223,11 +217,11 @@
                             [class]="selectedDate() === group.dateStr
                               ? 'bg-white/20 text-white'
                               : 'bg-emerald-50 text-emerald-600'">
-                            {{ group.availableCount }} موعد
+                            {{ group.availableCount }} {{ 'specialist.appointments.bookingSlot' | t }}
                           </span>
                         } @else {
                           <span class="mt-3 text-[10px] font-bold px-2.5 py-1 rounded-full inline-block bg-rose-50 text-rose-400">
-                            محجوز
+                            {{ 'specialist.appointments.booked' | t }}
                           </span>
                         }
 
@@ -254,13 +248,13 @@
                     <div>
                       <div class="flex items-center gap-3 mb-1">
                         <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">2</span>
-                        <h2 class="text-xl font-bold text-bosla-charcoal">اختر الوقت المناسب</h2>
+                        <h2 class="text-xl font-bold text-bosla-charcoal">{{ 'appointments.book.selectTime' | t }}</h2>
                       </div>
                       <p class="text-sm text-gray-500 mr-10">{{ group.displayDate }}</p>
                     </div>
                     @if (selectedSlotId()) {
                       <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full whitespace-nowrap">
-                        تم الاختيار ✓
+                        {{ 'specialist.appointments.selected' | t }}
                       </span>
                     }
                   </div>
@@ -284,7 +278,7 @@
                               </svg>
                               <span class="line-through text-gray-300">{{ slot.timeStr }}</span>
                             </span>
-                            <span class="block text-[10px] text-gray-300 mt-1.5 font-medium">غير متاح</span>
+                            <span class="block text-[10px] text-gray-300 mt-1.5 font-medium">{{ 'specialist.appointments.booked' | t }}</span>
                           } @else {
                             <span class="flex items-center justify-center gap-1.5">
                               @if (selectedSlotId() === slot.id) {
@@ -295,16 +289,14 @@
                               <span>{{ slot.timeStr }}</span>
                             </span>
                             <span class="block text-[10px] mt-1.5 font-medium"
-                              [class]="selectedSlotId() === slot.id ? 'text-white/70' : 'text-emerald-500'">
-                              متاح
-                            </span>
+                              [class]="selectedSlotId() === slot.id ? 'text-white/70' : 'text-emerald-500'">{{ 'specialist.appointments.available' | t }}</span>
                           }
                         </button>
                       }
                     </div>
                   } @else {
                     <div class="text-center py-12 bg-gray-50/50 rounded-2xl">
-                      <p class="text-sm text-gray-400">لا توجد مواعيد متاحة لهذا اليوم</p>
+                      <p class="text-sm text-gray-400">{{ 'specialist.appointments.availableForDay' | t }}</p>
                     </div>
                   }
                 </div>
@@ -318,15 +310,15 @@
                 <div class="flex items-center gap-3 mb-7">
                   <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">3</span>
                   <div>
-                    <h2 class="text-xl font-bold text-bosla-charcoal">موضوع الجلسة</h2>
-                    <p class="text-sm text-gray-500 mt-0.5">حدد موضوع الجلسة وأي ملاحظات إضافية للمختص</p>
+                    <h2 class="text-xl font-bold text-bosla-charcoal">{{ 'specialist.appointments.sessionTopicLabel' | t }}</h2>
+                    <p class="text-sm text-gray-500 mt-0.5">{{ 'specialist.appointments.topicHint' | t }}</p>
                   </div>
                 </div>
 
                 <div class="space-y-5">
                   <!-- Session Topic -->
                   <div>
-                    <label class="block text-sm font-semibold text-bosla-charcoal mb-2 mr-1">موضوع الدراسة <span class="text-gray-300 font-normal">(اختياري)</span></label>
+                    <label class="block text-sm font-semibold text-bosla-charcoal mb-2 mr-1">{{ 'specialist.appointments.studyTopic' | t }}</label>
                     <div class="relative">
                       <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,14 +326,14 @@
                         </svg>
                       </span>
                       <input type="text" [value]="sessionTopic()" (input)="sessionTopic.set($any($event.target).value)"
-                        placeholder="مثال: استشارة تسويقية، تطوير أعمال"
+                        [placeholder]="'specialist.appointments.topicPlaceholder' | t"
                         class="w-full pr-11 pl-4 py-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bosla-blue focus:bg-white focus:ring-2 focus:ring-bosla-blue/10 text-bosla-charcoal placeholder:text-gray-300 transition-all duration-200" />
                     </div>
                   </div>
 
                   <!-- Notes -->
                   <div>
-                    <label class="block text-sm font-semibold text-bosla-charcoal mb-2 mr-1">ملاحظات للمختص <span class="text-gray-300 font-normal">(اختياري)</span></label>
+                    <label class="block text-sm font-semibold text-bosla-charcoal mb-2 mr-1">{{ 'specialist.appointments.notesForSpecialist' | t }}</label>
                     <div class="relative">
                       <span class="absolute right-3.5 top-3.5 text-gray-400">
                         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +341,7 @@
                         </svg>
                       </span>
                       <textarea [value]="notes()" (input)="notes.set($any($event.target).value)"
-                        placeholder="اكتب تفاصيل إضافية أو محاور ترغب بنقاشها..."
+                        [placeholder]="'specialist.appointments.notesPlaceholder2' | t"
                         class="w-full pr-11 pl-4 py-3.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bosla-blue focus:bg-white focus:ring-2 focus:ring-bosla-blue/10 text-bosla-charcoal placeholder:text-gray-300 resize-none h-24 transition-all duration-200"></textarea>
                     </div>
                   </div>
@@ -359,11 +351,11 @@
                 <div class="flex items-center gap-3 mt-8">
                   <button (click)="backToStep3()"
                     class="flex-1 py-3.5 px-6 rounded-2xl text-sm font-bold border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:text-bosla-charcoal transition-all duration-200 cursor-pointer">
-                    العودة للوقت
+                    {{ 'specialist.appointments.backToTime' | t }}
                   </button>
                   <button (click)="goToReview()"
                     class="flex-1 py-3.5 px-6 rounded-2xl text-sm font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-xl hover:shadow-bosla-primary/20 transition-all duration-200 cursor-pointer">
-                    مراجعة الحجز
+                    {{ 'specialist.appointments.reviewBooking' | t }}
                   </button>
                 </div>
               </div>
@@ -377,8 +369,8 @@
                   <div class="flex items-center gap-3 mb-7">
                     <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-xs font-bold flex items-center justify-center">4</span>
                     <div>
-                      <h2 class="text-xl font-bold text-bosla-charcoal">مراجعة الحجز</h2>
-                      <p class="text-sm text-gray-500 mt-0.5">تأكد من المعلومات قبل تأكيد الحجز</p>
+                      <h2 class="text-xl font-bold text-bosla-charcoal">{{ 'specialist.appointments.reviewBooking' | t }}</h2>
+                      <p class="text-sm text-gray-500 mt-0.5">{{ 'specialist.appointments.confirmBooking' | t }}</p>
                     </div>
                   </div>
 
@@ -393,7 +385,7 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">اليوم</p>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{{ 'home.cta.headline2' | t }}</p>
                           <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ slot.displayDate }}</p>
                         </div>
                       </div>
@@ -405,7 +397,7 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">الوقت</p>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{{ 'specialist.appointments.time' | t }}</p>
                           <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ slot.timeStr }}</p>
                         </div>
                       </div>
@@ -417,8 +409,8 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">المدة</p>
-                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ durationMinutes() }} دقيقة</p>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{{ 'specialist.appointments.duration' | t }}</p>
+                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ durationMinutes() }} {{ 'specialist.appointments.minutes' | t }}</p>
                         </div>
                       </div>
 
@@ -429,8 +421,8 @@
                           </svg>
                         </div>
                         <div>
-                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">الإجمالي</p>
-                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ totalPrice() }} ج.م</p>
+                          <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{{ 'payments.total.alajmaly' | t }}</p>
+                          <p class="text-sm font-bold text-bosla-charcoal mt-0.5">{{ totalPrice() }} {{ 'specialist.appointments.egp' | t }}</p>
                         </div>
                       </div>
 
@@ -440,13 +432,13 @@
                       <div class="mt-4 pt-4 border-t border-bosla-blue/10">
                         @if (sessionTopic()) {
                           <div class="mb-2">
-                            <span class="text-[11px] font-semibold text-gray-400">موضوع الجلسة</span>
+                            <span class="text-[11px] font-semibold text-gray-400">{{ 'specialist.appointments.sessionTopicLabel' | t }}</span>
                             <p class="text-sm font-medium text-bosla-charcoal mt-0.5">{{ sessionTopic() }}</p>
                           </div>
                         }
                         @if (notes()) {
                           <div>
-                            <span class="text-[11px] font-semibold text-gray-400">الملاحظات</span>
+                            <span class="text-[11px] font-semibold text-gray-400">{{ 'specialist.appointments.notes' | t }}</span>
                             <p class="text-sm font-medium text-bosla-charcoal mt-0.5">{{ notes() }}</p>
                           </div>
                         }
@@ -458,7 +450,7 @@
                   <div class="flex items-center gap-3 mb-4">
                     <button (click)="backToStep3()"
                       class="flex-1 py-3.5 px-6 rounded-2xl text-sm font-bold border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:text-bosla-charcoal transition-all duration-200 cursor-pointer">
-                      تعديل الموضوع
+                      {{ 'specialist.appointments.editTopic' | t }}
                     </button>
                   </div>
 
@@ -474,12 +466,12 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                       </svg>
-                      <span>جاري الحجز...</span>
+                      <span>{{ 'specialist.appointments.bookLoading' | t }}</span>
                     } @else {
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span>تأكيد الحجز</span>
+                      <span>{{ 'appointments.book.confirm' | t }}</span>
                     }
                   </button>
                 </div>
@@ -503,38 +495,38 @@
                 </div>
 
                 <!-- Status Title -->
-                <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">في انتظار موافقة المختص</h2>
-                <p class="text-sm text-gray-500 mb-2">تم إرسال طلب الحجز إلى المختص بنجاح</p>
-                <p class="text-xs text-gray-400 mb-8">سيتم إشعارك فور الموافقة على الطلب لتتمكن من إتمام الدفع</p>
+                <h2 class="text-2xl font-bold text-bosla-charcoal mb-2">{{ 'specialist.appointments.pendingApproval' | t }}</h2>
+                <p class="text-sm text-gray-500 mb-2">{{ 'specialist.appointments.bookingSent' | t }}</p>
+                <p class="text-xs text-gray-400 mb-8">{{ 'specialist.appointments.notifyOnApproval' | t }}</p>
 
                 <!-- Appointment Summary -->
-                <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 p-5 mb-8 text-right">
+                <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100 p-5 mb-8" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
                   <div class="flex items-center gap-3.5 mb-4 pb-4 border-b border-gray-100">
                     <div class="w-12 h-12 rounded-xl overflow-hidden bg-bosla-blue/10 shrink-0 ring-2 ring-white shadow-sm">
                       <img [src]="s.imageUrl || 'assets/icons/favicon.ico'" [alt]="s.name" class="w-full h-full object-cover" />
                     </div>
                     <div>
                       <p class="text-sm font-bold text-bosla-charcoal">{{ s.name }}</p>
-                      <p class="text-xs text-gray-500 mt-0.5">{{ s.title || 'مختص معتمد' }}</p>
+                      <p class="text-xs text-gray-500 mt-0.5">{{ s.title || ('specialist.appointments.certifiedSpecialist' | t) }}</p>
                     </div>
                   </div>
                   <div class="flex justify-between items-center py-1.5">
-                    <span class="text-sm text-gray-500">رسوم الساعة</span>
-                    <span class="text-sm font-bold text-bosla-charcoal">{{ s.hourlyRate }} ج.م</span>
+                    <span class="text-sm text-gray-500">{{ 'specialist.appointments.hourlyRate' | t }}</span>
+                    <span class="text-sm font-bold text-bosla-charcoal">{{ s.hourlyRate }} {{ 'specialist.appointments.egp' | t }}</span>
                   </div>
                   <div class="flex justify-between items-center py-1.5">
-                    <span class="text-sm text-gray-500">المدة</span>
-                    <span class="text-sm font-bold text-bosla-charcoal">{{ durationMinutes() }} دقيقة</span>
+                    <span class="text-sm text-gray-500">{{ 'specialist.appointments.duration' | t }}</span>
+                    <span class="text-sm font-bold text-bosla-charcoal">{{ durationMinutes() }} {{ 'specialist.appointments.minutes' | t }}</span>
                   </div>
                   <div class="flex justify-between items-center py-1.5 border-t border-gray-100 mt-2 pt-3">
-                    <span class="text-sm font-bold text-bosla-charcoal">الإجمالي</span>
-                    <span class="text-lg font-black text-bosla-primary">{{ totalPrice() }} ج.م</span>
+                    <span class="text-sm font-bold text-bosla-charcoal">{{ 'payments.total.alajmaly' | t }}</span>
+                    <span class="text-lg font-black text-bosla-primary">{{ totalPrice() }} {{ 'specialist.appointments.egp' | t }}</span>
                   </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex flex-col gap-3">
-                  <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">العودة إلى المواعيد</ui-button>
+                  <ui-button (click)="goToAppointments()" size="md" variant="ghost" class="w-full">{{ 'specialist.appointments.goToAppointments' | t }}</ui-button>
                 </div>
               </div>
             }
@@ -564,7 +556,7 @@
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
                     <h2 class="text-base font-bold text-bosla-charcoal truncate">{{ specialist.name }}</h2>
-                    <p class="text-xs text-gray-500 mt-0.5 truncate">{{ specialist.title || 'مختص معتمد' }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5 truncate">{{ specialist.title || ('specialist.appointments.certifiedSpecialist' | t) }}</p>
 
                     <!-- Rating inline -->
                     <div class="flex items-center gap-1 mt-2">
@@ -583,7 +575,7 @@
                   <!-- Price -->
                   <div class="shrink-0 text-left">
                     <p class="text-xl font-black text-bosla-primary">{{ specialist.hourlyRate }}</p>
-                    <p class="text-[10px] text-gray-500 mt-0.5 font-medium whitespace-nowrap">ج.م / ساعة</p>
+                    <p class="text-[10px] text-gray-500 mt-0.5 font-medium whitespace-nowrap">{{ 'home.specialists.currency' | t }} {{ 'specialist.appointments.perHour' | t }}</p>
                   </div>
                 </div>
 
@@ -593,13 +585,9 @@
                     class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-bosla-primary to-bosla-blue text-white hover:shadow-lg hover:shadow-bosla-primary/20 transition-all duration-200">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    حجز موعد
-                  </a>
+                    </svg>{{ 'appointments.book.title' | t }}</a>
                   <a [routerLink]="['/specialists', specialistId()]"
-                    class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200">
-                    عرض الملف
-                    <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-gray-50 text-bosla-charcoal hover:bg-bosla-blue/5 hover:text-bosla-blue border border-gray-200 transition-all duration-200">{{ 'specialists.viewProfile.ard_almlf' | t }}<svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                   </a>
