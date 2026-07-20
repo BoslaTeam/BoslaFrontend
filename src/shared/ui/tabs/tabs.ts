@@ -1,4 +1,5 @@
-import { Component, input, output, model } from '@angular/core';
+import { Component, input, output, model, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface TabItem {
   id: string;
@@ -10,7 +11,6 @@ export interface TabItem {
   standalone: true,
   imports: [],
   templateUrl: './tabs.html',
-  styleUrl: './tabs.css',
 })
 export class UiTabs {
   // استقبال قائمة التبويبات ديناميكياً
@@ -20,6 +20,9 @@ export class UiTabs {
 
   // حدث يطلق عند تغيير التبويب
   readonly tabChange = output<string>();
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   selectTab(id: string): void {
     this.activeId.set(id);

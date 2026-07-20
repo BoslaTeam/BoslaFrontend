@@ -1,4 +1,4 @@
-<div class="w-full border-b border-bosla-charcoal/10" dir="rtl">
+<div class="w-full border-b border-bosla-charcoal/10" [dir]="direction()">
     <nav class="flex gap-8 -mb-px" aria-label="Tabs">
         @for (tab of items(); track tab.id) {
         <button type="button" (click)="selectTab(tab.id)"

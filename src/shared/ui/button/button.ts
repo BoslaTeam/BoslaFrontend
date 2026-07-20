@@ -10,7 +10,6 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   standalone: true,
   imports: [UiSpinner],
   templateUrl: './button.html',
-  styleUrl: './button.css',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

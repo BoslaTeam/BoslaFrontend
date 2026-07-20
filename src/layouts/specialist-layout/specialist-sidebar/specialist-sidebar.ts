@@ -1,10 +1,11 @@
 import { Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-specialist-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './specialist-sidebar.html',
   styleUrl: './specialist-sidebar.css',
 })

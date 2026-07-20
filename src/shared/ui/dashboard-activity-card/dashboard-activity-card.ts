@@ -1,4 +1,5 @@
-import { Component, input } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface DashboardActivity {
   id: any;
@@ -19,4 +20,7 @@ export interface DashboardActivity {
 export class UiDashboardActivityCard {
   readonly title = input<string>('النشاط الأخير');
   readonly activities = input<DashboardActivity[]>([]);
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 }

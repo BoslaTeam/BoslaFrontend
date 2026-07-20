@@ -39,6 +39,13 @@ testem.log
 /typings
 __screenshots__/
 
+# Secrets
+*.pem
+
+# Generated files
+api_endpoints_raw.json
+docx_output.txt
+
 # System files
 .DS_Store
 Thumbs.db

@@ -16,7 +16,8 @@ import { AddAvailabilitiesRequest, SpecialistAvailabilityResponse } from '../con
 import { SpecialistDetailsResponse } from '../contracts/specialist-details.contract';
 import {
   OnboardSpecialistRequest,
-  OnboardSpecialistResponse
+  StartResponse,
+  UpdateProfileRequest,
 } from '../contracts/specialist-onboard.contract';
 import { SpecialistReviewResponse } from '../contracts/specialist-review.contract';
 
@@ -27,6 +28,10 @@ import { SpecialistReviewsResponse } from '../contracts/specialist-reviews-respo
 import { AddSkillsRequest } from '../contracts/specialist-skill.contract';
 import { AddExperiencesRequest, ExperienceResponse } from '../contracts/specialist-experience.contract';
 import { AddToolsRequest } from '../contracts/specialist-tool.contract';
+import { UpdateSpecialistRequest, UpdateBookingPolicyRequest, UpdateCancellationPolicyRequest, UpdateExperienceRequest } from '../contracts/specialist-profile-update.contract';
+import { VerificationDetailsResponse } from '../contracts/specialist-verification.contract';
+import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
+import { PortfolioItemDto, CreatePortfolioItemRequest, UpdatePortfolioItemRequest, ReorderPortfolioRequest } from '../contracts/specialist-portfolio.contract';
 
 @Injectable({
   providedIn: 'root',
@@ -42,13 +47,13 @@ export class SpecialistApiService {
     }>(`${this.apiUrl}/specialists/me`);
   }
 
-  getDashboard() {
-    return this.http.get<{
-      data: SpecialistDashboardResponse;
-    }>(
-      `${this.apiUrl}/specialists/me/dashboard`
-    );
-  }
+ getDashboard() {
+  return this.http.get<{
+    data: SpecialistDashboardResponse;
+  }>(
+    API_ENDPOINTS.specialists.dashboard
+  );
+}
 
   getMyEarnings() {
     return this.http.get<SpecialistEarningsResponse>(
@@ -56,13 +61,13 @@ export class SpecialistApiService {
     );
   }
 
-  getMyReviews(pageNumber = 1, pageSize = 10) {
-    return this.http.get<{
-      data: SpecialistReviewsResponse;
-    }>(
-      `${this.apiUrl}/specialists/me/reviews?pageNumber=${pageNumber}&pageSize=${pageSize}`
-    );
-  }
+ getMyReviews(pageNumber = 1, pageSize = 10) {
+  return this.http.get<{
+    data: SpecialistReviewsResponse;
+  }>(
+    `${API_ENDPOINTS.specialists.myReviews}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+  );
+}
 }
 
 @Injectable({
@@ -130,12 +135,66 @@ export class SpecialistsApiService {
     );
   }
 
-  onboard(request: OnboardSpecialistRequest) {
-    return this.http.post<
-      ApiResponse<OnboardSpecialistResponse>
+  getCertificates(id: string) {
+    return this.http.get<
+      ApiResponse<SpecialistDocumentResponse[]>
     >(
-      API_ENDPOINTS.specialists.onboard,
+      API_ENDPOINTS.specialists.certificatesFor(id)
+    );
+  }
+
+  start() {
+    return this.http.post<ApiResponse<StartResponse>>(
+      API_ENDPOINTS.specialists.start,
+      {}
+    );
+  }
+
+  updateProfile(request: UpdateProfileRequest) {
+    return this.http.put<ApiResponse<SpecialistProfileResponse>>(
+      API_ENDPOINTS.specialists.updateProfile,
       request
+    );
+  }
+
+  updateUserTitle(title: string) {
+    return this.http.put<ApiResponse<unknown>>(
+      API_ENDPOINTS.users.me,
+      { title }
+    );
+  }
+
+  submitForReview() {
+    return this.http.post<ApiResponse<void>>(
+      API_ENDPOINTS.specialists.submit,
+      {}
+    );
+  }
+
+  getVerification() {
+    return this.http.get<ApiResponse<VerificationDetailsResponse>>(
+      API_ENDPOINTS.specialists.verification
+    );
+  }
+
+  uploadDocument(file: File, type: number) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<string>>(
+      `${API_ENDPOINTS.specialists.documents}?type=${type}`,
+      formData
+    );
+  }
+
+  getDocuments() {
+    return this.http.get<ApiResponse<SpecialistDocumentResponse[]>>(
+      API_ENDPOINTS.specialists.documents
+    );
+  }
+
+  deleteDocument(id: string) {
+    return this.http.delete<ApiResponse<void>>(
+      API_ENDPOINTS.specialists.documentById(id)
     );
   }
 
@@ -159,6 +218,40 @@ export class SpecialistsApiService {
     );
   }
 
+  removeExpertise(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.expertiseById(id)
+    );
+  }
+
+  updateMyProfile(request: UpdateSpecialistRequest) {
+    return this.http.put<ApiResponse<SpecialistProfileResponse>>(
+      API_ENDPOINTS.specialists.me,
+      request
+    );
+  }
+
+  updateBookingPolicy(request: UpdateBookingPolicyRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.bookingPolicy,
+      request
+    );
+  }
+
+  updateCancellationPolicy(request: UpdateCancellationPolicyRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.cancellationPolicy,
+      request
+    );
+  }
+
+  updateExperience(id: string, request: UpdateExperienceRequest) {
+    return this.http.put<ApiResponse<boolean>>(
+      API_ENDPOINTS.specialists.experienceById(id),
+      request
+    );
+  }
+
   addTools(request: AddToolsRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.tools,
@@ -179,6 +272,12 @@ export class SpecialistsApiService {
     );
   }
 
+  deleteAvailability(id: string) {
+    return this.http.delete(
+      API_ENDPOINTS.specialists.availabilityById(id)
+    );
+  }
+
   addExperiences(request: AddExperiencesRequest) {
     return this.http.post(
       API_ENDPOINTS.specialists.experience,
@@ -190,6 +289,44 @@ export class SpecialistsApiService {
     return this.http.delete(
       API_ENDPOINTS.specialists.experienceById(id)
     );
+  }
+
+  // ==========================================
+  // Portfolio
+  // ==========================================
+
+  getMyPortfolio() {
+    return this.http.get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.myPortfolio);
+  }
+
+  createPortfolioItem(request: CreatePortfolioItemRequest) {
+    return this.http.post<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.myPortfolio, request);
+  }
+
+  updatePortfolioItem(id: string, request: UpdatePortfolioItemRequest) {
+    return this.http.put<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.myPortfolioItem(id), request);
+  }
+
+  deletePortfolioItem(id: string) {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.myPortfolioItem(id));
+  }
+
+  reorderPortfolio(request: ReorderPortfolioRequest) {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.reorder, request);
+  }
+
+  getPublicPortfolio(specialistId: string) {
+    return this.http.get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.public(specialistId));
+  }
+
+  getPublicPortfolioItem(specialistId: string, itemId: string) {
+    return this.http.get<ApiResponse<PortfolioItemDto>>(API_ENDPOINTS.portfolio.publicItem(specialistId, itemId));
+  }
+
+  uploadPortfolioImage(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.portfolio.uploadImage, formData);
   }
 
   // ==========================================
@@ -217,6 +354,12 @@ export class SpecialistsApiService {
   getMySkills() {
     return this.http.get<ApiResponse<LookupResponse[]>>(
       API_ENDPOINTS.specialists.skills
+    );
+  }
+
+  getMyExpertise() {
+    return this.http.get<ApiResponse<LookupResponse[]>>(
+      API_ENDPOINTS.specialists.expertise
     );
   }
 

@@ -24,8 +24,28 @@ export function mapSpecialistDetails(
         tools: (dto.tools || []).map(t => typeof t === 'string' ? { id: t, name: t } : mapLookup(t as any)),
         skills: (dto.skills || []).map(s => typeof s === 'string' ? { id: s, name: s } : mapLookup(s as any)),
         industries: (dto.industries || []).map(i => typeof i === 'string' ? { id: i, name: i } : mapLookup(i as any)),
+        expertise: dto.expertise || [],
         rating: dto.rating,
         reviewsCount: dto.reviewsCount,
         isOnline: dto.isOnline,
+
+        bookingPolicy: dto.bookingPolicy ?? '',
+        minBookingNoticeHours: dto.minBookingNoticeHours,
+        maxSessionsPerDay: dto.maxSessionsPerDay,
+        maxSessionsPerWeek: dto.maxSessionsPerWeek,
+
+        cancellationDeadlineHours: dto.cancellationDeadlineHours,
+        cancellationFeePercent: dto.cancellationFeePercent,
+        allowCancellation: dto.allowCancellation,
+        cancellationPolicy: dto.cancellationPolicy ?? '',
+
+        experiences: (dto.experiences || []).map(e => ({
+            id: e.id,
+            companyName: e.companyName,
+            jobTitle: e.jobTitle,
+            description: e.description ?? '',
+            fromDate: e.fromDate,
+            toDate: e.toDate,
+        })),
     };
 }

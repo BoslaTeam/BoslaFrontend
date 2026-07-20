@@ -1,7 +1,7 @@
 <div data-mobile-menu class="md:hidden">
   <button (click)="toggle()"
     class="flex items-center justify-center w-10 h-10 rounded-full text-white hover:text-bosla-orange transition-colors focus:outline-none"
-    aria-label="القائمة">
+    [attr.aria-label]="'common.menu' | t">
     @if (!isOpen()) {
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -19,28 +19,42 @@
   @if (isOpen()) {
     <div class="fixed inset-0 top-20 z-50 bg-bosla-primary/98 backdrop-blur-md">
       <div class="flex flex-col items-center gap-6 py-10 px-6 text-center">
-        <a [routerLink]="navigationService.homeRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">الرئيسية</a>
-        <a [routerLink]="navigationService.specialistsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">المتخصصين</a>
+
+        <app-language-toggle />
+
+        <a [routerLink]="navigationService.homeRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.home' | t }}</a>
+        <a [routerLink]="navigationService.specialistsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.specialists' | t }}</a>
 
         <div class="w-3/4 h-px bg-white/10 my-4"></div>
 
         @if (!authService.isAuthenticated()) {
           <a [routerLink]="navigationService.loginRoute" (click)="close()"
-            class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">تسجيل الدخول</a>
+            class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.login' | t }}</a>
           <a [routerLink]="navigationService.registerRoute" (click)="close()"
-            class="px-8 py-3 rounded-full bg-bosla-orange hover:bg-orange-500 text-white font-bold text-lg">ابدأ الآن</a>
+            class="px-8 py-3 rounded-full bg-bosla-orange hover:bg-orange-500 text-white font-bold text-lg">{{ 'home.hero.cta' | t }}</a>
         } @else {
-          <a [routerLink]="navigationService.profileRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">الملف الشخصي</a>
-          <a [routerLink]="navigationService.appointmentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">الحجوزات</a>
-          <a [routerLink]="navigationService.chatRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">الرسائل</a>
-          <a [routerLink]="navigationService.videoRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">جلسات الفيديو</a>
-          <a [routerLink]="navigationService.paymentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">المعاملات المالية</a>
+          <a [routerLink]="navigationService.profileRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.profile' | t }}</a>
+          @if (authService.userRole() === 0) {
+            <a [routerLink]="navigationService.appointmentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.appointments' | t }}</a>
+          }
+          @if (authService.userRole() === 1) {
+            <a [routerLink]="navigationService.specialistAppointmentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'appointments.title' | t }}</a>
+          }
+          <a [routerLink]="navigationService.chatRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.messages' | t }}</a>
+          <a [routerLink]="navigationService.videoRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'nav.video' | t }}</a>
+          @if (authService.userRole() === 1) {
+            <a routerLink="/specialist/wallet" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'wallet.title' | t }}</a>
+          }
+          @if (authService.userRole() === 0) {
+            <a routerLink="/wallet" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'wallet.title' | t }}</a>
+            <a [routerLink]="navigationService.paymentsRoute" (click)="close()" class="text-xl font-bold text-white hover:text-bosla-orange transition-colors">{{ 'payments.history' | t }}</a>
+          }
 
           <div class="w-3/4 h-px bg-white/10 my-4"></div>
 
           <button (click)="authService.logout(); close()"
             class="text-xl font-bold text-red-400 hover:text-red-300 transition-colors">
-            تسجيل الخروج
+            {{ 'nav.logout' | t }}
           </button>
         }
       </div>

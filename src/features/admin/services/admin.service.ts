@@ -9,12 +9,17 @@ import {
   AdminDashboardDto,
   AdminUserDto,
   AdminUserDetailDto,
-  PendingSpecialistDto,
+  AdminSpecialistListItemDto,
   AdminSpecialistDetailDto,
   AdminAppointmentDto,
+  AdminAppointmentDetailDto,
+  AdminPaymentDto,
+  AdminPaymentDetailDto,
   AuditLogDto,
   EmbeddingsStatusDto,
+  CreateSpecialistRequest,
 } from '../contracts/admin.contracts';
+import { PortfolioItemDto, AdminReviewPortfolioRequest } from '@features/specialists/contracts/specialist-portfolio.contract';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -73,10 +78,13 @@ export class AdminService {
 
   // ── Specialists Management ──
 
-  getPendingSpecialists(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<PendingSpecialistDto>>> {
-    return this.http.get<ApiResponse<PaginatedResponse<PendingSpecialistDto>>>(
-      API_ENDPOINTS.admin.pendingSpecialists,
-      { params: this.buildPaginationParams(params) }
+  getAllSpecialists(params: PaginationRequest & { verificationStatus?: string }): Observable<ApiResponse<PaginatedResponse<AdminSpecialistListItemDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.verificationStatus) httpParams = httpParams.set('verificationStatus', params.verificationStatus);
+
+    return this.http.get<ApiResponse<PaginatedResponse<AdminSpecialistListItemDto>>>(
+      API_ENDPOINTS.admin.specialists,
+      { params: httpParams }
     );
   }
 
@@ -86,10 +94,92 @@ export class AdminService {
       .pipe(map((res) => res.data!));
   }
 
-  verifySpecialist(id: string, payload: { isApproved: boolean; notes?: string }): Observable<boolean> {
+  verifySpecialist(id: string, payload: { isVerified: boolean; adminNotes?: string }): Observable<boolean> {
     return this.http
       .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.verifySpecialist(id), payload)
       .pipe(map((res) => res.data!));
+  }
+
+  // ── Lookups (Expertise, Skills, Tools) ──
+
+  getIndustryList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.industries)
+      .pipe(map((res) => res.data!));
+  }
+
+  createIndustry(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.industries, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateIndustry(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteIndustry(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.industryById(id))
+      .pipe(map((res) => res.success));
+  }
+
+  getExpertiseList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.expertise)
+      .pipe(map((res) => res.data!));
+  }
+
+  createExpertise(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.expertise, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateExpertise(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.expertiseById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteExpertise(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.expertiseById(id))
+      .pipe(map((res) => res.success));
+  }
+
+  getSkillList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.skills)
+      .pipe(map((res) => res.data!));
+  }
+
+  createSkill(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.skills, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateSkill(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.skillById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteSkill(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.skillById(id))
+      .pipe(map((res) => res.success));
+  }
+
+  getToolList(): Observable<{ id: string; name: string }[]> {
+    return this.http.get<ApiResponse<{ id: string; name: string }[]>>(API_ENDPOINTS.admin.tools)
+      .pipe(map((res) => res.data!));
+  }
+
+  createTool(name: string): Observable<string> {
+    return this.http.post<ApiResponse<string>>(API_ENDPOINTS.admin.tools, { name })
+      .pipe(map((res) => res.data!));
+  }
+
+  updateTool(id: string, name: string): Observable<boolean> {
+    return this.http.put<ApiResponse<boolean>>(API_ENDPOINTS.admin.toolById(id), { name })
+      .pipe(map((res) => res.success));
+  }
+
+  deleteTool(id: string): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(API_ENDPOINTS.admin.toolById(id))
+      .pipe(map((res) => res.success));
   }
 
   // ── Appointments ──
@@ -104,12 +194,123 @@ export class AdminService {
     );
   }
 
+  getAppointmentDetail(id: string): Observable<AdminAppointmentDetailDto> {
+    return this.http
+      .get<ApiResponse<AdminAppointmentDetailDto>>(API_ENDPOINTS.admin.appointmentDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  cancelAppointment(id: string, reason: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.cancelAppointment(id), { reason })
+      .pipe(map((res) => res.data ?? res.success));
+  }
+
+  confirmAppointment(id: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.confirmAppointment(id), {})
+      .pipe(map((res) => res.success));
+  }
+
+  completeAppointment(id: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.completeAppointment(id), {})
+      .pipe(map((res) => res.success));
+  }
+
+  // ── Payments ──
+
+  getPayments(params: PaginationRequest & { status?: string }): Observable<ApiResponse<PaginatedResponse<AdminPaymentDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+
+    return this.http.get<ApiResponse<PaginatedResponse<AdminPaymentDto>>>(
+      API_ENDPOINTS.admin.payments,
+      { params: httpParams }
+    );
+  }
+
+  getPaymentDetail(id: string): Observable<AdminPaymentDetailDto> {
+    return this.http
+      .get<ApiResponse<AdminPaymentDetailDto>>(API_ENDPOINTS.admin.paymentDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  refundPayment(id: string, reason?: string): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.refundPayment(id), { reason })
+      .pipe(map((res) => res.success));
+  }
+
+  // ── Disputes ──
+
+  getAllDisputes(status?: string): Observable<import('@features/payments/contracts/payment.contracts').ComplaintListItemDto[]> {
+    let params = new HttpParams();
+    if (status) params = params.set('status', status);
+    return this.http
+      .get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintListItemDto[]>>(API_ENDPOINTS.admin.paymentDisputes, { params })
+      .pipe(map((res) => res.data!));
+  }
+
+  getDisputeDetail(id: string): Observable<import('@features/payments/contracts/payment.contracts').ComplaintDetailDto> {
+    return this.http
+      .get<ApiResponse<import('@features/payments/contracts/payment.contracts').ComplaintDetailDto>>(API_ENDPOINTS.admin.paymentDisputeDetail(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  resolveDispute(id: string, request: import('@features/admin/contracts/admin.contracts').ResolveDisputeRequest): Observable<boolean> {
+    return this.http
+      .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.resolveDispute(id), request)
+      .pipe(map((res) => res.success));
+  }
+
+  updateSpecialistStatus(id: string, status: string): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.specialistStatus(id), { status })
+      .pipe(map((res) => res.success));
+  }
+
+  createSpecialist(payload: CreateSpecialistRequest): Observable<string> {
+    return this.http
+      .post<ApiResponse<string>>(API_ENDPOINTS.admin.createSpecialist, payload)
+      .pipe(map((res) => res.data!));
+  }
+
+  updateSpecialist(id: string, payload: any): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.updateSpecialist(id), payload)
+      .pipe(map((res) => res.success));
+  }
+
+  updateUserRoles(id: string, roles: string[]): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.admin.userRoles(id), { roles })
+      .pipe(map((res) => res.success));
+  }
+
   // ── Audit Logs ──
 
-  getAuditLogs(params: PaginationRequest): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+  getAuditLogById(id: string): Observable<AuditLogDto> {
+    return this.http
+      .get<ApiResponse<AuditLogDto>>(API_ENDPOINTS.admin.auditLogById(id))
+      .pipe(map((res) => res.data!));
+  }
+
+  getAuditLogs(params: PaginationRequest & {
+    action?: string;
+    entityType?: string;
+    from?: string;
+    to?: string;
+  }): Observable<ApiResponse<PaginatedResponse<AuditLogDto>>> {
+    let httpParams = this.buildPaginationParams(params);
+    if (params.action) httpParams = httpParams.set('action', params.action);
+    if (params.entityType) httpParams = httpParams.set('entityType', params.entityType);
+    if (params.from) httpParams = httpParams.set('from', params.from);
+    if (params.to) httpParams = httpParams.set('to', params.to);
+
     return this.http.get<ApiResponse<PaginatedResponse<AuditLogDto>>>(
       API_ENDPOINTS.admin.auditLogs,
-      { params: this.buildPaginationParams(params) }
+      { params: httpParams }
     );
   }
 
@@ -124,6 +325,26 @@ export class AdminService {
   rebuildEmbeddings(): Observable<boolean> {
     return this.http
       .post<ApiResponse<boolean>>(API_ENDPOINTS.admin.embeddingsRebuild, {})
+      .pipe(map((res) => res.data!));
+  }
+
+  // ── Portfolio Review ──
+
+  getSpecialistPortfolio(specialistId: string): Observable<PortfolioItemDto[]> {
+    return this.http
+      .get<ApiResponse<PortfolioItemDto[]>>(API_ENDPOINTS.portfolio.adminBySpecialist(specialistId))
+      .pipe(map((res) => res.data!));
+  }
+
+  approvePortfolioItem(specialistId: string, itemId: string, request: AdminReviewPortfolioRequest): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.adminApprove(specialistId, itemId), request)
+      .pipe(map((res) => res.data!));
+  }
+
+  rejectPortfolioItem(specialistId: string, itemId: string, request: AdminReviewPortfolioRequest): Observable<boolean> {
+    return this.http
+      .put<ApiResponse<boolean>>(API_ENDPOINTS.portfolio.adminReject(specialistId, itemId), request)
       .pipe(map((res) => res.data!));
   }
 

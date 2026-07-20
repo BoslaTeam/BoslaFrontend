@@ -1,0 +1,76 @@
+@if (isOpen()) {
+<div class="ntf-dropdown">
+  <div class="ntf-dropdown-header">
+    <h3>{{ 'nav.notifications' | t }}</h3>
+    @if (unreadCount() > 0) {
+    <span class="ntf-dropdown-badge">{{ unreadCount() }}</span>
+    }
+  </div>
+
+  <div class="ntf-dropdown-body">
+    @if (latest.length === 0) {
+    <div class="ntf-dropdown-empty">
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#95A5A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      <p>{{ 'notifications.empty' | t }}</p>
+    </div>
+    }
+
+    @for (notif of latest; track notif.id) {
+    <div class="ntf-dropdown-item" [class.ntf-dropdown-item-unread]="!notif.isRead" [class.ntf-dropdown-item-clickable]="!!notif.appointmentId" (click)="markAsRead(notif, $event)">
+      <div class="ntf-dropdown-icon" [class]="'ntf-dropdown-icon-' + iconType(notif.type)">
+        @switch (notif.type) {
+          @case (notificationType.SpecialistVerification) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          }
+          @case (notificationType.Booking) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          }
+          @case (notificationType.Message) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          }
+          @case (notificationType.Reminder) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          }
+          @default {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          }
+        }
+      </div>
+      <div class="ntf-dropdown-text">
+        <p class="ntf-dropdown-title">{{ notificationTitle(notif) }}</p>
+        <p class="ntf-dropdown-msg">{{ notificationMessage(notif) }}</p>
+        <p class="ntf-dropdown-time">{{ relativeTime(notif.createdAtUtc) }}</p>
+      </div>
+      @if (!notif.isRead) {
+      <div class="ntf-dropdown-dot"></div>
+      }
+    </div>
+    }
+  </div>
+
+  <a [routerLink]="notifRoute" class="ntf-dropdown-footer" (click)="close.emit()">
+    {{ 'notifications.viewAll' | t }}
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </a>
+</div>
+}

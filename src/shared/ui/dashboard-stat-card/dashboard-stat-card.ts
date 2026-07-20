@@ -1,4 +1,5 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 
 @Component({
   selector: 'ui-dashboard-stat-card',
@@ -19,4 +20,7 @@ export class UiDashboardStatCard {
 
   // تحديد ما إذا كانت البطاقة تحتوي على حد برتقالي جانبي (مثل بطاقة التقييم)
   readonly hasOrangeBorder = input<boolean>(false);
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 }

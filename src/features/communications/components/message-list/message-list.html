@@ -1,4 +1,4 @@
-<div class="flex-1 flex flex-col min-h-0 overflow-y-auto p-4 space-y-4 bg-bosla-offwhite" aria-label="Messages" role="log" aria-live="polite">
+<div class="flex-1 flex flex-col min-h-0 overflow-y-auto p-4 gap-1 bg-bosla-offwhite" aria-label="Messages" role="log" aria-live="polite">
 
   <!-- Loading State -->
   @if (store.isLoadingMessages()) {
@@ -28,14 +28,12 @@
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">تعذر تحميل الرسائل</h4>
-      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">لم نتمكن من جلب الرسائل. تحقق من اتصالك.</p>
+      <h4 class="text-sm font-bold text-bosla-charcoal font-sans">{{ 'messaging.loadMessagesError' | t }}</h4>
+      <p class="text-xs text-bosla-grey max-w-[200px] leading-relaxed">{{ 'messaging.loadMessagesErrorDesc' | t }}</p>
       <button class="inline-flex items-center gap-1.5 px-4 py-2 mt-1 rounded-xl border border-bosla-primary/20 text-bosla-primary text-xs font-semibold hover:bg-bosla-primary/5 transition cursor-pointer font-sans" (click)="store.loadMessages(store.activeConversationId()!)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-        </svg>
-        إعادة المحاولة
-      </button>
+        </svg>{{ 'common.retry' | t }}</button>
     </div>
   }
 

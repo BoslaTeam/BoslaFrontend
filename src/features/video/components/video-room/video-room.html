@@ -1,40 +1,666 @@
-<div class="video-room">
-  <div class="video-room-controls">
-    <button (click)="joinSession()" [disabled]="agoraService.joined() || agoraService.joining()">
-      {{ agoraService.joining() ? 'Joining...' : 'Join Session' }}
-    </button>
+<div class="vr-page">
 
-    <button (click)="leaveSession()" [disabled]="!agoraService.joined()">
-      Leave Session
-    </button>
-  </div>
+  <!-- ══════════════════════════════════════════════════════════
+       GLOBAL HEADER — Bosla AppHeader (fixed, z-50, h-20)
+       The page uses padding-top on .vr-main to clear it.
+       ════════════════════════════════════════════════════════ -->
+  <app-app-header variant="public" />
 
-  <div class="video-room-status">
-    @if (agoraService.joining()) {
-    <span>Connecting to session...</span>
-    } @else if (agoraService.joined()) {
-    <span>Connected</span>
-    } @else {
-    <span>Disconnected</span>
-    }
-  </div>
+  <!-- ══════════════════════════════════════════════════════════
+       MAIN CONTENT  (padded below the fixed 80 px header)
+       ════════════════════════════════════════════════════════ -->
+  <main class="vr-main" role="main" aria-label="Meeting room">
 
-  @if (agoraService.error()) {
-  <div class="video-room-error">
-    {{ agoraService.error() }}
-  </div>
-  }
-
-  <div #localPlayer class="video-room-local" [class.video-room-local--active]="agoraService.joined()">
-  </div>
-
-  @if (agoraService.remoteParticipants().length > 0) {
-    <div class="video-room-remote-grid">
-      @for (p of agoraService.remoteParticipants(); track p.uid) {
-        <div [id]="p.containerId" class="video-room-remote">
-          <span class="video-room-remote-label">User {{ p.uid }}</span>
-        </div>
-      }
+    <!-- Error Banner -->
+    @if (agoraService.error()) {
+    <div class="vr-error-banner" role="alert" aria-live="assertive">
+      <span class="vr-error-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </span>
+      <span>{{ agoraService.error() }}</span>
     </div>
-  }
+    }
+
+    <!-- ──────────────────────────────────────────────────────
+         VIDEO STAGE — aspect-ratio 16/9 on desktop, flex on mobile
+         ────────────────────────────────────────────────────── -->
+    <section class="vr-stage" aria-label="Video stage">
+
+      <!-- Network Quality Warning Toast (floating inside stage) -->
+      @if (agoraService.joined() && networkQualityService.warningActive()) {
+      <div class="vr-nq-warning" role="alert" aria-live="polite">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+          aria-hidden="true">
+          <path d="M12 9v4M12 17h.01" />
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+        </svg>
+        <span>{{ 'video.networkQualityWarning' | t }}</span>
+      </div>
+      }
+
+      <!-- Screen Share Indicator (floating top-right inside stage) -->
+      @if (agoraService.joined()) {
+      <app-screen-share-indicator />
+      }
+
+      <!-- ── VIDEO GRID ── -->
+      <div class="vr-video-grid">
+
+        <!-- Local Video Tile -->
+        <div class="vr-video-tile vr-video-tile--local">
+          <div #localPlayer class="vr-video-feed"
+            [style.display]="agoraService.cameraEnabled() ? 'flex' : 'none'"
+            aria-label="Your video"></div>
+
+          <!-- Camera-off placeholder -->
+          @if (!agoraService.cameraEnabled()) {
+          <div class="vr-video-placeholder" aria-label="Your camera is off">
+            <div class="vr-placeholder-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <span class="vr-placeholder-text">{{ 'video.cameraOff' | t }}</span>
+          </div>
+          }
+
+          <div class="vr-video-label" aria-hidden="true">
+            <span class="vr-video-label-dot"></span>
+            <span class="vr-video-label-text">{{ 'video.you' | t }}</span>
+          </div>
+        </div>
+
+        <!-- Remote Participant Tiles -->
+        @for (p of agoraService.remoteParticipants(); track p.uid) {
+        <div class="vr-video-tile">
+          <div [id]="p.containerId" class="vr-video-feed"
+            [attr.aria-label]="'Participant ' + p.uid + ' video'"></div>
+
+          @if (!p.hasVideo) {
+          <div class="vr-video-placeholder" [attr.aria-label]="'Participant ' + p.uid + ' camera is off'">
+            <div class="vr-placeholder-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <span class="vr-placeholder-text">{{ 'video.cameraOff' | t }}</span>
+          </div>
+          }
+
+          <div class="vr-video-label" aria-hidden="true">
+            <span class="vr-video-label-text">{{ p.uid }}</span>
+          </div>
+        </div>
+        }
+
+        <!-- Empty waiting state (no remote participants, but joined) -->
+        @if (agoraService.joined() && agoraService.remoteParticipants().length === 0) {
+        <div class="vr-waiting-tile" aria-live="polite">
+          <div class="vr-waiting-tile-inner">
+            <div class="vr-waiting-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                <path d="M16 3.13a4 4 0 010 7.75" />
+              </svg>
+            </div>
+            <p class="vr-waiting-tile-text">{{ 'video.waitingForParticipants' | t }}</p>
+            <div class="vr-waiting-tile-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+        }
+
+      </div><!-- /vr-video-grid -->
+
+      <!-- ── PRE-JOIN OVERLAY ── -->
+      @if (!agoraService.joined()) {
+      <div class="vr-prejoin-overlay" role="region" aria-label="Join session">
+
+        @if (isSessionEnded()) {
+        <div class="vr-state-card vr-state-card--ended" role="status">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="16 8 8 16" />
+              <polyline points="8 8 16 16" />
+            </svg>
+          </div>
+          <h2 class="vr-state-title">{{ 'video.sessionEnded' | t }}</h2>
+          <p class="vr-state-subtitle">{{ 'video.sessionEndedDesc' | t }}</p>
+        </div>
+
+        } @else if (isWaitingForSpecialist()) {
+
+          @if (signalrFailed()) {
+          <div class="vr-state-card vr-state-card--error" role="alert">
+            <div class="vr-state-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 0110.19-4.43" />
+                <path d="M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88" />
+                <path d="M8.53 16.11a6 6 0 016.95 0" />
+                <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h2 class="vr-state-title">{{ 'video.connectionFailed' | t }}</h2>
+            <p class="vr-state-subtitle">{{ 'video.connectionFailedDesc' | t }}</p>
+            <button class="vr-retry-btn" (click)="retryJoin()" type="button" aria-label="Retry connection">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                aria-hidden="true">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+              </svg>{{ 'common.retry' | t }}</button>
+          </div>
+          } @else {
+          <div class="vr-state-card vr-state-card--waiting" role="status" aria-live="polite">
+            <div class="vr-state-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h2 class="vr-state-title">{{ 'video.waitingForSpecialist' | t }}</h2>
+            <p class="vr-state-subtitle">{{ 'video.waitingForSpecialistDesc' | t }}</p>
+            <div class="vr-waiting-dots" aria-hidden="true">
+              <span class="vr-waiting-dot"></span>
+              <span class="vr-waiting-dot"></span>
+              <span class="vr-waiting-dot"></span>
+            </div>
+          </div>
+          }
+
+        } @else {
+        <div class="vr-state-card vr-state-card--join">
+          <div class="vr-state-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5">
+              @if (isRejoining()) {
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              } @else {
+                <path d="M23 7l-7 5 7 5V7z" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              }
+            </svg>
+          </div>
+          <h2 class="vr-state-title">
+            {{ isRejoining() ? ('video.rejoinQuestion' | t) : ('video.readyToJoin' | t) }}
+          </h2>
+          <p class="vr-state-subtitle">
+            {{ isRejoining() ? ('video.rejoinDesc' | t) : ('video.joinDesc' | t) }}
+          </p>
+          <button id="btn-join-session" class="vr-join-btn" (click)="handleJoinClick()"
+            [disabled]="agoraService.joining()" type="button"
+            [attr.aria-label]="agoraService.joining() ? 'Joining session...' : 'Join session'">
+            @if (agoraService.joining()) {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true" class="vr-spin">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            {{ 'video.joining' | t }}
+            } @else {
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              @if (isRejoining()) {
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              } @else {
+                <path d="M23 7l-7 5 7 5V7z" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              }
+            </svg>
+            {{ isRejoining() ? ('video.rejoin' | t) : ('video.join' | t) }}
+            }
+          </button>
+        </div>
+        }
+
+      </div>
+      }<!-- /@if joined pre-join overlay -->
+
+      <!-- ═══════════════════════════════════════════════════════
+           FLOATING CONTROLLER DOCK — Google Meet / Teams style
+           Positioned absolutely at the bottom of the stage.
+           CSS adapts layout between desktop and mobile.
+           ═══════════════════════════════════════════════════════ -->
+      @if (agoraService.joined()) {
+      <div class="vr-dock-wrapper" role="toolbar" aria-label="Meeting controls">
+        <div class="vr-dock">
+
+          <!-- ── LEFT GROUP: Danger actions ── -->
+          <div class="vr-dock-group">
+            <!-- Leave -->
+            <button id="btn-leave-session" class="vr-tb-btn vr-tb-btn--leave"
+              (click)="confirmLeave()" type="button"
+              [attr.aria-label]="'video.leaveSession' | t" [title]="'video.leaveSession' | t">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
+                <polyline points="17 8 21 12 17 16" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span class="vr-tb-label">{{ 'video.leave' | t }}</span>
+            </button>
+
+            <!-- Finish (specialist only) -->
+            @if (isSpecialist) {
+            <button id="btn-finish-session" class="vr-tb-btn vr-tb-btn--finish"
+              (click)="confirmFinish()" type="button"
+              [attr.aria-label]="'video.finishConsultation' | t" [title]="'video.finishConsultation' | t">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M5 12l5 5l10 -10" />
+              </svg>
+              <span class="vr-tb-label">{{ 'video.finish' | t }}</span>
+            </button>
+            }
+          </div>
+
+          <!-- ── CENTRE DIVIDER ── -->
+          <div class="vr-dock-divider" aria-hidden="true"></div>
+
+          <!-- ── CENTRE GROUP: Media toggles ── -->
+          <div class="vr-dock-group">
+            <!-- Microphone -->
+            <div class="vr-tb-wrap">
+              <button id="btn-toggle-mic" class="vr-tb-btn"
+                [class.vr-tb-btn--off]="!agoraService.microphoneEnabled()"
+                (click)="toggleMicrophone()" type="button"
+                [attr.aria-label]="(agoraService.microphoneEnabled() ? 'video.muteMicrophone' : 'video.unmuteMicrophone') | t"
+                [attr.aria-pressed]="!agoraService.microphoneEnabled()"
+                [title]="(agoraService.microphoneEnabled() ? 'video.muteMicrophone' : 'video.unmuteMicrophone') | t">
+                @if (agoraService.microphoneEnabled()) {
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <rect x="9" y="2" width="6" height="11" rx="3" />
+                  <path d="M5 10a7 7 0 0014 0" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+                } @else {
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                  <path d="M18.89 13.23A7.12 7.12 0 0019 12" />
+                  <path d="M5 10a7 7 0 0012.87 3.13" />
+                  <rect x="9" y="2" width="6" height="11" rx="3" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+                }
+              </button>
+              <span class="vr-tb-tooltip">{{ (agoraService.microphoneEnabled() ? 'video.mute' : 'video.unmute') | t }}</span>
+            </div>
+
+            <!-- Camera -->
+            <div class="vr-tb-wrap">
+              <button id="btn-toggle-camera" class="vr-tb-btn"
+                [class.vr-tb-btn--off]="!agoraService.cameraEnabled()"
+                (click)="toggleCamera()" type="button"
+                [attr.aria-label]="(agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t"
+                [attr.aria-pressed]="!agoraService.cameraEnabled()"
+                [title]="(agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t">
+                @if (agoraService.cameraEnabled()) {
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <polygon points="23 7 16 12 23 17 23 7" />
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                </svg>
+                } @else {
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                  <path d="M16 16H3a2 2 0 01-2-2V7a2 2 0 012-2h3" />
+                  <path d="M20.66 16.66A2 2 0 0022 15V9.34" />
+                  <path d="M16 3.27L23 7v10" />
+                </svg>
+                }
+              </button>
+              <span class="vr-tb-tooltip">{{ (agoraService.cameraEnabled() ? 'video.stopCamera' : 'video.startCamera') | t }}</span>
+            </div>
+
+            <!-- Screen Share -->
+            <div class="vr-tb-wrap">
+              <app-screen-share-button />
+              <span class="vr-tb-tooltip">{{ 'video.screenShare' | t }}</span>
+            </div>
+
+            <!-- Recording (specialist only) -->
+            <div class="vr-tb-wrap">
+              <app-recording-button [sessionId]="sessionId" />
+              <span class="vr-tb-tooltip">{{ (recordingTimerService.isActive() ? 'video.stopRecording' : 'video.record') | t }}</span>
+            </div>
+          </div>
+
+          <!-- ── RIGHT DIVIDER ── -->
+          <div class="vr-dock-divider" aria-hidden="true"></div>
+
+          <!-- ── RIGHT GROUP: Timer + Status pill ── -->
+          <div class="vr-dock-group">
+            <!-- Session Timer -->
+            <div class="vr-dock-timer" role="timer" aria-label="Session duration">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="vr-timer-value">{{ sessionTimerService.formattedElapsed() }}</span>
+            </div>
+
+            <!-- Live recording badge (visible when recording) -->
+            @if (recordingTimerService.isActive()) {
+            <div class="vr-dock-rec-badge" role="status" aria-label="Recording active">
+              <span class="vr-dock-rec-dot" aria-hidden="true"></span>
+              <span>REC</span>
+            </div>
+            }
+          </div>
+
+        </div><!-- /vr-dock -->
+      </div><!-- /vr-dock-wrapper -->
+      }<!-- /@if joined controls -->
+
+    </section><!-- /vr-stage -->
+
+    <!-- Screen Share Error -->
+    @if (agoraService.joined() && screenShareService.error()) {
+    <div class="vr-screenshare-error" role="alert" aria-live="polite">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+        stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ screenShareService.error() }}
+    </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════════
+         IN-SESSION SIDE PANEL — Info cards + device settings
+         Only rendered when joined. Desktop/mobile responsive.
+         ═══════════════════════════════════════════════════════ -->
+    @if (agoraService.joined()) {
+
+    <!--
+      RESPONSIVE STATUS PATTERN:
+      • .vr-info-row   → shown on desktop (≥ 768 px), hidden on mobile
+      • .vrm-status-card → shown on mobile (< 768 px), hidden on desktop
+      Both render identical data — one is hidden via CSS at each breakpoint.
+      This is intentional responsive design, NOT a duplicate.
+    -->
+
+    <!-- Desktop: 3 separate status info cards -->
+    <div class="vr-info-row vr-desktop-only" role="region" aria-label="Meeting status">
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12.55a11 11 0 0114.08 0" />
+            <path d="M1.42 9a16 16 0 0121.16 0" />
+            <path d="M8.53 16.11a6 6 0 016.95 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">{{ 'video.connection' | t }}</span>
+          <app-connection-status-badge />
+        </div>
+      </div>
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">{{ 'video.recordingStatus' | t }}</span>
+          <app-recording-indicator />
+        </div>
+      </div>
+
+      <div class="vr-info-card">
+        <div class="vr-info-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <rect x="2"  y="16" width="3" height="5" rx="1" opacity="1" />
+            <rect x="7"  y="12" width="3" height="9" rx="1" opacity="0.7" />
+            <rect x="12" y="8"  width="3" height="13" rx="1" opacity="0.5" />
+            <rect x="17" y="4"  width="3" height="17" rx="1" opacity="0.3" />
+          </svg>
+        </div>
+        <div class="vr-info-body">
+          <span class="vr-info-label">{{ 'video.network' | t }}</span>
+          <app-network-quality-badge />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Desktop: device settings grid (3 cards) -->
+    <div class="vr-devices-section vr-desktop-only" role="region" aria-label="Device settings">
+
+      <div class="vr-devices-header">
+        <span class="vr-devices-header-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
+          </svg>
+        </span>
+        <h2 class="vr-devices-title">{{ 'video.deviceSettings' | t }}</h2>
+      </div>
+
+      <div class="vr-devices-grid">
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">{{ 'video.camera' | t }}</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-camera-selector />
+          </div>
+        </div>
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="2" width="6" height="11" rx="3" />
+                <path d="M5 10a7 7 0 0014 0" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">{{ 'video.microphone' | t }}</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-microphone-selector />
+            <app-microphone-level-indicator />
+          </div>
+        </div>
+
+        <div class="vr-device-card">
+          <div class="vr-device-card-header">
+            <div class="vr-device-card-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 010 14.14" />
+                <path d="M15.54 8.46a5 5 0 010 7.07" />
+              </svg>
+            </div>
+            <span class="vr-device-card-title">{{ 'video.speaker' | t }}</span>
+          </div>
+          <div class="vr-device-card-body">
+            <app-speaker-selector />
+            <app-speaker-test-button />
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /vr-devices-section desktop -->
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         MOBILE LAYOUT — single compact status strip + accordion
+         Hidden on desktop via .vr-mobile-only
+         ═══════════════════════════════════════════════════════ -->
+
+    <!-- Mobile: ONE unified horizontal status strip -->
+    <div class="vrm-status-card vr-mobile-only" role="region" aria-label="Meeting status">
+      <!-- Connection -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">{{ 'video.connection' | t }}</span>
+        <app-connection-status-badge />
+      </div>
+
+      <div class="vrm-status-divider" aria-hidden="true"></div>
+
+      <!-- Recording -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">{{ 'video.recordingStatus' | t }}</span>
+        <app-recording-indicator />
+      </div>
+
+      <div class="vrm-status-divider" aria-hidden="true"></div>
+
+      <!-- Network -->
+      <div class="vrm-status-item">
+        <span class="vrm-status-label">{{ 'video.network' | t }}</span>
+        <app-network-quality-badge />
+      </div>
+    </div>
+
+    <!-- Mobile: Device Settings Accordion -->
+    <div class="vrm-accordion vr-mobile-only" role="region" aria-label="Device settings">
+
+      <button class="vrm-accordion-trigger" (click)="toggleDeviceSettings()" type="button"
+        [attr.aria-expanded]="deviceSettingsOpen()" aria-controls="vrm-device-panel" id="vrm-device-trigger">
+        <span class="vrm-accordion-trigger-content">
+          <span class="vrm-accordion-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.07 4.93l-1.41 1.41M5.34 16.66l-1.41 1.41M4.93 4.93l1.41 1.41M18.66 16.66l1.41 1.41M2 12h2M20 12h2M12 2v2M12 20v2" />
+            </svg>
+          </span>
+          <span class="vrm-accordion-label">{{ 'video.deviceSettings' | t }}</span>
+        </span>
+        <svg class="vrm-accordion-chevron" [class.vrm-accordion-chevron--open]="deviceSettingsOpen()"
+          viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+
+      @if (deviceSettingsOpen()) {
+      <div class="vrm-accordion-content" id="vrm-device-panel" role="group" aria-labelledby="vrm-device-trigger">
+
+        <!-- Camera -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">{{ 'video.camera' | t }}</span>
+          </div>
+          <app-camera-selector />
+        </div>
+
+        <!-- Microphone -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="2" width="6" height="11" rx="3" />
+                <path d="M5 10a7 7 0 0014 0" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">{{ 'video.microphone' | t }}</span>
+          </div>
+          <app-microphone-selector />
+          <app-microphone-level-indicator />
+        </div>
+
+        <!-- Speaker -->
+        <div class="vrm-device-row">
+          <div class="vrm-device-row-header">
+            <div class="vrm-device-row-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M19.07 4.93a10 10 0 010 14.14" />
+                <path d="M15.54 8.46a5 5 0 010 7.07" />
+              </svg>
+            </div>
+            <span class="vrm-device-row-label">{{ 'video.speaker' | t }}</span>
+          </div>
+          <app-speaker-selector />
+          <app-speaker-test-button />
+        </div>
+
+      </div>
+      }<!-- /vrm-accordion-content -->
+
+    </div><!-- /vrm-accordion -->
+
+    }<!-- /@if joined -->
+
+    <!-- Leave Confirmation Dialog -->
+    @if (showLeaveConfirm()) {
+    <div class="vr-dialog-overlay" role="dialog" aria-modal="true" aria-labelledby="dlg-leave-title">
+      <div class="vr-dialog">
+        <div class="vr-dialog-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 3H6a2 2 0 00-2 2v14c0 1.1.9 2 2 2h4" />
+            <polyline points="17 8 21 12 17 16" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </div>
+        <h3 class="vr-dialog-title" id="dlg-leave-title">{{ 'video.confirmLeave' | t }}</h3>
+        <p class="vr-dialog-text">{{ 'video.confirmLeaveDesc' | t }}</p>
+        <div class="vr-dialog-actions">
+          <button class="vr-btn-cancel" (click)="cancelLeave()" type="button">{{ 'appointments.book.cancel' | t }}</button>
+          <button class="vr-btn-confirm" (click)="leaveSession()" type="button">{{ 'video.leave' | t }}</button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Finish Consultation Confirmation Dialog (Specialist) -->
+    @if (showFinishConfirm()) {
+    <div class="vr-dialog-overlay" role="dialog" aria-modal="true" aria-labelledby="dlg-finish-title">
+      <div class="vr-dialog">
+        <div class="vr-dialog-icon vr-dialog-icon--warning">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <h3 class="vr-dialog-title" id="dlg-finish-title">{{ 'video.confirmFinish' | t }}</h3>
+        <p class="vr-dialog-text">{{ 'video.confirmFinishDesc' | t }}</p>
+        <div class="vr-dialog-actions">
+          <button class="vr-btn-cancel" (click)="cancelFinish()" type="button">{{ 'appointments.book.cancel' | t }}</button>
+          <button class="vr-btn-finish" (click)="finishConsultation()" type="button">{{ 'common.confirm' | t }} {{ 'video.finish' | t }}</button>
+        </div>
+      </div>
+    </div>
+    }
+
+  </main><!-- /vr-main -->
+
 </div>

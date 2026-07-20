@@ -1,0 +1,162 @@
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
+  
+  <!-- Global Background Decorations -->
+  <div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-bosla-orange/5 blur-[100px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-bosla-blue/5 blur-[120px] pointer-events-none z-0"></div>
+  <div class="fixed top-[40%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-purple-500/5 blur-[90px] pointer-events-none z-0"></div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center min-h-screen gap-6 relative z-10 animate-fade-in">
+      <div class="relative w-24 h-24">
+        <div class="absolute inset-0 rounded-full border-[6px] border-bosla-primary/10"></div>
+        <div class="absolute inset-0 rounded-full border-[6px] border-t-bosla-orange border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <i class="fa-solid fa-compass text-2xl text-bosla-primary animate-pulse"></i>
+        </div>
+      </div>
+      <p class="text-lg text-bosla-primary font-bold animate-pulse">{{ 'portfolio.detail.loading' | t }}</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @else if (error()) {
+    <div class="max-w-xl mx-auto px-4 py-32 text-center animate-fade-up relative z-10">
+      <div class="relative inline-flex mb-8 group">
+        <div class="absolute inset-0 bg-red-400/20 rounded-[2rem] blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div class="w-28 h-28 rounded-[2rem] bg-white border border-red-100 flex items-center justify-center shadow-xl relative z-10">
+          <i class="fa-solid fa-link-slash text-5xl text-red-500"></i>
+        </div>
+      </div>
+      <h2 class="text-3xl font-black text-slate-800 mb-4">{{ 'portfolio.detail.notAvailable' | t }}</h2>
+      <p class="text-base text-slate-500 mb-10 leading-relaxed max-w-md mx-auto">{{ 'portfolio.detail.notAvailableDesc' | t }}</p>
+      <button (click)="goBack()" class="px-10 py-4 bg-gradient-to-l from-bosla-primary to-bosla-blue hover:from-bosla-blue hover:to-bosla-primary text-white rounded-2xl font-bold text-lg transition-all duration-500 shadow-lg shadow-bosla-primary/30 hover:shadow-xl hover:-translate-y-1 active:scale-[0.97] flex items-center gap-3 mx-auto">
+        <i class="fa-solid fa-arrow-right"></i> {{ 'portfolio.detail.backToSpecialist' | t }}
+      </button>
+    </div>
+  }
+
+  <!-- Content -->
+  @else if (item(); as it) {
+    <!-- Hero Section -->
+    <div class="relative z-10 pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- Top Navigation Bar -->
+        <div class="flex items-center gap-4 mb-10 sm:mb-16 animate-fade-up stagger-1">
+          <button (click)="goBack()" class="shrink-0 w-12 h-12 rounded-2xl bg-white/70 backdrop-blur-md border border-white flex items-center justify-center text-slate-600 hover:text-bosla-primary hover:bg-white transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1 active:scale-90 group">
+            <i class="fa-solid fa-arrow-right text-lg group-hover:-translate-x-1 transition-transform"></i>
+          </button>
+          
+          <div class="flex items-center gap-2 text-sm font-semibold text-slate-500 min-w-0 overflow-hidden bg-white/50 backdrop-blur-sm px-5 py-3 rounded-2xl border border-white/60 shadow-sm">
+            <a [routerLink]="['/specialists']" class="shrink-0 hover:text-bosla-primary transition-colors flex items-center gap-2">
+              <i class="fa-solid fa-users text-bosla-orange"></i>{{ 'specialists.title.almtkhsswn' | t }}</a>
+            <i class="fa-solid fa-chevron-left text-[9px] shrink-0 text-slate-300 mx-1"></i>
+            <span class="truncate min-w-0 max-w-[120px] sm:max-w-[180px] hover:text-bosla-primary transition-colors cursor-pointer" (click)="goBack()">{{ specialistName() || ('portfolio.detail.specialist' | t) }}</span>
+            <i class="fa-solid fa-chevron-left text-[9px] shrink-0 text-slate-300 mx-1"></i>
+            <span class="text-bosla-primary font-black truncate min-w-0 max-w-[140px] sm:max-w-[250px]">{{ it.title }}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          
+          <!-- Left/Top: Title & Meta Info -->
+          <div class="lg:col-span-5 flex flex-col justify-center animate-fade-up stagger-2 lg:sticky lg:top-32">
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+              <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-700 text-xs font-black border border-green-500/20 shadow-sm">
+                <i class="fa-solid fa-shield-check text-green-500 text-sm"></i>
+                {{ 'portfolio.detail.approvedWork' | t }}
+              </span>
+              @if (it.images.length > 0) {
+              <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-slate-600 text-xs font-black border border-slate-200 shadow-sm">
+                <i class="fa-solid fa-images text-bosla-blue text-sm"></i>
+                {{ allImages().length }} {{ 'portfolio.detail.media' | t }}
+              </span>
+              }
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.2] tracking-tight mb-8">
+              {{ it.title }}
+            </h1>
+
+            @if (it.description) {
+            <div class="relative p-6 rounded-3xl bg-white/60 backdrop-blur-md border border-white shadow-sm mb-8">
+              <i class="fa-solid fa-quote-right absolute -top-4 -right-2 text-5xl text-bosla-primary/10 -z-10 transform -rotate-12"></i>
+              <p class="text-base text-slate-600 leading-relaxed whitespace-pre-line">{{ it.description }}</p>
+            </div>
+            }
+
+            @if (it.workUrl) {
+            <a [href]="it.workUrl" target="_blank" rel="noopener noreferrer"
+              class="group relative inline-flex items-center justify-center gap-4 px-8 py-5 bg-bosla-primary text-white rounded-3xl font-black text-lg transition-all duration-500 hover:shadow-[0_10px_40px_rgba(27,79,114,0.3)] hover:-translate-y-1 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-r from-bosla-orange to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <span class="relative z-10">{{ 'portfolio.detail.viewLive' | t }}</span>
+              <i class="fa-solid fa-arrow-up-right-from-square relative z-10 group-hover:rotate-12 group-hover:scale-110 transition-transform"></i>
+            </a>
+            }
+          </div>
+
+          <!-- Right/Bottom: Main Visuals -->
+          <div class="lg:col-span-7 space-y-8 animate-fade-up stagger-3">
+            
+            <!-- Cover Image Feature -->
+            <div class="relative group cursor-pointer" (click)="openPreview(it.coverImageUrl)">
+              <div class="absolute -inset-4 bg-gradient-to-br from-bosla-primary/20 via-bosla-orange/10 to-transparent rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div class="relative rounded-[2rem] overflow-hidden bg-white shadow-2xl border-4 border-white transform transition-transform duration-700 group-hover:scale-[1.02]">
+                <div class="aspect-[4/3] sm:aspect-[16/10] bg-slate-100 relative">
+                  <img [src]="it.coverImageUrl" [alt]="it.title" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="eager" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-8">
+                    <span class="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-bold text-sm border border-white/30 flex items-center gap-2">
+                      <i class="fa-solid fa-magnifying-glass-plus"></i> {{ 'portfolio.detail.zoomImage' | t }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub Images Grid -->
+            @if (allImages().length > 1) {
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 mt-8 animate-fade-up stagger-4">
+              @for (img of allImages(); track img; let i = $index) {
+                @if (i > 0) {
+                <div (click)="openPreview(img)"
+                  class="aspect-square rounded-[1.5rem] overflow-hidden cursor-pointer border-[3px] border-white shadow-lg hover:shadow-xl hover:border-bosla-orange/50 transition-all duration-500 transform hover:-translate-y-2 group relative bg-slate-50">
+                  <img [src]="img" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                  <div class="absolute inset-0 bg-bosla-primary/0 group-hover:bg-bosla-primary/20 transition-colors duration-300"></div>
+                  <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-bosla-primary">
+                      <i class="fa-solid fa-expand"></i>
+                    </div>
+                  </div>
+                </div>
+                }
+              }
+            </div>
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Image Preview Modal (Full Screen) -->
+  @if (previewUrl(); as url) {
+  <div (click)="closePreview()" class="fixed inset-0 z-[999] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8 animate-fade-in">
+    <div class="relative w-full max-w-7xl h-full flex items-center justify-center animate-scale-in" (click)="$event.stopPropagation()">
+      
+      <button (click)="closePreview()" class="absolute top-4 left-4 sm:top-8 sm:left-8 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-2xl z-50 hover:scale-110 active:scale-95">
+        <i class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+
+      <div class="relative w-full max-h-full flex items-center justify-center p-4">
+        <img [src]="url" class="max-w-full max-h-[85vh] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-lg" />
+      </div>
+
+    </div>
+  </div>
+  }
+
+</div>

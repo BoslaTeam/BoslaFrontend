@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { AppHeader } from '@layouts/shared/app-header/app-header';
 import { SpecialistSidebar } from './specialist-sidebar/specialist-sidebar';
 import { SpecialistShellService } from './services/specialist-shell.service';
+import { AiChatWidget } from '@features/ai/components/ai-chat-widget/ai-chat-widget';
 
 @Component({
   selector: 'app-specialist-layout',

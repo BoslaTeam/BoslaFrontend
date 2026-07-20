@@ -4,14 +4,15 @@ import { SpecialistsFilters } from '@features/specialists/contracts/specialist-f
 import { SpecialistListStore } from '@features/specialists/store/specialist-list.store';
 import { UiPagination } from "@shared/ui/pagination/pagination";
 import { SpecialistsGridComponent } from "@features/specialists/components/specialists-grid/specialists-grid";
-import { UiEmptyState } from "@shared/ui/empty-state/empty-state";
 import { SpecialistsFiltersComponent } from '@features/specialists/components/specialist-filters/specialist-filters';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-specialist-list-page',
-  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, UiEmptyState],
+  imports: [SpecialistsFiltersComponent, UiPagination, SpecialistsGridComponent, TranslatePipe],
   standalone: true,
   templateUrl: './specialist-list.html',
+  styleUrls: ['./specialist-list.css']
 })
 export class SpecialistListPage implements OnInit {
   readonly store = inject(SpecialistListStore);
@@ -23,8 +24,14 @@ export class SpecialistListPage implements OnInit {
 
     this.route.queryParamMap.subscribe(params => {
       const query = params.get('query');
+      const expertise = params.get('expertise');
 
-      if (query) {
+      if (expertise) {
+        this.store.updateFilters({
+          expertiseId: expertise,
+          pageNumber: 1,
+        });
+      } else if (query) {
         this.store.updateFilters({
           searchTerm: query,
           pageNumber: 1,

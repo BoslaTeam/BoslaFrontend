@@ -1,11 +1,12 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, effect, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { NavigationService } from '@core/navigation/navigation.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-user-dropdown',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './user-dropdown.html'
 })
 export class UserDropdown {
@@ -15,7 +16,14 @@ export class UserDropdown {
   readonly dropdownModel = this.navigationService.dropdownNavigation;
 
   isDropdownOpen = signal(false);
-  avatarError = false;
+  avatarError = signal(false);
+
+  constructor() {
+    effect(() => {
+      this.authService.currentUser()?.avatarUrl;
+      this.avatarError.set(false);
+    });
+  }
 
   toggleDropdown() {
     this.isDropdownOpen.update(v => !v);
@@ -34,7 +42,7 @@ export class UserDropdown {
   }
 
   onAvatarError() {
-    this.avatarError = true;
+    this.avatarError.set(true);
   }
 
   logout() {

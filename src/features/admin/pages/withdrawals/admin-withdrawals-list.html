@@ -1,0 +1,83 @@
+<div class="withdrawals-page">
+  <div class="page-header">
+    <h1>{{ 'admin.withdrawalManagement.adarh_alshwbat' | t }}</h1>
+    <p class="page-subtitle">{{ 'admin.withdrawals.subtitle' | t }}</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-tabs">
+      @for (opt of statusOptions; track $index) {
+        <button
+          class="filter-tab"
+          [class.active]="selectedStatus() === opt.value"
+          (click)="onStatusFilter(opt.value)">
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ 'common.loading' | t }}</p>
+    </div>
+  } @else if (withdrawals().length === 0) {
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="7 17 17 7"/>
+        <path d="M15 7h-8v8"/>
+        <circle cx="12" cy="12" r="10"/>
+      </svg>
+      <h3>{{ 'admin.withdrawals.noWithdrawals' | t }}</h3>
+      <p>{{ 'admin.withdrawals.noWithdrawalsDesc' | t }}</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ 'admin.specialistLabel.almtkhss' | t }}</th>
+            <th>{{ 'payments.amount' | t }}</th>
+            <th>{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</th>
+            <th>{{ 'payments.status' | t }}</th>
+            <th>{{ 'withdrawals.requestDate.tarykh_altlb' | t }}</th>
+            <th>{{ 'admin.withdrawals.processDate' | t }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (w of withdrawals(); track w.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-sm">{{ getUserInitials(w.specialistName) }}</div>
+                  <div>
+                    <div class="user-name">{{ w.specialistName }}</div>
+                    @if (w.specialistTitle) {
+                      <div class="user-title">{{ w.specialistTitle }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="amount-cell">{{ w.amount | number:'1.2-2' }} ج.م</td>
+              <td>{{ getMethodLabel(w.paymentMethod) }}</td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(w.status)">
+                  {{ getStatusLabel(w.status) }}
+                </span>
+              </td>
+              <td>{{ w.requestedAt | date:'yyyy/MM/dd' }}</td>
+              <td>{{ w.processedAt ? (w.processedAt | date:'yyyy/MM/dd') : '—' }}</td>
+              <td>
+                <a [routerLink]="['/admin/withdrawals', w.id]" class="btn btn-sm">{{ 'common.details.tfasyl' | t }}</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

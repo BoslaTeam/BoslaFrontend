@@ -1,162 +1,464 @@
 import { Component, inject, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SpecialistOnboardingStore } from '../../../store/specialist-onboarding.store';
-import { UiButton } from '@shared/ui/button/button';
 import { AvailabilityRequest } from '../../../contracts/specialist-availability.contract';
+import { ScheduleDraft } from '../../../models/specialist-onboarding-draft.model';
+
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { TranslationService } from '@core/services/translation.service';
+interface ScheduleDefinition {
+  id: string;
+  days: number[];
+  startTime: string;
+  endTime: string;
+  sessionDuration: number;
+  startDate: string;
+  endDate: string | null;
+  enabled: boolean;
+  createdAt: string;
+}
+
+const WEEKDAY_KEYS = ['day.sunday.alahd', 'day.monday.alathnyn', 'day.tuesday.althlatha', 'day.wednesday.alarbaa', 'day.thursday.alkhmys', 'day.friday.aljmah', 'day.saturday.alsbt'];
+const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
+const MAX_GENERATION_DAYS = 15;
+
+function generateId(): string {
+  return `sch_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function timeOptions(): { value: string; label: string }[] {
+  const opts: { value: string; label: string }[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (const m of [0, 30]) {
+      const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      const period = h >= 12 ? 'PM' : 'AM';
+      const hour12 = h % 12 || 12;
+      opts.push({ value: v, label: `${hour12}:${String(m).padStart(2, '0')} ${period}` });
+    }
+  }
+  return opts;
+}
+
+function formatTimeShort(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
+}
+
+function formatTime(d: Date): string {
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function formatDateLong(d: Date, weekdayKeys: string[], translationService: TranslationService): string {
+  const wd = translationService.translate(weekdayKeys[d.getDay()]);
+  const lang = translationService.currentLang();
+  const dateStr = d.toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  return `${wd}، ${dateStr}`;
+}
+
+function formatSessionDuration(minutes: number): string {
+  if (minutes >= 60) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  }
+  return `${minutes}min`;
+}
+
+function formatDuration(ms: number): string {
+  const totalMin = Math.round(ms / 60000);
+  if (totalMin >= 60) {
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
+  }
+  return `${totalMin}min`;
+}
+
+function slotsOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {
+  return aStart < bEnd && aEnd > bStart;
+}
+
+function schedulesConflict(a: ScheduleDefinition, b: ScheduleDefinition): boolean {
+  const aStart = new Date(a.startDate + 'T00:00:00').getTime();
+  const aEndMs = a.endDate ? new Date(a.endDate + 'T00:00:00').getTime() : Infinity;
+  const bStart = new Date(b.startDate + 'T00:00:00').getTime();
+  const bEndMs = b.endDate ? new Date(b.endDate + 'T00:00:00').getTime() : Infinity;
+  if (aStart > bEndMs || bStart > aEndMs) return false;
+
+  const sharedDays = a.days.filter(d => b.days.includes(d));
+  if (sharedDays.length === 0) return false;
+
+  return a.startTime < b.endTime && a.endTime > b.startTime;
+}
+
+function generateSlotsFromSchedule(schedule: ScheduleDefinition): { start: Date; end: Date }[] {
+  const result: { start: Date; end: Date }[] = [];
+  const now = new Date();
+
+  const startDate = new Date(schedule.startDate + 'T00:00:00');
+  const endDate = schedule.endDate ? new Date(schedule.endDate + 'T00:00:00') : null;
+
+  const maxDate = new Date(now);
+  maxDate.setDate(maxDate.getDate() + MAX_GENERATION_DAYS);
+  const effectiveEnd = endDate && endDate < maxDate ? endDate : maxDate;
+
+  const current = new Date(startDate);
+  while (current <= effectiveEnd) {
+    if (schedule.days.includes(current.getDay())) {
+      const [sh, sm] = schedule.startTime.split(':').map(Number);
+      const [eh, em] = schedule.endTime.split(':').map(Number);
+
+      const dayStart = new Date(current);
+      dayStart.setHours(sh, sm, 0, 0);
+      const dayEnd = new Date(current);
+      dayEnd.setHours(eh, em, 0, 0);
+
+      let slotStart = new Date(dayStart);
+      while (slotStart.getTime() + schedule.sessionDuration * 60000 <= dayEnd.getTime()) {
+        const slotEnd = new Date(slotStart.getTime() + schedule.sessionDuration * 60000);
+        if (slotStart > now) {
+          result.push({ start: new Date(slotStart), end: new Date(slotEnd) });
+        }
+        slotStart = slotEnd;
+      }
+    }
+    current.setDate(current.getDate() + 1);
+  }
+
+  return result;
+}
 
 @Component({
   selector: 'availability-step',
   standalone: true,
-  imports: [FormsModule, UiButton],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './availability-step.html',
 })
 export class AvailabilityStep {
   readonly onboardingStore = inject(SpecialistOnboardingStore);
+  readonly translationService = inject(TranslationService);
 
   readonly completed = output<void>();
   readonly back = output<void>();
 
   readonly isSaving = signal(false);
   readonly errorMessage = signal('');
-  readonly selectedDate = signal<string>('');
 
-  readonly startTime = signal('09:00');
-  readonly endTime = signal('10:00');
+  readonly allTimeOptions = timeOptions();
+  readonly weekdayNames = computed(() => WEEKDAY_KEYS.map(k => this.translationService.translate(k)));
+  readonly durationOptions = DURATION_OPTIONS;
+  readonly formatTimeShort = formatTimeShort;
+  readonly formatTime = formatTime;
+  readonly formatSessionDuration = formatSessionDuration;
+  readonly formatDuration = formatDuration;
+  readonly todayStr = new Date().toISOString().slice(0, 10);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
-  readonly timeOptions = signal<{ value: string; label: string }[]>([]);
+  readonly editingScheduleId = signal<string | null>(null);
+  readonly formDays = signal<boolean[]>(Array(7).fill(false));
+  readonly formStartTime = signal('09:00');
+  readonly formEndTime = signal('17:00');
+  readonly formDuration = signal(60);
+  readonly formStartDate = signal('');
+  readonly formEndDate = signal('');
+  readonly formError = signal('');
+  readonly showForm = signal(false);
 
-  readonly endTimeOptions = computed(() =>
-    this.timeOptions().filter(t => t.value > this.startTime())
-  );
+  readonly schedules = signal<ScheduleDefinition[]>([]);
 
-  readonly dateInvalid = computed(() => {
-    if (!this.selectedDate()) return false;
-    const [y, m, d] = this.selectedDate().split('-').map(Number);
-    const selected = new Date(y, m - 1, d);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return selected < today;
+  readonly showDeleteConfirm = signal(false);
+  readonly scheduleToDelete = signal<ScheduleDefinition | null>(null);
+
+  constructor() {
+    this.initFormDate();
+    this.loadExisting();
+  }
+
+  private initFormDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.formStartDate.set(tomorrow.toISOString().slice(0, 10));
+  }
+
+  private loadExisting() {
+    const stored = this.onboardingStore.draft().schedules;
+    if (stored.length > 0) {
+      this.schedules.set(stored.map(s => ({
+        ...s,
+        id: generateId(),
+        createdAt: new Date().toISOString(),
+      })));
+    }
+  }
+
+  readonly availableWeekdays = computed(() => {
+    const startStr = this.formStartDate();
+    const endStr = this.formEndDate();
+    if (!startStr) return Array(7).fill(true);
+
+    const start = new Date(startStr + 'T00:00:00');
+    if (isNaN(start.getTime())) return Array(7).fill(true);
+
+    let end: Date;
+    if (endStr) {
+      end = new Date(endStr + 'T00:00:00');
+    } else {
+      end = new Date(start);
+      end.setDate(end.getDate() + MAX_GENERATION_DAYS);
+    }
+    if (isNaN(end.getTime()) || end < start) return Array(7).fill(true);
+
+    const available = Array(7).fill(false);
+    const cur = new Date(start);
+    while (cur <= end) {
+      available[cur.getDay()] = true;
+      cur.setDate(cur.getDate() + 1);
+    }
+    return available;
   });
 
-  readonly submitDisabled = computed(() =>
-    this.isSaving() || !this.selectedDate() || this.onboardingStore.draft().availabilities.length === 0 || this.dateInvalid()
-  );
+  readonly formConflicts = computed(() => {
+    const all = this.schedules();
+    const editId = this.editingScheduleId();
+    const draft: ScheduleDefinition = {
+      id: editId || '__draft__',
+      days: this.formDays().map((sel, i) => (sel ? i : -1)).filter(i => i >= 0),
+      startTime: this.formStartTime(),
+      endTime: this.formEndTime(),
+      sessionDuration: this.formDuration(),
+      startDate: this.formStartDate() || '2000-01-01',
+      endDate: this.formEndDate() || null,
+      enabled: true,
+      createdAt: '',
+    };
 
-  readonly groupedByDate = computed(() => {
-    const groups = new Map<string, AvailabilityRequest[]>();
-    const availabilities = this.onboardingStore.draft().availabilities;
-    for (const slot of availabilities) {
-      const key = slot.start.slice(0, 10);
+    if (draft.days.length === 0) return [];
+
+    return all.filter(s => {
+      if (s.id === editId) return false;
+      return schedulesConflict(draft, s);
+    });
+  });
+
+  readonly formPreview = computed(() => {
+    const days = this.formDays().map((sel, i) => (sel ? i : -1)).filter(i => i >= 0);
+    if (days.length === 0 || !this.formStartDate()) return null;
+    const [sh, sm] = this.formStartTime().split(':').map(Number);
+    const [eh, em] = this.formEndTime().split(':').map(Number);
+    const totalMinutes = (eh * 60 + em) - (sh * 60 + sm);
+    if (totalMinutes <= 0) return null;
+    const slotsPerDay = Math.floor(totalMinutes / this.formDuration());
+    const weeklySlots = days.length * slotsPerDay;
+    return { slotsPerDay, weeklySlots };
+  });
+
+  readonly generatedSlots = computed(() => {
+    const result: { start: Date; end: Date }[] = [];
+    for (const sch of this.schedules()) {
+      if (!sch.enabled) continue;
+      const genSlots = generateSlotsFromSchedule(sch);
+      for (const gs of genSlots) {
+        const hasOverlap = result.some(e => slotsOverlap(gs.start, gs.end, e.start, e.end));
+        if (!hasOverlap) {
+          result.push(gs);
+        }
+      }
+    }
+    return result.sort((a, b) => a.start.getTime() - b.start.getTime());
+  });
+
+  readonly stats = computed(() => {
+    const all = this.generatedSlots();
+    return {
+      total: all.length,
+      activeSchedules: this.schedules().filter(s => s.enabled).length,
+      totalSchedules: this.schedules().length,
+    };
+  });
+
+  readonly groupedSlots = computed(() => {
+    const groups = new Map<string, { start: Date; end: Date }[]>();
+    for (const slot of this.generatedSlots()) {
+      const key = `${slot.start.getFullYear()}-${slot.start.getMonth()}-${slot.start.getDate()}`;
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(slot);
     }
     return Array.from(groups.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, slots]) => ({
-        date,
-        slots: slots.sort((a, b) => a.start.localeCompare(b.start)),
-      }));
+      .map(([key, slots]) => {
+        const [y, m, d] = key.split('-').map(Number);
+        return {
+          dateLabel: formatDateLong(new Date(y, m, d), WEEKDAY_KEYS, this.translationService),
+          date: new Date(y, m, d),
+          slots: slots.sort((a, b) => a.start.getTime() - b.start.getTime()),
+        };
+      })
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
   });
 
-  private readonly dayNames = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  private readonly monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-
-  constructor() {
-    this.initDefaultDate();
-    this.generateTimeOptions();
+  toggleDay(index: number) {
+    if (!this.availableWeekdays()[index]) return;
+    this.formDays.update(d => {
+      const next = [...d];
+      next[index] = !next[index];
+      return next;
+    });
   }
 
-  private initDefaultDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const yyyy = tomorrow.getFullYear();
-    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-    const dd = String(tomorrow.getDate()).padStart(2, '0');
-    this.selectedDate.set(`${yyyy}-${mm}-${dd}`);
+  openAddForm() {
+    this.editingScheduleId.set(null);
+    this.formDays.set(Array(7).fill(false));
+    this.formStartTime.set('09:00');
+    this.formEndTime.set('17:00');
+    this.formDuration.set(60);
+    this.initFormDate();
+    this.formEndDate.set('');
+    this.formError.set('');
+    this.showForm.set(true);
   }
 
-  private generateTimeOptions() {
-    const options: { value: string; label: string }[] = [];
-    for (let h = 0; h < 24; h++) {
-      for (const m of [0, 30]) {
-        const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-        options.push({ value, label: value });
-      }
-    }
-    this.timeOptions.set(options);
+  openEditForm(schedule: ScheduleDefinition) {
+    this.editingScheduleId.set(schedule.id);
+    const days = Array(7).fill(false) as boolean[];
+    schedule.days.forEach(d => days[d] = true);
+    this.formDays.set(days);
+    this.formStartTime.set(schedule.startTime);
+    this.formEndTime.set(schedule.endTime);
+    this.formDuration.set(schedule.sessionDuration);
+    this.formStartDate.set(schedule.startDate);
+    this.formEndDate.set(schedule.endDate || '');
+    this.formError.set('');
+    this.showForm.set(true);
   }
 
-  onStartTimeChange(value: string) {
-    this.startTime.set(value);
-    if (this.endTime() <= value) {
-      const next = this.timeOptions().find(t => t.value > value);
-      if (next) this.endTime.set(next.value);
-    }
+  closeForm() {
+    this.showForm.set(false);
+    this.editingScheduleId.set(null);
+    this.formError.set('');
   }
 
-  addPeriod() {
-    this.errorMessage.set('');
+  saveSchedule() {
+    this.formError.set('');
 
-    if (this.dateInvalid()) {
-      this.errorMessage.set('لا يمكن اختيار تاريخ في الماضي.');
+    const selectedDays = this.formDays().map((sel, i) => (sel ? i : -1)).filter(i => i >= 0);
+    if (selectedDays.length === 0) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectDay'));
       return;
     }
 
-    const [startHour, startMin] = this.startTime().split(':').map(Number);
-    const [endHour, endMin] = this.endTime().split(':').map(Number);
-    const [year, month, day] = this.selectedDate().split('-').map(Number);
+    if (!this.formStartTime() || !this.formEndTime()) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectTime'));
+      return;
+    }
 
-    const start = new Date(year, month - 1, day, startHour, startMin, 0, 0);
-    const end = new Date(year, month - 1, day, endHour, endMin, 0, 0);
+    if (this.formStartTime() >= this.formEndTime()) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorEndAfterStart'));
+      return;
+    }
 
-    const dateStr = this.selectedDate();
+    if (!this.formStartDate()) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorSelectStartDate'));
+      return;
+    }
 
-    for (const slot of this.onboardingStore.draft().availabilities) {
-      if (slot.start.slice(0, 10) !== dateStr) continue;
-      const slotStart = new Date(slot.start);
-      const slotEnd = new Date(slot.end);
-      if (start < slotEnd && end > slotStart) {
-        this.errorMessage.set('هذه الفترة تتداخل مع فترة موجودة مسبقاً.');
+    const startDate = this.formStartDate();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(startDate + 'T00:00:00') < today) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorStartToday'));
+      return;
+    }
+
+    const endDate = this.formEndDate();
+    if (endDate && endDate < startDate) {
+      this.formError.set(this.translationService.translate('onboarding.availability.errorEndAfterStartDate'));
+      return;
+    }
+
+    const editId = this.editingScheduleId();
+
+    const draft: ScheduleDefinition = {
+      id: editId || generateId(),
+      days: selectedDays,
+      startTime: this.formStartTime(),
+      endTime: this.formEndTime(),
+      sessionDuration: this.formDuration(),
+      startDate: this.formStartDate(),
+      endDate: this.formEndDate() || null,
+      enabled: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    for (const s of this.schedules()) {
+      if (s.id === editId) continue;
+      if (schedulesConflict(draft, s)) {
+        this.formError.set(this.translationService.translate('onboarding.availability.errorConflict'));
         return;
       }
     }
 
-    const newSlot: AvailabilityRequest = {
-      start: start.toISOString(),
-      end: end.toISOString(),
-    };
+    this.schedules.update(list => {
+      if (editId) {
+        return list.map(s => s.id === editId ? { ...draft, createdAt: s.createdAt } : s);
+      }
+      return [...list, draft];
+    });
 
-    this.onboardingStore.updateAvailabilities([
-      ...this.onboardingStore.draft().availabilities,
-      newSlot,
-    ]);
+    this.persistSchedules();
+    this.closeForm();
   }
 
-  removePeriod(slot: AvailabilityRequest) {
-    this.onboardingStore.updateAvailabilities(
-      this.onboardingStore.draft().availabilities.filter(s => s.start !== slot.start || s.end !== slot.end)
+  requestDeleteSchedule(schedule: ScheduleDefinition) {
+    this.scheduleToDelete.set(schedule);
+    this.showDeleteConfirm.set(true);
+  }
+
+  cancelDeleteSchedule() {
+    this.showDeleteConfirm.set(false);
+    this.scheduleToDelete.set(null);
+  }
+
+  confirmDeleteSchedule() {
+    const schedule = this.scheduleToDelete();
+    if (!schedule) return;
+    this.schedules.update(list => list.filter(s => s.id !== schedule.id));
+    this.persistSchedules();
+    this.showDeleteConfirm.set(false);
+    this.scheduleToDelete.set(null);
+  }
+
+  toggleSchedule(schedule: ScheduleDefinition) {
+    this.schedules.update(list =>
+      list.map(s => s.id === schedule.id ? { ...s, enabled: !s.enabled } : s),
+    );
+    this.persistSchedules();
+  }
+
+  private persistSchedules() {
+    this.onboardingStore.updateSchedules(
+      this.schedules().map(({ id, createdAt, ...rest }) => rest)
     );
   }
 
-  formatTime(isoString: string): string {
-    return new Date(isoString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-  }
-
-  formatDate(isoString: string): string {
-    const d = new Date(isoString);
-    return `${this.dayNames[d.getDay()]}، ${d.getDate()} ${this.monthNames[d.getMonth()]} ${d.getFullYear()}`;
-  }
-
   onSubmit() {
-    if (!this.selectedDate() || this.onboardingStore.draft().availabilities.length === 0) return;
+    this.persistSchedules();
+
+    const allSlots = this.generatedSlots();
+    if (allSlots.length === 0) {
+      this.errorMessage.set(this.translationService.translate('onboarding.availability.errorCreate'));
+      return;
+    }
 
     this.isSaving.set(true);
     this.errorMessage.set('');
 
+    const availabilities: AvailabilityRequest[] = allSlots.map(s => ({
+      start: s.start.toISOString(),
+      end: s.end.toISOString(),
+    }));
+
+    this.onboardingStore.updateAvailabilities(availabilities);
     this.onboardingStore.saveAvailabilities().subscribe({
       next: () => {
         this.isSaving.set(false);
@@ -164,16 +466,17 @@ export class AvailabilityStep {
       },
       error: (err) => {
         this.isSaving.set(false);
+        const apiError = err.error ?? err;
         const details: string[] = [];
-        if (err.error?.errors) {
-          for (const key of Object.keys(err.error.errors)) {
-            details.push(...err.error.errors[key]);
+        if (apiError?.errors) {
+          for (const key of Object.keys(apiError.errors)) {
+            details.push(...apiError.errors[key]);
           }
         }
         this.errorMessage.set(
           details.length > 0
             ? details.join(' | ')
-            : (err.error?.title ?? 'فشل في حفظ المواعيد. يرجى المحاولة مرة أخرى.')
+            : (apiError?.title ?? this.translationService.translate('onboarding.availability.errorSave'))
         );
       },
     });

@@ -1,0 +1,82 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-black text-slate-800">{{ 'admin.sidebar.disputes' | t }}</h1>
+      <p class="text-sm text-slate-500">{{ 'admin.disputes.subtitle' | t }}</p>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="flex gap-2 mb-6">
+    <button (click)="setTab('all')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'all' ? 'bg-bosla-primary text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">{{ 'home.domains.all' | t }}</button>
+    <button (click)="setTab('Pending')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'Pending' ? 'bg-amber-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+      {{ 'admin.disputes.pending' | t }}
+    </button>
+    <button (click)="setTab('Resolved')"
+            class="px-4 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer"
+            [class]="activeTab() === 'Resolved' ? 'bg-green-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+      {{ 'admin.disputes.resolved' | t }}
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  } @else if (disputes().length === 0) {
+    <div class="text-center py-20 text-slate-400 bg-white rounded-2xl shadow-sm border border-slate-100">
+      <i class="fa-solid fa-circle-check text-5xl mb-4 opacity-30"></i>
+      @if (activeTab() === 'all') {
+        <p class="text-lg font-bold">{{ 'admin.disputes.noDisputes' | t }}</p>
+      } @else if (activeTab() === 'Pending') {
+        <p class="text-lg font-bold">{{ 'admin.disputes.noPendingDisputes' | t }}</p>
+      } @else {
+        <p class="text-lg font-bold">{{ 'admin.disputes.noResolvedDisputes' | t }}</p>
+      }
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <table class="w-full text-right">
+        <thead class="bg-slate-50 text-slate-500 text-xs font-bold">
+          <tr>
+            <th class="px-6 py-4">{{ 'admin.audit.user' | t }}</th>
+            <th class="px-6 py-4">{{ 'admin.disputes.reason' | t }}</th>
+            <th class="px-6 py-4">{{ 'payments.amount' | t }}</th>
+            <th class="px-6 py-4">{{ 'payments.status' | t }}</th>
+            <th class="px-6 py-4">{{ 'admin.disputes.submissionDate' | t }}</th>
+            <th class="px-6 py-4"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          @for (d of disputes(); track d.id) {
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <img [src]="d.userAvatarUrl || 'assets/icons/favicon.ico'"
+                       [alt]="d.userName" class="w-7 h-7 rounded-full object-cover bg-slate-100">
+                  <span class="font-medium text-slate-800 text-sm">{{ d.userName }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 font-medium text-slate-800">{{ d.reason }}</td>
+              <td class="px-6 py-4 text-slate-800 font-bold">{{ d.amount }} {{ d.currency | uppercase }}</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-xl text-xs font-bold border {{ getStatusClass(d.status) }}">
+                  {{ getStatusLabel(d.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-slate-500 text-sm">{{ d.createdAtUtc | date:'yyyy/MM/dd' }}</td>
+              <td class="px-6 py-4">
+                <a [routerLink]="['/admin/payments/disputes', d.id]"
+                   class="text-bosla-primary hover:underline font-bold text-sm">{{ 'admin.details.altfasyl' | t }}</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

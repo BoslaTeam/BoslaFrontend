@@ -1,0 +1,219 @@
+:host {
+  display: contents;
+}
+
+.ntf-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(27, 79, 114, 0.12), 0 4px 16px rgba(27, 79, 114, 0.06);
+  z-index: 100;
+  overflow: hidden;
+  animation: ntf-dropdown-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform-origin: top left;
+}
+
+@media (max-width: 480px) {
+  .ntf-dropdown {
+    position: fixed;
+    top: 76px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 96px);
+  }
+  .ntf-dropdown-body {
+    max-height: calc(100vh - 200px);
+  }
+}
+
+@keyframes ntf-dropdown-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ntf-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ntf-dropdown-header h3 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #1B4F72;
+  margin: 0;
+}
+
+.ntf-dropdown-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: #F39C12;
+  color: white;
+}
+
+.ntf-dropdown-body {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.ntf-dropdown-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: #95A5A6;
+}
+
+.ntf-dropdown-empty p {
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.ntf-dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f8fafc;
+  position: relative;
+}
+
+.ntf-dropdown-item:hover {
+  background: #F7F9FA;
+}
+
+.ntf-dropdown-item-unread {
+  background: rgba(27, 79, 114, 0.02);
+}
+
+.ntf-dropdown-item-unread:hover {
+  background: rgba(27, 79, 114, 0.04);
+}
+
+.ntf-dropdown-item-clickable {
+  cursor: pointer;
+}
+
+.ntf-dropdown-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.ntf-dropdown-icon-verification {
+  background: rgba(243, 156, 18, 0.12);
+  color: #F39C12;
+}
+
+.ntf-dropdown-icon-booking {
+  background: rgba(46, 134, 171, 0.12);
+  color: #2E86AB;
+}
+
+.ntf-dropdown-icon-message {
+  background: rgba(27, 79, 114, 0.1);
+  color: #1B4F72;
+}
+
+.ntf-dropdown-icon-reminder {
+  background: rgba(149, 165, 166, 0.15);
+  color: #95A5A6;
+}
+
+.ntf-dropdown-text {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ntf-dropdown-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #2C3E50;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ntf-dropdown-item-unread .ntf-dropdown-title {
+  color: #1B4F72;
+}
+
+.ntf-dropdown-msg {
+  font-size: 0.75rem;
+  color: #95A5A6;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.ntf-dropdown-time {
+  font-size: 0.6875rem;
+  color: #95A5A6;
+  margin: 0;
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+
+.ntf-dropdown-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  background: #F39C12;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 14px;
+}
+
+.ntf-dropdown-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1B4F72;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.ntf-dropdown-footer:hover {
+  background: #F7F9FA;
+}
+
+.ntf-dropdown-footer svg {
+  width: 14px;
+  height: 14px;
+}

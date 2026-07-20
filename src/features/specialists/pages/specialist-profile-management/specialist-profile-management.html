@@ -1,0 +1,456 @@
+<div [dir]="direction()" class="p-4 md:p-8 min-h-screen bg-bosla-offwhite font-sans">
+
+  <header class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+    <a routerLink="/specialist/dashboard" class="cursor-pointer hover:text-bosla-primary transition-colors">{{ 'nav.home' | t }}</a>
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    <span class="text-bosla-primary font-bold">{{ 'nav.profile' | t }}</span>
+  </header>
+
+  @if (loading()) {
+    <div class="flex justify-center py-32">
+      <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  } @else {
+    <div class="max-w-4xl mx-auto space-y-8">
+
+      <!-- ==================== Profile Overview ==================== -->
+      <section class="rounded-3xl bg-white border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+        <div class="bg-gradient-to-l from-bosla-primary/5 via-bosla-blue/5 to-transparent p-6 md:p-8">
+          <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div class="relative group cursor-pointer shrink-0">
+              <div class="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-slate-100 flex items-center justify-center">
+                @if (profile()?.profileImageUrl && !profileImageError()) {
+                  <img [src]="profile()?.profileImageUrl" alt="" class="w-full h-full object-cover" (error)="profileImageError.set(true)" />
+                } @else {
+                  <div class="w-full h-full bg-gradient-to-br from-bosla-primary to-bosla-blue text-white flex items-center justify-center text-4xl font-black">
+                    {{ profile()?.name?.charAt(0) }}
+                  </div>
+                }
+              </div>
+              <div class="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-camera text-white text-xl"></i>
+              </div>
+              <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" (change)="onAvatarSelected($event)">
+            </div>
+            <div class="flex-1 text-center md:text-right space-y-3">
+              <div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-800">{{ profile()?.name }}</h1>
+                <p class="text-base text-slate-500 mt-1">{{ profile()?.title || ('specialist.profile.defaultTitle' | t) }}</p>
+              </div>
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-bosla-primary/10 text-bosla-primary text-sm font-medium border border-bosla-primary/20">
+                  <i class="fa-solid fa-layer-group text-xs"></i>
+                  {{ levelLabel() }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-green-50 text-green-600 text-sm font-medium border border-green-200">
+                  <i class="fa-solid fa-dollar-sign text-xs"></i>
+                  {{ profile()?.hourlyRate }} {{ 'home.specialists.currency' | t }} / {{ 'home.specialists.perHour' | t }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 text-blue-600 text-sm font-medium border border-blue-200">
+                  <i class="fa-solid fa-briefcase text-xs"></i>
+                  {{ profile()?.experienceYears }} {{ 'specialist.profile.experienceYears' | t }}
+                </span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm pt-2">
+                <div class="flex items-center gap-2 text-slate-600">
+                  <i class="fa-regular fa-envelope text-slate-400 w-4"></i>
+                  <span dir="ltr">{{ profile()?.email }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-600">
+                  <i class="fa-regular fa-flag text-slate-400 w-4"></i>
+                  <span>{{ profile()?.country }}</span>
+                </div>
+              </div>
+              @if (profile()?.bio) {
+                <p class="text-sm text-slate-600 leading-relaxed pt-2 border-t border-slate-100 max-w-2xl">{{ profile()?.bio }}</p>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 p-6 md:p-8">
+          <h3 class="text-sm font-bold text-slate-700 mb-4">{{ 'specialist.profile.basicData' | t }}</h3>
+          <form [formGroup]="profileForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ui-input formControlName="hourlyRate" label="{{ 'specialist.profile.sessionPrice' | t }}" type="number" [required]="true" />
+            <ui-input formControlName="experienceYears" label="{{ 'specialist.profile.experienceYearsLabel' | t }}" type="number" [required]="true" />
+            <ui-input formControlName="title" label="{{ 'specialist.profile.jobTitle' | t }}" [placeholder]="'specialist.profile.jobTitlePlaceholder' | t" />
+            <ui-textarea formControlName="bio" label="{{ 'specialist.profile.bio' | t }}" [placeholder]="'specialist.profile.bioPlaceholder' | t" [rows]="2" />
+            <div class="sm:col-span-2 flex justify-end">
+              <ui-button type="button" (btnClick)="onProfileUpdate()" [loading]="saving()">{{ 'specialist.profile.saveChanges' | t }}</ui-button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== Skills ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+            <i class="fa-solid fa-code text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.skills' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.skillsDesc' | t }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (skill of mySkills(); track skill.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bosla-primary/10 text-bosla-primary text-sm font-medium border border-bosla-primary/20">
+              {{ skill.name }}
+              <button (click)="removeSkill(skill.id)" [disabled]="savingSkill() === skill.id" class="text-bosla-primary/60 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingSkill() === skill.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-code text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">{{ 'specialist.profile.noSkills' | t }}</span>
+            </div>
+          }
+        </div>
+
+        @if (addSkillOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addSkillSearch()" (ngModelChange)="addSkillSearch.set($event)"
+                [placeholder]="'specialist.profile.searchSkill' | t" class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (skill of filteredAddSkills(); track skill.id) {
+                <button (click)="addSkill(skill.id)" [disabled]="savingSkill() === skill.id"
+                  class="w-full px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-bosla-primary/5 hover:text-bosla-primary transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
+                  {{ skill.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">{{ 'common.noResults' | t }}</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addSkillOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            {{ 'specialist.profile.addSkill' | t }}
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Expertise ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
+            <i class="fa-solid fa-brain text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.expertise' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.expertiseDesc' | t }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (item of myExpertise(); track item.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-600 text-sm font-medium border border-amber-200">
+              {{ item.name }}
+              <button (click)="removeExpertise(item.id)" [disabled]="savingExpertise() === item.id" class="text-amber-400 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingExpertise() === item.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-brain text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">{{ 'specialist.profile.noExpertise' | t }}</span>
+            </div>
+          }
+        </div>
+
+        @if (addExpertiseOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addExpertiseSearch()" (ngModelChange)="addExpertiseSearch.set($event)"
+                [placeholder]="'specialist.profile.searchExpertise' | t" class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (item of filteredAddExpertise(); track item.id) {
+                <button (click)="addExpertise(item.id)" [disabled]="savingExpertise() === item.id"
+                  class="w-full px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-amber-50 hover:text-amber-700 transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
+                  {{ item.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">{{ 'common.noResults' | t }}</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addExpertiseOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            {{ 'specialist.profile.addExpertise' | t }}
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Tools ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 border border-purple-100">
+            <i class="fa-solid fa-screwdriver-wrench text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.tools' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.toolsDesc' | t }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-4">
+          @for (tool of myTools(); track tool.id) {
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 text-purple-600 text-sm font-medium border border-purple-200">
+              {{ tool.name }}
+              <button (click)="removeTool(tool.id)" [disabled]="savingTool() === tool.id" class="text-purple-400 hover:text-red-500 transition-colors cursor-pointer">
+                @if (savingTool() === tool.id) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                }
+              </button>
+            </div>
+          } @empty {
+            <div class="w-full rounded-2xl border border-dashed border-slate-300 p-8 text-center">
+              <i class="fa-regular fa-screwdriver-wrench text-3xl text-slate-300 mb-3 block"></i>
+              <span class="text-slate-500 font-medium">{{ 'specialist.profile.noTools' | t }}</span>
+            </div>
+          }
+        </div>
+
+        @if (addToolOpen()) {
+          <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50">
+            <div class="relative mb-3">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [ngModel]="addToolSearch()" (ngModelChange)="addToolSearch.set($event)"
+                [placeholder]="'specialist.profile.searchTool' | t" class="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 bg-white text-sm outline-none focus:border-bosla-primary" />
+            </div>
+            <div class="max-h-40 overflow-y-auto space-y-1">
+              @for (tool of filteredAddTools(); track tool.id) {
+                <button (click)="addTool(tool.id)" [disabled]="savingTool() === tool.id"
+                  class="w-full px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-bosla-primary/5 hover:text-bosla-primary transition-colors cursor-pointer" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
+                  {{ tool.name }}
+                </button>
+              } @empty {
+                <p class="text-sm text-slate-400 px-3 py-2">{{ 'common.noResults' | t }}</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <button (click)="addToolOpen.set(true)" class="inline-flex items-center gap-2 text-sm font-bold text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            {{ 'specialist.profile.addTool' | t }}
+          </button>
+        }
+      </section>
+
+      <!-- ==================== Certificates ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600 border border-green-100">
+            <i class="fa-solid fa-certificate text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.certificates' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.certificatesDesc' | t }}</p>
+          </div>
+        </div>
+
+        @if (certificateError()) {
+          <div class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-600 flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ certificateError() }}
+          </div>
+        }
+
+        @if (certificates().length) {
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+            @for (cert of certificates(); track cert.id) {
+              <div class="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+                @if (isImage(cert.url)) {
+                  <div class="aspect-[4/3] overflow-hidden bg-slate-50">
+                    <img [src]="cert.url" [alt]="cert.originalFileName"
+                      class="w-full h-full object-cover" />
+                  </div>
+                } @else {
+                  <div class="aspect-[4/3] flex items-center justify-center bg-slate-50">
+                    <i class="fa-solid fa-file-pdf text-4xl text-red-400"></i>
+                  </div>
+                }
+                <div class="p-2.5 flex items-center justify-between gap-2">
+                  <p class="text-xs font-medium text-slate-600 truncate flex-1">{{ cert.originalFileName }}</p>
+                  <button (click)="deleteCertificate(cert)" [disabled]="isDeletingCertificate()[cert.id]"
+                    class="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
+                    @if (isDeletingCertificate()[cert.id]) {
+                      <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                    } @else {
+                      <i class="fa-solid fa-trash-can text-xs"></i>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center mb-6">
+            <i class="fa-solid fa-certificate text-3xl text-slate-300 mb-3 block"></i>
+            <span class="text-slate-500 font-medium">{{ 'specialist.profile.noCertificates' | t }}</span>
+          </div>
+        }
+
+        <label class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bosla-blue/10 text-bosla-blue hover:bg-bosla-blue hover:text-white transition-all cursor-pointer font-bold text-sm border border-bosla-blue/20">
+          <input type="file" accept=".pdf,.jpg,.jpeg,.png,.gif" (change)="onCertificateSelected($event)" class="hidden" [disabled]="isUploadingCertificate()" />
+          @if (isUploadingCertificate()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            {{ 'specialist.profile.uploading' | t }}
+          } @else {
+            <i class="fa-solid fa-upload"></i>
+            {{ 'specialist.profile.addCertificate' | t }}
+          }
+        </label>
+      </section>
+
+      <!-- ==================== Experience ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-100">
+            <i class="fa-solid fa-briefcase text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.previousExperience' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.previousExperienceDesc' | t }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="experienceForm">
+          <div formArrayName="items" class="space-y-4">
+            @for (item of experienceItems.controls; track $index) {
+              <div [formGroupName]="$index" class="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/50">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-bold text-slate-700">{{ 'specialist.profile.experienceNumber' | t }} #{{ $index + 1 }}</span>
+                  <button type="button" (click)="removeExperience($index)" class="text-red-500 hover:text-red-700 text-sm cursor-pointer font-medium">
+                    <i class="fa-solid fa-trash-can ml-1"></i>{{ 'admin.users.delete' | t }}</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ui-input formControlName="jobTitle" label="{{ 'specialist.profile.jobTitle' | t }}" [placeholder]="'specialist.profile.jobTitlePlaceholder' | t" [required]="true" [errorMessage]="getFieldError($index, 'jobTitle')" />
+                  <ui-input formControlName="companyName" label="{{ 'specialist.profile.companyName' | t }}" [placeholder]="'specialist.profile.companyNamePlaceholder' | t" [required]="true" [errorMessage]="getFieldError($index, 'companyName')" />
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ui-input formControlName="fromDate" label="{{ 'specialist.profile.fromDate' | t }}" type="date" [required]="true" [errorMessage]="getFieldError($index, 'fromDate')" />
+                  <ui-input formControlName="toDate" label="{{ 'specialist.profile.toDate' | t }}" type="date" />
+                </div>
+                @if (getDateError($index)) {
+                  <p class="text-[13px] font-sans text-bosla-error flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation text-xs"></i>
+                    {{ getDateError($index) }}
+                  </p>
+                }
+
+                <ui-textarea formControlName="description" label="{{ 'specialist.profile.description' | t }}" [placeholder]="'specialist.profile.descPlaceholder' | t" [rows]="2" />
+
+                <div class="flex justify-end gap-3 pt-2">
+                  <ui-button type="button" (btnClick)="saveExperience($index)" [loading]="saving()">
+                    <i class="fa-solid fa-floppy-disk ml-1"></i>{{ 'admin.ai.save' | t }}</ui-button>
+                </div>
+              </div>
+            }
+          </div>
+        </form>
+
+        @if (experienceItems.length === 0) {
+          <div class="rounded-2xl border border-dashed border-slate-300 p-8 text-center mb-4">
+            <i class="fa-regular fa-briefcase text-3xl text-slate-300 mb-3 block"></i>
+            <span class="text-slate-500 font-medium">{{ 'specialist.profile.noExperiences' | t }}</span>
+          </div>
+        }
+
+        <button (click)="addExperience()" class="mt-4 w-full py-3 border-2 border-dashed border-slate-300 rounded-2xl text-slate-500 hover:border-bosla-blue hover:text-bosla-blue transition-colors cursor-pointer font-sans font-medium text-sm">
+          <i class="fa-solid fa-plus ml-1"></i>
+          {{ 'specialist.profile.addExperience' | t }}
+        </button>
+      </section>
+
+      <!-- ==================== Booking Policy ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-bosla-blue/10 text-bosla-blue border border-bosla-blue/10">
+            <i class="fa-solid fa-calendar-check text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.bookingPolicy' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.bookingPolicyDesc' | t }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="bookingForm" (ngSubmit)="onBookingSubmit()" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ui-input formControlName="minBookingNoticeHours" label="{{ 'specialist.profile.minNotice' | t }}" type="number" [required]="true" />
+            <ui-input formControlName="maxSessionsPerDay" label="{{ 'specialist.profile.maxDaily' | t }}" type="number" [required]="true" />
+            <ui-input formControlName="maxSessionsPerWeek" label="{{ 'specialist.profile.maxWeekly' | t }}" type="number" [required]="true" />
+          </div>
+
+          <ui-textarea formControlName="bookingPolicy" label="{{ 'specialist.profile.bookingPolicyText' | t }}" [placeholder]="'specialist.profile.bookingPolicyPlaceholder' | t" [rows]="3" [required]="true" />
+
+          <div class="flex justify-end pt-2">
+            <ui-button type="submit" [loading]="saving()" variant="primary">
+              <i class="fa-solid fa-floppy-disk ml-1"></i>{{ 'admin.ai.save' | t }}</ui-button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ==================== Cancellation Policy ==================== -->
+      <section class="rounded-3xl bg-white p-6 md:p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-bosla-orange/10 text-bosla-orange border border-bosla-orange/10">
+            <i class="fa-solid fa-ban text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-black text-slate-800">{{ 'specialist.profile.cancellationPolicy' | t }}</h2>
+            <p class="text-sm text-slate-500 mt-0.5">{{ 'specialist.profile.cancellationPolicyDesc' | t }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="cancellationForm" (ngSubmit)="onCancellationSubmit()" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ui-input formControlName="cancellationNoticeHours" label="{{ 'specialist.profile.cancelNotice' | t }}" type="number" [required]="true" />
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-700">{{ 'specialist.profile.allowCancellation' | t }}</label>
+              <div class="flex items-center gap-6 h-11">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" formControlName="allowCancellation" [value]="true" class="accent-bosla-primary" />
+                  <span class="text-sm text-slate-700">{{ 'common.yes' | t }}</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" formControlName="allowCancellation" [value]="false" class="accent-bosla-primary" />
+                  <span class="text-sm text-slate-700">{{ 'common.no' | t }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <ui-textarea formControlName="cancellationPolicy" label="{{ 'specialist.profile.cancellationPolicyText' | t }}" [placeholder]="'specialist.profile.cancellationPolicyPlaceholder' | t" [rows]="3" />
+
+          <div class="flex justify-end pt-2">
+            <ui-button type="submit" [loading]="saving()" variant="primary">
+              <i class="fa-solid fa-floppy-disk ml-1"></i>{{ 'admin.ai.save' | t }}</ui-button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+  }
+</div>

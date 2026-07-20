@@ -1,1 +1,630 @@
-<p>specialist-availability works!</p>
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-sans">
+
+  <!-- ===== Header ===== -->
+  <div class="bg-white border-b border-slate-100 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+            <a routerLink="/specialist/dashboard" class="hover:text-bosla-primary transition-colors">{{ 'nav.home' | t }}</a>
+            <i class="fa-solid fa-chevron-left text-[10px] text-slate-300"></i>
+            <span class="text-bosla-primary font-bold">{{ 'specialist.availability.workSchedule' | t }}</span>
+          </nav>
+          <h1 class="text-2xl md:text-3xl font-black text-bosla-primary">{{ 'specialist.availability.manageSchedule' | t }}</h1>
+          <p class="text-sm text-slate-500 mt-1">{{ 'specialist.availability.scheduleDesc' | t }}</p>
+        </div>
+        <button (click)="openAddForm()"
+          class="hidden md:flex items-center gap-2 px-5 py-2.5 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-all cursor-pointer shadow-sm">
+          <i class="fa-solid fa-plus"></i>
+          <span>{{ 'specialist.availability.newSchedule' | t }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Loading ===== -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-32">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-10 h-10 border-4 border-bosla-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm text-slate-400 font-medium">{{ 'specialist.availability.loadingData' | t }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- ===== Error ===== -->
+  @if (!isLoading() && error()) {
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-16">
+      <div class="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm">
+        <div class="h-20 w-20 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-6">
+          <i class="fa-solid fa-circle-exclamation text-3xl text-red-400"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800 mb-2">{{ 'specialist.availability.errorTitle' | t }}</h3>
+        <p class="text-slate-500 mb-6 max-w-md mx-auto">{{ error() }}</p>
+        <button (click)="loadData()"
+          class="px-6 py-3 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-colors cursor-pointer">{{ 'common.retry' | t }}</button>
+      </div>
+    </div>
+  }
+
+  <!-- ===== Main ===== -->
+  @if (!isLoading() && !error()) {
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 space-y-6">
+
+      <!-- ===== Stats ===== -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-bosla-primary/10 flex items-center justify-center text-bosla-primary border border-bosla-primary/10">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div>
+              <p class="text-xl md:text-2xl font-black text-slate-800">{{ stats().totalSchedules }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ 'specialist.availability.schedules' | t }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div>
+              <p class="text-xl md:text-2xl font-black text-emerald-600">{{ stats().activeSchedules }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ 'admin.users.active' | t }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <p class="text-xl md:text-2xl font-black text-emerald-600">{{ stats().available }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ 'specialist.availability.available' | t }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+              <i class="fa-solid fa-bookmark"></i>
+            </div>
+            <div>
+              <p class="text-xl md:text-2xl font-black text-blue-600">{{ stats().booked }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ 'specialist.availability.booked' | t }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-5 border border-slate-100 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+              <p class="text-xl md:text-2xl font-black text-slate-500">{{ stats().total }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ 'specialist.availability.expected' | t }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Schedule Form ===== -->
+      @if (showForm()) {
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="px-6 py-4 bg-bosla-primary/5 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <h2 class="text-base font-black text-bosla-primary">
+                {{ editingScheduleId() ? ('specialist.availability.editSchedule' | t) : ('specialist.availability.newScheduleTitle' | t) }}
+              </h2>
+            </div>
+            <button (click)="closeForm()"
+              class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors flex items-center justify-center cursor-pointer">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            @if (formError()) {
+              <div class="bg-red-50 border-r-4 border-red-500 p-4 rounded-l-lg flex items-start gap-3">
+                <i class="fa-solid fa-circle-exclamation text-red-500 mt-0.5 shrink-0"></i>
+                <p class="text-sm text-red-700 font-medium">{{ formError() }}</p>
+              </div>
+            }
+
+            <!-- Days of week -->
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-3">{{ 'specialist.availability.weekdays' | t }}</label>
+              <div class="flex flex-wrap gap-2">
+                @for (name of weekdayNames; track $index) {
+                  <button type="button" (click)="toggleDay($index)"
+                    [disabled]="!availableWeekdays()[$index]"
+                    class="px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all"
+                    [class.cursor-pointer]="availableWeekdays()[$index]"
+                    [class.cursor-not-allowed]="!availableWeekdays()[$index]"
+                    [class.opacity-30]="!availableWeekdays()[$index]"
+                    [class.bg-bosla-primary]="formDays()[$index]"
+                    [class.text-white]="formDays()[$index]"
+                    [class.border-bosla-primary]="formDays()[$index]"
+                    [class.bg-white]="!formDays()[$index] && availableWeekdays()[$index]"
+                    [class.bg-slate-100]="!formDays()[$index] && !availableWeekdays()[$index]"
+                    [class.text-slate-600]="!formDays()[$index]"
+                    [class.border-slate-200]="!formDays()[$index]"
+                    [class.hover:border-bosla-primary/50]="!formDays()[$index] && availableWeekdays()[$index]">
+                    {{ weekdayKeys[$index] | t }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Time range -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-slate-700">{{ 'specialist.availability.startTime' | t }}</label>
+                <select [ngModel]="formStartTime()" (ngModelChange)="formStartTime.set($event); formError.set('')"
+                  class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer">
+                  @for (opt of allTimeOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-slate-700">{{ 'specialist.availability.endTime' | t }}</label>
+                <select [ngModel]="formEndTime()" (ngModelChange)="formEndTime.set($event); formError.set('')"
+                  class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer">
+                  @for (opt of allTimeOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">{{ 'video.duration.mdh_aljlsh' | t }}</label>
+              <div class="flex flex-wrap gap-2">
+                @for (d of durationOptions; track d) {
+                  <button type="button" (click)="formDuration.set(d)"
+                    class="px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all cursor-pointer"
+                    [class.bg-bosla-primary]="formDuration() === d"
+                    [class.text-white]="formDuration() === d"
+                    [class.border-bosla-primary]="formDuration() === d"
+                    [class.bg-white]="formDuration() !== d"
+                    [class.text-slate-600]="formDuration() !== d"
+                    [class.border-slate-200]="formDuration() !== d"
+                    [class.hover:border-bosla-primary/50]="formDuration() !== d">
+                    {{ formatSessionDuration(d) }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Date range -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-slate-700">{{ 'specialist.availability.startDate' | t }}</label>
+                <input type="date" [ngModel]="formStartDate()"
+                  (ngModelChange)="formStartDate.set($event); formError.set('')"
+                  [min]="todayStr"
+                  class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-slate-700">
+                  {{ 'specialist.availability.endDate' | t }}
+                  <span class="text-xs text-slate-400 font-normal">{{ 'specialist.availability.endDateHint' | t }}</span>
+                </label>
+                <input type="date" [ngModel]="formEndDate()"
+                  (ngModelChange)="formEndDate.set($event)"
+                  [min]="formStartDate() || todayStr"
+                  class="w-full h-11 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all" />
+              </div>
+            </div>
+
+            <!-- Conflicts -->
+            @if (formConflicts().length > 0) {
+              <div class="bg-amber-50 border-r-4 border-amber-400 p-4 rounded-l-lg">
+                <div class="flex items-start gap-3">
+                  <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 shrink-0"></i>
+                  <div>
+                    <p class="text-sm font-bold text-amber-800">{{ 'specialist.availability.conflictTitle' | t }}</p>
+                    <ul class="text-xs text-amber-700 mt-1 list-disc list-inside space-y-0.5">
+                      @for (c of formConflicts(); track c.id) {
+                        <li>
+                          {{ formatWeekdays(c.days) }} |
+                          {{ formatTimeShort(c.startTime) }} - {{ formatTimeShort(c.endTime) }} |
+                          {{ formatSessionDuration(c.sessionDuration) }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Preview: estimated slots -->
+            @if (formPreview()) {
+              <div class="bg-bosla-primary/5 rounded-xl px-4 py-3 border border-bosla-primary/10">
+                <p class="text-xs text-slate-600">
+                  <span class="font-bold text-bosla-primary">{{ 'specialist.availability.estimated' | t }}:</span>
+                  ~{{ formPreview()!.weeklySlots }} {{ 'specialist.availability.slotsPerWeek' | t }} |
+                  ~{{ formPreview()!.slotsPerDay }} {{ 'specialist.availability.slotsPerDay' | t }} |
+                  <span dir="ltr">{{ formatTimeShort(formStartTime()) }} - {{ formatTimeShort(formEndTime()) }}</span>
+                </p>
+              </div>
+            }
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 pt-2">
+              <button (click)="saveSchedule()" [disabled]="isSyncing()"
+                class="px-6 py-2.5 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                @if (isSyncing()) {
+                  <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{{ 'specialist.availability.syncing' | t }}</span>
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                  <span>{{ editingScheduleId() ? ('specialist.availability.saveChanges' | t) : ('specialist.availability.createSchedule' | t) }}</span>
+                }
+              </button>
+              <button (click)="closeForm()" type="button"
+                class="px-4 py-2.5 text-sm text-slate-600 font-medium hover:text-slate-800 transition-colors cursor-pointer">{{ 'appointments.book.cancel' | t }}</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ===== Mobile FAB ===== -->
+      @if (!showForm()) {
+        <button (click)="openAddForm()"
+          class="md:hidden fixed bottom-6 left-6 z-40 w-14 h-14 rounded-full bg-bosla-primary text-white shadow-lg hover:bg-bosla-primary/90 transition-all cursor-pointer flex items-center justify-center">
+          <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+      }
+
+      <!-- ===== Existing Schedules ===== -->
+      @if (schedules().length > 0) {
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+                <i class="fa-solid fa-list"></i>
+              </div>
+              <h2 class="text-base font-black text-bosla-primary">{{ 'specialist.availability.schedulesList' | t }}</h2>
+              <span class="text-xs text-slate-400 font-medium">({{ schedules().length }})</span>
+            </div>
+          </div>
+
+          <!-- Desktop table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-bosla-offwhite text-slate-500 text-xs font-bold">
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'specialist.availability.days' | t }}</th>
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'specialist.availability.time' | t }}</th>
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'specialist.availability.duration' | t }}</th>
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'specialist.availability.startDate' | t }}</th>
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'specialist.availability.endDate' | t }}</th>
+                  <th class="px-6 py-3" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">{{ 'payments.status' | t }}</th>
+                  <th class="text-left px-6 py-3">{{ 'specialist.availability.actions' | t }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-50">
+                @for (sch of schedules(); track sch.id) {
+                  <tr class="hover:bg-bosla-offwhite/50 transition-colors">
+                    <td class="px-6 py-4">
+                      <div class="flex gap-1 flex-wrap">
+                        @for (d of sch.days; track d) {
+                          <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayKeys[d] | t }}</span>
+                        }
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="font-bold text-slate-700" dir="ltr">{{ formatTimeShort(sch.startTime) }} - {{ formatTimeShort(sch.endTime) }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-600">{{ formatSessionDuration(sch.sessionDuration) }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ sch.startDate }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ sch.endDate || '—' }}</td>
+                    <td class="px-6 py-4">
+                      @if (sch.enabled) {
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                          <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>{{ 'admin.users.active' | t }}</span>
+                      } @else {
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200">
+                          <i class="fa-solid fa-circle text-[6px] text-slate-300"></i>
+                          {{ 'specialist.availability.disabled' | t }}
+                        </span>
+                      }
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-1 justify-end">
+                        <button (click)="toggleSchedule(sch)"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors border"
+                          [class.bg-emerald-50]="sch.enabled"
+                          [class.text-emerald-600]="sch.enabled"
+                          [class.border-emerald-100]="sch.enabled"
+                          [class.hover:bg-emerald-100]="sch.enabled"
+                          [class.bg-slate-50]="!sch.enabled"
+                          [class.text-slate-400]="!sch.enabled"
+                          [class.border-slate-100]="!sch.enabled"
+                          [class.hover:bg-slate-100]="!sch.enabled"
+                          [title]="sch.enabled ? ('specialist.availability.disable' | t) : ('specialist.availability.enable' | t)">
+                          @if (sch.enabled) {
+                            <i class="fa-solid fa-pause text-xs"></i>
+                          } @else {
+                            <i class="fa-solid fa-play text-xs"></i>
+                          }
+                        </button>
+                        <button (click)="openEditForm(sch)"
+                          class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors flex items-center justify-center cursor-pointer border border-blue-100"
+                          [title]="'admin.users.edit' | t">
+                          <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button (click)="requestDeleteSchedule(sch)"
+                          class="w-8 h-8 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors flex items-center justify-center cursor-pointer border border-red-100"
+                          [title]="'admin.users.delete' | t">
+                          <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile schedule cards -->
+          <div class="md:hidden divide-y divide-slate-50">
+            @for (sch of schedules(); track sch.id) {
+              <div class="p-4 space-y-3 hover:bg-bosla-offwhite/50 transition-colors">
+                <div class="flex items-start justify-between">
+                  <div class="flex gap-1 flex-wrap">
+                    @for (d of sch.days; track d) {
+                      <span class="text-xs font-bold text-slate-700 bg-bosla-offwhite px-2 py-1 rounded-lg border border-slate-100">{{ weekdayKeys[d] | t }}</span>
+                    }
+                  </div>
+                  @if (sch.enabled) {
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                      <i class="fa-solid fa-circle text-[6px] text-emerald-500"></i>{{ 'admin.users.active' | t }}</span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-400 text-xs font-bold border border-slate-200">
+                      <i class="fa-solid fa-circle text-[6px] text-slate-300"></i>
+                      {{ 'specialist.availability.disabled' | t }}
+                    </span>
+                  }
+                </div>
+                <div class="text-sm">
+                  <span class="font-bold text-slate-700" dir="ltr">{{ formatTimeShort(sch.startTime) }} - {{ formatTimeShort(sch.endTime) }}</span>
+                  <span class="mx-2 text-slate-300">|</span>
+                  <span class="text-slate-500">{{ formatSessionDuration(sch.sessionDuration) }}</span>
+                </div>
+                <div class="text-xs text-slate-400">
+                  {{ 'specialist.availability.from' | t }} {{ sch.startDate }} @if (sch.endDate) { {{ 'specialist.availability.to' | t }} {{ sch.endDate }} }
+                </div>
+                <div class="flex gap-2">
+                  <button (click)="toggleSchedule(sch)"
+                    class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer border"
+                    [class.bg-emerald-50]="sch.enabled"
+                    [class.text-emerald-700]="sch.enabled"
+                    [class.border-emerald-200]="sch.enabled"
+                    [class.bg-slate-50]="!sch.enabled"
+                    [class.text-slate-500]="!sch.enabled"
+                    [class.border-slate-100]="!sch.enabled">
+                    {{ sch.enabled ? ('specialist.availability.disable' | t) : ('specialist.availability.enable' | t) }}
+                  </button>
+                  <button (click)="openEditForm(sch)"
+                    class="flex-1 py-2 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer">{{ 'admin.users.edit' | t }}</button>
+                  <button (click)="requestDeleteSchedule(sch)"
+                    class="flex-1 py-2 rounded-lg bg-red-50 text-red-500 text-xs font-bold border border-red-100 hover:bg-red-100 transition-colors cursor-pointer">{{ 'admin.users.delete' | t }}</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ===== Empty Schedules ===== -->
+      @if (schedules().length === 0 && !showForm()) {
+        <div class="bg-white rounded-2xl p-12 text-center border border-slate-100 shadow-sm">
+          <div class="h-24 w-24 mx-auto bg-bosla-primary/5 rounded-full flex items-center justify-center mb-6 border border-bosla-primary/10">
+            <i class="fa-regular fa-clock text-4xl text-bosla-primary/40"></i>
+          </div>
+          <h3 class="text-xl font-black text-slate-800 mb-2">{{ 'specialist.availability.noSchedules' | t }}</h3>
+          <p class="text-slate-500 mb-6 max-w-md mx-auto">{{ 'specialist.availability.noSchedulesDesc' | t }}</p>
+          <button (click)="openAddForm()"
+            class="px-6 py-3 bg-bosla-primary text-white font-bold rounded-xl hover:bg-bosla-primary/90 transition-all cursor-pointer inline-flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i>
+            <span>{{ 'specialist.availability.createScheduleBtn' | t }}</span>
+          </button>
+        </div>
+      }
+
+      <!-- ===== Generated Slots ===== -->
+      @if (generatedSlots().length > 0) {
+        <!-- Filter + Search -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex items-center gap-1.5 bg-bosla-offwhite rounded-xl p-1">
+              @for (f of filterOptions; track f.key) {
+                <button (click)="toggleFilter(f.key)"
+                  class="px-3.5 py-1.5 text-sm font-bold rounded-lg transition-all cursor-pointer"
+                  [class.bg-white]="activeFilter() === f.key"
+                  [class.text-bosla-primary]="activeFilter() === f.key"
+                  [class.shadow-sm]="activeFilter() === f.key"
+                  [class.text-slate-500]="activeFilter() !== f.key"
+                  [class.hover:text-slate-700]="activeFilter() !== f.key">
+                  {{ f.labelKey | t }}
+                </button>
+              }
+            </div>
+            <select [ngModel]="slotScheduleFilter()"
+              (ngModelChange)="slotScheduleFilter.set($event)"
+              class="h-9 px-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all cursor-pointer max-w-64">
+              @for (opt of scheduleFilterOptions(); track opt.id) {
+                <option [ngValue]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
+            <div class="relative flex-1 max-w-xs">
+              <i class="fa-solid fa-search absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" [placeholder]="'specialist.availability.search' | t" [ngModel]="searchQuery()"
+                (ngModelChange)="updateSearch($event)"
+                class="w-full h-9 pr-9 pl-3 text-sm font-sans bg-bosla-offwhite border border-slate-200 rounded-xl text-slate-700 focus:border-bosla-primary focus:ring-2 focus:ring-bosla-primary/20 outline-none transition-all placeholder:text-slate-400" />
+            </div>
+            <div class="text-xs text-slate-400 font-medium md:mr-auto">
+              {{ filteredSlots().length }} {{ 'specialist.availability.of' | t }} {{ generatedSlots().length }} {{ 'specialist.availability.slots' | t }}
+            </div>
+          </div>
+        </div>
+
+        <!-- No results -->
+        @if (filteredSlots().length === 0) {
+          <div class="bg-white rounded-2xl p-8 text-center border border-slate-100 shadow-sm">
+            <div class="h-14 w-14 mx-auto bg-slate-100 rounded-full flex items-center justify-center mb-3">
+              <i class="fa-solid fa-filter-circle-xmark text-xl text-slate-300"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-600">{{ 'common.noResults' | t }}</p>
+            <p class="text-xs text-slate-400 mt-1">{{ 'specialist.availability.tryFilter' | t }}</p>
+          </div>
+        }
+
+        <!-- Slots grouped by date -->
+        @for (group of groupedSlots(); track group.date.getTime()) {
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="px-6 py-3.5 bg-bosla-primary/5 border-b border-slate-100 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-bosla-primary/10 flex items-center justify-center text-bosla-primary">
+                <i class="fa-regular fa-calendar"></i>
+              </div>
+              <h3 class="text-base font-black text-bosla-primary">{{ group.dateLabel }}</h3>
+              <span class="text-xs text-slate-400 font-medium mr-auto">{{ group.slots.length }}</span>
+            </div>
+            <div class="flex flex-wrap gap-3 p-4 md:p-6">
+              @for (slot of group.slots; track slot.id) {
+                <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors"
+                  [class.bg-emerald-50]="slot.status === 'available'"
+                  [class.border-emerald-200]="slot.status === 'available'"
+                  [class.bg-blue-50]="slot.status === 'booked'"
+                  [class.border-blue-200]="slot.status === 'booked'"
+                  [class.bg-slate-100]="slot.status === 'ended'"
+                  [class.border-slate-200]="slot.status === 'ended'"
+                  [class.bg-red-50]="slot.status === 'cancelled'"
+                  [class.border-red-100]="slot.status === 'cancelled'">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-[11px] text-slate-400"></i>
+                    <span class="text-sm font-bold text-slate-800" dir="ltr">{{ formatTime(slot.start) }} - {{ formatTime(slot.end) }}</span>
+                  </div>
+                  <span class="text-[10px] text-slate-400">({{ formatDuration(slot.end.getTime() - slot.start.getTime()) }})</span>
+
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0"
+                    [class.bg-emerald-100]="slot.status === 'available'"
+                    [class.text-emerald-700]="slot.status === 'available'"
+                    [class.border-emerald-300]="slot.status === 'available'"
+                    [class.bg-blue-100]="slot.status === 'booked'"
+                    [class.text-blue-700]="slot.status === 'booked'"
+                    [class.border-blue-300]="slot.status === 'booked'"
+                    [class.bg-slate-200]="slot.status === 'ended'"
+                    [class.text-slate-500]="slot.status === 'ended'"
+                    [class.border-slate-300]="slot.status === 'ended'"
+                    [class.bg-red-100]="slot.status === 'cancelled'"
+                    [class.text-red-400]="slot.status === 'cancelled'"
+                    [class.border-red-200]="slot.status === 'cancelled'">
+                    <i class="fa-solid fa-circle text-[5px]"
+                      [class.text-emerald-500]="slot.status === 'available'"
+                      [class.text-blue-500]="slot.status === 'booked'"
+                      [class.text-slate-400]="slot.status === 'ended'"
+                      [class.text-red-300]="slot.status === 'cancelled'"></i>
+                    {{ ST_META[slot.status] | t }}
+                  </span>
+
+                  @if (slot.source === 'schedule') {
+                    <span class="text-[10px] text-slate-400 bg-bosla-offwhite px-2 py-0.5 rounded border border-slate-100">
+                      <i class="fa-solid fa-clock"></i> {{ 'specialist.availability.schedule' | t }}
+                    </span>
+                  }
+
+                  @if (slot.status === 'booked' && slot.clientName) {
+                    <span class="text-xs text-slate-600 border-r border-slate-200 pr-2 mr-1 hidden sm:inline">
+                      <i class="fa-solid fa-user text-slate-300 text-[10px] ml-1"></i>{{ slot.clientName }}
+                    </span>
+                  }
+
+                  @if (slot.status === 'available' || slot.status === 'ended' || slot.status === 'cancelled') {
+                    <button (click)="requestDeleteSlot(slot)"
+                      class="w-6 h-6 rounded-lg bg-red-100 text-red-400 hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer border border-red-200"
+                      [title]="'specialist.availability.deleteSlot' | t">
+                      <i class="fa-solid fa-trash-can text-[10px]"></i>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+    </div>
+  }
+
+  <!-- ===== Delete Schedule Confirmation Modal ===== -->
+  @if (showDeleteConfirm() && scheduleToDelete()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" (click)="cancelDeleteSchedule()">
+      <div class="bg-white rounded-3xl max-w-sm w-full mx-auto shadow-2xl border border-slate-100" (click)="$event.stopPropagation()">
+        <div class="p-6 text-center">
+          <div class="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-4 border border-red-100">
+            <i class="fa-solid fa-trash-can text-2xl text-red-400"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-800 mb-1">{{ 'specialist.availability.confirmDeleteSchedule' | t }}</h3>
+          <p class="text-sm text-slate-500">{{ 'specialist.availability.deleteScheduleWarning' | t }}</p>
+          <div class="bg-bosla-offwhite rounded-2xl p-4 my-5 border border-slate-100" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
+            <div class="flex gap-1 flex-wrap mb-2">
+              @for (d of scheduleToDelete()!.days; track d) {
+                <span class="text-xs font-bold text-slate-700 bg-white px-2 py-1 rounded-lg border border-slate-100">{{ weekdayKeys[d] | t }}</span>
+              }
+            </div>
+            <p class="text-sm font-bold text-slate-700" dir="ltr">{{ formatTimeShort(scheduleToDelete()!.startTime) }} - {{ formatTimeShort(scheduleToDelete()!.endTime) }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ formatSessionDuration(scheduleToDelete()!.sessionDuration) }}</p>
+          </div>
+          <div class="flex gap-3">
+            <button (click)="cancelDeleteSchedule()"
+              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors cursor-pointer">{{ 'appointments.book.cancel' | t }}</button>
+            <button (click)="confirmDeleteSchedule()"
+              class="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>{{ 'specialist.availability.deleteSchedule' | t }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ===== Delete Slot Confirmation Modal ===== -->
+  @if (showDeleteSlotConfirm() && slotToDelete()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" (click)="cancelDeleteSlot()">
+      <div class="bg-white rounded-3xl max-w-sm w-full mx-auto shadow-2xl border border-slate-100" (click)="$event.stopPropagation()">
+        <div class="p-6 text-center">
+          <div class="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-4 border border-red-100">
+            <i class="fa-solid fa-trash-can text-2xl text-red-400"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-800 mb-1">{{ 'specialist.availability.confirmDeleteSlot' | t }}</h3>
+          <p class="text-sm text-slate-500 mb-5">{{ 'specialist.availability.confirmDeleteSlotDesc' | t }}</p>
+          <div class="bg-bosla-offwhite rounded-2xl p-4 mb-5 border border-slate-100" [class.text-right]="direction() === 'rtl'" [class.text-left]="direction() === 'ltr'">
+            <p class="text-sm font-bold text-slate-700">{{ formatDateLong(slotToDelete()!.start) }}</p>
+            <p class="text-xs text-slate-500 mt-1" dir="ltr">{{ formatTime(slotToDelete()!.start) }} - {{ formatTime(slotToDelete()!.end) }}</p>
+          </div>
+          <div class="flex gap-3">
+            <button (click)="cancelDeleteSlot()"
+              class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors cursor-pointer">{{ 'appointments.book.cancel' | t }}</button>
+            <button (click)="confirmDeleteSlot()"
+              class="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>{{ 'admin.users.delete' | t }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

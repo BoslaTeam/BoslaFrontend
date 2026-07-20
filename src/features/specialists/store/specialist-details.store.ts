@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 import { SpecialistDetails } from '../models/specialist-details.model';
 import { Review } from '../models/review.model';
 import { Availability } from '../models/availability.model';
+import { SpecialistDocumentResponse } from '../contracts/specialist-document.contract';
 
 import { SpecialistDetailsRepository } from '../data-access/specialist-details.repository';
 
@@ -12,6 +13,13 @@ import { RatingDistribution } from '@shared/ui/rating-summary/rating-summary';
 import { ReviewItem } from '@shared/ui/review-card/review-card';
 import { formatTimeAgo } from '@shared/utils/time-ago.util';
 import { formatAvailabilityDate, formatAvailabilityTime } from '@shared/utils/date-format.util';
+
+const EXPIERENCE_LEVEL_LABELS: Record<number, string> = {
+  0: 'مبتدئ',
+  1: 'متوسط',
+  2: 'متقدم',
+  3: 'خبير',
+};
 
 @Injectable({
   providedIn: 'root',
@@ -22,19 +30,14 @@ export class SpecialistDetailsStore {
   readonly specialist = signal<SpecialistDetails | null>(null);
   readonly reviews = signal<Review[]>([]);
   readonly availability = signal<Availability[]>([]);
+  readonly certificates = signal<SpecialistDocumentResponse[]>([]);
 
   readonly detailsLoading = signal(false);
   readonly error = signal<string | null>(null);
 
   readonly experienceLevelLabel = computed(() => {
     const level = this.specialist()?.experienceLevel;
-    const labels: Record<number, string> = {
-      0: 'مبتدئ',
-      1: 'متوسط',
-      2: 'متقدم',
-      3: 'خبير',
-    };
-    return labels[level ?? 0] || '';
+    return EXPIERENCE_LEVEL_LABELS[level ?? 0] || '';
   });
 
   readonly ratingDistribution = computed<RatingDistribution[]>(() => {
@@ -65,11 +68,21 @@ export class SpecialistDetailsStore {
   readonly reviewItems = computed<ReviewItem[]>(() => {
     return this.reviews().map(r => ({
       id: r.id,
-      authorName: r.userName,
+      authorName: r.reviewerName,
       timeAgo: formatTimeAgo(r.createdAt),
       rating: r.rating,
       comment: r.comment,
     }));
+  });
+
+  readonly experiences = computed(() => {
+    return this.specialist()?.experiences ?? [];
+  });
+
+  readonly canCancel = computed(() => {
+    const s = this.specialist();
+    if (!s) return false;
+    return s.allowCancellation && s.cancellationDeadlineHours > 0;
   });
 
   readonly availabilitySlots = computed(() => {
@@ -90,6 +103,7 @@ export class SpecialistDetailsStore {
       specialist: this.repository.getSpecialistById(id),
       reviews: this.repository.getReviews(id),
       availability: this.repository.getAvailability(id),
+      certificates: this.repository.getCertificates(id),
     })
       .pipe(finalize(() => this.detailsLoading.set(false)))
       .subscribe({
@@ -97,6 +111,7 @@ export class SpecialistDetailsStore {
           this.specialist.set(data.specialist);
           this.reviews.set(data.reviews);
           this.availability.set(data.availability);
+          this.certificates.set(data.certificates);
         },
         error: (err) => {
           this.error.set(err.message || 'Failed to load specialist details');

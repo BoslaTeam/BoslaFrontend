@@ -1,0 +1,181 @@
+<div class="min-h-screen bg-bosla-offwhite" [dir]="direction()">
+  <div class="max-w-3xl mx-auto px-4 pt-28 pb-12">
+    <a
+      [routerLink]="['/appointments']"
+      class="inline-flex items-center gap-2 text-sm text-bosla-grey hover:text-bosla-blue transition-colors mb-6 group cursor-pointer"
+    >
+      <svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      {{ 'specialist.appointments.backToAppointments' | t }}
+    </a>
+
+    @if (store.isLoading()) {
+      <div class="flex flex-col items-center justify-center py-24">
+        <ui-spinner size="lg"></ui-spinner>
+        <p class="text-sm text-bosla-grey mt-4">{{ 'specialist.appointments.loadingStatus' | t }}</p>
+      </div>
+    } @else if (store.selectedItem(); as appointment) {
+      <!-- Header -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-6 mb-6">
+        <div class="flex items-center gap-4">
+          <div dir="ltr">
+            <p class="text-xs text-bosla-grey font-medium mb-1">{{ 'specialist.appointments.upcomingAppointment' | t }}</p>
+            <p class="text-sm font-bold text-bosla-charcoal">{{ appointment.start | date:'EEEE, dd MMMM yyyy' :'' :'ar' }}</p>
+            <p class="text-xs text-bosla-grey mt-0.5" dir="ltr">{{ appointment.start | date:'hh:mm a' }} - {{ appointment.end | date:'hh:mm a' }}</p>
+          </div>
+          <div class="mr-auto">
+            <p class="text-xs text-bosla-grey mb-1">{{ appointment.sessionTopic || ('specialist.appointments.consultationSession' | t) }}</p>
+            @if (appointment.specialistName) {
+              <p class="text-sm font-semibold text-bosla-charcoal">{{ appointment.specialistName }}</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (paymentDeadline()) {
+        <div class="p-4 rounded-xl mb-4" [class]="remainingMs() > 60000 ? 'bg-amber-50 border border-amber-200' : 'bg-red-50 border border-red-200'">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 shrink-0" [class]="remainingMs() > 60000 ? 'text-amber-500' : 'text-red-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="text-sm">
+              <p class="font-semibold" [class]="remainingMs() > 60000 ? 'text-amber-700' : 'text-red-700'">
+                {{ 'specialist.appointments.remainingPayment' | t:{ time: formatCountdown(remainingMs()) } }}
+              </p>
+              <p class="text-bosla-grey text-xs mt-0.5">{{ 'specialist.appointments.autoCancelWarning' | t }}</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tracking Flow -->
+      <div class="bg-white rounded-2xl shadow-sm border border-bosla-charcoal/5 p-8">
+        @if (isCancelled()) {
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-3">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-bold text-rose-600">{{ 'appointments.status.cancelled' | t }}</h2>
+            @if (cancelReason()) {
+              <p class="text-sm text-bosla-grey mt-2">{{ 'specialist.appointments.cancelReason' | t }}: {{ cancelReason() }}</p>
+            }
+          </div>
+        }
+
+        <div class="relative">
+          <!-- Vertical line -->
+          <div class="absolute right-[23px] top-0 bottom-0 w-0.5 bg-bosla-charcoal/10"></div>
+
+          @for (step of trackingSteps(); track step.key) {
+            <div
+              class="relative flex items-start gap-5 pb-10 last:pb-0"
+              [attr.data-step]="step.status === 'current' ? 'current' : null"
+            >
+              <!-- Circle -->
+              <div
+                class="relative z-10 w-[48px] h-[48px] rounded-full flex items-center justify-center shrink-0 border-2 transition-all duration-500"
+                [class]="getStepBg(step) + ' ' + getStepBorder(step)"
+              >
+                @if (step.status === 'completed') {
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                } @else {
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="step.icon" />
+                  </svg>
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0 pt-2">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold" [class]="getStepLabelClass(step)">
+                    {{ step.label }}
+                  </p>
+                  <span
+                    class="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                    [class]="
+                      step.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                      step.status === 'current' ? 'bg-bosla-blue/10 text-bosla-blue' :
+                      'bg-bosla-charcoal/5 text-bosla-grey'
+                    "
+                  >
+                    {{ getStepSubtext(step) }}
+                  </span>
+                </div>
+                @if (step.date) {
+                  <p class="text-xs text-bosla-grey mt-1" dir="ltr">
+                    {{ step.date | date:'dd/MM/yyyy - hh:mm a' }}
+                  </p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="flex items-center justify-center gap-3 mt-6">
+        @if (hasConversation()) {
+          <button
+            (click)="goToConversation()"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-bosla-blue hover:bg-bosla-blue/90 rounded-xl transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            {{ 'specialist.appointments.goToChat' | t }}
+          </button>
+        }
+        @if (
+          appointment.status === AppointmentStatus.Confirmed &&
+          appointment.paymentStatus !== PaymentStatus.Paid &&
+          appointment.paymentStatus !== PaymentStatus.Refunded
+        ) {
+          <a
+            [routerLink]="['/appointments', appointment.id, 'pay']"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-bosla-orange hover:bg-bosla-orange/90 rounded-xl transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>{{ 'payments.complete.atmam_aldfa' | t }}</a>
+        }
+        @if (canJoin()) {
+          <button
+            (click)="joinSession()"
+            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-xl transition-all cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
+            </svg>{{ 'appointments.join' | t }}</button>
+        }
+        <a
+          [routerLink]="['/appointments', appointment.id]"
+          class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-bosla-blue bg-bosla-blue/5 hover:bg-bosla-blue/10 border border-bosla-blue/20 rounded-xl transition-colors cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ 'specialist.appointments.viewDetails' | t }}
+        </a>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center text-center py-20 bg-white rounded-2xl border border-bosla-charcoal/5 px-6">
+        <div class="w-16 h-16 bg-bosla-grey/10 text-bosla-grey rounded-full flex items-center justify-center mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-bosla-charcoal">{{ 'specialist.appointments.notFound' | t }}</h3>
+        <p class="text-sm text-bosla-grey max-w-sm mt-1">{{ 'specialist.appointments.notFoundDesc' | t }}</p>
+        <a [routerLink]="['/appointments']" class="mt-6 inline-flex items-center gap-2 text-sm text-bosla-blue hover:text-bosla-primary transition-colors cursor-pointer">
+          {{ 'specialist.appointments.backToAppointments' | t }}
+        </a>
+      </div>
+    }
+  </div>
+</div>

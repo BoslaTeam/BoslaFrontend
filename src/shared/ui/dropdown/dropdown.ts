@@ -1,4 +1,5 @@
-import { Component, forwardRef, input, signal, HostListener, ElementRef, inject } from '@angular/core';
+import { Component, forwardRef, input, signal, HostListener, ElementRef, inject, computed } from '@angular/core';
+import { TranslationService } from '@core/services/translation.service';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 export interface DropdownOption {
@@ -22,6 +23,8 @@ export interface DropdownOption {
 })
 export class UiDropdown implements ControlValueAccessor {
   private elementRef = inject(ElementRef);
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   // المدخلات الأساسية للمكون
   readonly label = input<string>('');

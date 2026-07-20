@@ -25,7 +25,7 @@
           </div>
           <div>
             <div class="text-xs font-bold text-white tracking-tight">{{ session()!.title }}</div>
-            <div class="text-[9px] text-white/80 font-medium">دعوة جلسة فيديو</div>
+            <div class="text-[9px] text-white/80 font-medium">{{ 'video.videoSessionInvitation' | t }}</div>
           </div>
         </div>
 
@@ -46,21 +46,21 @@
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-bosla-blue shrink-0">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
-              <span class="text-[11px] font-medium text-bosla-charcoal">تبدأ الساعة {{ session()!.startTime }}</span>
+              <span class="text-[11px] font-medium text-bosla-charcoal">{{ 'video.startsAt' | t }} {{ session()!.startTime }}</span>
             </div>
           </div>
 
           <!-- ORANGE CONVERSION CTA -->
           <button
-            class="w-full bg-bosla-orange hover:bg-bosla-orange/95 text-white font-bold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer border-none shadow-sm"
+            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition cursor-pointer border-none shadow-sm"
             (click)="onJoin()"
             id="join-video-session-{{ session()!.id }}"
             aria-label="Join video session: {{ session()!.title }}"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            <span>انضم للجلسة</span>
+            <span>{{ 'appointments.join' | t }}</span>
           </button>
         </div>
 

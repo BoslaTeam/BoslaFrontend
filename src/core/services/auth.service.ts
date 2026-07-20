@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, Injector, computed, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, map, of } from 'rxjs';
 
 import { ApiResponse } from '../models/api-response.model';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -22,6 +22,15 @@ export interface AuthTokensResponse {
     expiresOnUtc: string;
 }
 
+export type SpecialistStatus = 'Draft' | 'Pending' | 'Approved' | 'Rejected' | null;
+
+const STATUS_MAP: Record<number, Exclude<SpecialistStatus, null>> = {
+    0: 'Draft',
+    1: 'Pending',
+    2: 'Approved',
+    3: 'Rejected',
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly http = inject(HttpClient);
@@ -30,10 +39,12 @@ export class AuthService {
     private readonly injector = inject(Injector);
 
     private readonly _currentUser = signal<CurrentUser | null>(this.restoreUser());
+    private readonly _specialistStatus = signal<SpecialistStatus>(null);
 
     readonly currentUser = this._currentUser.asReadonly();
     readonly isAuthenticated = computed(() => !!this._currentUser());
     readonly roles = computed(() => this._currentUser()?.roles ?? []);
+    readonly specialistStatus = this._specialistStatus.asReadonly();
 
     readonly userRole = computed(() => {
         const roles = this._currentUser()?.roles;
@@ -41,6 +52,12 @@ export class AuthService {
         if (roles.includes(UserRole.Admin)) return UserRole.Admin;
         if (roles.includes(UserRole.Specialist)) return UserRole.Specialist;
         return UserRole.User;
+    });
+
+    readonly needsSpecialistOnboarding = computed(() => {
+        const role = this.userRole();
+        const status = this._specialistStatus();
+        return role === UserRole.Specialist && (status === 'Draft' || status === 'Rejected' || status === null);
     });
 
     login(payload: LoginPayload): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
@@ -53,14 +70,9 @@ export class AuthService {
             }));
     }
 
-    register(payload: RegisterRequest): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+    register(payload: RegisterRequest): Observable<ApiResponse<{ message: string; email: string }>> {
         return this.http
-            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.register, payload)
-            .pipe(tap((res) => {
-                if (res.data) {
-                    this.setSession(res.data.accessToken, res.data.refreshToken);
-                }
-            }));
+            .post<ApiResponse<{ message: string; email: string }>>(API_ENDPOINTS.auth.register, payload);
     }
 
     googleLogin(payload: any): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
@@ -90,9 +102,10 @@ export class AuthService {
     }
 
     refreshToken(): Observable<ApiResponse<{ accessToken: string; refreshToken: string }>> {
+        const accessToken = this.tokenService.getAccessToken();
         const refreshToken = this.tokenService.getRefreshToken();
         return this.http
-            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.refresh, { refreshToken })
+            .post<ApiResponse<{ accessToken: string; refreshToken: string }>>(API_ENDPOINTS.auth.refresh, { accessToken, refreshToken })
             .pipe(tap((res) => {
                 if (res.data) {
                     this.setSession(res.data.accessToken, res.data.refreshToken);
@@ -118,6 +131,9 @@ export class AuthService {
         } else {
             this._currentUser.set(null);
         }
+
+        this.refreshSpecialistStatus();
+        this.syncProfileAvatar();
     }
 
     updateAvatar(avatarUrl: string): void {
@@ -129,11 +145,71 @@ export class AuthService {
         }
     }
 
+    syncProfileAvatar(): void {
+        if (!this.isAuthenticated()) return;
+        this.http.get<ApiResponse<{ name?: string; profilePictureUrl?: string }>>(API_ENDPOINTS.users.me)
+            .pipe(catchError(() => of(null)))
+            .subscribe(res => {
+                if (!res?.data) return;
+                if (res.data.profilePictureUrl) {
+                    this.updateAvatar(res.data.profilePictureUrl);
+                }
+                if (res.data.name) {
+                    const user = this._currentUser();
+                    if (user && user.fullName !== res.data.name) {
+                        const updatedUser = { ...user, fullName: res.data.name };
+                        this._currentUser.set(updatedUser);
+                        this.storage.setJson(STORAGE_KEYS.currentUser, updatedUser);
+                    }
+                }
+            });
+    }
+
+    refreshSpecialistStatus(): void {
+        this.fetchSpecialistStatus().subscribe();
+    }
+
+    refreshSpecialistStatusAsync(): Observable<SpecialistStatus> {
+        return this.fetchSpecialistStatus();
+    }
+
+    private fetchSpecialistStatus(): Observable<SpecialistStatus> {
+        if (!this.isAuthenticated()) {
+            this._specialistStatus.set(null);
+            return of(null);
+        }
+
+        return this.http.get<ApiResponse<{ status: number }>>(API_ENDPOINTS.specialists.verification)
+            .pipe(
+                map((res) => {
+                    const mapped = STATUS_MAP[res.data?.status ?? -1];
+                    this._specialistStatus.set(mapped ?? null);
+                    return mapped ?? null;
+                }),
+                catchError((err: HttpErrorResponse) => {
+                    if (err.status === 404) {
+                        this._specialistStatus.set(null);
+                        return of(null);
+                    }
+                    this._specialistStatus.set(null);
+                    return of(null as SpecialistStatus);
+                }),
+            );
+    }
+
     clearSession(): void {
         this.tokenService.clearTokens();
         this.storage.remove(STORAGE_KEYS.currentUser);
         this._currentUser.set(null);
+        this._specialistStatus.set(null);
         this.injector.get(NavigationService).redirectAfterLogout();
+        this.clearProfileStore();
+    }
+
+    private clearProfileStore(): void {
+        import('@features/profile/stores/profile.store').then(m => {
+            this.injector.get(m.ProfileStore).reset();
+        }).catch(() => {});
     }
 
     hasRole(...roles: UserRole[]): boolean {

@@ -1,5 +1,3 @@
-import { ApiResponse } from "@core/models/api-response.model";
-
 export interface OnboardSpecialistRequest {
     experienceYears: number;
     experienceLevel: number;
@@ -7,11 +5,15 @@ export interface OnboardSpecialistRequest {
     bookingPolicy: string;
 }
 
-export interface OnboardSpecialistResponse {
+export interface StartResponse {
     specialistId: string;
     verificationStatus: number;
-    token: {
-        accessToken: string;
-        refreshToken: string;
-    };
+}
+
+export interface UpdateProfileRequest {
+    experienceYears: number;
+    experienceLevel: number;
+    hourlyRate: number;
+    introVideoUrl?: string;
+    bookingPolicy?: string;
 }

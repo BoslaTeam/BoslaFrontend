@@ -1,5 +1,6 @@
 import { Component, forwardRef, input, signal, HostListener, ElementRef, inject, computed } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule } from '@angular/forms';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface FilterOption {
   value: any;
@@ -22,6 +23,9 @@ export interface FilterOption {
 })
 export class UiMultiSelectFilter implements ControlValueAccessor {
   private elementRef = inject(ElementRef);
+  private readonly translationService = inject(TranslationService);
+
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   // المدخلات الأساسية للمكون
   readonly label = input<string>('');

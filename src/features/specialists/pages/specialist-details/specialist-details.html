@@ -1,255 +1,476 @@
-<section class="relative z-10 py-10 bg-bosla-offwhite min-h-screen" dir="rtl">
-  <div class="container mx-auto px-4 md:px-8 max-w-6xl space-y-6">
-    <!-- Loading -->
+<section class="relative z-10 py-12 bg-bosla-offwhite min-h-screen font-cairo" [dir]="direction()">
+  <div class="container mx-auto px-4 md:px-8 max-w-7xl space-y-8">
+    
     @if (store.detailsLoading()) {
-      <div class="flex justify-center py-24">
-        <div
-          class="animate-spin w-12 h-12 border-4 border-slate-200 border-t-bosla-orange rounded-full"
-        ></div>
+    <div class="flex flex-col items-center justify-center py-32 animate-fade-in">
+      <div class="relative w-20 h-20">
+        <div class="absolute inset-0 border-4 border-bosla-primary/20 rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-bosla-orange rounded-full border-t-transparent animate-spin"></div>
       </div>
+      <p class="mt-6 text-bosla-primary font-bold text-lg animate-pulse">{{ 'specialist.details.loading' | t }}</p>
+    </div>
     }
 
-    <!-- Error -->
     @else if (store.error()) {
-      <ui-empty-state
-        icon="fa-solid fa-circle-exclamation"
-        title="حدث خطأ"
-        [description]="store.error() || 'فشل تحميل بيانات المتخصص'"
-      >
-        <ui-button variant="primary" size="sm" (btnClick)="goBack()"> العودة للقائمة </ui-button>
+    <div class="animate-zoom-in">
+      <ui-empty-state icon="fa-solid fa-circle-exclamation" [title]="'common.error.hdth_khta' | t" [description]="store.error() || ('specialists.details.loadError' | t)">
+        <ui-button variant="primary" size="sm" (btnClick)="goBack()">{{ 'specialists.details.backToList' | t }}</ui-button>
       </ui-empty-state>
+    </div>
     }
 
-    <!-- Details -->
     @else if (store.specialist(); as specialist) {
-      <!-- Centered Header -->
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <!-- Top Cover Color (Optional, Mostaql has a blue top or just white, let's keep it white with padding) -->
-        <div class="pt-12 pb-6 px-6 flex flex-col items-center text-center">
-          <!-- Avatar -->
-          <div class="relative mb-4">
-            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-              <img
-                [src]="specialist.imageUrl.trim() || 'assets/icons/favicon.ico'"
-                [alt]="specialist.name"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            @if (specialist.isOnline) {
-              <span
-                class="absolute bottom-2 left-2 w-5 h-5 rounded-full bg-green-500 border-4 border-white"
-              ></span>
-            }
-          </div>
+    <!-- ===== Premium Hero Header ===== -->
+    <div class="sd-glass-card sd-header-bg animate-slide-up">
+      <div class="pt-16 pb-10 px-6 md:px-12 flex flex-col items-center text-center relative z-10">
+        
+        <!-- Profile Image -->
+        <div class="sd-profile-img-wrap mb-6 animate-zoom-in delay-100">
+          <img [src]="specialist.imageUrl.trim() || 'assets/icons/favicon.ico'" [alt]="specialist.name" class="sd-profile-img" />
+          @if (specialist.isOnline) {
+          <span class="absolute bottom-3 left-3 w-6 h-6 rounded-full bg-green-500 border-4 border-white shadow-md animate-pulse"></span>
+          }
+        </div>
 
-          <!-- Name & Verification -->
-          <div class="flex items-center justify-center gap-2 mb-2">
-            <h1 class="text-3xl font-black text-bosla-primary">
+        <!-- Name & Badges -->
+        <div class="flex flex-col items-center gap-3 mb-6 animate-slide-up delay-200">
+          <div class="flex items-center gap-3">
+            <h1 class="text-4xl md:text-5xl font-black text-bosla-primary tracking-tight">
               {{ specialist.name }}
             </h1>
             @if (specialist.isVerified) {
-              <span
-                class="text-green-500 bg-green-50 rounded-full px-2 py-0.5 text-xs font-bold border border-green-200 flex items-center gap-1"
-              >
-                <i class="fa-solid fa-circle-check"></i> موثق
-              </span>
+            <span class="sd-badge sd-badge-success" title="{{ 'specialist.details.verified' | t }}">
+              <i class="fa-solid fa-circle-check text-base"></i> {{ 'home.specialists.verified' | t }}
+            </span>
             }
           </div>
-
-          <!-- Title & Location -->
-          <div class="flex items-center justify-center gap-4 text-slate-500 font-medium mb-6">
-            <span class="flex items-center gap-1.5">
-              <i class="fa-solid fa-user-tie"></i>
+          
+          <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-slate-600 font-semibold text-lg">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-user-tie text-bosla-blue"></i>
               {{ specialist.title }}
             </span>
             @if (specialist.country) {
-              <span class="flex items-center gap-1.5">
-                <i class="fa-solid fa-location-dot"></i>
-                {{ specialist.country }}
-              </span>
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-bosla-orange"></i>
+              {{ specialist.country }}
+            </span>
             }
           </div>
         </div>
 
-        <!-- Action & Tabs Bar (Like Mostaql) -->
-        <div
-          class="bg-slate-50/50 border-t border-slate-100 px-6 flex flex-col md:flex-row items-center justify-between"
-        >
-          <!-- Tabs -->
-          <div class="flex-1 w-full md:w-auto overflow-x-auto">
-            <ui-tabs
-              [items]="tabs"
-              [activeId]="activeTab()"
-              (tabChange)="onTabChange($event)"
-              class="border-none bg-transparent"
-            >
-            </ui-tabs>
-          </div>
-
-          <!-- Call to Action -->
-          <div
-            class="py-3 md:py-0 shrink-0 border-t md:border-t-0 md:border-r border-slate-200 md:pr-6 mt-2 md:mt-0 w-full md:w-auto flex justify-center md:justify-start"
-          >
-            <button
-              [routerLink]="['/user/appointments/book']"
-              [queryParams]="{ specialistId: specialist.id }"
-              class="w-full md:w-auto px-6 py-2.5 bg-bosla-primary hover:bg-bosla-primary/90 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-sm"
-            >
-              حجز موعد الآن
-              <i class="fa-solid fa-paper-plane text-sm"></i>
-            </button>
-          </div>
+        <!-- Mini Stats Bar -->
+        <div class="flex flex-wrap items-center justify-center gap-3 animate-slide-up delay-300">
+          <span class="sd-badge sd-badge-primary">
+            <i class="fa-solid fa-layer-group text-bosla-blue"></i> {{ store.experienceLevelLabel() }}
+          </span>
+          <span class="sd-badge sd-badge-success">
+            <i class="fa-solid fa-tag text-green-600"></i> {{ 'home.specialists.currency' | t }} {{ specialist.hourlyRate }} {{ 'common.perSession' | t }}
+          </span>
+          <span class="sd-badge sd-badge-accent">
+            <i class="fa-solid fa-briefcase text-bosla-orange"></i> {{ specialist.experienceYears }} {{ 'specialists.experience' | t }}
+          </span>
         </div>
+
       </div>
 
-      <!-- Main Content Grid -->
-      <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Right Sidebar (Stats & Info) -->
-        <div class="w-full lg:w-1/3 xl:w-1/4 space-y-6">
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-lg font-bold text-bosla-primary mb-5 border-b border-slate-100 pb-3">
-              إحصائيات
-            </h3>
+      <!-- Action Bar (Tabs & Buttons) -->
+      <div class="bg-white/60 backdrop-blur-md border-t border-white/40 px-4 md:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4 relative z-10 animate-fade-in delay-400">
+        <div class="flex-1 w-full md:w-auto overflow-x-auto hide-scrollbar">
+          <ui-tabs [items]="tabs" [activeId]="activeTab()" (tabChange)="onTabChange($event)" class="border-none bg-transparent"></ui-tabs>
+        </div>
 
-            <div class="space-y-4">
-              <div class="flex justify-between items-center">
-                <span class="text-slate-500 text-sm font-medium">التقييمات</span>
-                <div class="flex items-center gap-1 font-bold text-bosla-primary">
-                  {{ specialist.rating | number: '1.1-1' }}
-                  <i class="fa-solid fa-star text-bosla-orange text-xs"></i>
-                  <span class="text-slate-400 font-normal text-xs mr-1"
-                    >({{ specialist.reviewsCount }})</span
-                  >
-                </div>
+        <div class="flex shrink-0 w-full md:w-auto justify-center md:justify-end gap-3">
+          <!-- @if (authService.isAuthenticated()) {
+          <button (click)="toggleFavorite(specialist.id)" [disabled]="favoriteToggling()"
+            class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all bg-white shadow-sm border border-slate-200 hover:shadow-md hover:-translate-y-1"
+            [class.border-red-200]="isFavorited()" [class.text-red-500]="isFavorited()" [class.bg-red-50]="isFavorited()"
+            [class.text-slate-400]="!isFavorited()" title="{{ isFavorited() ? ('favorites.remove' | t) : ('favorites.add' | t) }}">
+            @if (favoriteToggling()) {
+            <i class="fa-solid fa-spinner fa-spin text-lg"></i>
+            } @else {
+            <i [class.fa-regular]="!isFavorited()" [class.fa-solid]="isFavorited()" class="fa-heart text-xl transition-transform active:scale-75"></i>
+            }
+          </button>
+          } -->
+          
+          <button [routerLink]="['/appointments/book']" [queryParams]="{ specialistId: specialist.id }"
+            class="sd-action-btn flex-1 md:flex-none px-8 py-3 bg-gradient-to-r from-bosla-primary to-bosla-blue text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+            {{ 'specialist.profile.bookNow' | t }}
+            <i class="fa-solid fa-calendar-check"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Main Layout Grid ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- ===== Sidebar (Desktop 4 cols) ===== -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Stats Card -->
+        <div class="sd-glass-card p-6 animate-slide-up delay-200">
+          <h3 class="text-xl font-black text-bosla-primary mb-6 flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-bosla-orange"></i> {{ 'specialist.details.overview' | t }}
+          </h3>
+          
+          <div class="sd-stats-grid">
+            <div class="sd-stat-box">
+              <div class="sd-stat-val">{{ specialist.rating | number: '1.1-1' }}</div>
+              <div class="flex justify-center text-bosla-orange text-[10px] mb-1">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
               </div>
-
-              <div class="flex justify-between items-center">
-                <span class="text-slate-500 text-sm font-medium">سعر الساعة</span>
-                <span class="font-bold text-bosla-primary">{{ specialist.hourlyRate }} ر.س</span>
-              </div>
-
-            <div class="flex justify-between items-center">
-              <span class="text-slate-500 text-sm font-medium">الخبرة</span>
-              <span class="font-bold text-bosla-primary">{{ store.experienceLevelLabel() }}
-                @if(specialist.experienceYears){({{specialist.experienceYears}} سنوات)}</span>
+              <div class="sd-stat-label">{{ specialist.reviewsCount }} {{ 'specialists.rating' | t }}</div>
             </div>
-
-              @if (specialist.preferredLanguage) {
-                <div class="flex justify-between items-center">
-                  <span class="text-slate-500 text-sm font-medium">اللغة</span>
-                  <span class="font-bold text-bosla-primary">{{
-                    specialist.preferredLanguage
-                  }}</span>
-                </div>
-              }
+            <div class="sd-stat-box">
+              <div class="sd-stat-val">{{ 'home.specialists.currency' | t }} {{ specialist.hourlyRate }}</div>
+              <div class="sd-stat-label">{{ 'common.perSession' | t }}</div>
+            </div>
+            <div class="sd-stat-box">
+              <div class="sd-stat-val">{{ specialist.experienceYears }}</div>
+              <div class="sd-stat-label">{{ 'specialists.experience' | t }}</div>
             </div>
           </div>
 
-          @if (
-            specialist.skills.length || specialist.tools.length || specialist.industries.length
-          ) {
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h3 class="text-lg font-bold text-bosla-primary mb-5 border-b border-slate-100 pb-3">
-                المهارات والأدوات
-              </h3>
+          <div class="mt-6 space-y-4">
+            @if (specialist.email) {
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-bosla-primary/5 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fa-regular fa-envelope"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs text-slate-500 font-bold mb-0.5">{{ 'auth.login.email' | t }}</p>
+                <p class="text-sm font-semibold text-slate-800 truncate" dir="ltr">{{ specialist.email }}</p>
+              </div>
+            </div>
+            }
+            
+            @if (specialist.preferredLanguage) {
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-bosla-primary/5 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-bosla-blue">
+                <i class="fa-solid fa-language text-lg"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-500 font-bold mb-0.5">{{ 'specialist.details.language' | t }}</p>
+                <p class="text-sm font-semibold text-slate-800">{{ specialist.preferredLanguage }}</p>
+              </div>
+            </div>
+            }
+
+            @if (specialist.gender) {
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-bosla-primary/5 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-purple-400">
+                <i class="fa-solid fa-venus-mars text-lg"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-500 font-bold mb-0.5">{{ 'specialist.details.gender' | t }}</p>
+                <p class="text-sm font-semibold text-slate-800">{{ specialist.gender === 'Male' ? ('common.male' | t) : specialist.gender === 'Female' ? ('common.female' | t) : specialist.gender }}</p>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Video Intro Card -->
+        @if (specialist.introVideoUrl && (activeTab() === 'profile' || !activeTab())) {
+        <div class="sd-glass-card p-1 pb-1 overflow-hidden animate-slide-up delay-300">
+          <div class="bg-slate-900 rounded-[20px] p-6 text-center relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-t from-bosla-primary/80 to-transparent opacity-60"></div>
+            <i class="fa-solid fa-video text-6xl text-white/20 absolute -right-4 -bottom-4 transform -rotate-12 group-hover:scale-110 transition-transform duration-500"></i>
+            
+            <div class="relative z-10">
+              <h4 class="text-white font-black text-xl mb-2">{{ 'specialist.details.introVideo' | t }}</h4>
+              <p class="text-white/70 text-sm mb-6">{{ 'specialist.details.introVideoDesc' | t }}</p>
+              
+              <a [href]="specialist.introVideoUrl" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bosla-orange text-white shadow-lg hover:scale-110 hover:shadow-[0_0_20px_rgba(243,156,18,0.5)] transition-all animate-float">
+                <i class="fa-solid fa-play text-2xl ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        }
+
+      </div>
+
+      <!-- ===== Main Content Area (Desktop 8 cols) ===== -->
+      <div class="lg:col-span-8 space-y-8">
+        
+        <!-- Profile Tab -->
+        @if (activeTab() === 'profile' || !activeTab()) {
+        
+        <!-- Bio Card -->
+        <div class="sd-glass-card p-8 animate-slide-up delay-100">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-bosla-primary to-bosla-blue text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-address-card text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800">{{ 'specialist.details.bioTitle' | t }}</h2>
+          </div>
+          
+          @if (specialist.bio) {
+          <div class="sd-rich-text">
+            <p>{{ specialist.bio }}</p>
+          </div>
+          } @else {
+          <div class="text-center py-8">
+            <i class="fa-regular fa-comment-dots text-4xl text-slate-200 mb-3 block"></i>
+            <span class="text-slate-400 font-medium">{{ 'specialist.details.bioEmpty' | t }}</span>
+          </div>
+          }
+        </div>
+
+        <!-- Skills & Expertise -->
+        @if (specialist.skills.length || specialist.expertise.length || specialist.tools.length || specialist.industries.length) {
+        <div class="sd-glass-card p-8 animate-slide-up delay-200">
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-bosla-orange text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-bolt text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800">{{ 'specialist.details.skillsExpertise' | t }}</h2>
+          </div>
+
+          <div class="space-y-8">
+            @if (specialist.expertise.length) {
+            <div>
+              <h4 class="text-sm font-black text-slate-400 mb-4 uppercase tracking-wider">{{ 'specialist.details.expertiseAreas' | t }}</h4>
+              <div class="flex flex-wrap gap-2">
+                @for (exp of specialist.expertise; track exp) {
+                <span class="px-4 py-2 rounded-xl bg-amber-50 text-amber-700 font-bold text-sm border border-amber-100 hover:bg-amber-100 transition-colors">
+                  {{ exp }}
+                </span>
+                }
+              </div>
+            </div>
+            }
+
+            @if (specialist.skills.length) {
+            <div>
+              <h4 class="text-sm font-black text-slate-400 mb-4 uppercase tracking-wider">{{ 'specialist.details.technicalSkills' | t }}</h4>
               <div class="flex flex-wrap gap-2">
                 @for (skill of specialist.skills; track skill.id) {
-                  <span
-                    class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                  >
-                    {{ skill.name }}
-                  </span>
-                }
-                @for (tool of specialist.tools; track tool.id) {
-                  <span
-                    class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                  >
-                    {{ tool.name }}
-                  </span>
-                }
-                @for (industry of specialist.industries; track industry.id) {
-                  <span
-                    class="px-3 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                  >
-                    {{ industry.name }}
-                  </span>
+                <span class="px-4 py-2 rounded-xl bg-bosla-primary/5 text-bosla-primary font-bold text-sm border border-bosla-primary/10 hover:bg-bosla-primary/10 transition-colors">
+                  {{ skill.name }}
+                </span>
                 }
               </div>
             </div>
-          }
-        </div>
+            }
 
-        <!-- Left Main Content Area -->
-        <div class="w-full lg:w-2/3 xl:w-3/4 space-y-6">
-          <!-- Active Tab Content -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm min-h-100">
-            <!-- Bio Tab -->
-            @if (activeTab() === 'profile' || !activeTab()) {
-              <h3 class="text-xl font-bold text-bosla-primary mb-6">نبذة عني</h3>
-
-              <p class="text-slate-600 leading-8 whitespace-pre-line text-[15px]">
-                {{ specialist.bio || 'لم يتم إضافة نبذة تعريفية بعد.' }}
-              </p>
-
-              @if (specialist.introVideoUrl) {
-                <div class="mt-8 pt-8 border-t border-slate-100">
-                  <h3 class="text-xl font-bold text-bosla-primary mb-6">الفيديو التعريفي</h3>
-                  <a
-                    [href]="specialist.introVideoUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-bosla-orange text-white font-bold hover:opacity-90 transition-opacity"
-                  >
-                    <i class="fa-solid fa-play"></i>
-                    مشاهدة الفيديو
-                  </a>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              @if (specialist.tools.length) {
+              <div>
+                <h4 class="text-sm font-black text-slate-400 mb-4 uppercase tracking-wider">{{ 'specialist.details.toolsAndSoftware' | t }}</h4>
+                <div class="flex flex-wrap gap-2">
+                  @for (tool of specialist.tools; track tool.id) {
+                  <span class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 font-semibold text-xs border border-slate-200">
+                    <i class="fa-solid fa-wrench text-[10px] ml-1 text-slate-400"></i> {{ tool.name }}
+                  </span>
+                  }
                 </div>
+              </div>
               }
-            }
-
-          <!-- Reviews Tab -->
-          @if (activeTab() === 'reviews') {
-          <h3 class="text-xl font-bold text-bosla-primary mb-6">التقييمات</h3>
-          @if (store.reviews().length > 0) {
-          <div class="space-y-8">
-            <ui-rating-summary [averageRating]="store.specialist()?.rating ?? 0" [totalReviews]="store.reviews().length"
-              [distribution]="store.ratingDistribution()">
-            </ui-rating-summary>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              @for (item of store.reviewItems(); track item.id) {
-              <ui-review-card [review]="item"></ui-review-card>
+              
+              @if (specialist.industries.length) {
+              <div>
+                <h4 class="text-sm font-black text-slate-400 mb-4 uppercase tracking-wider">{{ 'specialist.details.industries' | t }}</h4>
+                <div class="flex flex-wrap gap-2">
+                  @for (ind of specialist.industries; track ind.id) {
+                  <span class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-xs border border-indigo-100">
+                    <i class="fa-solid fa-building text-[10px] ml-1 text-indigo-400"></i> {{ ind.name }}
+                  </span>
+                  }
+                </div>
+              </div>
               }
             </div>
           </div>
-          } @else {
-          <ui-empty-state icon="fa-regular fa-comments" title="لا توجد تقييمات"
-            description="لم يقم أي عميل بإضافة تقييم بعد">
-          </ui-empty-state>
-          }
-          }
-
-          <!-- Availability Tab -->
-          @if (activeTab() === 'availability') {
-          <h3 class="text-xl font-bold text-bosla-primary mb-6">الأوقات المتاحة</h3>
-          @if (store.availabilitySlots().length > 0) {
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @for (day of store.availabilitySlots(); track day.id) {
-            <div
-              class="bg-slate-50 border border-slate-200 rounded-xl p-4 hover:bg-slate-100 transition-colors text-center">
-              <h4 class="font-bold text-bosla-primary mb-2">{{ day.dateStr }}</h4>
-              <p class="text-slate-600 text-sm font-medium">{{ day.timeStr }}</p>
-            </div>
-            }
-          </div>
-          } @else {
-          <ui-empty-state icon="fa-regular fa-calendar" title="لا توجد أوقات متاحة"
-            description="لم يقم المتخصص بإضافة مواعيد متاحة بعد">
-          </ui-empty-state>
-          }
-          }
-
         </div>
+        }
+
+        <!-- Experience Timeline -->
+        @if (store.experiences().length) {
+        <div class="sd-glass-card p-8 animate-slide-up delay-300">
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-timeline text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800">{{ 'specialist.details.careerHistory' | t }}</h2>
+          </div>
+
+          <div class="relative border-r-2 border-slate-100 pr-6 space-y-8">
+            @for (exp of store.experiences(); track exp.id) {
+            <div class="relative group">
+              <div class="absolute -right-[35px] top-1 w-6 h-6 rounded-full bg-white border-4 border-purple-500 shadow-sm group-hover:scale-125 transition-transform duration-300"></div>
+              
+              <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm group-hover:shadow-md group-hover:border-purple-200 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  <h4 class="text-lg font-black text-slate-800">{{ exp.jobTitle }}</h4>
+                  <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold">
+                    {{ exp.fromDate }} — {{ exp.toDate || ('specialist.details.present' | t) }}
+                  </span>
+                </div>
+                <p class="text-bosla-primary font-bold mb-3 flex items-center gap-2">
+                  <i class="fa-solid fa-building text-slate-300"></i> {{ exp.companyName }}
+                </p>
+                @if (exp.description) {
+                <p class="text-slate-500 leading-relaxed text-sm bg-slate-50 p-4 rounded-xl">{{ exp.description }}</p>
+                }
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Booking & Rules Policies -->
+        @if (specialist.bookingPolicy || specialist.cancellationPolicy || specialist.allowCancellation) {
+        <div class="sd-glass-card p-8 animate-slide-up delay-400">
+          <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-400 to-red-500 text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-scale-balanced text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-800">{{ 'specialist.details.bookingPolicies' | t }}</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Booking Rules -->
+            <div class="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
+              <h4 class="font-black text-blue-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check text-blue-500"></i> {{ 'specialist.details.bookingRules' | t }}
+              </h4>
+              @if (specialist.bookingPolicy) {
+              <p class="text-slate-600 text-sm leading-7 mb-4 whitespace-pre-line">{{ specialist.bookingPolicy }}</p>
+              }
+              <ul class="space-y-3">
+                @if (specialist.minBookingNoticeHours > 0) {
+                <li class="flex items-center gap-3 text-sm text-slate-700 bg-white p-2 rounded-lg shadow-sm border border-slate-100">
+                  <i class="fa-solid fa-clock text-blue-400"></i> {{ 'specialist.details.maxBookingDelay' | t }} {{ specialist.minBookingNoticeHours }} {{ 'specialist.details.hours' | t }}
+                </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Cancel Rules -->
+            <div class="bg-orange-50/50 rounded-2xl p-6 border border-orange-100">
+              <h4 class="font-black text-orange-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-ban text-orange-500"></i> {{ 'specialist.details.cancellationPolicyTitle' | t }}
+              </h4>
+              @if (specialist.cancellationPolicy) {
+              <p class="text-slate-600 text-sm leading-7 mb-4 whitespace-pre-line">{{ specialist.cancellationPolicy }}</p>
+              }
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3 text-sm text-slate-700 bg-white p-2 rounded-lg shadow-sm border border-slate-100">
+                  <i class="fa-solid fa-xmark-circle" [class.text-green-500]="specialist.allowCancellation" [class.text-red-500]="!specialist.allowCancellation"></i>
+                  {{ specialist.allowCancellation ? ('specialist.details.allowedCancel' | t) : ('specialist.details.notAllowedCancel' | t) }}
+                </li>
+                @if (specialist.allowCancellation) {
+                <li class="flex items-center gap-3 text-sm text-slate-700 bg-white p-2 rounded-lg shadow-sm border border-slate-100">
+                  <i class="fa-solid fa-stopwatch text-orange-400"></i> {{ 'specialist.details.cancelDeadline' | t }} {{ specialist.cancellationDeadlineHours }} {{ 'specialist.details.hours' | t }}
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+        }
+        } <!-- End Profile Tab -->
+
+        <!-- Reviews Tab -->
+        @if (activeTab() === 'reviews') {
+        <div class="sd-glass-card p-8 animate-slide-up">
+          <h2 class="text-3xl font-black text-bosla-primary mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-comments text-bosla-orange"></i> {{ 'specialist.details.clientReviews' | t }}
+          </h2>
+          
+          @if (store.reviews().length > 0) {
+          <div class="space-y-10">
+            <ui-rating-summary [averageRating]="store.specialist()?.rating ?? 0" [totalReviews]="store.reviews().length" [distribution]="store.ratingDistribution()"></ui-rating-summary>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              @for (item of store.reviewItems(); track item.id) {
+              <div class="sd-review-item">
+                <ui-review-card [review]="item"></ui-review-card>
+              </div>
+              }
+            </div>
+          </div>
+          } @else {
+          <ui-empty-state icon="fa-regular fa-star" [title]="'specialists.noReviews.la_twjd_tqyymat' | t" [description]="'specialists.noReviews.description' | t"></ui-empty-state>
+          }
+        </div>
+        }
+
+        <!-- Portfolio Tab -->
+        @if (activeTab() === 'portfolio') {
+        <div class="sd-glass-card p-8 animate-slide-up">
+          <h2 class="text-3xl font-black text-bosla-primary mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-images text-purple-500"></i>{{ 'specialist.portfolio.mard_alaamal' | t }}</h2>
+
+          @if (portfolioLoading()) {
+          <div class="flex justify-center py-20">
+            <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+          </div>
+          } @else if (portfolioItems().length === 0) {
+          <ui-empty-state icon="fa-regular fa-folder-open" [title]="'specialist.details.noPortfolioWorks' | t" [description]="'specialist.details.noPortfolioDesc' | t"></ui-empty-state>
+          } @else {
+          <div class="sd-portfolio-grid">
+            @for (item of portfolioItems(); track item.id) {
+            <div (click)="openPortfolioDetail(item)" class="sd-portfolio-card cursor-pointer group">
+              <div class="relative overflow-hidden aspect-[4/3]">
+                <img [src]="item.coverImageUrl" [alt]="item.title" class="sd-portfolio-img w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <span class="bg-white/20 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-bold border border-white/30">
+                    {{ 'specialist.details.viewDetails' | t }} <i class="fa-solid fa-arrow-left mr-1"></i>
+                  </span>
+                </div>
+                @if (item.images.length > 0) {
+                <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-lg border border-white/20 shadow-sm flex items-center gap-1.5">
+                  <i class="fa-regular fa-images"></i>
+                  {{ item.images.length + 1 }}
+                </div>
+                }
+              </div>
+              <div class="p-5 flex-1 flex flex-col justify-between bg-white">
+                <h3 class="font-black text-slate-800 text-base mb-2 group-hover:text-bosla-primary transition-colors">{{ item.title }}</h3>
+                <p class="text-xs text-slate-500 font-medium truncate">{{ 'specialist.details.viewProject' | t }}</p>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Availability Tab -->
+        @if (activeTab() === 'availability') {
+        <div class="sd-glass-card p-8 animate-slide-up">
+          <h2 class="text-3xl font-black text-bosla-primary mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-clock text-green-500"></i>{{ 'specialist.profile.availability' | t }}</h2>
+
+          @if (store.availability().length === 0) {
+          <ui-empty-state icon="fa-regular fa-calendar" [title]="'specialist.details.noAvailability' | t" [description]="'specialist.details.noAvailabilityDesc' | t"></ui-empty-state>
+          } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (slot of store.availabilitySlots(); track slot.id) {
+            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+              <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+                <i class="fa-regular fa-calendar text-xl"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-slate-800 text-sm">{{ slot.dateStr }}</p>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">{{ slot.timeStr }}</p>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+
       </div>
+    </div>
     }
   </div>
 </section>

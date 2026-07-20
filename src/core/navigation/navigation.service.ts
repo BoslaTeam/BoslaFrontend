@@ -1,6 +1,7 @@
 import { inject, Injectable, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { TranslationService } from '../services/translation.service';
 import { UserRole } from '../enums/user-role.enum';
 import { AUTH_CONFIG } from '../config/auth.config';
 
@@ -16,12 +17,14 @@ export interface NavItem {
   label: string;
   route: string;
   icon: string;
+  cta?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translationService = inject(TranslationService);
 
   private readonly ROUTES = {
     public: {
@@ -38,12 +41,16 @@ export class NavigationService {
       video: '/video',
       payments: '/payments',
       becomeSpecialist: '/become-specialist',
+      favorites: '/specialists/favorites',
     },
     specialist: {
       dashboard: '/specialist/dashboard',
       chat: '/specialist/chat',
       profile: '/specialist/profile',
       availability: '/specialist/availability',
+      appointments: '/specialist/appointments',
+      profileManagement: '/specialist/profile-management',
+      portfolio: '/specialist/portfolio',
     },
     admin: {
       dashboard: '/admin/dashboard',
@@ -62,32 +69,64 @@ export class NavigationService {
   readonly videoRoute = this.ROUTES.user.video;
   readonly paymentsRoute = this.ROUTES.user.payments;
   readonly becomeSpecialistRoute = this.ROUTES.user.becomeSpecialist;
+  readonly favoritesRoute = this.ROUTES.user.favorites;
 
   readonly specialistDashboardRoute = this.ROUTES.specialist.dashboard;
   readonly specialistChatRoute = this.ROUTES.specialist.chat;
   readonly specialistProfileRoute = this.ROUTES.specialist.profile;
   readonly specialistAvailabilityRoute = this.ROUTES.specialist.availability;
+  readonly specialistAppointmentsRoute = this.ROUTES.specialist.appointments;
+  readonly specialistProfileManagementRoute = this.ROUTES.specialist.profileManagement;
+  readonly specialistPortfolioRoute = this.ROUTES.specialist.portfolio;
 
   readonly dashboardRoute = computed(() => {
+    this.translationService.currentLang();
     const role = this.authService.userRole();
     if (role === UserRole.Specialist) return this.ROUTES.specialist.dashboard;
     if (role === UserRole.Admin) return this.ROUTES.admin.dashboard;
     return this.ROUTES.user.profile;
   });
 
-  readonly mainNavigation = computed<NavItem[]>(() => {
+  readonly userRoute = computed(() => {
+    this.translationService.currentLang();
     const role = this.authService.userRole();
+    if (role === UserRole.Admin) return this.ROUTES.admin.dashboard;
+    if (role === UserRole.Specialist) return this.ROUTES.specialist.dashboard;
+    return this.ROUTES.user.appointments;
+  });
 
-    const items: NavItem[] = [
-      { label: 'الرئيسية', route: this.ROUTES.public.home, icon: 'home' },
-    ];
+  readonly mainNavigation = computed<NavItem[]>(() => {
+    this.translationService.currentLang();
+    const t = (key: string) => this.translationService.translate(key);
+    const role = this.authService.userRole();
+    const needsOnboarding = this.authService.needsSpecialistOnboarding();
+
+    const items: NavItem[] = [];
+
+    if (needsOnboarding) {
+      items.push({
+        label: t('nav.register'),
+        route: this.ROUTES.user.becomeSpecialist,
+        icon: 'specialist-cta',
+        cta: true,
+      });
+    }
+
+    items.push(
+      { label: t('nav.home'), route: this.ROUTES.public.home, icon: 'home' },
+      { label: t('nav.about'), route: '/about', icon: 'about' },
+      { label: t('nav.contact'), route: '/contact', icon: 'contact' },
+    );
 
     if (role === UserRole.Admin) {
-      items.push({ label: 'لوحة التحكم', route: this.ROUTES.admin.dashboard, icon: 'dashboard' });
+      items.push({ label: t('nav.dashboard'), route: this.ROUTES.admin.dashboard, icon: 'dashboard' });
     } else {
-      items.push({ label: 'المتخصصين', route: this.ROUTES.public.specialists, icon: 'specialists' });
+      items.push({ label: t('nav.specialists'), route: this.ROUTES.public.specialists, icon: 'specialists' });
+      if (role === UserRole.User) {
+        items.push({ label: t('nav.appointments'), route: this.ROUTES.user.appointments, icon: 'appointments' });
+      }
       if (role === UserRole.Specialist) {
-        items.push({ label: 'لوحة التحكم', route: this.ROUTES.specialist.dashboard, icon: 'dashboard' });
+        items.push({ label: t('nav.dashboard'), route: this.ROUTES.specialist.dashboard, icon: 'dashboard' });
       }
     }
 
@@ -95,46 +134,41 @@ export class NavigationService {
   });
 
   readonly dropdownNavigation = computed<DropdownItem[]>(() => {
+    this.translationService.currentLang();
+    const t = (key: string) => this.translationService.translate(key);
     const role = this.authService.userRole();
     const isSpecialist = role === UserRole.Specialist;
+    const isAdmin = role === UserRole.Admin;
     const items: DropdownItem[] = [];
 
-    // if (isSpecialist) {
-    //   items.push({
-    //     label: 'لوحة التحكم',
-    //     route: this.dashboardRoute(),
-    //     icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
-    //   });
-    // }
-
     items.push({
-      label: 'الإعدادات والملف الشخصي',
+      label: t('nav.settings'),
       route: this.ROUTES.user.profile,
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
     });
 
-    items.push({
-      label: 'سجل الحجوزات',
-      route: this.ROUTES.user.appointments,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
-    });
+    if (!isAdmin) {
+      items.push({
+        label: isSpecialist ? t('appointments.title') : t('appointments.title'),
+        route: isSpecialist ? this.ROUTES.specialist.appointments : this.ROUTES.user.appointments,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+      });
+    }
 
-    items.push({
-      label: 'جلسات الفيديو',
-      route: this.ROUTES.user.video,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
-    });
+    if (!isSpecialist && !isAdmin) {
+      items.push({
+        label: t('payments.history'),
+        route: this.ROUTES.user.payments,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
+      });
+    }
 
-    items.push({
-      label: 'المعاملات المالية',
-      route: this.ROUTES.user.payments,
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
-    });
+    const needsOnboarding = this.authService.needsSpecialistOnboarding();
 
-    if (!isSpecialist) {
+    if (needsOnboarding || (role === UserRole.User)) {
       items.push({ label: '', route: '', icon: '', divider: true });
       items.push({
-        label: 'انضم كاختصاصي',
+        label: needsOnboarding ? t('nav.register') : t('nav.register'),
         route: this.ROUTES.user.becomeSpecialist,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>',
       });
@@ -142,7 +176,7 @@ export class NavigationService {
 
     items.push({ label: '', route: '', icon: '', divider: true });
     items.push({
-      label: 'تسجيل الخروج',
+      label: t('nav.logout'),
       route: '',
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>',
       destructive: true,
@@ -152,37 +186,48 @@ export class NavigationService {
   });
 
   readonly specialistSidebarNavigation = computed<NavItem[]>(() => {
-    const items: NavItem[] = [
+    this.translationService.currentLang();
+    const t = (key: string) => this.translationService.translate(key);
+    const items: NavItem[] = [];
+
+    items.push(
       {
-        label: 'لوحة التحكم',
+        label: t('specialist.sidebar.dashboard'),
         route: this.ROUTES.specialist.dashboard,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
       },
       {
-        label: 'المواعيد',
-        route: this.ROUTES.user.appointments,
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+        label: t('specialist.sidebar.profile'),
+        route: this.ROUTES.specialist.profileManagement,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
       },
       {
-        label: 'التوافر',
+        label: t('specialist.sidebar.availability'),
         route: this.ROUTES.specialist.availability,
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       },
       {
-        label: 'الرسائل',
-        route: this.ROUTES.specialist.chat,
-        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        label: t('specialist.sidebar.appointments'),
+        route: this.ROUTES.specialist.appointments,
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
       },
       {
-        label: 'المعاملات المالية',
-        route: this.ROUTES.user.payments,
+        label: t('specialist.sidebar.earnings'),
+        route: '/specialist/wallet',
         icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
       },
-    ];
+    );
+
     return items;
   });
 
   redirectAfterLogin(): void {
+    const needsOnboarding = this.authService.needsSpecialistOnboarding();
+    if (needsOnboarding) {
+      this.router.navigateByUrl(this.ROUTES.user.becomeSpecialist);
+      return;
+    }
+
     const role = this.authService.userRole();
     if (role !== null && AUTH_CONFIG.defaultRedirectByRole[role]) {
       this.router.navigateByUrl(AUTH_CONFIG.defaultRedirectByRole[role]);

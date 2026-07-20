@@ -1,41 +1,87 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-slate-800">المعاملات المالية</h1>
-  </div>
+<div [dir]="direction()" class="min-h-screen bg-bosla-offwhite font-cairo selection:bg-bosla-primary/20 selection:text-bosla-primary relative overflow-hidden">
 
-  <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-    <div class="p-6 border-b border-slate-100 bg-blue-50/50">
-      <div class="flex items-center gap-4 text-bosla-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <p class="font-medium">هذه الصفحة تعرض الفواتير والمدفوعات السابقة. (قريباً سيتم ربطها ببيانات حقيقية من السيرفر).</p>
+  <div class="fixed top-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-bosla-orange/5 blur-[100px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-bosla-blue/5 blur-[120px] pointer-events-none z-0"></div>
+
+  <div class="relative z-10 pt-28 sm:pt-36 pb-16 sm:pb-24 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">{{ 'payments.myPayments.title' | t }}</h1>
+          <p class="text-sm text-slate-500">{{ 'payments.myPayments.subtitle' | t }}</p>
+        </div>
       </div>
-    </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-right whitespace-nowrap">
-        <thead class="bg-slate-50 border-b border-slate-100 text-slate-600 text-sm">
-          <tr>
-            <th class="px-6 py-4 font-semibold text-right">رقم الفاتورة</th>
-            <th class="px-6 py-4 font-semibold text-right">التفاصيل</th>
-            <th class="px-6 py-4 font-semibold text-right">التاريخ</th>
-            <th class="px-6 py-4 font-semibold text-right">المبلغ</th>
-            <th class="px-6 py-4 font-semibold text-right">الحالة</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr *ngFor="let pay of payments" class="hover:bg-slate-50/50 transition-colors">
-            <td class="px-6 py-4 text-sm text-slate-500 font-medium">{{ pay.id }}</td>
-            <td class="px-6 py-4 text-sm text-slate-800">{{ pay.description }}</td>
-            <td class="px-6 py-4 text-sm text-slate-800">{{ pay.date | date:'dd MMM yyyy' }}</td>
-            <td class="px-6 py-4 text-sm font-bold text-slate-800">${{ pay.amount }}</td>
-            <td class="px-6 py-4">
-              <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
-                مكتمل
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @if (isLoading()) {
+        <div class="flex justify-center py-20">
+          <ui-spinner size="lg" />
+        </div>
+      } @else if (payments().length === 0) {
+        <div class="text-center py-20 text-slate-400">
+          <i class="fa-solid fa-receipt text-5xl mb-4 opacity-30"></i>
+          <p class="text-lg font-bold">{{ 'payments.myPayments.noTransactions' | t }}</p>
+        </div>
+      } @else {
+        <div class="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-xl border border-white overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-right whitespace-nowrap">
+              <thead class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-[13px] uppercase tracking-wider">
+                <tr>
+                  <th class="px-6 py-5 font-black">{{ 'payments.date' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.amount' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.status' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.escrowStatus' | t }}</th>
+                  <th class="px-6 py-5 font-black">{{ 'payments.releaseDate' | t }}</th>
+                  <th class="px-6 py-5 font-black"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100/80 text-sm">
+                @for (pay of payments(); track pay.id) {
+                <tr class="hover:bg-bosla-primary/5 transition-colors">
+                  <td class="px-6 py-5 text-slate-500">
+                    {{ pay.paidAt | date:'dd MMM yyyy' }}
+                  </td>
+                  <td class="px-6 py-5 font-bold text-slate-800">
+                    {{ pay.amount }} {{ pay.currency | uppercase }}
+                  </td>
+                  <td class="px-6 py-5">
+                    <span class="px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                      {{ getStatusLabel(pay.status) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-5">
+                    <span class="px-3 py-1 rounded-xl text-xs font-bold border {{ getEscrowClass(pay.escrowStatus) }}">
+                      {{ getEscrowLabel(pay.escrowStatus) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-5 text-slate-500 text-xs">
+                    @if (pay.escrowStatus === 'Held' && pay.heldUntil) {
+                      {{ pay.heldUntil | date:'dd MMM yyyy' }}
+                    } @else if (pay.escrowStatus === 'Released') {
+                      <span class="text-emerald-600">{{ 'payments.escrowStatus.released' | t }}</span>
+                    } @else if (pay.escrowStatus === 'Disputed') {
+                      <span class="text-red-600">{{ 'payments.escrowStatus.disputed' | t }}</span>
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td class="px-6 py-5">
+                    @if (canFileDispute(pay)) {
+                      <a [routerLink]="['/payments/dispute', pay.id]"
+                         class="text-xs text-red-500 hover:text-red-700 font-bold underline">
+                        {{ 'payments.fileDispute' | t }}
+                      </a>
+                    }
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
     </div>
   </div>
 </div>

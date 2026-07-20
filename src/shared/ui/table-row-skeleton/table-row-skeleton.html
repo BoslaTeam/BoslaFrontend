@@ -1,4 +1,4 @@
-<div class="w-full bg-white border border-bosla-charcoal/10 rounded-2xl divide-y divide-bosla-charcoal/10 overflow-hidden shadow-sm" dir="rtl">
+<div class="w-full bg-white border border-bosla-charcoal/10 rounded-2xl divide-y divide-bosla-charcoal/10 overflow-hidden shadow-sm" [dir]="direction()">
   
   @for (row of [].constructor(rowsCount()); track $index) {
     <div class="w-full h-13 px-4 flex items-center justify-between gap-6 animate-pulse bg-white">

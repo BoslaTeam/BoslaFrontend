@@ -127,12 +127,20 @@
 
 .header-notification-badge {
   position: absolute;
-  top: 6px;
-  inset-inline-end: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #F39C12;
+  top: -2px;
+  inset-inline-end: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
   border: 2px solid #fff;
 }
 

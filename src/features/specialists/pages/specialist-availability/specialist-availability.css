@@ -1,0 +1,95 @@
+@layer utilities {
+  .slot-card-enter {
+    animation: slideUp 0.3s ease-out both;
+  }
+
+  .modal-backdrop {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-content {
+    animation: scaleIn 0.25s ease-out;
+  }
+
+  .card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-1px);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Day picker button animation */
+  .day-btn {
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+
+  .day-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Duration pill */
+  .duration-pill {
+    transition: all 0.15s ease;
+  }
+
+  .duration-pill:active {
+    transform: scale(0.96);
+  }
+
+  /* Schedule row hover */
+  .schedule-row {
+    transition: background-color 0.15s ease;
+  }
+
+  /* Table improvements */
+  table th {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

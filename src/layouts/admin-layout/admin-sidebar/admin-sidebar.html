@@ -9,12 +9,12 @@
         <polygon points="12 2 19 21 12 17 5 21 12 2"/>
       </svg>
     </div>
-    <span class="sidebar-logo-text">بوصلة</span>
+    <span class="sidebar-logo-text">{{ 'admin.sidebar.bosla' | t }}</span>
   </div>
 
   <!-- Navigation -->
   <nav class="sidebar-nav">
-    @for (section of navSections; track section.title) {
+    @for (section of navSections(); track section.title) {
       <div class="sidebar-nav-section">
         <div class="sidebar-nav-section-title">{{ section.title }}</div>
         @for (item of section.items; track item.route) {
@@ -61,6 +61,25 @@
                     <line x1="1" y1="10" x2="23" y2="10"/>
                   </svg>
                 }
+                @case ('wallet') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+                    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+                    <path d="M18 12a2 2 0 1 0 0 4h4v-4Z"/>
+                  </svg>
+                }
+                @case ('withdrawals') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="7 17 17 7"/>
+                    <path d="M15 7h-8v8"/>
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                }
+                @case ('lookups') {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                }
                 @case ('audit') {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -99,8 +118,8 @@
         {{ userInitials() }}
       </div>
       <div class="sidebar-user-details">
-        <div class="sidebar-user-name">{{ currentUser()?.fullName ?? 'مدير النظام' }}</div>
-        <div class="sidebar-user-role">مدير</div>
+        <div class="sidebar-user-name">{{ currentUser()?.fullName ?? ('admin.sidebar.admin' | t) }}</div>
+        <div class="sidebar-user-role">{{ 'admin.sidebar.role' | t }}</div>
       </div>
     </div>
     <button class="sidebar-logout" (click)="onLogout()">
@@ -109,7 +128,7 @@
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>تسجيل الخروج</span>
+      <span>{{ 'nav.logout' | t }}</span>
     </button>
   </div>
 </aside>

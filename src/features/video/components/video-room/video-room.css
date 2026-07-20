@@ -1,85 +1,1219 @@
-.video-room {
+/* ================================================================
+   BOSLA MEET — Premium Video Room
+   Design System · Light Mode · Premium Edition
+   ================================================================ */
+
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:host {
+  /* Brand Colors */
+  --vr-bg:           #F7F9FA;
+  --vr-surface:      #ffffff;
+  --vr-surface-2:    #f0f4f8;
+  --vr-surface-3:    #e2e8f0;
+  --vr-primary:      #1B4F72;
+  --vr-blue:         #2E86AB;
+  --vr-orange:       #F39C12;
+  --vr-text:         #2C3E50;
+  --vr-text-2:       #4a5568;
+  --vr-muted:        #95A5A6;
+  --vr-error:        #e74c3c;
+  --vr-danger:       #c0392b;
+  --vr-success:      #2ecc71;
+
+  /* Video Stage */
+  --vr-video-bg-1:   #0a1628;
+  --vr-video-bg-2:   #101d34;
+
+  /* Shadows */
+  --vr-shadow-xs:    0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  --vr-shadow-sm:    0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --vr-shadow-md:    0 8px 24px rgba(27,79,114,0.10), 0 4px 8px rgba(0,0,0,0.04);
+  --vr-shadow-lg:    0 16px 48px rgba(27,79,114,0.14), 0 8px 16px rgba(0,0,0,0.06);
+  --vr-shadow-dock:  0 -4px 32px rgba(0,0,0,0.18), 0 8px 32px rgba(0,0,0,0.12);
+  --vr-shadow-glow:  0 0 24px rgba(243,156,18,0.45);
+
+  /* Border Radii */
+  --vr-radius-sm:    10px;
+  --vr-radius-md:    16px;
+  --vr-radius-lg:    24px;
+  --vr-radius-xl:    32px;
+  --vr-radius-pill:  9999px;
+
+  /* Spacing scale */
+  --vr-s1: 8px;
+  --vr-s2: 16px;
+  --vr-s3: 24px;
+  --vr-s4: 32px;
+  --vr-s5: 40px;
+  --vr-s6: 48px;
+
+  /* Transitions */
+  --vr-t:        0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --vr-t-bounce: 0.4s  cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Dock geometry */
+  --vr-dock-h:     80px;   /* height of the floating dock on desktop */
+  --vr-dock-h-sm:  68px;   /* height on mobile */
+}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+@keyframes vr-fade-in    { from { opacity: 0; }                               to { opacity: 1; } }
+@keyframes vr-slide-up   { from { opacity: 0; transform: translateY(20px); }  to { opacity: 1; transform: translateY(0); } }
+@keyframes vr-slide-down { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes vr-zoom-in    { from { opacity: 0; transform: scale(0.94); }        to { opacity: 1; transform: scale(1); } }
+@keyframes vr-pulse-ring {
+  0%   { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+@keyframes vr-dot-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes vr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   PAGE STRUCTURE
+   ================================================================ */
+.vr-page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--vr-bg);
+  font-family: 'Cairo', 'Inter', sans-serif;
+  color: var(--vr-text);
+  animation: vr-fade-in var(--vr-t);
+  /* No overflow-x on the page — prevent horizontal scroll */
+  overflow-x: hidden;
 }
 
-.video-room-controls {
+/* ================================================================
+   MAIN CONTENT
+   The fixed AppHeader is 80px (h-20 in Tailwind).
+   We push content below it via padding-top.
+   ================================================================ */
+.vr-main {
+  flex: 1;
   display: flex;
-  gap: 0.5rem;
-}
-
-.video-room-controls button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-}
-
-.video-room-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.video-room-status {
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.video-room-error {
-  color: #d32f2f;
-  font-size: 0.875rem;
-}
-
-.video-room-local {
+  flex-direction: column;
+  max-width: 1600px;
+  margin: 0 auto;
   width: 100%;
-  height: 400px;
-  background: #1a1a1a;
-  border-radius: 8px;
+  /* 80px for fixed header + 16px breathing room */
+  padding: calc(80px + var(--vr-s2)) var(--vr-s2) var(--vr-s2);
+  gap: var(--vr-s3);
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .vr-main {
+    padding: calc(80px + var(--vr-s3)) var(--vr-s4) var(--vr-s4);
+    gap: var(--vr-s4);
+  }
+}
+
+/* ── Spinner util ── */
+.vr-spin {
+  animation: vr-spin 1s linear infinite;
+}
+
+/* ── Error Banner ── */
+.vr-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fdf0ef;
+  color: var(--vr-error);
+  border-radius: var(--vr-radius-md);
+  font-weight: 500;
+  font-size: 14px;
+  border-inline-start: 4px solid var(--vr-error);
+  box-shadow: var(--vr-shadow-sm);
+  animation: vr-slide-down var(--vr-t);
+  flex-shrink: 0;
+}
+.vr-error-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+/* ── Screen Share Error ── */
+.vr-screenshare-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fef9e7;
+  color: #b7791f;
+  border-radius: var(--vr-radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  border-inline-start: 3px solid var(--vr-orange);
+  animation: vr-slide-down var(--vr-t);
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   VIDEO STAGE
+   On desktop: fixed 16/9 aspect ratio with max-height.
+   On mobile: fills available vertical space.
+   The stage is `position: relative` — the dock floats inside it.
+   ================================================================ */
+.vr-stage {
+  position: relative;
+  width: 100%;
+  background: radial-gradient(ellipse at center, var(--vr-video-bg-2) 0%, var(--vr-video-bg-1) 100%);
+  border-radius: var(--vr-radius-lg);
   overflow: hidden;
+  box-shadow: var(--vr-shadow-lg);
+  display: flex;
+  flex-direction: column;
+
+  /* Aspect ratio — collapses on mobile */
+  aspect-ratio: 16 / 9;
+  min-height: 320px;
+  max-height: calc(100vh - 80px - 4 * var(--vr-s3));
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .vr-stage {
+    aspect-ratio: unset;
+    /* Fill most of the viewport minus header and a small margin */
+    min-height: calc(100svh - 80px - 180px);
+    max-height: none;
+    border-radius: var(--vr-radius-md);
+    flex: 1 0 auto;
+  }
+}
+
+/* ── Floating Network Warning Toast ── */
+.vr-nq-warning {
+  position: absolute;
+  top: 16px;
+  inset-inline-start: 16px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(243, 156, 18, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--vr-radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  animation: vr-slide-down var(--vr-t-bounce);
+  box-shadow: var(--vr-shadow-md);
+  pointer-events: none;
+}
+
+/* Screen Share Indicator host — absolute positioning provided by component itself */
+app-screen-share-indicator {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 40;
+}
+
+/* ── Video Grid ── */
+.vr-video-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--vr-s2);
+  padding: var(--vr-s2);
+  /* Reserve space at the bottom for the floating dock */
+  padding-bottom: calc(var(--vr-dock-h) + var(--vr-s3));
+  overflow-y: auto;
+  align-content: start;
+}
+
+@media (max-width: 767px) {
+  .vr-video-grid {
+    grid-template-columns: 1fr;
+    padding-bottom: calc(var(--vr-dock-h-sm) + var(--vr-s2));
+  }
+}
+
+/* ── Video Tile ── */
+.vr-video-tile {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--vr-radius-md);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  aspect-ratio: 16 / 9;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: var(--vr-t);
+}
+
+.vr-video-tile:hover {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+              0 8px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Local tile — Bosla blue border */
+.vr-video-tile--local {
+  border: 2px solid rgba(46, 134, 171, 0.6);
+}
+
+.vr-video-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Camera-off Placeholder ── */
+.vr-video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--vr-video-bg-2) 0%, var(--vr-video-bg-1) 100%);
+  gap: 14px;
+  animation: vr-fade-in var(--vr-t);
+}
+
+.vr-placeholder-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(27, 79, 114, 0.6);
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.vr-placeholder-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ── Waiting Tile (no remote participants yet) ── */
+.vr-waiting-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--vr-radius-md);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  animation: vr-fade-in var(--vr-t);
+}
+
+.vr-waiting-tile-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.vr-waiting-tile-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.video-room-local--active {
-  border: 2px solid #4caf50;
+.vr-waiting-tile-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
 }
 
-.video-room-placeholder {
-  color: #888;
-  font-size: 0.875rem;
+.vr-waiting-tile-dots {
+  display: flex;
+  gap: 6px;
 }
 
-.video-room-remote-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+.vr-waiting-tile-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: vr-dot-bounce 1.2s ease-in-out infinite;
+}
+.vr-waiting-tile-dots span:nth-child(2) { animation-delay: 0.2s; }
+.vr-waiting-tile-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Name Label ── */
+.vr-video-label {
+  position: absolute;
+  bottom: 10px;
+  inset-inline-end: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: white;
+  padding: 5px 10px;
+  border-radius: var(--vr-radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.vr-video-label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vr-success);
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   PRE-JOIN OVERLAY (GLASSMORPHISM)
+   ================================================================ */
+.vr-prejoin-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: var(--vr-s3);
+  animation: vr-fade-in var(--vr-t);
+}
+
+.vr-state-card {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-xl);
+  padding: var(--vr-s5) var(--vr-s4);
   width: 100%;
-}
-
-.video-room-remote {
-  width: 100%;
-  height: 240px;
-  background: #222;
-  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: vr-zoom-in var(--vr-t-bounce);
+  position: relative;
   overflow: hidden;
+}
+
+/* Soft gradient flare */
+.vr-state-card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 180px;
+  background: var(--vr-blue);
+  filter: blur(90px);
+  opacity: 0.12;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.vr-state-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--vr-s3);
   position: relative;
 }
 
-.video-room-remote-label {
+.vr-state-card--join     .vr-state-icon-wrap { background: rgba(46, 134, 171, 0.1);  color: var(--vr-blue); }
+.vr-state-card--waiting  .vr-state-icon-wrap { background: rgba(243, 156, 18, 0.1);  color: var(--vr-orange); }
+.vr-state-card--error    .vr-state-icon-wrap { background: rgba(231, 76, 60, 0.1);   color: var(--vr-error); }
+.vr-state-card--ended    .vr-state-icon-wrap { background: rgba(149, 165, 166, 0.1); color: var(--vr-muted); }
+
+/* Pulsing ring for waiting */
+.vr-state-card--waiting .vr-state-icon-wrap::after {
+  content: '';
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  color: #fff;
-  font-size: 0.75rem;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 6px;
-  border-radius: 3px;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--vr-orange);
+  animation: vr-pulse-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.vr-state-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--vr-primary);
+  margin: 0 0 10px 0;
+}
+
+.vr-state-subtitle {
+  font-size: 14px;
+  color: var(--vr-text-2);
+  margin: 0 0 28px 0;
+  line-height: 1.6;
+}
+
+/* Join / Retry Buttons */
+.vr-join-btn,
+.vr-retry-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--vr-radius-pill);
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--vr-t-bounce);
+  color: white;
+}
+
+.vr-join-btn {
+  background: var(--vr-primary);
+  box-shadow: 0 8px 20px rgba(27, 79, 114, 0.28);
+}
+.vr-join-btn:hover:not(:disabled) {
+  background: #153e5a;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(27, 79, 114, 0.38);
+}
+.vr-join-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.vr-retry-btn {
+  background: var(--vr-surface);
+  color: var(--vr-text);
+  border: 2px solid var(--vr-surface-3);
+}
+.vr-retry-btn:hover {
+  background: var(--vr-surface-2);
+  border-color: var(--vr-muted);
+}
+
+/* Waiting Dots */
+.vr-waiting-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: -8px;
+}
+.vr-waiting-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--vr-orange);
+  animation: vr-dot-bounce 0.9s infinite alternate;
+}
+.vr-waiting-dot:nth-child(2) { animation-delay: 0.2s; }
+.vr-waiting-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ================================================================
+   FLOATING CONTROLLER DOCK  (Google Meet / Teams style)
+
+   The dock lives INSIDE .vr-stage as an absolutely positioned
+   element at the very bottom, spanning the full width.
+   ================================================================ */
+.vr-dock-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  /* Gradient fade so the dock blends into the stage */
+  background: linear-gradient(to top,
+    rgba(10, 22, 40, 0.80) 0%,
+    rgba(10, 22, 40, 0.40) 60%,
+    transparent 100%
+  );
+  padding: var(--vr-s4) var(--vr-s3) var(--vr-s3);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: vr-slide-up var(--vr-t-bounce);
+  pointer-events: none; /* Let clicks pass through gradient bg */
+}
+
+.vr-dock {
+  pointer-events: all; /* Restore clicks on the pill */
+  display: flex;
+  align-items: center;
+  gap: var(--vr-s2);
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: var(--vr-radius-pill);
+  box-shadow: var(--vr-shadow-dock),
+              inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  /* Prevent overflow on small screens */
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: calc(100vw - 2 * var(--vr-s2));
+}
+
+/* ── Dock groups ── */
+.vr-dock-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Dock vertical dividers ── */
+.vr-dock-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--vr-surface-3);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Session Timer ── */
+.vr-dock-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--vr-primary);
+  font-family: 'Inter', monospace;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ── Live REC badge (in dock, right group) ── */
+.vr-dock-rec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--vr-radius-pill);
+  background: rgba(243, 156, 18, 0.12);
+  color: #b45309;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+.vr-dock-rec-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F39C12;
+  animation: vr-dot-bounce 1.2s ease-in-out infinite;
+}
+
+/* ================================================================
+   TOOLBAR BUTTONS  (shared across dock and all child components)
+   .vr-tb-btn is the universal circle-button token.
+   ================================================================ */
+.vr-tb-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--vr-surface-2);
+  color: var(--vr-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: var(--vr-t-bounce);
+  box-shadow: var(--vr-shadow-xs);
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+}
+
+.vr-tb-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: var(--vr-shadow-md);
+  background: var(--vr-surface-3);
+}
+
+.vr-tb-btn:focus-visible {
+  outline: 3px solid var(--vr-blue);
+  outline-offset: 3px;
+}
+
+.vr-tb-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Muted / Off state */
+.vr-tb-btn--off {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--vr-error);
+}
+.vr-tb-btn--off:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.18);
+}
+
+/* Leave button — pill, red */
+.vr-tb-btn--leave {
+  width: auto;
+  border-radius: var(--vr-radius-pill);
+  background: var(--vr-danger);
+  color: white;
+  padding: 0 18px;
+}
+.vr-tb-btn--leave:hover:not(:disabled) {
+  background: #e53935;
+  box-shadow: 0 8px 20px rgba(192, 57, 43, 0.4);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Finish button — pill, orange */
+.vr-tb-btn--finish {
+  width: auto;
+  border-radius: var(--vr-radius-pill);
+  background: var(--vr-orange);
+  color: white;
+  padding: 0 18px;
+}
+.vr-tb-btn--finish:hover:not(:disabled) {
+  background: #e67e22;
+  box-shadow: var(--vr-shadow-glow);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Label inside leave/finish pill buttons */
+.vr-tb-label {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Tooltip wrapper ── */
+.vr-tb-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.vr-tb-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.88);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: var(--vr-radius-sm);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 10;
+}
+
+.vr-tb-wrap:hover .vr-tb-tooltip,
+.vr-tb-btn:focus-visible ~ .vr-tb-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* RTL: keep tooltip centered */
+[dir="rtl"] .vr-tb-tooltip {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+[dir="rtl"] .vr-tb-wrap:hover .vr-tb-tooltip {
+  transform: translateX(50%) translateY(0);
+}
+
+/* ── Mobile dock adaptations ── */
+@media (max-width: 767px) {
+  .vr-dock-wrapper {
+    padding: var(--vr-s2) var(--vr-s1) var(--vr-s1);
+  }
+
+  .vr-dock {
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--vr-radius-lg);
+  }
+
+  .vr-tb-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .vr-tb-btn--leave,
+  .vr-tb-btn--finish {
+    padding: 0 14px;
+    font-size: 12px;
+  }
+
+  .vr-dock-divider {
+    display: none;
+  }
+
+  .vr-dock-timer {
+    font-size: 12px;
+  }
+
+  .vr-tb-tooltip {
+    display: none; /* Tooltips not needed on touch */
+  }
+}
+
+@media (max-width: 414px) {
+  .vr-dock {
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  .vr-tb-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .vr-tb-btn--leave,
+  .vr-tb-btn--finish {
+    padding: 0 10px;
+  }
+
+  /* On very small screens, hide the label text in pill buttons */
+  .vr-tb-label {
+    display: none;
+  }
+
+  .vr-tb-btn--leave,
+  .vr-tb-btn--finish {
+    width: 40px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS: desktop-only / mobile-only
+   ================================================================ */
+.vr-desktop-only { display: block; }
+.vr-mobile-only  { display: none;  }
+
+@media (max-width: 767px) {
+  .vr-desktop-only { display: none;  }
+  .vr-mobile-only  { display: block; }
+}
+
+/* ================================================================
+   INFO CARDS ROW (DESKTOP)
+   ================================================================ */
+.vr-info-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--vr-s2);
+}
+
+@media (max-width: 1023px) {
+  .vr-info-row {
+    grid-template-columns: 1fr;
+    gap: var(--vr-s1);
+  }
+}
+
+.vr-info-card {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--vr-shadow-sm);
+  transition: var(--vr-t);
+  border: 1px solid var(--vr-surface-2);
+}
+
+.vr-info-card:hover {
+  box-shadow: var(--vr-shadow-md);
+  transform: translateY(-2px);
+}
+
+.vr-info-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--vr-radius-md);
+  background: rgba(27, 79, 114, 0.06);
+  color: var(--vr-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vr-info-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vr-info-label {
+  font-size: 12px;
+  color: var(--vr-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ================================================================
+   DEVICE SETTINGS (DESKTOP)
+   ================================================================ */
+.vr-devices-section {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-lg);
+  padding: var(--vr-s4);
+  box-shadow: var(--vr-shadow-sm);
+  border: 1px solid var(--vr-surface-2);
+}
+
+.vr-devices-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--vr-s3);
+  padding-bottom: var(--vr-s2);
+  border-bottom: 1px solid var(--vr-surface-2);
+}
+
+.vr-devices-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(46, 134, 171, 0.08);
+  color: var(--vr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vr-devices-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--vr-primary);
+  margin: 0;
+}
+
+.vr-devices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--vr-s3);
+}
+
+.vr-device-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--vr-bg);
+  border-radius: var(--vr-radius-md);
+  border: 1px solid var(--vr-surface-3);
+  transition: var(--vr-t);
+}
+
+.vr-device-card:hover {
+  border-color: rgba(46, 134, 171, 0.28);
+  background: var(--vr-surface);
+  box-shadow: var(--vr-shadow-sm);
+}
+
+.vr-device-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vr-device-card-icon-wrap {
+  color: var(--vr-blue);
+}
+
+.vr-device-card-title {
+  font-weight: 600;
+  color: var(--vr-text);
+  font-size: 14px;
+}
+
+.vr-device-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ================================================================
+   MOBILE STATUS STRIP
+   ================================================================ */
+.vrm-status-card {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  box-shadow: var(--vr-shadow-sm);
+  border: 1px solid var(--vr-surface-2);
+  overflow: hidden;
+}
+
+.vrm-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.vrm-status-label {
+  font-size: 10px;
+  color: var(--vr-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.vrm-status-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--vr-surface-3);
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   MOBILE DEVICE SETTINGS ACCORDION
+   ================================================================ */
+.vrm-accordion {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-md);
+  box-shadow: var(--vr-shadow-sm);
+  border: 1px solid var(--vr-surface-2);
+  overflow: hidden;
+}
+
+.vrm-accordion-trigger {
+  width: 100%;
+  padding: 15px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--vr-text);
+  transition: background var(--vr-t);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vrm-accordion-trigger:hover {
+  background: var(--vr-surface-2);
+}
+
+.vrm-accordion-trigger:focus-visible {
+  outline: 3px solid var(--vr-blue);
+  outline-offset: -3px;
+}
+
+.vrm-accordion-trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vrm-accordion-icon-wrap {
+  color: var(--vr-blue);
+}
+
+.vrm-accordion-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--vr-text);
+}
+
+.vrm-accordion-chevron {
+  color: var(--vr-muted);
+  transition: transform var(--vr-t);
+  flex-shrink: 0;
+}
+
+.vrm-accordion-chevron--open {
+  transform: rotate(180deg);
+}
+
+.vrm-accordion-content {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: vr-slide-up var(--vr-t);
+  border-top: 1px solid var(--vr-surface-2);
+  padding-top: 16px;
+}
+
+.vrm-device-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vrm-device-row-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--vr-text-2);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.vrm-device-row-icon {
+  color: var(--vr-blue);
+}
+
+/* ================================================================
+   CONFIRMATION DIALOGS (MODALS)
+   ================================================================ */
+.vr-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--vr-s3);
+  animation: vr-fade-in var(--vr-t);
+}
+
+.vr-dialog {
+  background: var(--vr-surface);
+  border-radius: var(--vr-radius-xl);
+  padding: var(--vr-s4);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: vr-zoom-in var(--vr-t-bounce);
+}
+
+.vr-dialog-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(46, 134, 171, 0.1);
+  color: var(--vr-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--vr-s3);
+}
+
+.vr-dialog-icon--warning {
+  background: rgba(243, 156, 18, 0.1);
+  color: var(--vr-orange);
+}
+
+.vr-dialog-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--vr-primary);
+  margin: 0 0 10px 0;
+}
+
+.vr-dialog-text {
+  font-size: 14px;
+  color: var(--vr-text-2);
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.vr-dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.vr-btn-cancel,
+.vr-btn-confirm,
+.vr-btn-finish {
+  flex: 1;
+  height: 46px;
+  border-radius: var(--vr-radius-md);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--vr-t);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vr-btn-cancel {
+  background: var(--vr-surface-2);
+  color: var(--vr-text);
+}
+.vr-btn-cancel:hover {
+  background: var(--vr-surface-3);
+}
+
+.vr-btn-confirm {
+  background: var(--vr-primary);
+  color: white;
+}
+.vr-btn-confirm:hover {
+  background: #153e5a;
+  box-shadow: 0 4px 12px rgba(27, 79, 114, 0.3);
+}
+
+.vr-btn-finish {
+  background: var(--vr-orange);
+  color: white;
+}
+.vr-btn-finish:hover {
+  background: #d68910;
+  box-shadow: var(--vr-shadow-glow);
 }

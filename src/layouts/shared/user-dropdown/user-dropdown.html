@@ -1,7 +1,7 @@
 <div class="relative user-dropdown-container">
-  <button (click)="toggleDropdown()" title="قائمة المستخدم"
+  <button (click)="toggleDropdown()" [title]="'nav.profile' | t"
     class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm border border-white/10 hover:border-white/30 overflow-hidden cursor-pointer focus:outline-none">
-    @if (authService.currentUser()?.avatarUrl && !avatarError) {
+    @if (authService.currentUser()?.avatarUrl && !avatarError()) {
     <img [src]="authService.currentUser()?.avatarUrl" alt="Profile" class="w-full h-full object-cover"
       (error)="onAvatarError()">
     } @else {
@@ -15,9 +15,9 @@
 
   @if (isDropdownOpen()) {
   <div
-    class="absolute left-0 mt-3 w-56 bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-100 flex flex-col transform origin-top-left transition-all duration-200">
+    class="absolute right-0 mt-3 w-56 max-w-[calc(100vw-32px)] bg-white rounded-xl shadow-2xl py-2 z-50 border border-slate-100 flex flex-col transition-all duration-200">
     <div class="px-4 py-3 border-b border-slate-100">
-      <p class="text-sm font-bold text-slate-800 truncate">{{ authService.currentUser()?.fullName || 'مستخدم' }}</p>
+      <p class="text-sm font-bold text-slate-800 truncate">{{ authService.currentUser()?.fullName || ('nav.profile' | t) }}</p>
       <p class="text-xs text-slate-500 truncate mt-0.5">{{ authService.currentUser()?.email || '' }}</p>
     </div>
 

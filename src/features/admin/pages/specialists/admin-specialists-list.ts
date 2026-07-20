@@ -1,0 +1,124 @@
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+import { AdminService } from '../../services/admin.service';
+import { AdminSpecialistListItemDto } from '../../contracts/admin.contracts';
+import { PaginationMetadata } from '@core/models/paginated-response.model';
+import { TranslationService } from '@core/services/translation.service';
+
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+@Component({
+  selector: 'app-admin-specialists-list',
+  imports: [RouterLink, FormsModule, TranslatePipe],
+  templateUrl: './admin-specialists-list.html',
+  styleUrl: './admin-specialists-list.css',
+})
+export class AdminSpecialistsList implements OnInit {
+  private readonly adminService = inject(AdminService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly translationService = inject(TranslationService);
+
+  readonly specialists = signal<AdminSpecialistListItemDto[]>([]);
+  readonly isLoading = signal(true);
+  readonly metadata = signal<PaginationMetadata | null>(null);
+
+  searchQuery = '';
+  selectedTab: 'all' | 'draft' | 'pending' | 'approved' | 'rejected' = 'all';
+  currentPage = 1;
+  pageSize = 10;
+
+  readonly totalSpecialists = computed(() => this.metadata()?.totalCount ?? 0);
+  readonly totalPages = computed(() => this.metadata()?.totalPages ?? 0);
+
+  ngOnInit(): void {
+    this.route.fragment.subscribe((fragment) => {
+      if (fragment === 'draft') this.selectedTab = 'draft';
+      else if (fragment === 'pending') this.selectedTab = 'pending';
+      else if (fragment === 'approved') this.selectedTab = 'approved';
+      else if (fragment === 'rejected') this.selectedTab = 'rejected';
+      this.loadSpecialists();
+    });
+  }
+
+  loadSpecialists(): void {
+    this.isLoading.set(true);
+
+    const verificationStatus = this.selectedTab === 'all' ? undefined : this.selectedTab;
+
+    this.adminService.getAllSpecialists({
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchQuery || undefined,
+      verificationStatus,
+    }).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.specialists.set(res.data.items);
+          this.metadata.set(res.data.metadata);
+        }
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.specialists.set([]);
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  setTab(tab: 'all' | 'draft' | 'pending' | 'approved' | 'rejected'): void {
+    this.selectedTab = tab;
+    this.currentPage = 1;
+    this.loadSpecialists();
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
+    this.loadSpecialists();
+  }
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.totalPages()) return;
+    this.currentPage = page;
+    this.loadSpecialists();
+  }
+
+  verifySpecialist(id: string, isApproved: boolean): void {
+    const adminNotes = isApproved ? undefined : (prompt(this.translationService.translate('admin.specialists.rejectionReason')) || undefined);
+    if (!isApproved && !adminNotes) return;
+    this.adminService.verifySpecialist(id, { isVerified: isApproved, adminNotes }).subscribe({
+      next: () => this.loadSpecialists(),
+    });
+  }
+
+  getVerificationStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      Draft: this.translationService.translate('specialist.status.Draft'),
+      Pending: this.translationService.translate('specialist.status.Pending'),
+      Approved: this.translationService.translate('specialist.status.Approved'),
+      Rejected: this.translationService.translate('specialist.status.Rejected'),
+    };
+    return labels[status] ?? status;
+  }
+
+  getVerificationStatusClass(status: string): string {
+    const classes: Record<string, string> = { Draft: 'status-draft', Pending: 'status-pending', Approved: 'status-approved', Rejected: 'status-rejected' };
+    return classes[status] ?? 'status-draft';
+  }
+
+  getUserInitials(name: string): string {
+    const parts = name.split(' ').filter(Boolean);
+    if (parts.length >= 2) return parts[0][0] + parts[1][0];
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  getPageNumbers(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage;
+    const pages: number[] = [];
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
+}

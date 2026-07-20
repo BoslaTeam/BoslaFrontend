@@ -32,4 +32,10 @@ export class SpecialistDetailsRepository {
       ),
     );
   }
+
+  getCertificates(id: string) {
+    return this.api.getCertificates(id).pipe(
+      map(response => response.data),
+    );
+  }
 }

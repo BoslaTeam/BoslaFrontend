@@ -1,5 +1,8 @@
-
 <ui-global-loader></ui-global-loader>
 <router-outlet></router-outlet>
 
 <ui-toast></ui-toast>
+<app-notification-toast />
+@if (showChat()) {
+  <app-ai-chat-widget />
+}

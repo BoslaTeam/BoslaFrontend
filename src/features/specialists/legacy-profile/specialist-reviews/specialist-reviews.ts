@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { SpecialistApiService } from '../../data-access/specialist-api.service';
 import { SpecialistReviewsResponse } from '../../contracts/specialist-reviews-response';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-specialist-reviews',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './specialist-reviews.html',
 })
 export class SpecialistReviews implements OnInit {

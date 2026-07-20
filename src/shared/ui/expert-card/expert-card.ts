@@ -1,5 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface ExpertData {
   id: string;
@@ -15,16 +17,22 @@ export interface ExpertData {
 @Component({
   selector: 'ui-expert-card',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, TranslatePipe],
   templateUrl: './expert-card.html',
-  styleUrl: './expert-card.css',
+  styleUrls: ['./expert-card.css']
 })
 export class UiExpertCard {
   readonly expert = input.required<ExpertData>();
-
   readonly cardClick = output<string>();
+
+  private readonly router = inject(Router);
 
   onCardClick(): void {
     this.cardClick.emit(this.expert().id);
+  }
+
+  bookAppointment(event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/appointments/book'], { queryParams: { specialistId: this.expert().id } });
   }
 }

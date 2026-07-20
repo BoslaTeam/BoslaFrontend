@@ -1,0 +1,528 @@
+<div class="detail-page">
+
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    {{ 'common.backToList' | t }}
+  </button>
+
+  @if (isLoading()) {
+    <div class="detail-skeleton">
+      <div class="profile-header">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-40"></div>
+            <div class="skeleton-line w-30"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skeleton-block"></div>
+    </div>
+  } @else if (hasError() || !specialist()) {
+    <div class="error-card">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ba1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem;">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3>{{ 'common.errorLabel.khta' | t }} في تحميل بيانات المتخصص</h3>
+      <p>{{ 'common.error.hdth_khta' | t }} أثناء محاولة جلب التفاصيل.</p>
+      <button class="retry-btn" (click)="loadSpecialist()">{{ 'common.retry' | t }}</button>
+    </div>
+  } @else {
+    @let s = specialist()!;
+
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="profile-info">
+          <div class="profile-avatar">
+            @if (s.profileImageUrl) {
+              <img [src]="s.profileImageUrl" [alt]="s.fullName">
+            } @else {
+              {{ getUserInitials(s.fullName) }}
+            }
+          </div>
+          <div>
+            <h2 class="profile-name">{{ s.fullName }}</h2>
+            <div class="profile-email">{{ s.email }}</div>
+            <div class="profile-badges">
+              <span class="status-badge" [class]="getVerificationStatusClass(s.verificationStatus)">
+                {{ getVerificationStatusLabel(s.verificationStatus) }}
+              </span>
+              @if (s.title) {
+                <span class="info-tag">{{ s.title }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="profile-stats-row">
+          <div class="mini-stat">
+            <span class="mini-stat-value">{{ s.rating ? (s.rating.toFixed(1) + ' ★') : '—' }}</span>
+            <span class="mini-stat-label">{{ 'specialists.sortBy.rating' | t }}</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-value">{{ s.totalSessions || 0 }}</span>
+            <span class="mini-stat-label">{{ 'admin.specialists.sessions' | t }}</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-value">{{ 'home.specialists.currency' | t }} {{ s.totalEarnings.toLocaleString() }}</span>
+            <span class="mini-stat-label">{{ 'specialist.sidebar.earnings' | t }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-header-actions">
+        <a [routerLink]="['/admin/specialists', s.id, 'edit']" class="edit-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>{{ 'admin.users.edit' | t }}</a>
+      </div>
+      <div class="status-actions">
+        <div class="status-select-wrapper">
+          <label class="status-select-label">{{ 'admin.specialists.changeStatus' | t }}</label>
+          <select class="status-select" [value]="s.verificationStatus" [disabled]="isUpdatingStatus()" (change)="updateStatus($any($event.target).value)">
+            <option value="Draft">{{ 'admin.specialists.draft' | t }}</option>
+            <option value="Pending">{{ 'admin.specialists.pending' | t }}</option>
+            <option value="Approved">{{ 'status.approved.mqbwl' | t }}</option>
+            <option value="Rejected">{{ 'admin.specialists.rejected' | t }}</option>
+          </select>
+        </div>
+        @if (isUpdatingStatus()) {
+          <span class="status-updating">{{ 'common.updating' | t }}</span>
+        }
+      </div>
+    </div>
+
+    @if (isPending || isRejected) {
+      <div class="verify-section">
+        <div class="verify-section-header">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 1 0 10 10"/>
+          </svg>
+          @if (isPending) {
+            <span>{{ 'admin.specialists.reviewApproval' | t }}</span>
+          } @else {
+            <span>{{ 'admin.specialists.reviewRejection' | t }}</span>
+          }
+        </div>
+
+        <div class="verify-section-body">
+          @if (isPending) {
+            <p class="verify-hint">{{ 'admin.specialists.pendingHint' | t }}</p>
+          } @else {
+            <p class="verify-hint">{{ 'admin.specialists.rejectedHint' | t }}</p>
+          }
+
+          <label class="verify-notes-label">{{ 'admin.specialists.adminNotes' | t }}</label>
+          <textarea
+            class="admin-notes-input"
+            placeholder="{{ 'admin.specialists.adminNotesPlaceholder' | t }}"
+            [(ngModel)]="adminNotes"
+            rows="3"
+          ></textarea>
+
+          @if (rejectionError()) {
+            <p class="rejection-error">{{ rejectionError() }}</p>
+          }
+
+          <div class="verify-buttons">
+            @if (isPending) {
+              <button class="verify-btn approve" (click)="verifyWithNotes(true)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                {{ 'admin.specialists.approveSpecialist' | t }}
+              </button>
+              <button class="verify-btn reject" (click)="verifyWithNotes(false)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                {{ 'admin.specialists.rejectRequest' | t }}
+              </button>
+            } @else {
+              <button class="verify-btn approve" (click)="verifyWithNotes(true)" [disabled]="isVerifying()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                {{ 'admin.specialists.reApprove' | t }}
+              </button>
+            }
+            @if (isVerifying()) {
+              <span class="status-updating">{{ 'common.updating' | t }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (s.adminNotes) {
+      <div class="admin-notes-display">
+        <strong>{{ 'admin.specialists.previousNotes' | t }}</strong>
+        <p>{{ s.adminNotes }}</p>
+      </div>
+    }
+
+    <div class="detail-tabs">
+      <button class="detail-tab" [class.active]="activeTab() === 'info'" (click)="setTab('info')">{{ 'specialist.basicInfo.almalwmat_alasasyh' | t }}</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'skills'" (click)="setTab('skills')">{{ 'admin.specialists.skillsAndTools' | t }}</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'experience'" (click)="setTab('experience')">{{ 'specialists.experience.alkhbrat' | t }} ({{ s.experiences.length }})</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'expertise'" (click)="setTab('expertise')">{{ 'admin.specialists.specialtiesAndDomains' | t }}</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">{{ 'specialist.profile.reviews' | t }} ({{ s.totalReviews || 0 }})</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'documents'" (click)="setTab('documents')">{{ 'admin.documents.almstndat' | t }} ({{ s.documents.length }})</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'portfolio'" (click)="setTab('portfolio')">{{ 'specialist.portfolio.mard_alaamal' | t }}</button>
+      <button class="detail-tab" [class.active]="activeTab() === 'ai'" (click)="setTab('ai')">{{ 'admin.specialists.ai' | t }}</button>
+    </div>
+
+    <div class="tab-content">
+
+      @if (activeTab() === 'info') {
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.fullNameLabel' | t }}</span>
+            <span class="info-value">{{ s.fullName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'auth.login.email' | t }}</span>
+            <span class="info-value">{{ s.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.jobTitle' | t }}</span>
+            <span class="info-value" [class.empty]="!s.title">{{ s.title || ('common.notSpecified' | t) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.specialists.experienceLevelLabel' | t }}</span>
+            <span class="info-value">{{ getExperienceLevelLabel(s.experienceLevel) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'specialists.yearsOfExperience.snwat_alkhbrh' | t }}</span>
+            <span class="info-value">{{ s.experienceYears || 0 }} {{ 'admin.specialists.years' | t }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.specialists.hourlyRateLabel' | t }}</span>
+            <span class="info-value">{{ 'home.specialists.currency' | t }} {{ s.hourlyRate.toFixed(2) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.country' | t }}</span>
+            <span class="info-value" [class.empty]="!s.country">{{ s.country || ('common.notSpecified' | t) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.gender' | t }}</span>
+            <span class="info-value" [class.empty]="!s.gender">{{ s.gender || ('common.notSpecified' | t) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.preferredLanguage' | t }}</span>
+            <span class="info-value" [class.empty]="!s.preferredLanguage">{{ s.preferredLanguage || ('common.notSpecified' | t) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.specialists.overallRating' | t }}</span>
+            <span class="info-value">{{ formatRating(s.rating) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">{{ 'admin.users.joinedDate' | t }}</span>
+            <span class="info-value">{{ s.createdAt | date:'yyyy/MM/dd' }}</span>
+          </div>
+          @if (s.verifiedAt) {
+            <div class="info-item">
+              <span class="info-label">{{ 'admin.specialists.verifiedDate' | t }}</span>
+              <span class="info-value">{{ s.verifiedAt | date:'yyyy/MM/dd' }}</span>
+            </div>
+          }
+        </div>
+        @if (s.bio) {
+          <div class="bio-section">
+            <div class="info-label" style="margin-bottom:0.5rem;">{{ 'admin.specialists.bioLabel' | t }}</div>
+            <p class="bio-text">{{ s.bio }}</p>
+          </div>
+        }
+      }
+
+      @if (activeTab() === 'skills') {
+        <div class="two-col-content">
+          <div class="sub-section">
+            <h4 class="sub-section-title">{{ 'admin.specialists.skills' | t }}</h4>
+            @if (s.skills && s.skills.length > 0) {
+              <div class="tags-list">
+                @for (skill of s.skills; track skill.id) {
+                  <span class="tag primary">{{ skill.name }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">{{ 'admin.specialists.noSkills' | t }}</p>
+            }
+          </div>
+          <div class="sub-section">
+            <h4 class="sub-section-title">{{ 'admin.specialists.tools' | t }}</h4>
+            @if (s.tools && s.tools.length > 0) {
+              <div class="tags-list">
+                @for (tool of s.tools; track tool.id) {
+                  <span class="tag secondary">{{ tool.name }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">{{ 'admin.specialists.noTools' | t }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activeTab() === 'experience') {
+        @if (s.experiences && s.experiences.length > 0) {
+          <div class="experience-list">
+            @for (exp of s.experiences; track exp.id) {
+              <div class="experience-item">
+                <div class="exp-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="exp-title">{{ exp.jobTitle }}</div>
+                  <div class="exp-company">{{ exp.companyName }}</div>
+                  <div class="exp-years">{{ exp.fromDate }} — {{ exp.toDate || ('time.now' | t) }}</div>
+                  @if (exp.description) {
+                    <p class="exp-desc">{{ exp.description }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <p>{{ 'admin.specialists.noExperience' | t }}</p>
+          </div>
+        }
+      }
+
+      @if (activeTab() === 'expertise') {
+        <div class="two-col-content">
+          <div class="sub-section">
+            <h4 class="sub-section-title">{{ 'specialist.profile.specialties' | t }}</h4>
+            @if (s.expertiseAreas && s.expertiseAreas.length > 0) {
+              <div class="tags-list">
+                @for (area of s.expertiseAreas; track area) {
+                  <span class="tag primary">{{ area }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">{{ 'admin.specialists.noSpecialties' | t }}</p>
+            }
+          </div>
+          <div class="sub-section">
+            <h4 class="sub-section-title">{{ 'admin.specialists.domains' | t }}</h4>
+            @if (s.industries && s.industries.length > 0) {
+              <div class="tags-list">
+                @for (ind of s.industries; track ind) {
+                  <span class="tag secondary">{{ ind }}</span>
+                }
+              </div>
+            } @else {
+              <p class="empty-msg">{{ 'admin.specialists.noDomains' | t }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activeTab() === 'reviews') {
+        @if (s.reviews && s.reviews.length > 0) {
+          <div class="reviews-list">
+            @for (rev of s.reviews; track rev.id) {
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-avatar">{{ rev.reviewerName.substring(0, 2) }}</div>
+                  <div>
+                    <div class="reviewer-name">{{ rev.reviewerName }}</div>
+                    <div class="review-date">{{ rev.createdAt | date:'yyyy/MM/dd' }}</div>
+                  </div>
+                  <div class="review-rating">{{ rev.rating }} ★</div>
+                </div>
+                @if (rev.comment) {
+                  <p class="review-comment">{{ rev.comment }}</p>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-tab">
+            <div class="empty-tab-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 15l-2 5l9-11h-5l2-5L7 15z"/>
+              </svg>
+            </div>
+            <p>{{ 'specialists.noReviews.la_twjd_tqyymat' | t }} بعد</p>
+          </div>
+        }
+      }
+
+      @if (activeTab() === 'documents') {
+        <div class="documents-section">
+          <div class="documents-header">
+            <h4>{{ 'admin.specialists.uploadedDocuments' | t }}</h4>
+          </div>
+
+          @if (s.documents.length === 0) {
+            <div class="empty-tab">
+              <div class="empty-tab-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <p>{{ 'admin.specialists.noDocuments' | t }}</p>
+            </div>
+          } @else {
+            <div class="documents-grid">
+              @for (doc of s.documents; track doc.id) {
+                <div class="document-card">
+                  <div class="doc-type-badge" [class]="'doc-' + doc.type.toLowerCase()">
+                    @if (doc.type === 'Identity') {
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      </svg>
+                    } @else {
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="16 13 12 9 8 13 8 13"/><polyline points="16 17 12 21 8 17 8 17"/>
+                      </svg>
+                    }
+                  </div>
+                  <span class="doc-type-label">{{ documentTypeLabels[doc.type] || doc.type }}</span>
+                  <span class="doc-filename" title="{{ doc.originalFileName }}">{{ doc.originalFileName }}</span>
+                  <a class="doc-view-link" [href]="doc.url" target="_blank" rel="noopener">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    {{ 'admin.specialists.viewDocument' | t }}
+                  </a>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab() === 'portfolio') {
+        <div class="portfolio-section">
+          <div class="documents-header">
+            <h4>{{ 'specialist.portfolio.mard_alaamal' | t }}</h4>
+          </div>
+
+          @if (portfolioLoading()) {
+            <div class="empty-tab">
+              <p>{{ 'common.loading' | t }}</p>
+            </div>
+          } @else if (portfolioItems().length === 0) {
+            <div class="empty-tab">
+              <div class="empty-tab-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </div>
+              <p>{{ 'admin.specialists.noPortfolio' | t }}</p>
+            </div>
+          } @else {
+            <div class="portfolio-grid">
+              @for (item of portfolioItems(); track item.id) {
+                <div class="portfolio-card">
+                  <div class="portfolio-thumb">
+                    <img [src]="item.coverImageUrl" [alt]="item.title">
+                    @if (item.images.length > 0) {
+                      <div class="portfolio-thumb-badge">
+                        <i class="fa-regular fa-images"></i>
+                        {{ item.images.length + 1 }}
+                      </div>
+                    }
+                  </div>
+                  <div class="portfolio-body">
+                    <div class="portfolio-title">{{ item.title }}</div>
+                    @if (item.description) {
+                      <div class="portfolio-desc">{{ item.description }}</div>
+                    }
+                    <div class="portfolio-meta">
+                      <span class="status-badge" [class]="'portfolio-' + item.status.toLowerCase()">
+                        @if (item.status === 'Draft') { {{ 'admin.specialists.draft' | t }} }
+                        @else if (item.status === 'Pending') { {{ 'admin.specialists.pending' | t }} }
+                        @else if (item.status === 'Approved') { {{ 'admin.specialists.approved' | t }} }
+                        @else { {{ 'admin.specialists.rejected' | t }} }
+                      </span>
+                      @if (item.workUrl) {
+                        <a [href]="item.workUrl" target="_blank" rel="noopener noreferrer" class="portfolio-view-link" style="padding:0.25rem 0.5rem;">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                          </svg>
+                          {{ 'admin.specialists.link' | t }}
+                        </a>
+                      }
+                    </div>
+                    @if (item.adminNotes) {
+                      <div class="admin-notes-display" style="margin-top:0.5rem;">
+                        <strong>{{ 'admin.specialists.adminNotes' | t }}:</strong>
+                        <p>{{ item.adminNotes }}</p>
+                      </div>
+                    }
+                  </div>
+                  <div class="portfolio-actions">
+                    @if (item.status === 'Pending') {
+                      <button class="verify-btn approve" (click)="approvePortfolioItem(item.id)" [disabled]="reviewingItemId() === item.id">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>{{ 'admin.specialists.approve' | t }}</button>
+                      <button class="verify-btn reject" (click)="rejectPortfolioItem(item.id)" [disabled]="reviewingItemId() === item.id">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>{{ 'admin.specialists.reject' | t }}</button>
+                    } @else {
+                      <a [href]="item.coverImageUrl" target="_blank" rel="noopener noreferrer" class="portfolio-view-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>{{ 'admin.specialists.viewDocument' | t }}</a>
+                    }
+                    @if (reviewingItemId() === item.id) {
+                      <span class="status-updating">{{ 'common.updating' | t }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeTab() === 'ai') {
+        <div class="ai-section">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">{{ 'admin.specialists.embeddingStatus' | t }}</span>
+              <span class="info-value">
+                @if (s.isEmbedded) {
+                  <span class="ai-status-done">✅ {{ 'admin.specialists.embedded' | t }}</span>
+                } @else {
+                  <span class="ai-status-pending">⏳ {{ 'admin.specialists.pendingEmbedding' | t }}</span>
+                }
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">{{ 'terms.lastUpdated' | t }}</span>
+              <span class="info-value" [class.empty]="!s.lastEmbeddedAt">{{ s.lastEmbeddedAt ? (s.lastEmbeddedAt | date:'yyyy/MM/dd hh:mm a') : ('admin.specialists.notYet' | t) }}</span>
+            </div>
+          </div>
+          <div class="ai-section-actions">
+            <button class="rebuild-embedding-btn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              {{ 'admin.specialists.reEmbed' | t }}
+            </button>
+            <span class="ai-section-hint">{{ 'admin.specialists.embeddingHint' | t }}</span>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>

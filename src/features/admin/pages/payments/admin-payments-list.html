@@ -1,0 +1,135 @@
+<div class="payments-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-info">
+      <h1>{{ 'payments.title' | t }}</h1>
+      <p>{{ 'pagination.showing' | t }} وإدارة جميع {{ 'admin.payments.title' | t }} على المنصة</p>
+    </div>
+    <div class="count-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+        <line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
+      {{ totalPayments() }} {{ 'admin.payments.operations' | t }}
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="payments-toolbar">
+    <div class="toolbar-search">
+      <div class="toolbar-search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+      <input type="text" class="toolbar-search-input" placeholder="{{ 'admin.payments.searchPlaceholder' | t }}" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+    </div>
+
+    <select class="toolbar-select" (change)="onStatusFilter($any($event.target).value === '' ? null : $any($event.target).value)">
+      @for (opt of statusOptions; track opt.value) {
+        <option [value]="opt.value ?? ''" [selected]="selectedStatus === opt.value">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="payments-table-wrapper">
+    @if (isLoading()) {
+      <div class="table-skeleton">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          <div class="skeleton-row">
+            <div class="skeleton-line w-20"></div>
+            <div class="skeleton-line w-20"></div>
+            <div class="skeleton-line w-15"></div>
+            <div class="skeleton-line w-10"></div>
+            <div class="skeleton-line w-10"></div>
+            <div class="skeleton-line w-10"></div>
+          </div>
+        }
+      </div>
+    } @else if (payments().length === 0) {
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+        <h3>{{ 'admin.payments.noPayments' | t }}</h3>
+        <p>{{ 'admin.payments.noResults' | t }}</p>
+      </div>
+    } @else {
+      <table class="payments-table">
+        <thead>
+          <tr>
+            <th>{{ 'admin.audit.user' | t }}</th>
+            <th>{{ 'admin.specialistLabel.almtkhss' | t }}</th>
+            <th>{{ 'payments.amount' | t }}</th>
+            <th>{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</th>
+            <th>{{ 'payments.status' | t }}</th>
+            <th>{{ 'payments.date' | t }}</th>
+            <th>{{ 'admin.audit.action' | t }}ات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of payments(); track p.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar sm">{{ getUserInitials(p.userName) }}</div>
+                  <span class="name-text">{{ p.userName }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar sm secondary">{{ getUserInitials(p.specialistName) }}</div>
+                  <span class="name-text">{{ p.specialistName }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="amount-text">{{ p.amount.toFixed(2) }} {{ p.currency.toUpperCase() }}</span>
+              </td>
+              <td><span class="method-text">{{ getMethodLabel(p.paymentMethod) }}</span></td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span>
+              </td>
+              <td>
+                <span class="date-text">{{ p.createdAt | date:'yyyy/MM/dd' }}</span>
+                <span class="time-text">{{ p.createdAt | date:'hh:mm a' }}</span>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <a class="action-btn" [routerLink]="['/admin/payments', p.id]" title="{{ 'admin.payments.viewDetails' | t }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (metadata(); as meta) {
+        <div class="pagination-wrapper">
+          <span class="pagination-info">
+            عرض {{ (meta.currentPage - 1) * meta.pageSize + 1 }} - {{ meta.currentPage * meta.pageSize > meta.totalCount ? meta.totalCount : meta.currentPage * meta.pageSize }} من {{ meta.totalCount }}
+          </span>
+          <div class="pagination-btns">
+            <button class="page-btn" [disabled]="!meta.hasPreviousPage" (click)="onPageChange(currentPage - 1)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            @for (page of getPageNumbers(); track page) {
+              <button class="page-btn" [class.active]="page === currentPage" (click)="onPageChange(page)">{{ page }}</button>
+            }
+            <button class="page-btn" [disabled]="!meta.hasNextPage" (click)="onPageChange(currentPage + 1)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

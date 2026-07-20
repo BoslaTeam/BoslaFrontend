@@ -6,6 +6,7 @@ export interface CreateAppointmentRequest {
   end: string | Date;
   sessionTopic?: string;
   notes?: string;
+  slotId?: string;
 }
 
 export interface CancelAppointmentRequest {
@@ -31,10 +32,15 @@ export interface AddReminderRequest {
 }
 
 export interface AddReviewRequest {
-  rating: number; 
+  rating: number;
   comment?: string;
 }
 
+export enum PaymentStatus {
+  Unpaid = 0,
+  Paid = 1,
+  Refunded = 2,
+}
 
 export interface AppointmentDto {
   id: string;
@@ -45,6 +51,20 @@ export interface AppointmentDto {
   status: AppointmentStatus;
   sessionTopic?: string;
   notes?: string;
+  specialistName?: string;
+  specialistTitle?: string;
+  specialistImageUrl?: string;
+  sessionPrice?: number;
+  paymentStatus?: PaymentStatus;
+  conversationId?: string;
+  confirmedAt?: string;
+
+  paymentId?: string;
+  escrowStatus?: string;
+  disputeReason?: string;
+  disputeAdminNotes?: string;
+  complaintStatus?: string;
+  disputeDescription?: string;
 }
 
 export interface AppointmentStatusHistoryDto {
@@ -62,4 +82,43 @@ export interface ReminderDto {
   reminderTime: string;
   message: string;
   isSent: boolean;
+}
+
+export interface SpecialistBrief {
+  id: string;
+  name: string;
+  title: string | null;
+  imageUrl: string | null;
+  rating: number;
+  hourlyRate: number;
+  reviewsCount: number;
+}
+
+export interface SpecialistFullDetail extends SpecialistBrief {
+  bio: string | null;
+  skills: { id: string; name: string }[];
+  isOnline: boolean;
+  country: string | null;
+}
+
+export interface SessionSummaryDto {
+  id: string;
+  appointmentId: string;
+  transcriptId?: string;
+  keyTakeaways: string;
+  actionItemsForUser: string;
+  actionItemsForSpec: string;
+  llmProvider: string;
+  status: number;
+  createdAtUtc: string;
+  createdBy?: string;
+  lastModifiedUtc?: string;
+  lastModifiedBy?: string;
+}
+
+export interface AvailabilitySlotDto {
+  id: string;
+  start: string;
+  end: string;
+  isBooked?: boolean;
 }

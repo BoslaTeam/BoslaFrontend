@@ -7,7 +7,6 @@ export type DrawerPosition = 'start' | 'end';
   standalone: true,
   imports: [],
   templateUrl: './drawer.html',
-  styleUrl: './drawer.css',
 })
 export class Drawer {
   readonly open = input(false);

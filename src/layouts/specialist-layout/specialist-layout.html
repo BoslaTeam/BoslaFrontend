@@ -1,16 +1,33 @@
-<div dir="rtl" class="specialist-layout min-h-screen flex flex-col bg-slate-50 text-slate-800 relative">
-  <app-app-header variant="dashboard"></app-app-header>
+<style>
+  .specialist-main-content {
+    margin-inline-start: 0;
+    transition: margin-inline-start 0.3s ease;
+  }
+  @media (min-width: 1024px) {
+    .specialist-main-content.sidebar-open {
+      margin-inline-start: 280px;
+    }
+    .specialist-main-content.sidebar-collapsed {
+      margin-inline-start: 80px;
+    }
+  }
+</style>
 
-  <!-- Mobile Overlay -->
-  <div class="fixed inset-0 bg-black/30 z-40 lg:hidden" [class.hidden]="!sidebarMobileOpen()"
-    (click)="closeMobileSidebar()">
-  </div>
+<div class="specialist-layout min-h-screen flex flex-col bg-bosla-offwhite text-slate-800 relative overflow-hidden">
+  <app-app-header variant="dashboard" (toggleSidebar)="toggleSidebar()"></app-app-header>
 
-  <div class="flex grow pt-20 relative z-10 min-h-screen">
+  <div class="flex grow pt-20 relative z-10 min-h-screen w-full">
+    <!-- Mobile Overlay -->
+    <div class="fixed inset-0 bg-black/30 z-40 lg:hidden" [class.hidden]="!sidebarMobileOpen()"
+      (click)="closeMobileSidebar()">
+    </div>
+
     <app-specialist-sidebar [isCollapsed]="sidebarCollapsed()" [isMobileOpen]="sidebarMobileOpen()"
       (toggleCollapse)="toggleSidebar()" (closeMobile)="closeMobileSidebar()" />
 
-    <main class="grow flex flex-col min-w-0" [style.margin-inline-start]="sidebarCollapsed() ? '80px' : '280px'">
+    <main class="grow flex flex-col min-w-0 w-full specialist-main-content"
+          [class.sidebar-open]="!sidebarCollapsed()"
+          [class.sidebar-collapsed]="sidebarCollapsed()">
       <router-outlet></router-outlet>
     </main>
   </div>

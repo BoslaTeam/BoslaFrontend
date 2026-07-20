@@ -13,6 +13,10 @@ export const PUBLIC_ROUTES: Routes = [
         loadChildren: () => import('@features/home/routes').then(m => m.HOME_ROUTES),
       },
       {
+        path: 'ai',
+        loadChildren: () => import('@features/ai/routes').then(m => m.AI_ROUTES),
+      },
+      {
         path: 'specialists',
         loadChildren: () => import('@features/specialists/routes').then(m => m.SPECIALISTS_ROUTES),
       },
@@ -52,9 +56,22 @@ export const PUBLIC_ROUTES: Routes = [
         loadChildren: () => import('@features/notifications/routes').then(m => m.NOTIFICATIONS_ROUTES),
       },
       {
+        path: 'about',
+        loadChildren: () => import('@features/about/routes').then(m => m.ABOUT_ROUTES),
+      },
+      {
+        path: 'contact',
+        loadChildren: () => import('@features/contact/routes').then(m => m.CONTACT_ROUTES),
+      },
+      {
         path: 'become-specialist',
         canActivate: [authGuard, nonSpecialistGuard],
         loadComponent: () => import('@features/specialists/pages/onboarding/specialist-onboarding').then(m => m.SpecialistOnboardingPage),
+      },
+      {
+        path: 'wallet',
+        canActivate: [authGuard],
+        loadComponent: () => import('@features/wallet/pages/my-wallet/my-wallet').then(m => m.MyWallet),
       },
     ],
   },

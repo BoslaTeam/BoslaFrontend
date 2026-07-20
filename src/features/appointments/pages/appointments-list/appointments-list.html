@@ -1,103 +1,574 @@
-<div class="max-w-5xl mx-auto px-4 py-8 bg-gray-300" dir="rtl">
-  
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-    <div>
-      <h1 class="text-2xl font-bold text-bosla-charcoal dark:text-white font-sans">إدارة المواعيد</h1>
-      <p class="text-sm text-bosla-charcoal/60 dark:text-charcoal/40 mt-1">تابع وجدول جلساتك الاستشارية بكل سهولة.</p>
+<div class="min-h-screen bg-bosla-offwhite">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1
+          class="text-3xl sm:text-4xl font-black bg-gradient-to-l from-[#F39C12] to-[#e67e22] text-transparent bg-clip-text font-sans drop-shadow-sm tracking-tight"
+        >{{ 'nav.appointments' | t }}</h1>
+        <p class="text-sm text-bosla-grey mt-1.5">{{ 'appointments.list.subtitle' | t }}</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-bosla-grey">
+        <span>{{ 'appointments.list.total' | t }}</span>
+        <span
+          class="font-semibold text-bosla-charcoal bg-white border border-bosla-charcoal/10 px-3 py-1 rounded-lg"
+          >{{ store.items().length }}</span
+        >
+        <span>{{ 'appointments.list.appointment' | t }}</span>
+      </div>
     </div>
-    
-    <ui-button [routerLink]="['/appointments/book']" size="md" variant="primary">
-      <span class="text-base font-semibold">+</span> حجز موعد جديد
-    </ui-button>
-  </div>
 
-  <div class="flex border-b border-bosla-charcoal/10 dark:border-white/10 mb-6">
-    <button 
-      (click)="setTab('upcoming')"
-      [class]="activeTab() === 'upcoming' 
-        ? 'border-bosla-blue text-bosla-blue font-semibold' 
-        : 'border-transparent text-bosla-charcoal/60 hover:text-bosla-charcoal dark:text-white/60 dark:hover:text-white'"
-      class="py-3 px-6 text-[15px] font-sans border-b-2 transition-all duration-200 outline-none">
-      المواعيد القادمة
-    </button>
-    <button 
-      (click)="setTab('past')"
-      [class]="activeTab() === 'past' 
-        ? 'border-bosla-blue text-bosla-blue font-semibold' 
-        : 'border-transparent text-bosla-charcoal/60 hover:text-bosla-charcoal dark:text-white/60 dark:hover:text-white'"
-      class="py-3 px-6 text-[15px] font-sans border-b-2 transition-all duration-200 outline-none">
-      المواعيد السابقة والتاريخ
-    </button>
-  </div>
-
-  @if (store.isLoading()) {
-    <div class="flex flex-col items-center justify-center py-20">
-      <ui-spinner size="lg"></ui-spinner>
-      <p class="text-sm text-bosla-charcoal/40 mt-4 font-sans">جاري تحميل قائمة المواعيد...</p>
+    <!-- Toolbar: Search + Sort -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <div class="relative flex-1">
+        <svg
+          class="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-bosla-grey pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <input
+          #searchBox
+          type="text"
+          (input)="onSearchInput($event)"
+          [placeholder]="'appointments.list.searchPlaceholder' | t"
+          autocomplete="off"
+          class="w-full pr-10 pl-4 py-2.5 text-sm bg-white border border-bosla-charcoal/10 rounded-xl outline-none transition-all duration-200 placeholder:text-bosla-grey/60 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
+        />
+        <button
+          (click)="searchBox.value = ''; searchQuery.set('')"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full transition-colors text-xs font-bold cursor-pointer"
+          [class]="
+            searchQuery()
+              ? 'bg-rose-100 text-rose-500 hover:bg-rose-200'
+              : 'opacity-0 pointer-events-none'
+          "
+        >
+          ✕
+        </button>
+      </div>
+      <div class="relative">
+        <select
+          [value]="sortOrder()"
+          (change)="setSort($any($event.target).value)"
+          class="appearance-none bg-white border border-bosla-charcoal/10 rounded-xl px-4 pr-4 pl-10 py-2.5 text-sm text-bosla-charcoal outline-none cursor-pointer transition-all duration-200 focus:border-bosla-primary/40 focus:shadow-[0_0_0_3px_rgba(168,85,47,0.08)]"
+        >
+          <option value="asc">{{ 'appointments.list.oldestFirst' | t }}</option>
+          <option value="desc">{{ 'appointments.list.newestFirst' | t }}</option>
+        </select>
+        <svg
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bosla-grey pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      </div>
     </div>
-  } @else {
-    
-    @if (filteredAppointments().length > 0) {
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        @for (appointment of filteredAppointments(); track appointment.id) {
-          <div 
-            [routerLink]="['/user/appointments', appointment.id]"
-            class="group block bg-white/60 dark:bg-bosla-charcoal/10 backdrop-blur-md border border-bosla-charcoal/5 dark:border-white/5 rounded-2xl p-5 hover:border-bosla-blue/30 dark:hover:border-bosla-blue/30 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-            
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <h3 class="text-[16px] font-semibold text-bosla-charcoal dark:text-white group-hover:text-bosla-blue transition-colors duration-200 font-sans">
-                  {{ appointment.sessionTopic || 'جلسة استشارية عامة' }}
-                </h3>
-                <p class="text-[12px] text-bosla-charcoal/40 dark:text-white/40 mt-0.5">معرف الموعد: {{ appointment.id.slice(0, 8) }}...</p>
-              </div>
 
-              @let statusInfo = getStatusDetails(appointment.status);
-              <span [class]="statusInfo.classes" class="text-[12px] font-medium px-3 py-1 rounded-full border">
-                {{ statusInfo.text }}
-              </span>
-            </div>
+    <!-- Tabs -->
+    <div
+      class="flex flex-wrap gap-1.5 mb-8 bg-white border border-bosla-charcoal/5 rounded-2xl p-1.5 shadow-sm"
+    >
+      @for (tab of tabs; track tab.key) {
+        @let count = tabCounts()[tab.key];
+        <button
+          (click)="setTab(tab.key)"
+          class="relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none cursor-pointer"
+          [class]="
+            activeTab() === tab.key
+              ? 'bg-bosla-primary text-white shadow-md shadow-bosla-primary/15'
+              : 'text-bosla-grey hover:text-bosla-charcoal hover:bg-bosla-charcoal/[0.03]'
+          "
+        >
+           {{ tab.label | t }}
+          @if (count > 0) {
+            <span
+              class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+              [class]="
+                activeTab() === tab.key
+                  ? 'bg-white/20 text-white'
+                  : 'bg-bosla-charcoal/5 text-bosla-grey'
+              "
+              >{{ count }}</span
+            >
+          }
+        </button>
+      }
+    </div>
 
-            <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-bosla-charcoal/70 dark:text-white/70 border-t border-bosla-charcoal/5 dark:border-white/5 pt-4">
-              <div class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                <span class="font-sans text-[13px]">{{ appointment.start | date: 'dd MMMM yyyy' : '' : 'ar' }}</span>
-              </div>
-              
-              <div class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-bosla-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="font-sans text-[13px]" dir="ltr">
-                  {{ appointment.start | date: 'hh:mm a' }} - {{ appointment.end | date: 'hh:mm a' }}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        }
-
+    <!-- Loading State -->
+    @if (store.isLoading()) {
+      <div class="flex flex-col items-center justify-center py-32">
+        <div
+          class="w-10 h-10 border-[3px] border-bosla-primary/20 border-t-bosla-primary rounded-full animate-spin"
+        ></div>
+        <p class="text-sm text-bosla-grey mt-5">{{ 'appointments.list.loading' | t }}</p>
       </div>
     } @else {
-      <div class="flex flex-col items-center justify-center text-center py-20 bg-white/30 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-bosla-charcoal/5 dark:border-white/5 px-6">
-        <div class="w-16 h-16 bg-bosla-blue/10 text-bosla-blue rounded-full flex items-center justify-center mb-4">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-        </div>
-        <h3 class="text-lg font-semibold text-bosla-charcoal dark:text-white font-sans">لا توجد مواعيد متاحة</h3>
-        <p class="text-sm text-bosla-charcoal/50 dark:text-white/40 max-w-sm mt-1 font-sans">
-          @if (activeTab() === 'upcoming') {
-            ليس لديك أي مواعيد قادمة مجدولة في الوقت الحالي. يمكنك بدء طلب حجز جلسة جديدة الآن.
-          } @else {
-            لا يوجد سجل مواعيد سابقة لعرضه هنا.
+      @if (getFilteredAppointments().length > 0) {
+        <!-- Appointments List -->
+        <div class="space-y-3">
+          @for (appointment of getFilteredAppointments(); track appointment.id) {
+            @let meta = getStatusMeta(appointment.status);
+            @let startDate = appointment.start | date: 'dd MMMM yyyy' : '' : 'ar';
+            @let startDay = getDayName(appointment.start);
+            @let startTime = appointment.start | date: 'hh:mm a';
+            @let endTime = appointment.end | date: 'hh:mm a';
+
+            <div
+              class="group relative bg-white rounded-2xl border border-gray-100/80 shadow-[0_1px_2px_0_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_0_rgba(0,0,0,0.07)] hover:-translate-y-[1.5px] transition-all duration-300"
+            >
+              <!-- Top status strip -->
+              <div
+                class="absolute top-0 right-0 left-0 h-[2.5px] rounded-t-2xl opacity-70 {{
+                  meta.dot
+                }}"
+              ></div>
+
+              <!-- Desktop (lg+) -->
+              <div class="hidden lg:flex items-center py-3 min-h-[64px]">
+                <!-- 1. CLIENT -->
+                <div class="flex items-center gap-3 py-3 pr-2 pl-1 min-w-0 flex-[2]">
+                  <div
+                    class="w-10 h-10 rounded-lg shrink-0 overflow-hidden ring-1 ring-gray-100/80 mt-0.5"
+                  >
+                    @if (appointment.specialistImageUrl) {
+                      <img
+                        [src]="appointment.specialistImageUrl"
+                        class="w-full h-full object-cover"
+                      />
+                    } @else {
+                      <div
+                        class="w-full h-full flex items-center justify-center bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-[13px] font-bold"
+                      >
+                        {{ (appointment.specialistName || 'م').charAt(0) }}
+                      </div>
+                    }
+                  </div>
+                  <div class="min-w-0 pt-0.5">
+                    <a
+                      [routerLink]="['/appointments', appointment.id]"
+                      class="text-sm font-bold text-gray-900 truncate block leading-snug group-hover:text-bosla-primary transition-colors cursor-pointer"
+                    >
+                      {{ appointment.specialistName || ('appointments.list.specialist' | t) }}
+                    </a>
+                    <p class="text-[12px] text-gray-400 truncate mt-0.5 leading-snug">
+                      {{ appointment.sessionTopic || ('appointments.list.consultationSession' | t) }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 2. SESSION -->
+                <div
+                  class="flex flex-col justify-start gap-0.5 py-3 min-w-[150px] border-r border-gray-50/80 pr-4 pl-2"
+                >
+                  <div class="flex items-center gap-1.5 text-[12px] text-gray-500">
+                    <svg
+                      class="w-3.5 h-3.5 shrink-0 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                      />
+                    </svg>
+                    <span class="truncate">{{ startDay }}، {{ startDate }}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-[12px] text-gray-500">
+                    <svg
+                      class="w-3.5 h-3.5 shrink-0 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ startTime }} – {{ endTime }}</span>
+                  </div>
+                </div>
+
+                <!-- 3. STATUS -->
+                <div
+                  class="flex flex-col justify-start gap-1 py-3 min-w-[120px] border-r border-gray-50/80 pr-4 pl-2"
+                >
+                  <span
+                    class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-lg border {{
+                      meta.bg
+                    }}"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full {{ meta.dot }}"></span>
+                    {{ meta.label | t }}
+                  </span>
+                  @if (appointment.sessionPrice) {
+                    <span class="text-sm font-bold text-gray-900 leading-snug"
+                      >{{ appointment.sessionPrice }} {{ 'appointments.currency' | t }}</span
+                    >
+                  }
+                </div>
+
+                <!-- 4. ACTIONS -->
+                <div
+                  class="flex flex-col justify-start items-end gap-1 py-3 min-w-[145px] flex-[2] border-r border-gray-50/80 pr-4 pl-5"
+                >
+                  <div class="flex items-center gap-1">
+                    @if (
+                      appointment.status === AppointmentStatus.Confirmed &&
+                      appointment.confirmedAt &&
+                      appointment.paymentStatus !== PaymentStatus.Paid
+                    ) {
+                      @let ct = getCountdownText(appointment.confirmedAt, now());
+                      @if (ct) {
+                        <span class="inline-flex items-center gap-1.5">
+                          <span
+                            class="text-[11px] font-semibold text-red-500 tabular-nums leading-tight"
+                            dir="ltr"
+                            >⏱ {{ ct }}</span
+                          >
+                          <span class="text-[10px] text-red-500 leading-tight whitespace-nowrap"
+                            >{{ 'appointments.list.expiryWarningDesktop' | t }}</span
+                          >
+                        </span>
+                      }
+                    }
+                    @if (
+                      appointment.status === AppointmentStatus.Confirmed &&
+                      appointment.paymentStatus !== PaymentStatus.Paid
+                    ) {
+                      <a
+                        [routerLink]="['/appointments', appointment.id, 'pay']"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm hover:shadow-md hover:shadow-bosla-orange/15 hover:-translate-y-[0.5px] transition-all duration-200 cursor-pointer"
+                      >
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
+                          />
+                        </svg>{{ 'wallet.transaction.payment' | t }}</a>
+                    }
+                    @if (canJoinAppointment(appointment)) {
+                      <button
+                        (click)="joinSession(appointment.id)"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg shadow-sm transition-colors cursor-pointer"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
+                        </svg>{{ 'appointments.join' | t }}</button>
+                    }
+                    <a
+                      [routerLink]="['/appointments', appointment.id]"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
+                      [title]="'admin.details.altfasyl' | t"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                        />
+                      </svg>
+                    </a>
+                    <a
+                      [routerLink]="['/appointments', appointment.id, 'track']"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue hover:bg-bosla-blue/5 transition-all duration-200 cursor-pointer"
+                      [title]="'appointments.list.trackStatus' | t"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile (< lg) -->
+              <div class="lg:hidden px-4 pt-3.5 pb-3">
+                <!-- Status + Name row -->
+                <div class="flex items-start gap-3 mb-2.5">
+                  <div
+                    class="w-10 h-10 rounded-lg shrink-0 overflow-hidden ring-1 ring-gray-100/80"
+                  >
+                    @if (appointment.specialistImageUrl) {
+                      <img
+                        [src]="appointment.specialistImageUrl"
+                        class="w-full h-full object-cover"
+                      />
+                    } @else {
+                      <div
+                        class="w-full h-full flex items-center justify-center bg-gradient-to-br from-bosla-primary to-bosla-blue text-white text-[13px] font-bold"
+                      >
+                        {{ (appointment.specialistName || 'م').charAt(0) }}
+                      </div>
+                    }
+                  </div>
+                  <div class="min-w-0 flex-1 pt-0.5">
+                    <a
+                      [routerLink]="['/appointments', appointment.id]"
+                      class="text-sm font-bold text-gray-900 truncate block leading-snug cursor-pointer"
+                    >
+                      {{ appointment.specialistName || ('appointments.list.specialist' | t) }}
+                    </a>
+                    <p class="text-[12px] text-gray-400 truncate mt-0.5 leading-snug">
+                      {{ appointment.sessionTopic || ('appointments.list.consultationSession' | t) }}
+                    </p>
+                  </div>
+                  <span
+                    class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-lg border shrink-0 {{
+                      meta.bg
+                    }}"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full {{ meta.dot }}"></span>
+                    {{ meta.label | t }}
+                  </span>
+                </div>
+
+                <!-- Date + Time -->
+                <div class="flex items-center gap-1.5 text-[12px] text-gray-500 mb-0.5">
+                  <svg
+                    class="w-3.5 h-3.5 shrink-0 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                    />
+                  </svg>
+                  <span>{{ startDay }}، {{ startDate }}</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-[12px] text-gray-500 mb-3">
+                  <svg
+                    class="w-3.5 h-3.5 shrink-0 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{{ startTime }} – {{ endTime }}</span>
+                </div>
+
+                <!-- Actions row -->
+                <div class="flex items-center justify-between pt-2.5 border-t border-gray-50/80">
+                  @if (appointment.sessionPrice) {
+                    <span class="text-sm font-bold text-gray-900"
+                      >{{ appointment.sessionPrice }} {{ 'appointments.currency' | t }}</span
+                    >
+                  }
+                  <div class="flex items-center gap-2 mr-auto">
+                    @if (
+                      appointment.status === AppointmentStatus.Confirmed &&
+                      appointment.confirmedAt &&
+                      appointment.paymentStatus !== PaymentStatus.Paid
+                    ) {
+                      @let ct = getCountdownText(appointment.confirmedAt, now());
+                      @if (ct) {
+                        <span class="inline-flex items-center gap-1.5">
+                          <span
+                            class="text-[11px] font-semibold text-red-500 tabular-nums leading-tight"
+                            dir="ltr"
+                            >⏱ {{ ct }}</span
+                          >
+                          <span class="text-[10px] text-red-500 leading-tight whitespace-nowrap"
+                            >{{ 'appointments.list.expiryWarningMobile' | t }}</span
+                          >
+                        </span>
+                      }
+                    }
+                    <div class="flex items-center gap-0.5">
+                      @if (
+                        appointment.status === AppointmentStatus.Confirmed &&
+                        appointment.paymentStatus !== PaymentStatus.Paid
+                      ) {
+                        <a
+                          [routerLink]="['/appointments', appointment.id, 'pay']"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-gradient-to-l from-bosla-orange to-bosla-orange/90 rounded-lg shadow-sm transition-all duration-200 cursor-pointer"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
+                            />
+                          </svg>{{ 'wallet.transaction.payment' | t }}</a>
+                      }
+                      @if (canJoinAppointment(appointment)) {
+                        <button
+                          (click)="joinSession(appointment.id)"
+                          class="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 rounded-lg shadow-sm transition-colors cursor-pointer"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9.75a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H4.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25z" />
+                          </svg>{{ 'appointments.join' | t }}</button>
+                      }
+                      <a
+                        [routerLink]="['/appointments', appointment.id]"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
+                        [title]="'admin.details.altfasyl' | t"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                          />
+                        </svg>
+                      </a>
+                      <a
+                        [routerLink]="['/appointments', appointment.id, 'track']"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-bosla-blue transition-all duration-200 cursor-pointer"
+                        [title]="'appointments.list.trackStatus' | t"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           }
-        </p>
-        @if (activeTab() === 'upcoming') {
-          <ui-button [routerLink]="['/appointments/book']" size="sm" variant="secondary" class="mt-5">
-            احجز جلستك الأولى الآن
-          </ui-button>
-        }
-      </div>
+        </div>
+      } @else {
+        <div
+          class="flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-bosla-charcoal/5 shadow-sm px-6"
+        >
+          <div
+            class="w-16 h-16 rounded-full bg-gradient-to-br from-bosla-blue/10 to-bosla-primary/10 flex items-center justify-center mb-5"
+          >
+            <svg
+              class="w-7 h-7 text-bosla-blue/40"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-bosla-charcoal">
+            @if (activeTab() === 'all') {
+              {{ 'appointments.list.emptyAll' | t }}
+            } @else if (activeTab() === 'pending') {
+              {{ 'appointments.list.emptyPending' | t }}
+            } @else if (activeTab() === 'awaiting_payment') {
+              {{ 'appointments.list.emptyAwaitingPayment' | t }}
+            } @else if (activeTab() === 'paid') {
+              {{ 'appointments.list.emptyPaid' | t }}
+            } @else if (activeTab() === 'completed') {
+              {{ 'appointments.list.emptyCompleted' | t }}
+            } @else {
+              {{ 'appointments.list.emptyCancelled' | t }}
+            }
+          </h3>
+          <p class="text-sm text-bosla-grey max-w-sm mt-2 leading-relaxed">
+            @if (searchQuery()) {
+              {{ 'appointments.list.emptySearch' | t }}
+            } @else if (activeTab() === 'all') {
+              {{ 'appointments.list.emptyAllDesc' | t }}
+            } @else if (activeTab() === 'pending') {
+              {{ 'appointments.list.emptyPendingDesc' | t }}
+            } @else {
+              {{ 'appointments.list.emptyDefaultDesc' | t }}
+            }
+          </p>
+          @if (!searchQuery() && activeTab() === 'all') {
+            <ui-button [routerLink]="['/specialists']" size="md" variant="primary" class="mt-6">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                {{ 'appointments.list.bookFirst' | t }}
+              </span>
+            </ui-button>
+          }
+        </div>
+      }
     }
-
-  }
-
+  </div>
 </div>

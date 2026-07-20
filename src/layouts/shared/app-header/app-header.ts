@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, inject } from '@angular/core';
+import { Component, HostListener, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { UiLogo } from '@shared/ui/logo/logo';
@@ -14,6 +14,11 @@ import { MobileMenu } from '@layouts/shared/mobile-menu/mobile-menu';
 })
 export class AppHeader {
   @Input() variant: 'public' | 'dashboard' = 'public';
+  @Output() toggleSidebar = new EventEmitter<void>();
+
+  onToggleSidebar() {
+    this.toggleSidebar.emit();
+  }
 
   private readonly router = inject(Router);
   readonly navigationService = inject(NavigationService);

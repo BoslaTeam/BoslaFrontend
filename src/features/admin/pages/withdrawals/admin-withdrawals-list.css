@@ -1,0 +1,202 @@
+/* ── Admin Withdrawals List ── */
+.withdrawals-page { padding: 1.5rem; }
+
+/* Page Header */
+.page-header {
+  margin-bottom: 1.5rem;
+}
+.page-header h1 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #1B4F72;
+  margin: 0 0 0.125rem;
+}
+.page-subtitle {
+  font-size: 0.8125rem;
+  color: #95A5A6;
+  margin: 0;
+}
+
+/* Filters */
+.filters {
+  margin-bottom: 1rem;
+}
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.filter-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(27, 79, 114, 0.1);
+  background: #fff;
+  font-size: 0.8125rem;
+  color: #2C3E50;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.filter-tab:hover {
+  background: rgba(27, 79, 114, 0.04);
+  border-color: rgba(27, 79, 114, 0.2);
+}
+.filter-tab.active {
+  background: #1B4F72;
+  color: #fff;
+  border-color: #1B4F72;
+}
+
+/* Table */
+.table-container {
+  background: #fff;
+  border: 1px solid rgba(27, 79, 114, 0.08);
+  border-radius: 0.875rem;
+  overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.data-table th {
+  padding: 0.875rem 1rem;
+  text-align: start;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #95A5A6;
+  background: #F7F9FA;
+  border-bottom: 1px solid rgba(27, 79, 114, 0.06);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(27, 79, 114, 0.04);
+  color: #2C3E50;
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: rgba(46, 134, 171, 0.02); }
+
+/* User Cell */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.user-avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1B4F72, #2E86AB);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.user-name {
+  font-weight: 600;
+  color: #1B4F72;
+  font-size: 0.8125rem;
+}
+.user-title {
+  font-size: 0.6875rem;
+  color: #95A5A6;
+}
+.amount-cell {
+  font-weight: 600;
+  color: #1B4F72;
+  white-space: nowrap;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-pending { color: #F39C12; background: rgba(243, 156, 18, 0.1); }
+.status-processing { color: #2E86AB; background: rgba(46, 134, 171, 0.1); }
+.status-completed { color: #16a34a; background: rgba(22, 163, 74, 0.1); }
+.status-rejected { color: #ba1a1a; background: rgba(186, 26, 26, 0.08); }
+
+/* Action Button */
+.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(27, 79, 114, 0.1);
+  background: transparent;
+  color: #1B4F72;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.btn-sm:hover {
+  background: rgba(27, 79, 114, 0.06);
+  border-color: rgba(27, 79, 114, 0.2);
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(27, 79, 114, 0.1);
+  border-top-color: #1B4F72;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state p {
+  font-size: 0.8125rem;
+  color: #95A5A6;
+}
+
+/* Empty */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.empty-state h3 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #2C3E50;
+  margin: 0.75rem 0 0.25rem;
+}
+.empty-state p {
+  font-size: 0.8125rem;
+  color: #95A5A6;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-tabs { flex-wrap: nowrap; overflow-x: auto; }
+  .table-container { overflow-x: auto; }
+  .data-table { min-width: 650px; }
+}

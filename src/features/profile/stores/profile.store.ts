@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { AuthService } from '@core/services/auth.service';
 import { UserProfileService } from '../../users/services/user-profile.service';
 import {
   UserProfileDto,
@@ -14,6 +15,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ProfileStore {
   private readonly userProfileService = inject(UserProfileService);
+  private readonly authService = inject(AuthService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -55,6 +57,14 @@ export class ProfileStore {
     this.loadSocialLinks();
   }
 
+  reset() {
+    this.profile.set(null);
+    this.educations.set([]);
+    this.socialLinks.set([]);
+    this.loading.set(false);
+    this.error.set(null);
+  }
+
   // ─── Mutations ────────────────────────────────────────
 
   updateProfile(request: UpdateProfileRequest) {
@@ -79,6 +89,7 @@ export class ProfileStore {
       next: (res) => {
         const fileUrl = res.data || res;
         this.profile.update(p => p ? { ...p, profilePictureUrl: fileUrl } : p);
+        this.authService.updateAvatar(fileUrl);
         this.loading.set(false);
       },
       error: (err) => {

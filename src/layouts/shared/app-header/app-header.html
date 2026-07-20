@@ -1,13 +1,23 @@
-<header class="fixed top-0 left-0 w-full z-50 transition-all duration-300"
-  [ngClass]="variant === 'dashboard'
+<header class="fixed top-0 left-0 w-full z-50 transition-all duration-300" [ngClass]="variant === 'dashboard'
     ? 'bg-bosla-primary shadow-md'
     : (isSolidBackground
       ? 'bg-bosla-primary/95 backdrop-blur-md border-b border-white/10 shadow-lg'
       : 'bg-transparent border-transparent')">
-  <div class="container mx-auto px-4 h-20 flex items-center justify-between">
-    <a [routerLink]="navigationService.homeRoute" class="flex items-center gap-2 group">
-      <ui-logo size="lg"></ui-logo>
-    </a>
+  <div class="container mx-auto px-4 h-20 flex items-center justify-between" dir="rtl">
+    <div class="flex items-center gap-4">
+      @if (variant === 'dashboard') {
+        <button (click)="onToggleSidebar()" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-full text-white hover:bg-white/10 transition-colors focus:outline-none" aria-label="تبديل القائمة الجانبية">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      }
+      <a [routerLink]="navigationService.homeRoute" class="flex items-center gap-2 group">
+        <ui-logo size="lg"></ui-logo>
+      </a>
+    </div>
     <app-main-navigation />
     <app-header-actions />
     <app-mobile-menu />

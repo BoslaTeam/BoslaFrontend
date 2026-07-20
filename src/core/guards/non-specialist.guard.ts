@@ -1,7 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { UserRole } from '../enums/user-role.enum';
 import { NavigationService } from '../navigation/navigation.service';
 
 export const nonSpecialistGuard: CanActivateFn = () => {
@@ -9,7 +8,9 @@ export const nonSpecialistGuard: CanActivateFn = () => {
   const router = inject(Router);
   const navigationService = inject(NavigationService);
 
-  if (authService.hasRole(UserRole.Specialist)) {
+  const status = authService.specialistStatus();
+
+  if (status === 'Approved' || status === 'Pending') {
     return router.createUrlTree([navigationService.specialistDashboardRoute]);
   }
 

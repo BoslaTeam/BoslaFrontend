@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-admin-user-edit',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './admin-user-edit.html',
   styleUrl: './admin-user-create.css',
 })

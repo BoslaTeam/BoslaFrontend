@@ -1,0 +1,50 @@
+/* ── Microphone Level Indicator — Light Mode ── */
+
+.level-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.level-indicator-bar-track {
+  flex: 1;
+  height: 5px;
+  background: #e8ecf0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.level-indicator-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.08s linear, background-color 0.2s ease;
+}
+
+.level-bar--low {
+  background-color: #16a34a;
+}
+
+.level-bar--medium {
+  background-color: #ca8a04;
+}
+
+.level-bar--high {
+  background-color: #dc2626;
+}
+
+.level-indicator-percent {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6875rem;
+  color: #95A5A6;
+  min-width: 2.2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.level-indicator-error {
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 400;
+}

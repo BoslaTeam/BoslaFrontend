@@ -80,25 +80,168 @@ export interface AdminSocialLinkDto {
 
 // ── Specialists ──
 
-export interface PendingSpecialistDto {
+export interface CreateSpecialistRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
+  country?: string;
+  title?: string;
+  bio?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  experienceYears: number;
+  experienceLevel: string;
+  hourlyRate: number;
+  bookingPolicy?: string;
+  expertiseIds: string[];
+  industryIds: string[];
+  skillIds: string[];
+  toolIds: string[];
+}
+
+export interface AdminUpdateSpecialistRequest {
+  fullName?: string;
+  phoneNumber?: string;
+  country?: string;
+  title?: string;
+  bio?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  experienceYears?: number;
+  experienceLevel?: string;
+  hourlyRate?: number;
+  bookingPolicy?: string;
+  verificationStatus?: string;
+  expertiseIds?: string[];
+  industryIds?: string[];
+}
+
+export interface AdminSpecialistListItemDto {
   id: string;
   fullName: string;
   email: string;
   title?: string;
-  createdAt: string;
-  avatarUrl?: string | null;
-  expertiseAreas: string[];
-}
-
-export interface AdminSpecialistDetailDto extends PendingSpecialistDto {
-  bio?: string;
-  isVerified: boolean;
-  rating?: number;
+  verificationStatus: string;
+  experienceLevel: string;
+  hourlyRate: number;
+  rating: number;
+  isOnline: boolean;
   totalSessions: number;
   totalEarnings: number;
+  createdAt: string;
+  profileImageUrl?: string | null;
+  expertiseAreas: string[];
+  isEmbedded?: boolean;
+}
+
+export interface SkillDto {
+  id: string;
+  name: string;
+}
+
+export interface ToolDto {
+  id: string;
+  name: string;
+}
+
+export interface ExperienceDto {
+  id: string;
+  jobTitle: string;
+  companyName: string;
+  fromDate: string;
+  toDate?: string;
+  description?: string;
+}
+
+export interface ReviewDto {
+  id: string;
+  reviewerName: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+}
+
+export interface AdminSpecialistDetailDto {
+  id: string;
+  userId: string;
+  fullName: string;
+  email: string;
+  title?: string;
+  bio?: string;
+  verificationStatus: string;
+  experienceLevel: string;
+  experienceYears: number;
+  hourlyRate: number;
+  country?: string;
+  gender?: string;
+  preferredLanguage?: string;
+  rating: number;
+  isVerified: boolean;
+  totalSessions: number;
+  totalEarnings: number;
+  totalReviews: number;
+  profileImageUrl?: string | null;
+  createdAt: string;
+  verifiedAt?: string;
+  lastLoginAt?: string;
+  skills: SkillDto[];
+  tools: ToolDto[];
+  experiences: ExperienceDto[];
+  expertiseAreas: string[];
+  industries: string[];
+  reviews: ReviewDto[];
+  isEmbedded?: boolean;
+  lastEmbeddedAt?: string;
+  documents: SpecialistDocumentDto[];
+  adminNotes?: string;
+}
+
+export interface SpecialistDocumentDto {
+  id: string;
+  type: string;
+  url: string;
+  originalFileName: string;
+}
+
+export interface VerifySpecialistRequest {
+  isVerified: boolean;
+  adminNotes?: string;
 }
 
 // ── Appointments ──
+
+export interface AdminAppointmentDetailDto {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  userAvatarUrl?: string;
+  specialistId: string;
+  specialistName: string;
+  specialistAvatarUrl?: string;
+  start: string;
+  end: string;
+  durationMinutes: number;
+  status: string;
+  sessionTopic?: string;
+  notes?: string;
+  cancellationReason?: string;
+  totalAmount?: number;
+  paymentStatus?: string;
+  createdAt: string;
+  statusHistory: AdminAppointmentStatusHistoryDto[];
+  keyTakeaways?: string;
+  actionItemsForUser?: string;
+  actionItemsForSpec?: string;
+}
+
+export interface AdminAppointmentStatusHistoryDto {
+  oldStatus: string;
+  newStatus: string;
+  reason?: string;
+  createdAt: string;
+}
 
 export interface AdminAppointmentDto {
   id: string;
@@ -122,9 +265,67 @@ export interface AuditLogDto {
   userName: string;
   entityType: string;
   entityId: string;
+  oldValues?: string;
+  newValues?: string;
   details?: string;
   ipAddress?: string;
   createdAt: string;
+}
+
+// ── Payments ──
+
+export interface AdminPaymentDto {
+  id: string;
+  appointmentId: string;
+  userName: string;
+  specialistName: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  paidAt?: string;
+  createdAt: string;
+}
+
+export interface AdminPaymentDetailDto {
+  id: string;
+  appointmentId: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  userAvatarUrl?: string;
+  specialistId: string;
+  specialistName: string;
+  specialistAvatarUrl?: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  externalPaymentId?: string;
+  paidAt?: string;
+  platformFeeAmount: number;
+  specialistAmount: number;
+  taxAmount: number;
+  refundReason?: string;
+  createdAt: string;
+  escrowStatus?: string;
+  heldUntil?: string;
+  disputeInfo?: AdminDisputeInfoDto;
+}
+
+export interface AdminDisputeInfoDto {
+  id: string;
+  reason: string;
+  description?: string;
+  status: string;
+  filedAt: string;
+  resolvedAt?: string;
+  adminNotes?: string;
+}
+
+export interface ResolveDisputeRequest {
+  approveRefund: boolean;
+  adminNotes?: string;
 }
 
 // ── AI Embeddings ──
@@ -133,6 +334,7 @@ export interface EmbeddingsStatusDto {
   totalSpecialists: number;
   embeddedCount: number;
   pendingCount: number;
+  outdatedCount: number;
   lastRebuildAt?: string;
   status: string;
 }

@@ -1,0 +1,93 @@
+<div class="withdrawal-detail-page">
+  <div class="page-header">
+    <a routerLink="/admin/withdrawals" class="back-link">{{ 'admin.withdrawals.backToWithdrawals' | t }}</a>
+    <h1>{{ 'common.details.tfasyl' | t }} طلب السحب</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ 'common.loading' | t }}</p>
+    </div>
+  } @else if (withdrawal(); as w) {
+    <div class="detail-grid">
+      <div class="detail-card">
+        <h3>{{ 'admin.withdrawals.requestInfo' | t }}</h3>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'admin.specialistLabel.almtkhss' | t }}</span>
+          <span class="detail-value">{{ w.specialistName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'payments.amount' | t }}</span>
+          <span class="detail-value amount">{{ w.amount | number:'1.2-2' }} ج.م</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'payments.paymentMethod.tryqh_aldfa' | t }}</span>
+          <span class="detail-value">{{ getMethodLabel(w.paymentMethod) }}</span>
+        </div>
+        @if (w.paymentDetails) {
+          <div class="detail-row">
+            <span class="detail-label">{{ 'common.details.tfasyl' | t }} الدفع</span>
+            <span class="detail-value">{{ w.paymentDetails }}</span>
+          </div>
+        }
+        <div class="detail-row">
+          <span class="detail-label">{{ 'payments.status' | t }}</span>
+          <span class="status-badge" [class]="getStatusClass(w.status)">
+            {{ getStatusLabel(w.status) }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">{{ 'withdrawals.requestDate.tarykh_altlb' | t }}</span>
+          <span class="detail-value">{{ w.requestedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+        </div>
+        @if (w.processedAt) {
+          <div class="detail-row">
+            <span class="detail-label">{{ 'admin.withdrawals.processDate' | t }}</span>
+            <span class="detail-value">{{ w.processedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (w.status === 'Pending') {
+        <div class="detail-card action-card">
+          <h3>{{ 'admin.withdrawals.action' | t }}</h3>
+          <div class="form-group">
+            <label>{{ 'admin.withdrawals.adminNotes' | t }}</label>
+            <textarea
+              [(ngModel)]="adminNotes"
+              placeholder="{{ 'admin.withdrawals.notesPlaceholder' | t }}"
+              rows="4"
+              class="form-control">
+            </textarea>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary" (click)="approve()" [disabled]="actionLoading()">
+              {{ actionLoading() ? ('common.loading' | t) : ('admin.withdrawals.approve' | t) }}
+            </button>
+            <button class="btn btn-danger" (click)="reject()" [disabled]="actionLoading()">
+              {{ actionLoading() ? ('common.loading' | t) : ('admin.withdrawals.reject' | t) }}
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (w.status === 'Processing') {
+        <div class="detail-card action-card">
+          <h3>{{ 'admin.withdrawals.action' | t }}</h3>
+          <p class="help-text">{{ 'admin.withdrawals.processingHint' | t }}</p>
+          <button class="btn btn-primary" (click)="markCompleted()" [disabled]="actionLoading()">
+            {{ actionLoading() ? ('common.loading' | t) : ('admin.withdrawals.markCompleted' | t) }}
+          </button>
+        </div>
+      }
+
+      @if (w.adminNotes) {
+        <div class="detail-card">
+          <h3>{{ 'admin.withdrawals.adminNotes' | t }}</h3>
+          <p class="notes-text">{{ w.adminNotes }}</p>
+        </div>
+      }
+    </div>
+  }
+</div>

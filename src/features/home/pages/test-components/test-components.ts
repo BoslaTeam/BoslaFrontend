@@ -28,20 +28,11 @@ import { DashboardActivity, UiDashboardActivityCard } from '@shared/ui/dashboard
 import { UiDashboardStatCard } from "@shared/ui/dashboard-stat-card/dashboard-stat-card";
 import { UiPagination } from '@shared/ui/pagination/pagination';
 
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-test-components',
-  imports: [
-    FormsModule, JsonPipe,
-    UiLogo, UiButton, UiInput, UiTextarea, UiToast, UiTabs, UiBreadcrumbs,
-    UiExpertCard, UiTimeSlotsPicker, UiStatCard, UiEmptyStateCard,
-    UiLoadingSkeleton, UiModal, UiStatusBadge, UiReviewCard,
-    UiInteractiveRating, UiRatingSummary, UiTableRowSkeleton,
-    UiKpiCardSkeleton, UiDropdown, UiMultiSelectFilter,
-    UiEmptyState, UiDashboardStatCard, UiDashboardActivityCard,
-    UiPagination
-  ],
+  imports: [FormsModule, JsonPipe, UiLogo, UiButton, UiInput, UiTextarea, UiToast, UiTabs, UiBreadcrumbs, UiExpertCard, UiTimeSlotsPicker, UiStatCard, UiEmptyStateCard, UiLoadingSkeleton, UiModal, UiStatusBadge, UiReviewCard, UiInteractiveRating, UiRatingSummary, UiTableRowSkeleton, UiKpiCardSkeleton, UiDropdown, UiMultiSelectFilter, UiEmptyState, UiDashboardStatCard, UiDashboardActivityCard, UiPagination, TranslatePipe],
   templateUrl: './test-components.html',
-  styleUrl: './test-components.css',
 })
 export class TestComponents {
 

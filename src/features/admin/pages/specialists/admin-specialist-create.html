@@ -1,0 +1,153 @@
+<div class="user-form-page">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    {{ 'common.backToList' | t }}
+  </button>
+
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ 'admin.specialists.addSpecialistTitle' | t }}</h2>
+      <p>{{ 'admin.specialists.createDesc' | t }}</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
+      <!-- Basic Info -->
+      <div class="form-section-title">{{ 'specialist.basicInfo.almalwmat_alasasyh' | t }}</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>{{ 'admin.users.fullNameLabel' | t }}</label>
+          <input type="text" formControlName="fullName" [placeholder]="'admin.users.fullNamePlaceholder' | t" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'auth.login.email' | t }} *</label>
+          <input type="email" formControlName="email" placeholder="example@domain.com" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'auth.login.password' | t }} *</label>
+          <input type="password" formControlName="password" [placeholder]="'admin.users.passwordMinLength' | t" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'auth.register.phone' | t }}</label>
+          <input type="text" formControlName="phoneNumber" [placeholder]="'auth.register.phone' | t" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.users.country' | t }}</label>
+          <input type="text" formControlName="country" [placeholder]="'admin.users.countryPlaceholder' | t" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.users.gender' | t }}</label>
+          <select formControlName="gender" class="form-input">
+            <option value="">{{ 'common.select' | t }}</option>
+            <option value="Male">{{ 'common.male' | t }}</option>
+            <option value="Female">{{ 'common.female' | t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.specialists.professionalTitle' | t }}</label>
+          <input type="text" formControlName="title" [placeholder]="'admin.specialists.professionalTitlePlaceholder' | t" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.users.preferredLanguage' | t }}</label>
+          <input type="text" formControlName="preferredLanguage" [placeholder]="'admin.specialists.preferredLanguagePlaceholder' | t" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group form-group-full">
+        <label>{{ 'admin.specialists.bioLabel' | t }}</label>
+        <textarea formControlName="bio" [placeholder]="'admin.specialists.bioPlaceholder' | t" class="form-input form-textarea" rows="3"></textarea>
+      </div>
+
+      <!-- Professional Info -->
+      <div class="form-section-title">{{ 'onboarding.professionalInfo.almalwmat_almhnyh' | t }}</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>{{ 'specialists.yearsOfExperience.snwat_alkhbrh' | t }} *</label>
+          <input type="number" formControlName="experienceYears" placeholder="0" class="form-input" min="0">
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.specialists.experienceLevelLabel' | t }} *</label>
+          <select formControlName="experienceLevel" class="form-input">
+            <option value="Entry">{{ 'admin.specialists.beginner' | t }}</option>
+            <option value="Mid">{{ 'common.average.mtwst' | t }}</option>
+            <option value="Senior">{{ 'admin.specialists.advanced' | t }}</option>
+            <option value="Lead">{{ 'auth.register.roleSpecialist' | t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.specialists.hourlyRateLabel' | t }} *</label>
+          <input type="number" formControlName="hourlyRate" placeholder="0" class="form-input" min="0">
+        </div>
+        <div class="form-group">
+          <label>{{ 'admin.specialists.bookingPolicy' | t }}</label>
+          <input type="text" formControlName="bookingPolicy" [placeholder]="'admin.specialists.bookingPolicy' | t" class="form-input">
+        </div>
+      </div>
+
+      <!-- Expertise -->
+      <div class="form-section-title">{{ 'admin.specialists.expertiseAreas' | t }}</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">{{ 'common.loading' | t }}</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of expertiseList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('expertiseIds', item.id)" (click)="toggleSelection('expertiseIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Industries -->
+      <div class="form-section-title">{{ 'admin.specialists.industries' | t }}</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">{{ 'common.loading' | t }}</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of industryList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('industryIds', item.id)" (click)="toggleSelection('industryIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Skills -->
+      <div class="form-section-title">{{ 'admin.specialists.skills' | t }}</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">{{ 'common.loading' | t }}</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of skillList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('skillIds', item.id)" (click)="toggleSelection('skillIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Tools -->
+      <div class="form-section-title">{{ 'admin.specialists.tools' | t }}</div>
+      @if (isLoadingLookups()) {
+        <p class="loading-hint">{{ 'common.loading' | t }}</p>
+      } @else {
+        <div class="chips-grid">
+          @for (item of toolList(); track item.id) {
+            <button type="button" class="chip-btn" [class.chip-selected]="isSelected('toolIds', item.id)" (click)="toggleSelection('toolIds', item.id)">
+              {{ item.name }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">{{ 'appointments.book.cancel' | t }}</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
+          {{ 'admin.specialists.addSpecialist' | t }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

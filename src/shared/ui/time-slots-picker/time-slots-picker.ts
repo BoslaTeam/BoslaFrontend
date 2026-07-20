@@ -1,5 +1,6 @@
-import { Component, input, model, output, signal, computed } from '@angular/core';
+import { Component, input, model, output, signal, computed, inject } from '@angular/core';
 import { SlotState, UiTimeSlot } from '../time-slot/time-slot';
+import { TranslationService } from '@core/services/translation.service';
 
 export interface TimeSlotItem {
   time: string;
@@ -20,6 +21,9 @@ export class UiTimeSlotsPicker {
 
   readonly prevClick = output<number>();
   readonly nextClick = output<number>();
+
+  private readonly translationService = inject(TranslationService);
+  readonly direction = computed(() => this.translationService.currentLang() === 'ar' ? 'rtl' : 'ltr');
 
   private readonly PAGE_SIZE = 6;
 
