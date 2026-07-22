@@ -47,6 +47,14 @@ export class AppointmentDetail implements OnInit, OnDestroy {
   readonly showCancelModal = signal(false);
   readonly cancelReason = signal('');
 
+  readonly cancelMessage = computed(() => {
+    const item = this.store.selectedItem();
+    if (item?.status !== AppointmentStatus.Cancelled) return null;
+    const history = this.store.selectedItemHistory();
+    const cancelEvent = history.find((h) => h.newStatus === AppointmentStatus.Cancelled);
+    return cancelEvent?.reason || null;
+  });
+
   readonly showReviewModal = signal(false);
   readonly reviewRating = signal(0);
   readonly reviewHover = signal(0);

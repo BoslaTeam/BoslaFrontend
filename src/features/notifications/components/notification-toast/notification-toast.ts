@@ -59,7 +59,7 @@ export class NotificationToast {
     if (item.type === NotificationType.Message) {
       this.router.navigate(['/chat', item.appointmentId]);
     } else {
-      this.router.navigate(['/appointments', item.appointmentId, 'pay']);
+      this.router.navigate(['/appointments', item.appointmentId]);
     }
   }
 }
