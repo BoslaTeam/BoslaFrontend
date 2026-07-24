@@ -11,6 +11,9 @@
     <div class="flex-grow min-w-0">
       <p class="ntf-toast-title">{{ toast.title }}</p>
       <p class="ntf-toast-msg">{{ toast.message }}</p>
+      @if (toast.appointmentId) {
+        <button type="button" (click)="onClickToast(toast); $event.stopPropagation()" class="ntf-toast-btn">{{ 'notifications.viewDetails' | t }}</button>
+      }
     </div>
     <button type="button" (click)="dismiss(toast.id); $event.stopPropagation()" class="ntf-toast-close" [attr.aria-label]="'common.close' | t">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

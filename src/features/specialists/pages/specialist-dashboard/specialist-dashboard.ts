@@ -9,6 +9,7 @@ import { SpecialistAiService } from '@features/ai/services/specialist-ai.service
 import { DashboardInsightsDto } from '@features/ai/contracts/specialist-ai.contracts';
 
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { NotificationsService } from '@features/notifications/services/notifications.service';
 @Component({
   selector: 'app-specialist-dashboard',
   imports: [DatePipe, RouterLink, TranslatePipe],
@@ -17,6 +18,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 export class SpecialistDashboard implements OnInit, OnDestroy {
   private specialistApi = inject(SpecialistApiService);
   private specialistAiService = inject(SpecialistAiService);
+  private notifHttp = inject(NotificationsService);
+  private notifInterval: ReturnType<typeof setInterval> | null = null;
   reviews = signal<SpecialistReviewsResponse | null>(null);
   profile = signal<SpecialistProfileResponse | null>(null);
   searchTerm = signal('');
@@ -36,17 +39,23 @@ export class SpecialistDashboard implements OnInit, OnDestroy {
   private aiRefreshInterval: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
+    this.notifHttp.getNotifications().subscribe({ error: () => {} });
     this.loadProfile();
     this.loadDashboard();
     this.loadReviews();
     this.loadAiInsights();
-    // Auto-refresh AI insights every 5 minutes
     this.aiRefreshInterval = setInterval(() => this.loadAiInsights(), 5 * 60 * 1000);
+    this.notifInterval = setInterval(() => {
+      this.notifHttp.getNotifications().subscribe({ error: () => {} });
+    }, 30000);
   }
 
   ngOnDestroy(): void {
     if (this.aiRefreshInterval) {
       clearInterval(this.aiRefreshInterval);
+    }
+    if (this.notifInterval) {
+      clearInterval(this.notifInterval);
     }
   }
 
