@@ -12,6 +12,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import { JOIN_WINDOW_MS } from '@core/constants/appointment.constants';
 import { PaymentStatus } from '../../contracts/appointments.contracts';
 import { UiButton } from '@shared/ui/button/button';
 import { UiSpinner } from '@shared/ui/spinner/spinner';
@@ -174,7 +175,7 @@ export class AppointmentDetail implements OnInit, OnDestroy {
     if (!this.canJoin()) return false;
     const item = this.store.selectedItem();
     if (!item) return false;
-    const startMs = new Date(item.start).getTime() - 15 * 60 * 1000;
+    const startMs = new Date(item.start).getTime() - JOIN_WINDOW_MS;
     return Date.now() >= startMs;
   });
 

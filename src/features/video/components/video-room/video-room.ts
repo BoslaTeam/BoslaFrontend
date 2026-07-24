@@ -141,6 +141,7 @@ export class VideoRoom {
       this.recordingTimerService.stop();
       this.isSessionEnded.set(true);
       this.isWaitingForSpecialist.set(false);
+      this.screenShareService.reset();
 
       if (this.agoraService.joined()) {
         this.networkQualityService.stop();
@@ -161,6 +162,7 @@ export class VideoRoom {
         this.sessionTimerService.stop();
         this.recordingTimerService.stop();
         this.isSessionEnded.set(true);
+        this.screenShareService.reset();
 
         if (this.agoraService.joined()) {
           this.networkQualityService.stop();
@@ -205,6 +207,7 @@ export class VideoRoom {
       this.networkQualityService.stop();
       this.videoSignalrService.disconnect();
       this.sessionTimerService.stop();
+      this.screenShareService.reset();
       this.agoraService.disconnect();
     });
   }
@@ -347,6 +350,22 @@ export class VideoRoom {
       if (this.isDestroyed) return;
 
       this.agoraService.initialize();
+
+      // Provide a token-renewal source so an expiring token is refreshed
+      // automatically mid-call instead of silently dropping the connection.
+      this.agoraService.setTokenRenewer(async () => {
+        if (!this._appointmentId) return null;
+        try {
+          const res = await firstValueFrom(
+            this.videoSessionService.generateToken(this._appointmentId)
+          );
+          return res.data?.token ?? null;
+        } catch (err) {
+          console.error('[VideoRoom] Token renewal fetch failed', err);
+          return null;
+        }
+      });
+
       await this.agoraService.join(token.appId, token.channelName, token.token, token.uid);
       if (this.isDestroyed) {
         await this.agoraService.disconnect();
@@ -401,6 +420,7 @@ export class VideoRoom {
     this.agoraService.clearError();
     this.networkQualityService.stop();
     this.sessionTimerService.stop();
+    this.screenShareService.reset();
     await this.agoraService.disconnect();
 
     try {
@@ -425,6 +445,7 @@ export class VideoRoom {
     this.agoraService.clearError();
     this.networkQualityService.stop();
     this.sessionTimerService.stop();
+    this.screenShareService.reset();
     await this.agoraService.disconnect();
 
     try {

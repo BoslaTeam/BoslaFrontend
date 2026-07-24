@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AppointmentsStore } from '../../store/appointments.store';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import { JOIN_WINDOW_MS } from '@core/constants/appointment.constants';
 import { UiButton } from '@shared/ui/button/button';
 import { AuthService } from '@core/services/auth.service';
 import { TranslationService } from '@core/services/translation.service';
@@ -62,7 +63,7 @@ export class AppointmentList implements OnDestroy {
 
   canJoinAppointmentNow(apt: AppointmentDto): boolean {
     if (!this.canJoinAppointment(apt)) return false;
-    const startMs = new Date(apt.start).getTime() - 15 * 60 * 1000;
+    const startMs = new Date(apt.start).getTime() - JOIN_WINDOW_MS;
     return this.now() >= startMs;
   }
 

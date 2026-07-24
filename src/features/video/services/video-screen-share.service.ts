@@ -88,6 +88,21 @@ export class VideoScreenShareService {
     return this.screenTrack;
   }
 
+  /**
+   * Force-resets screen-share state on session teardown (leave / finish / end /
+   * expiry / component destroy). Unlike {@link stopScreenShare}, this does NOT
+   * republish the camera — the Agora client is being disconnected anyway — and it
+   * clears state regardless of the current phase, so a stale `Sharing` state can
+   * never leak into the next session (which would wedge the button/indicator).
+   * This service is a root singleton, so it MUST be reset explicitly.
+   */
+  reset(): void {
+    this.cleanup();
+    this._state.set(ScreenShareState.Idle);
+    this._error.set(null);
+    this._wasCameraEnabled = true;
+  }
+
   private restoreCameraState(): void {
     if (!this._wasCameraEnabled) {
       this.agoraService.disableCamera();

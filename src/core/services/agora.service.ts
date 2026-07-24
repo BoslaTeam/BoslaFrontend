@@ -28,6 +28,14 @@ export class AgoraService {
   private localVideoTrack: ICameraVideoTrack | null = null;
   private screenTrack: ILocalVideoTrack | null = null;
 
+  /**
+   * Supplies a fresh Agora token when the current one is about to expire.
+   * Set by the owning component (which knows the appointment/session). Returns
+   * null if a fresh token cannot be obtained. Kept out of this core service so
+   * it stays decoupled from the video-session feature.
+   */
+  private tokenRenewer: (() => Promise<string | null>) | null = null;
+
   private remoteVideoTracks = new Map<number, IRemoteVideoTrack>();
   private remoteAudioTracks = new Map<number, IRemoteAudioTrack>();
 
@@ -61,6 +69,23 @@ export class AgoraService {
 
   getClient(): IAgoraRTCClient | null {
     return this.client;
+  }
+
+  /** Registers (or clears) the callback used to renew the Agora token before it expires. */
+  setTokenRenewer(fn: (() => Promise<string | null>) | null): void {
+    this.tokenRenewer = fn;
+  }
+
+  private async renewToken(): Promise<void> {
+    if (!this.client || !this.tokenRenewer) return;
+    try {
+      const freshToken = await this.tokenRenewer();
+      if (freshToken && this.client) {
+        await this.client.renewToken(freshToken);
+      }
+    } catch (err) {
+      console.error('[Agora] Token renewal failed', err);
+    }
   }
 
   initialize(): void {
@@ -151,6 +176,29 @@ export class AgoraService {
 
     this.client.on('user-left', (user: IAgoraRTCRemoteUser) => {
       this.handleUserLeft(user);
+    });
+
+    // Keep our connection signal in sync with the SDK's own reconnect lifecycle,
+    // otherwise a mid-call drop/reconnect would never be reflected in the UI.
+    this.client.on('connection-state-change', (curState) => {
+      switch (curState) {
+        case 'CONNECTED':
+          this._connectionState.set('connected');
+          break;
+        case 'CONNECTING':
+        case 'RECONNECTING':
+          this._connectionState.set('connecting');
+          break;
+        case 'DISCONNECTED':
+          this._connectionState.set('disconnected');
+          break;
+        // DISCONNECTING is transient — leave the current state as-is.
+      }
+    });
+
+    // Renew the token before it expires so the call is not silently dropped.
+    this.client.on('token-privilege-will-expire', async () => {
+      await this.renewToken();
     });
   }
 
@@ -298,6 +346,7 @@ export class AgoraService {
     this._remoteParticipants.set([]);
     this._screenSharing.set(false);
     this._localUid.set(null);
+    this.tokenRenewer = null;
   }
 
   // ── Camera controls ──

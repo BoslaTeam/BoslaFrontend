@@ -12,8 +12,9 @@ import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AppointmentService } from '../../../appointments/services/appointments.service';
-import { AppointmentDto } from '../../../appointments/contracts/appointments.contracts';
+import { AppointmentDto, PaymentStatus } from '../../../appointments/contracts/appointments.contracts';
 import { AppointmentStatus } from '@core/enums/appointment-status.enum';
+import { JOIN_WINDOW_MS } from '@core/constants/appointment.constants';
 import { API_ENDPOINTS } from '@core/constants/api-endpoints';
 import { ApiResponse } from '@core/models/api-response.model';
 import { AgoraTokenResponse } from '../../../video/models/video-session.model';
@@ -160,11 +161,12 @@ export class UpcomingSessionCard implements OnDestroy {
   readonly canJoin = computed(() => {
     if (this.isPastOrCancelled()) return false;
     if (this.isActiveSession()) return true;
-    const s = this.sessionData()?.status;
-    if (s !== AppointmentStatus.Paid && s !== AppointmentStatus.Confirmed) return false;
     const apt = this.appointment();
     if (!apt) return false;
-    const startMs = new Date(apt.start).getTime() - 15 * 60 * 1000;
+    // Payment gate: a Confirmed-but-unpaid appointment must NOT be joinable.
+    // Mirror the same check used by every other join entry point.
+    if (apt.paymentStatus !== PaymentStatus.Paid && apt.status !== AppointmentStatus.Paid) return false;
+    const startMs = new Date(apt.start).getTime() - JOIN_WINDOW_MS;
     return this.now() >= startMs;
   });
 
