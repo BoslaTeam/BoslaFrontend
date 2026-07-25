@@ -1,575 +1,379 @@
-<div class="home-wrapper transition-opacity duration-150 ease-in-out" [class.fade-out]="translationService.switchingLang()">
+<div class="home-wrapper" [class.fade-out]="translationService.switchingLang()">
 
-<!-- ════════════════════════════════════════════
-HERO SECTION — تم إعادة التصميم بالكامل
-════════════════════════════════════════════ -->
-<section class="hero-section pt-32 pb-20"
-  style="background: linear-gradient(140deg, #0d2640 0%, #1B4F72 35%, #1a5f7a 65%, #2E86AB 100%);">
-
-  <!-- Precise geometric rings (Compass motif) instead of blobs -->
-  <div class="hero-decorations absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border-[1px] border-white/5" style="animation: spin 60s linear infinite;"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border-[1px] border-white/10" style="animation: spin 40s linear infinite reverse;"></div>
+  <!-- ═══ HERO — Immersive Video ═══ -->
+  <section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
     
-    <!-- Compass cardinal points glowing -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-32 bg-gradient-to-b from-[#F39C12]/40 to-transparent"></div>
-    
-    <!-- Subtle accent glow -->
-    <div class="absolute top-1/3 right-[18%] w-64 h-64 bg-[#F39C12] opacity-[0.03] rounded-full blur-[100px]"></div>
+    <!-- Hero Video Background -->
+    <div class="absolute inset-0 z-0">
+      <video autoplay loop muted [muted]="true" playsinline oncanplay="this.muted=true" volume="0" class="w-full h-full object-cover opacity-60">
+        <source src="assets/videos/hero.mp4" type="video/mp4">
+      </video>
+      <!-- Premium dark gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-b from-[#091a26]/80 via-[#091a26]/50 to-[#091a26]"></div>
+    </div>
 
-    <!-- Particles -->
-    @for (p of particles; track $index) {
-    <div class="hero-particle"
-      [style.top]="p.y + '%'"
-      [style.left]="p.x + '%'"
-      [style.--delay]="p.delay + 's'"
-      [style.--dx]="p.dx + 'px'"
-      [style.--dy]="p.dy + 'px'"></div>
-    }
-  </div>
 
-  <!-- Video Background (مطلوب بقاءه) -->
-  <video autoplay loop [muted]="true" playsinline oncontextmenu="return false;"
-    class="absolute inset-0 w-full h-full object-cover z-0 opacity-15 pointer-events-none">
-    <source src="assets/videos/hero.mp4" type="video/mp4">
-  </video>
-
-  <!-- Content -->
-  <div class="container mx-auto px-6 relative z-10 w-full">
-    <div class="max-w-3xl">
-
+    <!-- Content Container -->
+    <div class="container mx-auto px-6 relative z-10 flex flex-col items-center justify-center text-center mt-16">
+      
       <!-- Badge -->
-      <div class="hero-badge section-enter section-enter-delay-1">
+      <div class="hero-badge section-enter inline-flex items-center gap-2 mb-6">
         <span class="hero-badge-dot"></span>
         <span class="hero-badge-text">{{ 'home.hero.badge' | t }}</span>
       </div>
 
-      <!-- Headline with typewriter -->
-      <h1 class="hero-headline section-enter section-enter-delay-2">
+      <!-- Headline -->
+      <h1 class="hero-headline text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight mb-6" style="text-shadow: 0 10px 40px rgba(0,0,0,0.5);">
         {{ 'home.hero.headline' | t }}<br>
-        <span class="hero-headline-accent inline-block">
-          {{ typewriterText }}<span class="border-l-2" style="border-color:#F39C12;animation:blink 0.8s step-end infinite;">&nbsp;</span>
+        <span class="hero-headline-accent inline-block mt-2" style="background: linear-gradient(to right, #ffffff, #F39C12); -webkit-background-clip: text; color: transparent;">
+          {{ typewriterText }}<span class="typewriter-cursor">&nbsp;</span>
         </span>
       </h1>
 
       <!-- Subheadline -->
-      <p class="text-lg md:text-xl text-white/60 mb-10 leading-relaxed font-light max-w-xl section-enter section-enter-delay-3">
+      <p class="text-xl md:text-2xl text-white/80 font-light max-w-3xl leading-relaxed section-enter mb-12">
         {{ 'home.hero.subheadline' | t }}
       </p>
 
-      <!-- Search Bar (بقاء — مطلوب) -->
-      <div class="hero-search-wrap section-enter section-enter-delay-4">
-        <div class="hero-search-bar">
+      <!-- Search Bar (Glassmorphic pill) -->
+      <div class="hero-search-wrap section-enter w-full max-w-2xl">
+        <div class="hero-search-bar flex items-center bg-white/10 backdrop-blur-2xl border border-white/20 rounded-full p-2 shadow-[0_0_40px_rgba(243,156,18,0.15)] transition-all duration-300 hover:bg-white/15">
           <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
             [placeholder]="'home.hero.searchPlaceholder' | t"
-            class="hero-search-input">
+            class="hero-search-input flex-grow bg-transparent text-white px-6 py-4 outline-none placeholder-white/60 text-lg">
 
-          <button (click)="onSearch()" class="hero-search-btn">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <button (click)="onSearch()" class="hero-search-btn bg-gradient-to-r from-[#F39C12] to-[#e67e22] text-white px-10 py-4 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-lg hover:shadow-[#F39C12]/30">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            {{ 'common.search' | t }}
+            <span>{{ 'common.search' | t }}</span>
           </button>
-          <div class="hero-ai-btn" [title]="'ai.widget.title' | t">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="hero-tags">
-          <span>{{ 'home.hero.trending' | t }}</span>
-          <a routerLink="/specialists" [queryParams]="{query:'قانون'}"
-            class="hero-tag">{{ 'home.hero.trendingLaw' | t }}</a>
-          <a routerLink="/specialists" [queryParams]="{query:'مالية'}"
-            class="hero-tag">{{ 'home.hero.trendingFinance' | t }}</a>
-          <a routerLink="/specialists" [queryParams]="{query:'برمجة'}"
-            class="hero-tag">{{ 'home.hero.trendingDev' | t }}</a>
         </div>
       </div>
 
-      <!-- Stats row (glass container redesign) -->
-      <div class="hero-stats stats-trigger section-enter section-enter-delay-5">
-        <div>
-          <div class="hero-stat-value">+{{ counters.specialists }}</div>
-          <div class="hero-stat-label">{{ 'home.hero.statSpecialists' | t }}</div>
+      <!-- Stats Floating Island -->
+      <div class="hero-stats stats-trigger section-enter mt-16 inline-flex flex-wrap justify-center gap-12 p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] shadow-2xl">
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-white">+{{ counters.specialists }}</div>
+          <div class="text-xs text-white/70 mt-2 uppercase tracking-widest font-bold">{{ 'home.hero.statSpecialists' | t }}</div>
         </div>
-        <div class="hero-stat-divider"></div>
-        <div>
-          <div class="hero-stat-value">+{{ counters.consultations }}K</div>
-          <div class="hero-stat-label">{{ 'home.hero.statConsultations' | t }}</div>
+        <div class="w-[1px] bg-white/20 self-stretch hidden md:block"></div>
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-[#F39C12]">+{{ counters.consultations }}K</div>
+          <div class="text-xs text-white/70 mt-2 uppercase tracking-widest font-bold">{{ 'home.hero.statConsultations' | t }}</div>
         </div>
-        <div class="hero-stat-divider"></div>
-        <div>
-          <div class="hero-stat-value">{{ counters.fields }}+</div>
-          <div class="hero-stat-label">{{ 'home.hero.statFields' | t }}</div>
+        <div class="w-[1px] bg-white/20 self-stretch hidden md:block"></div>
+        <div class="flex flex-col items-center">
+          <div class="text-5xl font-black text-[#2E86AB]">{{ counters.fields }}+</div>
+          <div class="text-xs text-white/70 mt-2 uppercase tracking-widest font-bold">{{ 'home.hero.statFields' | t }}</div>
         </div>
       </div>
+
     </div>
-  </div>
+  </section>
 
-  <!-- Bottom divider -->
-  <div class="wave-divider">
-    <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
-      <path d="M0,30 C360,55 1080,5 1440,30 L1440,60 L0,60 Z" fill="#F7F9FA" />
-    </svg>
-  </div>
-</section>
+  <!-- ═══ DOMAINS SECTION ═══ -->
+  <section class="section-dark py-24 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] rounded-full" style="background: radial-gradient(circle, rgba(46,134,171,0.06), transparent); pointer-events:none;"></div>
+    <div class="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full" style="background: radial-gradient(circle, rgba(243,156,18,0.05), transparent); pointer-events:none;"></div>
 
-
-<!-- ════════════════════════════════════════════
-DOMAINS SECTION — تم إعادة التصميم بالكامل - تصميم استثنائي
-════════════════════════════════════════════ -->
-<section class="py-20 md:py-32 relative overflow-hidden bg-white">
-  <!-- Decorative Background elements (Compass Theme) -->
-  <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#1B4F72]/5 to-transparent rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-  <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-[#F39C12]/10 to-transparent rounded-full blur-[120px] translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
-
-  <div class="container mx-auto px-6 relative z-10">
-    
-    <!-- Section Header -->
-    <div class="flex flex-col md:flex-row items-end justify-between mb-16 section-enter">
-      <div class="max-w-2xl">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="h-[2px] w-12 bg-[#F39C12]"></div>
-          <span class="text-sm font-black text-[#F39C12] tracking-wider uppercase">{{ 'home.domains.exploreLabel' | t }}</span>
+    <div class="container mx-auto px-6 relative z-10">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row items-end justify-between mb-16 section-enter">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-[2px] w-10 bg-[#F39C12]"></div>
+            <span class="section-label">{{ 'home.domains.exploreLabel' | t }}</span>
+          </div>
+          <h2 class="text-3xl md:text-5xl font-black section-headline mb-4 leading-tight">
+            {{ 'home.domains.headline' | t }} <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(90deg, #F39C12, #e67e22);">{{ 'home.domains.headlineAccent' | t }}</span>
+          </h2>
+          <p class="section-subline text-base md:text-lg">
+            {{ 'home.domains.description' | t }}
+          </p>
         </div>
-        <h2 class="text-4xl md:text-6xl font-black text-[#1B4F72] mb-6 leading-[1.2] tracking-tight">
-          {{ 'home.domains.headline' | t }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#F39C12] to-[#e67e22]">{{ 'home.domains.headlineAccent' | t }}</span>
-        </h2>
-        <p class="text-slate-500 text-lg md:text-xl leading-relaxed">
-          {{ 'home.domains.description' | t }}
-        </p>
+        
+        <a routerLink="/specialists" class="hidden md:inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border border-white/15 text-white font-bold hover:border-[#F39C12]/50 hover:text-[#F39C12] transition-all duration-300 group">
+          <span>{{ 'home.domains.browseAll' | t }}</span>
+          <svg class="w-5 h-5 transition-transform group-hover:translate-x-1 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 section-enter">
+        @if (expertiseList.length === 0) {
+        <div class="col-span-full py-24 flex flex-col items-center justify-center gap-5 text-white/30">
+          <div class="relative w-16 h-16">
+            <div class="absolute inset-0 rounded-full border-2 border-white/10"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-[#F39C12] border-t-transparent animate-spin"></div>
+          </div>
+          <span class="font-bold text-lg">{{ 'home.domains.loading' | t }}</span>
+        </div>
+        } @else {
+        @for (item of displayedExpertise; track $index; let i = $index) {
+        <a [routerLink]="['/specialists']" [queryParams]="{expertise:item.id}"
+          class="domain-card p-7 flex flex-col items-center justify-center text-center group"
+          [style.transitionDelay]="(0.05 * i) + 's'">
+          
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 relative group-hover:scale-110 transition-transform duration-500 ease-out"
+               style="background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));">
+            <div class="absolute inset-0 rounded-2xl bg-[#F39C12] opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-lg"></div>
+            <div class="relative z-10 w-8 h-8 text-white/70 group-hover:text-[#F39C12] transition-colors duration-500">
+               <ui-domain-icon [name]="item.name" class="w-full h-full"></ui-domain-icon>
+            </div>
+          </div>
+
+          <h3 class="text-white/80 font-bold text-base group-hover:text-[#F39C12] transition-colors duration-300 leading-tight">{{ getDomainName(item.name) }}</h3>
+          
+          <div class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#F39C12] to-[#2E86AB] w-0 group-hover:w-full transition-all duration-500 ease-in-out"></div>
+        </a>
+        }
+        }
       </div>
       
-      <a routerLink="/specialists" class="hidden md:inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-[#1B4F72] text-white font-bold hover:bg-[#153f5c] hover:shadow-[0_10px_30px_rgba(27,79,114,0.3)] transition-all duration-300 group">
-        {{ 'home.domains.browseAll' | t }}
-        <svg class="w-5 h-5 rotate-180 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-        </svg>
-      </a>
     </div>
+  </section>
 
-    <!-- Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 section-enter">
-      @if (expertiseList.length === 0) {
-      <div class="col-span-full py-24 flex flex-col items-center justify-center gap-5 text-[#1B4F72]/50">
-        <div class="relative w-20 h-20">
-           <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
-           <div class="absolute inset-0 rounded-full border-4 border-[#F39C12] border-t-transparent animate-spin"></div>
+  <!-- ═══ FEATURED SPECIALISTS ═══ -->
+  <section class="section-dark-alt py-24 overflow-hidden">
+    <div class="container mx-auto px-6">
+      
+      <div class="flex flex-col md:flex-row items-end justify-between mb-16 section-enter">
+        <div>
+          <span class="section-label">{{ 'home.specialists.eliteLabel' | t }}</span>
+          <h2 class="text-3xl md:text-5xl font-black section-headline mt-3 mb-3">{{ 'home.specialists.headline' | t }}</h2>
+          <p class="section-subline text-base md:text-lg max-w-2xl">{{ 'home.specialists.description' | t }}</p>
         </div>
-        <span class="font-bold text-lg">{{ 'home.domains.loading' | t }}</span>
+        <a routerLink="/specialists"
+          class="mt-6 md:mt-0 inline-flex items-center gap-2 font-bold text-white/60 hover:text-[#F39C12] transition-colors">
+          <span>{{ 'common.viewAll' | t }}</span>
+          <svg class="w-5 h-5 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
       </div>
-      } @else {
-      @for (item of displayedExpertise; track $index; let i = $index) {
-      <a [routerLink]="['/specialists']" [queryParams]="{expertise:item.id}"
-        class="group relative bg-white rounded-[2rem] p-8 flex flex-col items-center justify-center text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:shadow-[0_20px_50px_rgba(27,79,114,0.12)] hover:-translate-y-3 transition-all duration-500 overflow-hidden"
-        [style.transitionDelay]="(0.05 * i) + 's'">
-        
-        <!-- Glowing Compass Accent -->
-        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-             style="background: radial-gradient(circle at top right, rgba(243,156,18,0.05), transparent 70%);">
-        </div>
-        
-        <!-- Compass Arrow Icon (Top Right Decor) -->
-        <svg class="absolute top-6 right-6 w-5 h-5 text-slate-200 group-hover:text-[#F39C12] transition-all duration-500 transform group-hover:rotate-45 opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
 
-        <!-- Dynamic Icon Container -->
-        <div class="w-24 h-24 rounded-3xl flex items-center justify-center mb-6 relative group-hover:scale-110 transition-transform duration-500 ease-out"
-             style="background: linear-gradient(135deg, rgba(27,79,114,0.05), rgba(46,134,171,0.08)); box-shadow: inset 0 0 0 1px rgba(27,79,114,0.05);">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 section-enter">
+        @if (featuredSpecialists.length === 0) {
+        <div class="col-span-full py-12 flex justify-center">
+          <div class="animate-spin w-10 h-10 border-4 border-[#1B4F72] border-t-transparent rounded-full"></div>
+        </div>
+        } @else {
+        @for (specialist of featuredSpecialists; track specialist.id; let i = $index) {
+        <div [routerLink]="['/specialists', specialist.id]"
+          class="specialist-premium shadow-md border border-slate-100 hover:border-[#F39C12]/20 hover:shadow-2xl transition-all duration-500"
+          [style.transition-delay]="(0.08 * i) + 's'">
           
-          <!-- Inner Glow -->
-          <div class="absolute inset-0 rounded-3xl bg-[#F39C12] opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-xl -z-10"></div>
-          
-          <!-- The Icon -->
-          <div class="relative z-10 w-12 h-12 text-[#1B4F72] group-hover:text-[#1B4F72] transition-colors duration-500">
-             <ui-domain-icon [name]="item.name" class="w-full h-full"></ui-domain-icon>
-          </div>
-        </div>
-
-        <h3 class="text-[#1B4F72] font-black text-xl group-hover:text-[#F39C12] transition-colors duration-300 leading-tight">{{ getDomainName(item.name) }}</h3>
-        
-        <!-- Progress/Action Bar at Bottom -->
-        <div class="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-[#1B4F72] to-[#F39C12] w-0 group-hover:w-full transition-all duration-700 ease-in-out"></div>
-      </a>
-      }
-      }
-    </div>
-    
-    <!-- Mobile CTA -->
-    <div class="mt-10 text-center md:hidden">
-      <a routerLink="/specialists" class="inline-flex items-center justify-center w-full gap-3 px-8 py-5 rounded-2xl bg-[#1B4F72] text-white font-bold hover:bg-[#153f5c] transition-all duration-300 group shadow-[0_10px_30px_rgba(27,79,114,0.3)]">
-        {{ 'home.domains.browseAll' | t }}
-        <svg class="w-5 h-5 rotate-180 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-        </svg>
-      </a>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- ════════════════════════════════════════════
-FEATURED SPECIALISTS SECTION — تم إعادة التصميم بالكامل
-════════════════════════════════════════════ -->
-<section class="py-10 md:py-12 bg-white overflow-hidden">
-  <div class="container mx-auto px-6">
-    <div class="flex flex-col md:flex-row items-end justify-between mb-6 section-enter">
-      <div>
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold text-bosla-orange mb-2"
-          style="background:rgba(243,156,18,0.1);">{{ 'home.specialists.eliteLabel' | t }}</span>
-        <h2 class="text-2xl md:text-3xl font-black text-bosla-primary mb-1">{{ 'home.specialists.headline' | t }}</h2>
-        <p class="text-bosla-charcoal/60 text-sm md:text-base max-w-xl">{{ 'home.specialists.description' | t }}</p>
-      </div>
-      <a routerLink="/specialists"
-        class="mt-6 md:mt-0 inline-flex items-center gap-2 font-bold text-bosla-primary hover:text-bosla-orange transition-colors">
-        {{ 'common.viewAll' | t }}
-        <svg class="w-5 h-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-        </svg>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 section-enter">
-      @if (featuredSpecialists.length === 0) {
-      <div class="col-span-full py-12 flex justify-center text-bosla-charcoal/50">
-        <div class="animate-spin w-8 h-8 border-4 border-bosla-primary border-t-transparent rounded-full"></div>
-      </div>
-      } @else {
-      @for (specialist of featuredSpecialists; track specialist.id; let i = $index) {
-      <div [routerLink]="['/specialists', specialist.id]"
-        class="specialist-premium"
-        [style.transition-delay]="(0.08 * i) + 's'">
-        <!-- Header -->
-        <div class="specialist-premium-header" style="background:linear-gradient(135deg, #1B4F72, #2E86AB);">
-          <div class="specialist-premium-shimmer"></div>
-          <div class="specialist-premium-badge">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
-            </svg>
-            {{ 'home.specialists.verified' | t }}
-          </div>
-          <div class="specialist-premium-avatar">
-            <img [src]="specialist.profileImageUrl?.trim() || 'assets/icons/favicon.ico'"
-              [alt]="specialist.name"
-              (error)="specialist.profileImageUrl = undefined">
-            @if (specialist.isOnline) {
-            <div class="specialist-premium-online"></div>
-            }
-          </div>
-        </div>
-
-        <!-- Body -->
-        <div class="specialist-premium-body">
-          <div class="specialist-premium-name">{{ specialist.name }}</div>
-          <div class="specialist-premium-title">{{ specialist.title || ('home.specialists.defaultTitle' | t) }}</div>
-
-          <!-- Level indicator -->
-          <div class="specialist-premium-expertise">
-            @if (specialist.experienceLevel) {
-            <span>{{ 'home.specialists.level' | t }} {{ specialist.experienceLevel }}</span>
-            }
-            <span>{{ 'home.specialists.certifiedExpert' | t }}</span>
-          </div>
-
-          <!-- Footer -->
-          <div class="specialist-premium-footer">
-            <div class="specialist-premium-rating">
-              <svg viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-              </svg>
-              {{ specialist.rating > 0 ? specialist.rating : ('home.specialists.newRating' | t) }}
-            </div>
-            <div class="specialist-premium-rate">
-              {{ 'home.specialists.currency' | t }} {{ specialist.hourlyRate }} <small>{{ 'home.specialists.perHour' | t }}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-      }
-      }
-    </div>
-  </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════
-HOW IT WORKS SECTION
-════════════════════════════════════════════ -->
-<section class="py-10 md:py-12 relative overflow-hidden" style="background:#F7F9FA;">
-  <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-5 pointer-events-none"
-    style="background:radial-gradient(circle,#1B4F72,transparent 70%);transform:translate(-30%,-30%);"></div>
-  <div class="absolute bottom-0 right-0 w-80 h-80 rounded-full opacity-5 pointer-events-none"
-    style="background:radial-gradient(circle,#F39C12,transparent 70%);transform:translate(30%,30%);"></div>
-
-  <div class="container mx-auto px-6 relative z-10">
-    <div class="text-center mb-6 section-enter">
-      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold text-bosla-orange mb-2"
-        style="background:rgba(243,156,18,0.1);">{{ 'home.howItWorks.badge' | t }}</span>
-      <h2 class="text-2xl md:text-3xl font-black text-bosla-primary mb-1">{{ 'home.howItWorks.headline' | t }}</h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-      <div class="hidden md:block absolute top-8 left-1/3 right-1/3 h-0.5 rounded-full"
-        style="background:linear-gradient(to right,#2E86AB,#F39C12);animation:drawLine 1.2s cubic-bezier(0.16,1,0.3,1) 0.5s both;">
-      </div>
-
-      <div class="text-center relative section-enter section-enter-delay-1">
-        <div
-          class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10 transition-transform duration-300 hover:scale-110"
-          style="background:linear-gradient(135deg,#1B4F72,#2E86AB);box-shadow:0 8px 25px rgba(27,79,114,0.3);">
-          {{ 'home.howItWorks.step1.number' | t }}
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.howItWorks.step1.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed px-4">{{ 'home.howItWorks.step1.desc' | t }}</p>
-      </div>
-
-      <div class="text-center relative section-enter section-enter-delay-2">
-        <div
-          class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10 transition-transform duration-300 hover:scale-110"
-          style="background:linear-gradient(135deg,#F39C12,#e67e22);box-shadow:0 8px 25px rgba(243,156,18,0.35);">
-          {{ 'home.howItWorks.step2.number' | t }}
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.howItWorks.step2.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed px-4">{{ 'home.howItWorks.step2.desc' | t }}</p>
-      </div>
-
-      <div class="text-center relative section-enter section-enter-delay-3">
-        <div
-          class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-black text-xl relative z-10 transition-transform duration-300 hover:scale-110"
-          style="background:linear-gradient(135deg,#2E86AB,#1B4F72);box-shadow:0 8px 25px rgba(46,134,171,0.3);">
-          {{ 'home.howItWorks.step3.number' | t }}
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.howItWorks.step3.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed px-4">{{ 'home.howItWorks.step3.desc' | t }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════
-PILLARS SECTION
-════════════════════════════════════════════ -->
-<section class="py-10 md:py-12 relative overflow-hidden" style="background:linear-gradient(135deg,#F7F9FA 0%,#ffffff 50%,#F0F4F8 100%);">
-  <div class="absolute top-1/4 -left-20 w-72 h-72 rounded-full mix-blend-multiply pointer-events-none"
-    style="background:radial-gradient(circle,rgba(27,79,114,0.06),transparent 70%);animation:float 12s ease-in-out infinite;"></div>
-  <div class="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full mix-blend-multiply pointer-events-none"
-    style="background:radial-gradient(circle,rgba(243,156,18,0.05),transparent 70%);animation:float 15s ease-in-out infinite 3s;"></div>
-
-  <div class="container mx-auto px-6 relative z-10">
-    <div class="text-center mb-6 section-enter">
-      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold text-bosla-orange mb-2"
-        style="background:rgba(243,156,18,0.1);">{{ 'home.pillars.badge' | t }}</span>
-      <h2 class="text-2xl md:text-3xl font-black text-bosla-primary mb-1">{{ 'home.pillars.title' | t }}</h2>
-      <p class="text-bosla-charcoal/60 text-sm md:text-base max-w-xl mx-auto">{{ 'home.pillars.subtitle' | t }}</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="group relative rounded-2xl p-8 bg-white border border-gray-100 hover:-translate-y-2 transition-all duration-500 hover:shadow-xl overflow-hidden cursor-default section-enter section-enter-delay-1">
-        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style="background:linear-gradient(135deg,rgba(27,79,114,0.03),rgba(46,134,171,0.06));"></div>
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-          style="background:linear-gradient(135deg,#1B4F72,#2E86AB);">
-          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8l-2 4 4-2-2 4 2-4-4 2 2-4z" fill="currentColor"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.direction.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'home.pillars.direction.desc' | t }}</p>
-        <div class="max-h-0 group-hover:max-h-12 overflow-hidden transition-all duration-500">
-          <p class="text-bosla-charcoal/40 text-xs mt-3 leading-relaxed">{{ 'home.pillars.direction.hoverDesc' | t }}</p>
-        </div>
-        <div class="mt-4 w-8 h-0.5 group-hover:w-16 transition-all duration-500" style="background:#1B4F72;"></div>
-      </div>
-
-      <div class="group relative rounded-2xl p-8 bg-white border border-gray-100 hover:-translate-y-2 transition-all duration-500 hover:shadow-xl overflow-hidden cursor-default section-enter section-enter-delay-2">
-        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style="background:linear-gradient(135deg,rgba(243,156,18,0.03),rgba(243,156,18,0.06));"></div>
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-          style="background:linear-gradient(135deg,#F39C12,#e67e22);">
-          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.instant.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'home.pillars.instant.desc' | t }}</p>
-        <div class="max-h-0 group-hover:max-h-12 overflow-hidden transition-all duration-500">
-          <p class="text-bosla-charcoal/40 text-xs mt-3 leading-relaxed">{{ 'home.pillars.instant.hoverDesc' | t }}</p>
-        </div>
-        <div class="mt-4 w-8 h-0.5 group-hover:w-16 transition-all duration-500" style="background:#F39C12;"></div>
-      </div>
-
-      <div class="group relative rounded-2xl p-8 bg-white border border-gray-100 hover:-translate-y-2 transition-all duration-500 hover:shadow-xl overflow-hidden cursor-default section-enter section-enter-delay-3">
-        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style="background:linear-gradient(135deg,rgba(27,79,114,0.03),rgba(46,134,171,0.06));"></div>
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-          style="background:linear-gradient(135deg,#2E86AB,#1B4F72);">
-          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.verified.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'home.pillars.verified.desc' | t }}</p>
-        <div class="max-h-0 group-hover:max-h-12 overflow-hidden transition-all duration-500">
-          <p class="text-bosla-charcoal/40 text-xs mt-3 leading-relaxed">{{ 'home.pillars.verified.hoverDesc' | t }}</p>
-        </div>
-        <div class="mt-4 w-8 h-0.5 group-hover:w-16 transition-all duration-500" style="background:#2E86AB;"></div>
-      </div>
-
-      <div class="group relative rounded-2xl p-8 bg-white border border-gray-100 hover:-translate-y-2 transition-all duration-500 hover:shadow-xl overflow-hidden cursor-default section-enter section-enter-delay-4">
-        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style="background:linear-gradient(135deg,rgba(243,156,18,0.03),rgba(27,79,114,0.06));"></div>
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-          style="background:linear-gradient(135deg,#1B4F72,#F39C12);">
-          <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-bosla-primary mb-3">{{ 'home.pillars.growth.title' | t }}</h3>
-        <p class="text-bosla-charcoal/60 text-sm leading-relaxed">{{ 'home.pillars.growth.desc' | t }}</p>
-        <div class="max-h-0 group-hover:max-h-12 overflow-hidden transition-all duration-500">
-          <p class="text-bosla-charcoal/40 text-xs mt-3 leading-relaxed">{{ 'home.pillars.growth.hoverDesc' | t }}</p>
-        </div>
-        <div class="mt-4 w-8 h-0.5 group-hover:w-16 transition-all duration-500" style="background:#F39C12;"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════
-FEATURES SECTION
-════════════════════════════════════════════ -->
-<section class="py-10 md:py-12 bg-white overflow-hidden">
-  <div class="container mx-auto px-6">
-    <div class="flex flex-col lg:flex-row items-center gap-8">
-      <div class="lg:w-1/2 section-enter">
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold text-bosla-orange mb-3"
-          style="background:rgba(243,156,18,0.1);">{{ 'home.features.badge' | t }}</span>
-        <h2 class="text-2xl md:text-3xl font-black text-bosla-primary mb-3 leading-tight">{{ 'home.features.headline' | t }}</h2>
-        <p class="text-bosla-charcoal/60 text-sm md:text-base leading-relaxed mb-6">
-          {{ 'home.features.description' | t }}
-        </p>
-
-        <div class="space-y-6">
-          <div class="flex gap-4 items-start section-enter section-enter-delay-1">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-1"
-              style="background:rgba(27,79,114,0.08);">
-              <svg class="w-5 h-5" style="color:#1B4F72;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-bosla-primary mb-1">{{ 'home.features.video.title' | t }}</h4>
-              <p class="text-bosla-charcoal/55 text-sm leading-relaxed">{{ 'home.features.video.desc' | t }}</p>
-            </div>
-          </div>
-
-          <div class="flex gap-4 items-start section-enter section-enter-delay-2">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-1"
-              style="background:rgba(243,156,18,0.08);">
-              <svg class="w-5 h-5" style="color:#F39C12;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-bosla-primary mb-1">{{ 'home.features.chat.title' | t }}</h4>
-              <p class="text-bosla-charcoal/55 text-sm leading-relaxed">{{ 'home.features.chat.desc' | t }}</p>
-            </div>
-          </div>
-
-          <div class="flex gap-4 items-start section-enter section-enter-delay-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-1"
-              style="background:rgba(46,134,171,0.08);">
-              <svg class="w-5 h-5" style="color:#2E86AB;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-bosla-primary mb-1">{{ 'home.features.ratings.title' | t }}</h4>
-              <p class="text-bosla-charcoal/55 text-sm leading-relaxed">{{ 'home.features.ratings.desc' | t }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="lg:w-1/2 grid grid-cols-2 gap-4 section-enter section-enter-delay-3">
-        <div class="rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-          style="background:linear-gradient(135deg,#1B4F72,#2E86AB);">
-          <div class="text-4xl font-black text-white mb-2">+15</div>
-          <div class="text-white/70 text-sm">{{ 'home.features.stats.fields' | t }}</div>
-          <div class="text-white/50 text-xs mt-2">{{ 'home.features.stats.fieldsDesc' | t }}</div>
-        </div>
-        <div class="rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-          style="background:linear-gradient(135deg,#F39C12,#e67e22);">
-          <div class="text-4xl font-black text-white mb-2">98%</div>
-          <div class="text-white/70 text-sm">{{ 'home.features.stats.satisfaction' | t }}</div>
-          <div class="text-white/50 text-xs mt-2">{{ 'home.features.stats.satisfactionDesc' | t }}</div>
-        </div>
-        <div class="rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 col-span-2"
-          style="background:#F7F9FA;border:1px solid rgba(27,79,114,0.1);">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-              style="background:rgba(27,79,114,0.08);">
-              <svg class="w-6 h-6" style="color:#1B4F72;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <!-- Card Header / Avatar -->
+          <div class="specialist-premium-header relative h-28" style="background:linear-gradient(135deg, #1B4F72, #2E86AB);">
+            <div class="specialist-premium-shimmer"></div>
+            <div class="specialist-premium-badge absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
               </svg>
-            </div>
-            <div>
-              <div class="font-bold text-bosla-primary">{{ 'home.features.stats.verified' | t }}</div>
-              <div class="text-bosla-charcoal/50 text-sm">{{ 'home.features.stats.verifiedDesc' | t }}</div>
+              <span>{{ 'home.specialists.verified' | t }}</span>
             </div>
           </div>
+
+          <!-- Avatar container moved outside of the hidden overflow header -->
+          <div class="specialist-premium-avatar absolute top-16 left-1/2 -translate-x-1/2 z-10">
+            <img [src]="specialist.profileImageUrl?.trim() || 'assets/icons/favicon.ico'"
+              [alt]="specialist.name"
+              class="w-20 h-20 rounded-full border-4 border-white object-cover shadow-lg"
+              (error)="specialist.profileImageUrl = undefined">
+            @if (specialist.isOnline) {
+            <div class="specialist-premium-online absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+            }
+          </div>
+
+          <!-- Card Body -->
+          <div class="specialist-premium-body pt-14 pb-6 px-6 text-center flex flex-col justify-between flex-grow">
+            <div>
+              <h3 class="specialist-premium-name text-lg font-black text-[#1B4F72]">{{ specialist.name }}</h3>
+              <p class="specialist-premium-title text-sm text-slate-400 mt-1 leading-relaxed line-clamp-1">{{ specialist.title || ('home.specialists.defaultTitle' | t) }}</p>
+              
+              <!-- Badges -->
+              <div class="specialist-premium-expertise flex flex-wrap justify-center gap-1.5 mt-4">
+                @if (specialist.experienceLevel) {
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-50 text-[#1B4F72] border border-slate-100">{{ 'home.specialists.level' | t }} {{ specialist.experienceLevel }}</span>
+                }
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-50 text-[#F39C12] border border-slate-100">{{ 'home.specialists.certifiedExpert' | t }}</span>
+              </div>
+            </div>
+
+            <!-- Footer info -->
+            <div class="specialist-premium-footer flex items-center justify-between border-t border-slate-50 pt-4 mt-6">
+              <div class="specialist-premium-rating flex items-center gap-1 text-[#f59e0b] font-bold text-sm">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <span>{{ specialist.rating > 0 ? specialist.rating : ('home.specialists.newRating' | t) }}</span>
+              </div>
+              <div class="specialist-premium-rate font-extrabold text-[#1B4F72] text-sm">
+                <span>{{ 'home.specialists.currency' | t }} {{ specialist.hourlyRate }}</span>
+                <small class="text-xs text-slate-400 font-normal"> / {{ 'home.specialists.perHour' | t }}</small>
+              </div>
+            </div>
+          </div>
+
         </div>
+        }
+        }
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <!-- ════════════════════════════════════════════
+  HOW IT WORKS SECTION — Dynamic Steps
+  ════════════════════════════════════════════ -->
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section class="section-dark py-24 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(circle at 50% 50%, rgba(46,134,171,0.04), transparent 70%);"></div>
 
-<!-- ════════════════════════════════════════════
-CTA SECTION
-════════════════════════════════════════════ -->
-<section class="py-12 md:py-16 relative overflow-hidden"
-  style="background:linear-gradient(135deg,#1B4F72 0%,#0d3050 50%,#2E86AB 100%);background-size:200% 200%;animation:gradientShift 12s ease-in-out infinite;">
-  <div class="absolute inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full border border-white/10 animate-spin"
-      style="animation-duration:30s;"></div>
-    <div class="absolute top-1/4 left-1/4 w-16 h-16 rounded-full bg-bosla-orange/20"
-      style="animation:float 7s ease-in-out infinite;"></div>
-    <div class="absolute bottom-1/3 right-1/3 w-10 h-10 rounded-full bg-white/10"
-      style="animation:float 9s ease-in-out infinite 2s;"></div>
-    <div class="absolute top-1/2 -left-16 w-48 h-48 rounded-full border border-bosla-orange/20"
-      style="animation:float 11s ease-in-out infinite 4s;"></div>
-    <div class="absolute inset-0"
-      style="background-image:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;">
+    <div class="container mx-auto px-6 relative z-10">
+      
+      <div class="text-center mb-20 section-enter">
+        <span class="section-label">{{ 'home.howItWorks.badge' | t }}</span>
+        <h2 class="text-3xl md:text-5xl font-black section-headline mt-3 mb-4">{{ 'home.howItWorks.headline' | t }}</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+        <div class="hidden md:block absolute top-10 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-[#F39C12]/30 to-transparent"></div>
+
+        <!-- Step 1 -->
+        <div class="text-center group section-enter relative">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#1B4F72] to-[#2E86AB] flex items-center justify-center text-white text-2xl font-black mx-auto mb-8 shadow-2xl group-hover:scale-110 transition-transform duration-300" style="box-shadow: 0 10px 30px rgba(27,79,114,0.4);">
+            {{ 'home.howItWorks.step1.number' | t }}
+          </div>
+          <h3 class="text-xl font-bold text-white mb-4">{{ 'home.howItWorks.step1.title' | t }}</h3>
+          <p class="section-subline text-sm leading-relaxed max-w-xs mx-auto">{{ 'home.howItWorks.step1.desc' | t }}</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center group section-enter relative">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#F39C12] to-[#e67e22] flex items-center justify-center text-white text-2xl font-black mx-auto mb-8 shadow-2xl group-hover:scale-110 transition-transform duration-300" style="box-shadow: 0 10px 30px rgba(243,156,18,0.35);">
+            {{ 'home.howItWorks.step2.number' | t }}
+          </div>
+          <h3 class="text-xl font-bold text-white mb-4">{{ 'home.howItWorks.step2.title' | t }}</h3>
+          <p class="section-subline text-sm leading-relaxed max-w-xs mx-auto">{{ 'home.howItWorks.step2.desc' | t }}</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center group section-enter relative">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#2E86AB] to-[#1B4F72] flex items-center justify-center text-white text-2xl font-black mx-auto mb-8 shadow-2xl group-hover:scale-110 transition-transform duration-300" style="box-shadow: 0 10px 30px rgba(46,134,171,0.35);">
+            {{ 'home.howItWorks.step3.number' | t }}
+          </div>
+          <h3 class="text-xl font-bold text-white mb-4">{{ 'home.howItWorks.step3.title' | t }}</h3>
+          <p class="section-subline text-sm leading-relaxed max-w-xs mx-auto">{{ 'home.howItWorks.step3.desc' | t }}</p>
+        </div>
+      </div>
+
     </div>
-  </div>
+  </section>
 
-  <div class="container mx-auto px-6 text-center relative z-10">
-    <h2 class="text-4xl md:text-5xl font-black text-white mb-6 section-enter">
-      {{ 'home.cta.headline1' | t }}<br>
-      <span style="color:#F39C12;">{{ 'home.cta.headlineAccent' | t }}</span> {{ 'home.cta.headline2' | t }}
-    </h2>
-    <p class="text-xl text-white/70 mb-10 max-w-xl mx-auto section-enter section-enter-delay-1">
-      {{ 'home.cta.description' | t }}
-    </p>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 section-enter section-enter-delay-2">
-      <a routerLink="/auth/register"
-        class="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-lg text-white transition-all hover:-translate-y-1 hover:shadow-2xl cta-glow"
-        style="background:#F39C12;">
-        {{ 'home.cta.registerNow' | t }}
-      </a>
-      <a routerLink="/auth/login"
-        class="inline-flex items-center gap-2 px-10 py-4 rounded-full font-bold text-lg text-white border border-white/30 hover:border-white/60 hover:bg-white/10 transition-all hover:-translate-y-1">
-        {{ 'nav.login' | t }}
-      </a>
+  <!-- ═══ PILLARS ═══ -->
+  <section class="section-dark-alt py-24 relative overflow-hidden">
+    <div class="container mx-auto px-6 relative z-10">
+      
+      <div class="text-center mb-16 section-enter">
+        <span class="section-label">{{ 'home.pillars.badge' | t }}</span>
+        <h2 class="text-3xl md:text-5xl font-black section-headline mt-3 mb-4">{{ 'home.pillars.title' | t }}</h2>
+        <p class="section-subline text-base md:text-lg max-w-2xl mx-auto">{{ 'home.pillars.subtitle' | t }}</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Pillar 1 -->
+        <div class="pillar-card group p-8 cursor-default section-enter overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white bg-gradient-to-br from-[#1B4F72] to-[#2E86AB] group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8l-2 4 4-2-2 4 2-4-4 2 2-4z" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-extrabold mb-3">{{ 'home.pillars.direction.title' | t }}</h3>
+          <p class="text-sm leading-relaxed">{{ 'home.pillars.direction.desc' | t }}</p>
+          <div class="mt-4 w-8 h-0.5 bg-[#1B4F72] rounded-full group-hover:w-16 transition-all duration-500"></div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="pillar-card group p-8 cursor-default section-enter overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white bg-gradient-to-br from-[#F39C12] to-[#e67e22] group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-extrabold mb-3">{{ 'home.pillars.instant.title' | t }}</h3>
+          <p class="text-sm leading-relaxed">{{ 'home.pillars.instant.desc' | t }}</p>
+          <div class="mt-4 w-8 h-0.5 bg-[#F39C12] rounded-full group-hover:w-16 transition-all duration-500"></div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="pillar-card group p-8 cursor-default section-enter overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white bg-gradient-to-br from-[#2E86AB] to-[#1B4F72] group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-extrabold mb-3">{{ 'home.pillars.verified.title' | t }}</h3>
+          <p class="text-sm leading-relaxed">{{ 'home.pillars.verified.desc' | t }}</p>
+          <div class="mt-4 w-8 h-0.5 bg-[#2E86AB] rounded-full group-hover:w-16 transition-all duration-500"></div>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="pillar-card group p-8 cursor-default section-enter overflow-hidden">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white bg-gradient-to-br from-[#1B4F72] to-[#F39C12] group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-extrabold mb-3">{{ 'home.pillars.growth.title' | t }}</h3>
+          <p class="text-sm leading-relaxed">{{ 'home.pillars.growth.desc' | t }}</p>
+          <div class="mt-4 w-8 h-0.5 bg-gradient-to-r from-[#1B4F72] to-[#F39C12] rounded-full group-hover:w-16 transition-all duration-500"></div>
+        </div>
+
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+  CTA SECTION — Glowing Backdrop
+  ════════════════════════════════════════════ -->
+  <section class="py-24 relative overflow-hidden text-center"
+    style="background:linear-gradient(135deg,#1B4F72 0%,#0d2338 50%,#2E86AB 100%); background-size:200% 200%; animation:gradientShift 15s ease-in-out infinite;">
+    
+    <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+      <div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full border border-white/10 animate-[spin_40s_linear_infinite]"></div>
+      <div class="absolute top-1/4 left-1/4 w-20 h-20 rounded-full bg-[#F39C12]/20 blur-xl animate-pulse"></div>
+      <div class="absolute bottom-1/3 right-1/3 w-16 h-16 rounded-full bg-white/5 animate-bounce"></div>
+      <div class="absolute inset-0"
+        style="background-image:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;">
+      </div>
+    </div>
+
+    <div class="container mx-auto px-6 text-center relative z-10">
+      <h2 class="text-4xl md:text-6xl font-black text-white mb-8 section-enter leading-tight">
+        {{ 'home.cta.headline1' | t }}<br>
+        <span style="color:#F39C12;">{{ 'home.cta.headlineAccent' | t }}</span> {{ 'home.cta.headline2' | t }}
+      </h2>
+      <p class="text-lg md:text-xl text-white/70 mb-12 max-w-2xl mx-auto section-enter section-enter-delay-1 leading-relaxed">
+        {{ 'home.cta.description' | t }}
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6 section-enter section-enter-delay-2">
+        <a routerLink="/auth/register"
+          class="inline-flex items-center gap-2 px-12 py-5 rounded-full font-bold text-lg text-white transition-all hover:-translate-y-1 hover:shadow-2xl cta-glow"
+          style="background:#F39C12; box-shadow: 0 10px 30px rgba(243,156,18,0.35);">
+          {{ 'home.cta.registerNow' | t }}
+        </a>
+        <a routerLink="/auth/login"
+          class="inline-flex items-center gap-2 px-12 py-5 rounded-full font-bold text-lg text-white border border-white/20 hover:border-white/50 hover:bg-white/10 transition-all hover:-translate-y-1">
+          {{ 'nav.login' | t }}
+        </a>
+      </div>
+    </div>
+  </section>
+
 </div>

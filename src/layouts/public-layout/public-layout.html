@@ -1,4 +1,13 @@
-<div class="min-h-screen flex flex-col relative overflow-hidden bg-[#F7F9FA] text-[#2C3E50]">
+<div class="min-h-screen flex flex-col relative overflow-hidden transition-colors duration-500">
+
+  <!-- WebGL Canvas — pinned full-screen behind everything -->
+  <canvas #networkCanvas class="webgl-canvas"></canvas>
+
+  <!-- ═══ COMPASS CURSOR (Desktop Only) ═══ -->
+  <div class="custom-cursor-outer hidden lg:block">
+    <div class="cursor-compass-ring"></div>
+  </div>
+  <div class="custom-cursor-inner hidden lg:block"></div>
 
   <!-- Content -->
   <div class="relative z-10 flex flex-col min-h-screen w-full">

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, DestroyRef, NgZone, effect } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, DestroyRef, NgZone, effect, ElementRef, ViewChild } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LookupService } from '@core/services/lookup.service';
@@ -9,8 +9,15 @@ import { LookupItemDto } from '@core/contracts/lookup.contracts';
 import { SpecialistListItemDto } from '@features/specialists/contracts/specialist.contracts';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-
 import { UiDomainIcon } from '@shared/ui/domain-icon/domain-icon';
+
+import * as THREE from 'three';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Component({
   selector: 'app-home',
@@ -18,7 +25,7 @@ import { UiDomainIcon } from '@shared/ui/domain-icon/domain-icon';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnInit, AfterViewInit {
+export class Home implements OnInit, AfterViewInit, OnDestroy {
   private lookupService = inject(LookupService);
   readonly translationService = inject(TranslationService);
   private specialistService = inject(SpecialistService);
@@ -27,6 +34,8 @@ export class Home implements OnInit, AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private ngZone = inject(NgZone);
+
+  @ViewChild('networkCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
   expertiseList: LookupItemDto[] = [];
   displayedExpertise: LookupItemDto[] = [];
@@ -52,12 +61,10 @@ export class Home implements OnInit, AfterViewInit {
   private counterTargets = { specialists: 500, consultations: 10, fields: 15 };
   private countersAnimated = false;
 
-  // Particles
-  particles: { x: number; y: number; delay: number; dx: number; dy: number }[] = [];
+  // Custom Cursor state (moved to layout)
+  // WebGL Background variables (moved to layout)
 
   ngOnInit() {
-    this.generateParticles();
-
     this.lookupService.getExpertise().subscribe({
       next: (res) => {
         this.expertiseList = res;
@@ -85,19 +92,49 @@ export class Home implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.setupIntersectionObserver();
+    if (typeof window !== 'undefined') {
+      document.body.classList.add('page-dark');
+      this.initGsapAnimations();
+    }
   }
 
-  /* ── Particle generation ── */
-  private generateParticles() {
-    this.particles = Array.from({ length: 30 }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      delay: Math.random() * 8,
-      dx: (Math.random() - 0.5) * 160,
-      dy: (Math.random() - 0.5) * 120,
-    }));
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      document.body.classList.remove('page-dark');
+      if (this.typewriterTimer) clearTimeout(this.typewriterTimer);
+    }
   }
+
+  /* ── GSAP Scroll Animations ── */
+  private initGsapAnimations() {
+    if (typeof window === 'undefined') return;
+    
+    // Hero entry animations
+    gsap.fromTo('.hero-badge', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out' });
+    gsap.fromTo('.hero-headline', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.2, delay: 0.4, ease: 'power3.out' });
+    gsap.fromTo('.hero-search-wrap', { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 1, delay: 0.6, ease: 'back.out(1.7)' });
+    gsap.fromTo('.interactive-card', { opacity: 0, x: 50, rotateY: 15 }, { opacity: 1, x: 0, rotateY: 0, duration: 1.5, delay: 0.8, ease: 'power3.out' });
+
+    // Section scroll animations
+    const sections = gsap.utils.toArray('.section-enter') as HTMLElement[];
+    sections.forEach(sec => {
+      gsap.fromTo(sec, 
+        { opacity: 0, y: 40 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 1.2, 
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sec,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+  }
+
 
   /* ── Typewriter Words (translatable) ── */
   private loadTypewriterWords(): void {
@@ -165,18 +202,14 @@ export class Home implements OnInit, AfterViewInit {
   private setupIntersectionObserver() {
     if (typeof window === 'undefined') return;
 
-    const sections = document.querySelectorAll('.section-enter');
+    const sections = document.querySelectorAll('.stats-trigger');
     if (!sections.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-
-            if (entry.target.classList.contains('stats-trigger') && !this.countersAnimated) {
-              this.animateCounters();
-            }
+          if (entry.isIntersecting && !this.countersAnimated) {
+            this.animateCounters();
           }
         }
       },
@@ -184,7 +217,6 @@ export class Home implements OnInit, AfterViewInit {
     );
 
     sections.forEach((s) => observer.observe(s));
-
     this.destroyRef.onDestroy(() => observer.disconnect());
   }
 
@@ -213,5 +245,5 @@ export class Home implements OnInit, AfterViewInit {
       this.router.navigate(['/specialists'], { queryParams: { query: this.searchQuery } });
     }
   }
-
 }
+

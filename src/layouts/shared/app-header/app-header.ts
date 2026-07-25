@@ -10,7 +10,9 @@ import { MobileMenu } from '@layouts/shared/mobile-menu/mobile-menu';
 @Component({
   selector: 'app-app-header',
   imports: [CommonModule, RouterLink, UiLogo, MainNavigation, HeaderActions, MobileMenu],
-  templateUrl: './app-header.html'
+  templateUrl: './app-header.html',
+  styleUrl: './app-header.css',
+  host: { class: 'header-host' }
 })
 export class AppHeader {
   @Input() variant: 'public' | 'dashboard' = 'public';

@@ -1,6 +1,6 @@
 <style>
   .specialist-list-bg {
-    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    background: transparent;
     position: relative;
     overflow: hidden;
   }
@@ -54,12 +54,12 @@
 
         <!-- Hero Section -->
         <div class="text-center max-w-4xl mx-auto mb-16 hero-animate">
-            <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white shadow-[0_4px_20px_rgba(27,79,114,0.08)] border border-slate-100 text-[#1B4F72] font-bold mb-8 transition-transform hover:-translate-y-1">
+            <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/10 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.2)] border border-white/20 text-white font-bold mb-8 transition-transform hover:-translate-y-1">
                 <i class="fa-solid fa-compass text-[#F39C12] text-lg animate-[spin_4s_linear_infinite]"></i>
                 <span class="tracking-wide">{{ 'specialists.hero.badge' | t }}</span>
             </div>
 
-            <h1 class="text-5xl md:text-7xl font-black text-[#1B4F72] leading-[1.2] mb-6 tracking-tight">
+            <h1 class="text-5xl md:text-7xl font-black text-white leading-[1.2] mb-6 tracking-tight">
                 {{ 'specialists.hero.title1' | t }}
                 <span class="text-[#F39C12] title-glow">
                     {{ 'specialists.hero.titleAccent' | t }}
@@ -67,7 +67,7 @@
                 {{ 'specialists.hero.title2' | t }}
             </h1>
 
-            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
                 {{ 'specialists.hero.desc' | t }}
             </p>
         </div>
@@ -92,12 +92,12 @@
 
         <!-- Empty -->
         @else if (store.isEmpty()) {
-        <div class="bg-white rounded-[2rem] p-16 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 text-center max-w-2xl mx-auto">
-            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-search text-4xl text-slate-300"></i>
+        <div class="bg-white/5 backdrop-blur-md rounded-[2rem] p-16 shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white/10 text-center max-w-2xl mx-auto">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-search text-4xl text-white/50"></i>
             </div>
-            <h3 class="text-2xl font-bold text-[#1B4F72] mb-3">{{ 'specialists.empty.title' | t }}</h3>
-            <p class="text-slate-500 mb-8">{{ 'specialists.empty.desc' | t }}</p>
+            <h3 class="text-2xl font-bold text-white mb-3">{{ 'specialists.empty.title' | t }}</h3>
+            <p class="text-white/60 mb-8">{{ 'specialists.empty.desc' | t }}</p>
             <button (click)="onFiltersChanged({})" class="px-8 py-3 bg-[#1B4F72] text-white font-bold rounded-xl hover:bg-[#153f5c] transition-colors shadow-lg shadow-[#1B4F72]/20">
                 {{ 'specialists.empty.reset' | t }}
             </button>
@@ -109,7 +109,7 @@
         <!-- Results Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 hero-animate" style="animation-delay: 0.4s;">
             <div class="flex items-center gap-3">
-                <h2 class="text-[#1B4F72] font-black text-3xl">{{ 'specialists.title.almtkhsswn' | t }} {{ 'specialists.results.available' | t }}</h2>
+                <h2 class="text-white font-black text-3xl">{{ 'specialists.title.almtkhsswn' | t }} {{ 'specialists.results.available' | t }}</h2>
                 <span class="px-3 py-1 bg-[#F39C12]/10 text-[#F39C12] font-bold rounded-lg text-sm">
                     {{ 'specialists.results.page' | t }} {{ store.currentPage() }}
                 </span>
@@ -122,7 +122,7 @@
 
         <!-- Pagination -->
         <div class="mt-16 flex justify-center">
-            <div class="bg-white p-2 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100">
+            <div class="bg-white/5 backdrop-blur-md p-2 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white/10">
                 <ui-pagination [currentPage]="store.currentPage()" [totalPages]="store.totalPages()"
                     (pageChange)="onPageChanged($event)">
                 </ui-pagination>

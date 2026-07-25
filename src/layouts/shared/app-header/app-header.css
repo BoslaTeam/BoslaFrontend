@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════
+   BOSLA FLOATING HEADER — Premium Island Nav
+   ═══════════════════════════════════════════ */
+
+/* === PUBLIC layout: Floating pill === */
+:host-context(app-public-layout) .header-root,
+.header-root.public {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2.5rem);
+  max-width: 1100px;
+  z-index: 1000;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Glass pill */
+.header-pill {
+  background: rgba(5, 13, 26, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(243, 156, 18, 0.15);
+  border-radius: 100px;
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Scrolled state: darker & more blur */
+.header-root.scrolled .header-pill {
+  background: rgba(5, 13, 26, 0.85);
+  border-color: rgba(243, 156, 18, 0.25);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Dashboard: full-width bar */
+.header-root.dashboard {
+  top: 0;
+  left: 0;
+  width: 100%;
+  transform: none;
+  max-width: 100%;
+}
+.header-root.dashboard .header-pill {
+  border-radius: 0;
+  background: #1B4F72;
+  backdrop-filter: none;
+  border: none;
+  padding: 0 1.5rem;
+}
+
+/* Active North Star indicator on nav links */
+.nav-link {
+  position: relative;
+  color: rgba(255,255,255,0.75);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+.nav-link:hover,
+.nav-link.active {
+  color: #F39C12;
+}
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #F39C12;
+  box-shadow: 0 0 8px #F39C12;
+}
+
+/* CTA button pulse */
+@keyframes headerCtaGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(243,156,18,0.4), 0 4px 20px rgba(243,156,18,0.2); }
+  50%       { box-shadow: 0 0 24px rgba(243,156,18,0.7), 0 4px 30px rgba(243,156,18,0.35); }
+}
+.header-cta {
+  background: linear-gradient(135deg, #F39C12, #e67e22);
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  border: none;
+  animation: headerCtaGlow 2.5s ease-in-out infinite;
+  transition: transform 0.2s ease;
+  white-space: nowrap;
+}
+.header-cta:hover {
+  animation: none;
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(243,156,18,0.45);
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: white;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.mobile-menu-btn:hover {
+  background: rgba(243,156,18,0.15);
+  border-color: rgba(243,156,18,0.3);
+}
+
+@media (max-width: 767px) {
+  .header-root {
+    top: 0.75rem;
+    width: calc(100% - 1.5rem);
+  }
+  .header-pill {
+    height: 56px;
+    padding: 0 1rem;
+  }
+}
