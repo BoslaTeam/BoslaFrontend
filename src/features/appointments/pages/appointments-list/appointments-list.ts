@@ -83,7 +83,7 @@ export class AppointmentList implements OnDestroy {
 
   readonly activeTab = signal<AppointmentTab>('all');
   readonly searchQuery = signal('');
-  readonly sortOrder = signal<SortOrder>('asc');
+  readonly sortOrder = signal<SortOrder>('desc');
 
   readonly tabs: TabDef[] = [
     { key: 'all', label: 'appointments.tab.all' },

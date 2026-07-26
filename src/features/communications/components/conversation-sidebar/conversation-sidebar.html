@@ -71,7 +71,7 @@
         </svg>
       </div>
       <h4 class="text-sm font-bold text-[#1B4F72] font-sans">{{ 'common.noResults' | t }}</h4>
-      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">{{ 'messaging.noResultsMatch' | t: { query: store.searchQuery() } }}
+      <p class="text-xs text-slate-500 leading-relaxed max-w-[220px]">{{ 'messaging.noResultsMatch' | t:store.searchQuery() }}
       </p>
       } @else {
       <div class="w-14 h-14 rounded-2xl bg-white/50 flex items-center justify-center text-[#2E86AB] shadow-sm">
