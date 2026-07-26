@@ -1,6 +1,6 @@
 {
     "nav.home":  "الرئيسية",
-    "nav.specialists":  "الخبراء",
+    "nav.specialists":  "المتخصصون",
     "nav.blog":  "المدونة",
     "nav.about":  "من نحن",
     "nav.contact":  "اتصل بنا",
@@ -37,9 +37,9 @@
     "auth.register.password":  "كلمة المرور",
     "auth.register.confirmPassword":  "تأكيد كلمة المرور",
     "auth.register.role":  "نوع الحساب",
-    "auth.register.roleUser":  "مستفيد",
+    "auth.register.roleUser":  "مستخدم",
     "auth.register.roleUser.desc":  "استفد من خدمات بوصلة",
-    "auth.register.roleSpecialist":  "خبير",
+    "auth.register.roleSpecialist":  "اختصاصي",
     "auth.register.roleSpecialist.desc":  "قدم خدماتك على بوصلة",
     "auth.register.country":  "الدولة",
     "auth.register.countryPlaceholder":  "مصر",
@@ -61,14 +61,14 @@
     "auth.verifyEmail.resend":  "إعادة إرسال",
     "auth.checkEmail.title":  "تحقق من بريدك الإلكتروني",
     "auth.checkEmail.message":  "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
-    "home.hero.title":  "استشر أفضل الخبراء في المملكة",
-    "home.hero.subtitle":  "منصة بوصلة تربطك بأفضل الخبراء والمستشارين في مختلف المجالات. احجز جلسة استشارية الآن",
-    "home.hero.cta":  "ابحث عن خبير",
+    "home.hero.title":  "استشر أفضل المتخصصين في المملكة",
+    "home.hero.subtitle":  "منصة بوصلة تربطك بأفضل المتخصصين والمستشارين في مختلف المجالات. احجز جلسة استشارية الآن",
+    "home.hero.cta":  "ابدأ الآن",
     "home.hero.specialistsCount":  "خبير معتمد",
     "home.hero.bookingsCount":  "جلسة استشارية",
     "home.domains.title":  "المجالات المتاحة",
     "home.domains.subtitle":  "اختر من بين مجموعة واسعة من المجالات الاستشارية",
-    "home.specialists.title":  "خبراؤنا المميزون",
+    "home.specialists.title":  "متخصصونا المميزون",
     "home.specialists.subtitle":  "تعرف على نخبة من الخبراء في مختلف المجالات",
     "home.specialists.viewAll":  "عرض الكل",
     "home.howItWorks.title":  "كيف تعمل بوصلة",
@@ -163,7 +163,7 @@
     "home.cta.registerNow":  "سجّل مجاناً الآن",
     "home.domains.all":  "الكل",
     "specialists.title":  "الخبراء",
-    "specialists.search":  "ابحث عن خبير...",
+    "specialists.search":  "ابحث عن متخصص...",
     "specialists.filter":  "تصفية",
     "specialists.sortBy":  "ترتيب حسب",
     "specialists.sortBy.popular":  "الأكثر شهرة",
@@ -1018,7 +1018,7 @@
     "admin.appointments.noResults":  "لم يتم العثور على حجوزات مطابقة لمعايير البحث",
     "admin.appointments.duration":  "المدة",
     "admin.appointments.actions":  "ات",
-    "appointments.minute":  "{{ apt.durationMinutes }} د",
+    "appointments.minute":  "دقيقة",
     "admin.auditLogs.title":  "سجل الأحداث",
     "admin.auditLogs.filterEntity":  "تصفية حسب نوع الكيان",
     "admin.auditLogs.filterEvent":  "تصفية حسب نوع الحدث",
@@ -1585,7 +1585,7 @@
     "specialist.appointments.loadingStatus":  "جاري تحميل حالة الموعد...",
     "specialist.appointments.upcomingAppointment":  "موعد",
     "specialist.appointments.consultationSession":  "جلسة استشارية",
-    "specialist.appointments.remainingPayment":  "متبقي {{ time }} للدفع",
+    "specialist.appointments.remainingPayment":  "متبقي {0} للدفع",
     "specialist.appointments.autoCancelWarning":  "سيتم إلغاء الحجز تلقائياً إذا لم يتم الدفع قبل انتهاء الوقت",
     "specialist.appointments.paymentExpired":  "انتهى وقت الدفع",
     "specialist.appointments.autoCancelled":  "تم إلغاء الحجز تلقائياً لعدم الدفع في الوقت المحدد",
@@ -1691,6 +1691,7 @@
     "admin.users.lastLogin":  "آخر تسجيل دخول",
     "common.notAvailable":  "غير متوفر",
     "admin.users.appointmentCount":  "{0} حجز",
+    "admin.users.appointmentCountLabel":  "عدد الحجوزات",
     "admin.specialists.ai":  "AI والتضمين",
     "admin.specialists.addSpecialistTitle":  "إضافة متخصص جديد",
     "admin.specialists.createDesc":  "أدخل بيانات المتخصص الجديد أدناه. سيتم إنشاء الحساب وتفعيله تلقائياً بحالة \"معلق\".",
@@ -1895,4 +1896,388 @@
     "specialist.level.Senior":  "خبير",
     "specialist.level.Lead":  "قائد",
     "common.noReviews":  "لا توجد تقييمات"
+,
+  "specialist.details.loading": "جاري تحميل بيانات المتخصص"
+,
+  "specialist.details.overview": "نظرة عامة"
+,
+  "specialist.details.bioTitle": "نبذة تعريفية"
+,
+  "specialist.details.bioEmpty": "لم يقم المتخصص بإضافة نبذة تعريفية بعد."
+,
+  "specialist.details.skillsExpertise": "المهارات والخبرات"
+,
+  "specialist.details.expertiseAreas": "مجالات الخبرة"
+,
+  "specialist.details.technicalSkills": "المهارات التقنية والعملية"
+,
+  "specialist.details.toolsAndSoftware": "الأدوات والبرامج"
+,
+  "specialist.details.industries": "قطاعات العمل"
+,
+  "specialist.details.careerHistory": "السجل المهني"
+,
+  "specialist.details.bookingPolicies": "سياسات وشروط الحجز"
+,
+  "specialist.details.bookingRules": "قواعد الحجز"
+,
+  "specialist.details.cancellationPolicyTitle": "سياسة الإلغاء"
+,
+  "specialist.details.clientReviews": "تقييمات العملاء"
+,
+  "specialist.details.introVideo": "الفيديو التعريفي"
+,
+  "specialist.details.introVideoDesc": "تعرف على المتخصص عن قرب قبل حجز جلستك الأولى."
+,
+  "specialist.details.verified": "حساب موثق"
+,
+  "specialist.details.language": "اللغة الأساسية"
+,
+  "specialist.details.gender": "الجنس"
+,
+  "specialist.details.present": "حتى الآن"
+,
+  "specialist.details.maxBookingDelay": "أقصى تأخير للحجز:"
+,
+  "specialist.details.hours": "ساعات"
+,
+  "specialist.details.allowedCancel": "يُسمح بإلغاء الحجز"
+,
+  "specialist.details.notAllowedCancel": "لا يُسمح بإلغاء الحجز"
+,
+  "specialist.details.cancelDeadline": "مهلة الإلغاء:"
+,
+  "specialist.details.viewDetails": "عرض التفاصيل"
+,
+  "specialist.details.viewProject": "اضغط لعرض المشروع بالكامل"
+,
+  "specialist.details.noPortfolioWorks": "لا توجد أعمال"
+,
+  "specialist.details.noPortfolioDesc": "لم يقم المتخصص بإضافة أعمال في معرضه بعد."
+,
+  "specialist.details.noAvailability": "لا توجد أوقات متاحة"
+,
+  "specialist.details.noAvailabilityDesc": "لم يقم المتخصص بإضافة أوقات متاحة بعد."
+,
+  "specialist.details.loadError": "فشل تحميل بيانات المتخصص"
+,
+  "specialist.details.backToList": "العودة للقائمة"
+,
+  "specialist.details.tabProfile": "الملف الشخصي"
+,
+  "specialist.details.tabReviews": "التقييمات"
+,
+  "specialist.details.tabAvailability": "الأوقات المتاحة"
+,
+  "admin.appointments.searchPlaceholder": "بحث بالاسم أو معرف الموعد..."
+,
+  "admin.appointments.viewDetails": "عرض التفاصيل"
+,
+  "admin.users.viewDetails": "عرض التفاصيل"
+,
+  "appointments.detailsHint": "مشاهدة تفاصيل الموعد"
+,
+  "appointments.sessionInvitation": "دعوة جلسة"
+,
+  "appointments.sessionNotes": "ملاحظات الجلسة"
+,
+  "chat.selectConversationDesc": "اختر محادثة من القائمة لعرض الرسائل"
+,
+  "common.account": "الحساب"
+,
+  "common.agreeToTerms": "أوافق على الشروط والأحكام"
+,
+  "common.option1": "الخيار الأول"
+,
+  "common.option2": "الخيار الثاني"
+,
+  "common.skip": "تخطي"
+,
+  "common.testComponents": "مكونات تجريبية"
+,
+  "favorites.browseSpecialists": "تصفح المتخصصين"
+,
+  "favorites.emptyDesc": "لم تقم بإضافة متخصصين إلى المفضلة بعد."
+,
+  "favorites.yourFavorites": "المفضلة"
+,
+  "messaging.attachFile": "إرفاق ملف"
+,
+  "messaging.backToConversations": "العودة للمحادثات"
+,
+  "messaging.bookToStart": "احجز موعداً لبدء محادثة"
+,
+  "messaging.checkConnection": "تحقق من اتصالك بالإنترنت"
+,
+  "messaging.deleteMessage": "حذف الرسالة"
+,
+  "messaging.deleteMessageDesc": "هل أنت متأكد من حذف هذه الرسالة؟"
+,
+  "messaging.disconnected": "غير متصل"
+,
+  "messaging.findSpecialist": "ابحث عن متخصص"
+,
+  "messaging.keyboardHint": "اضغط Enter للإرسال"
+,
+  "messaging.loadConversationsError": "فشل تحميل المحادثات"
+,
+  "messaging.loadMessagesError": "فشل تحميل الرسائل"
+,
+  "messaging.loadMessagesErrorDesc": "حدث خطأ أثناء تحميل الرسائل. حاول مرة أخرى."
+,
+  "messaging.messageCannotBeEmpty": "لا يمكن إرسال رسالة فارغة"
+,
+  "messaging.noConversationSelected": "لم يتم تحديد محادثة"
+,
+  "messaging.noResultsMatch": "لا توجد نتائج مطابقة لـ {0}"
+,
+  "messaging.reconnecting": "جاري إعادة الاتصال..."
+,
+  "messaging.selectConversationToView": "اختر محادثة لعرض الرسائل"
+,
+  "messaging.sendMessage": "إرسال"
+,
+  "messaging.sharedFiles": "الملفات المشتركة"
+,
+  "messaging.sharedResources": "الموارد المشتركة"
+,
+  "messaging.toggleConversationList": "إظهار/إخفاء قائمة المحادثات"
+,
+  "messaging.toggleDetails": "إظهار/إخفاء التفاصيل"
+,
+  "notifications.delete": "حذف"
+,
+  "portfolio.detail.approvedWork": "عمل معتمد"
+,
+  "portfolio.detail.backToSpecialist": "العودة للمتخصص"
+,
+  "portfolio.detail.loading": "جاري تحميل العمل..."
+,
+  "portfolio.detail.media": "الوسائط"
+,
+  "portfolio.detail.notAvailable": "العمل غير متاح"
+,
+  "portfolio.detail.notAvailableDesc": "تم إزالة هذا العمل أو أنه غير متاح حالياً."
+,
+  "portfolio.detail.specialist": "المتخصص"
+,
+  "portfolio.detail.viewLive": "عرض مباشر"
+,
+  "portfolio.detail.zoomImage": "تكبير الصورة"
+,
+  "specialist.appointments.accept": "قبول"
+,
+  "specialist.appointments.appointmentNumber": "رقم الموعد"
+,
+  "specialist.appointments.avgSessionPrice": "متوسط سعر الجلسة"
+,
+  "specialist.appointments.cancelReasonHint": "يرجى إدخال سبب الإلغاء (اختياري)"
+,
+  "specialist.appointments.cancelReasonPlaceholder": "اكتب سبب الإلغاء..."
+,
+  "specialist.appointments.chat": "المحادثة"
+,
+  "specialist.appointments.clientNumber": "رقم العميل"
+,
+  "specialist.appointments.completedSessions": "جلسات مكتملة"
+,
+  "specialist.appointments.confirmCancel": "تأكيد الإلغاء"
+,
+  "specialist.appointments.confirmReject": "تأكيد الرفض"
+,
+  "specialist.appointments.deleteWarning": "سيتم حذف الموعد بشكل دائم. لا يمكن التراجع عن هذا الإجراء."
+,
+  "specialist.appointments.endTime": "وقت الانتهاء"
+,
+  "specialist.appointments.hideCancelled": "إخفاء الملغية"
+,
+  "specialist.appointments.inProgress": "قيد التنفيذ"
+,
+  "specialist.appointments.lateBy": "متأخر"
+,
+  "specialist.appointments.missedBy": "فات الوقت"
+,
+  "specialist.appointments.noCompletedEarnings": "لا توجد جلسات مكتملة لعرض الإيرادات"
+,
+  "specialist.appointments.noPaymentsRecorded": "لم يتم تسجيل أي مدفوعات بعد"
+,
+  "specialist.appointments.refresh": "تحديث"
+,
+  "specialist.appointments.rejectReasonHint": "يرجى إدخال سبب الرفض (اختياري)"
+,
+  "specialist.appointments.rejectReasonPlaceholder": "اكتب سبب الرفض..."
+,
+  "specialist.appointments.revenueSummary": "ملخص الإيرادات"
+,
+  "specialist.appointments.revenueSummaryDesc": "إجمالي الأرباح من الجلسات المكتملة"
+,
+  "specialist.appointments.searchFound": "تم العثور على"
+,
+  "specialist.appointments.searchPlaceholder": "بحث عن عميل أو خدمة..."
+,
+  "specialist.appointments.searchResultFor": "نتيجة لـ"
+,
+  "specialist.appointments.service": "الخدمة"
+,
+  "specialist.appointments.sessionCompleted": "تمت بنجاح"
+,
+  "specialist.appointments.sessionInProgress": "جاري التنفيذ"
+,
+  "specialist.appointments.showCancelled": "إظهار الملغية"
+,
+  "specialist.appointments.showMore": "عرض المزيد"
+,
+  "specialist.appointments.sorry": "عذراً"
+,
+  "specialist.appointments.startsIn": "يبدأ بعد"
+,
+  "specialist.appointments.startTime": "وقت البدء"
+,
+  "specialist.appointments.unpaid": "غير مدفوع"
+,
+  "specialist.availability.deleteSchedule": "حذف الجدول"
+,
+  "specialist.viewProfile": "عرض الملف الشخصي"
+,
+  "specialist.wallet.paymentDetails": "تفاصيل الدفع"
+,
+  "specialist.wallet.withdrawFunds": "سحب الأموال"
+,
+  "time.today": "اليوم"
+,
+  "time.tomorrow": "غداً"
+,
+  "video.activeSession": "جلسة نشطة"
+,
+  "video.audioLevel": "مستوى الصوت"
+,
+  "video.camera": "الكاميرا"
+,
+  "video.cameraOff": "الكاميرا متوقفة"
+,
+  "video.confirmFinish": "إنهاء الجلسة"
+,
+  "video.confirmFinishDesc": "بمجرد الإنهاء، سيتم إغلاق الجلسة لكافة الأطراف ولن يمكن العودة إليها مجدداً."
+,
+  "video.confirmLeave": "مغادرة الجلسة"
+,
+  "video.confirmLeaveDesc": "يمكنك العودة للجلسة مرة أخرى طالما لم تنتهِ مدة الجلسة."
+,
+  "video.connection": "جودة الاتصال"
+,
+  "video.connectionFailed": "تعذر الاتصال"
+,
+  "video.connectionFailedDesc": "تعذر الاتصال بخادم الجلسة. يرجى التحقق من اتصالك بالإنترنت."
+,
+  "video.deviceSettings": "إعدادات الجهاز"
+,
+  "video.finish": "إنهاء"
+,
+  "video.finishConsultation": "إنهاء الاستشارة"
+,
+  "video.join": "انضمام"
+,
+  "video.joinDesc": "سيتم الانضمام إلى الجلسة تلقائياً عند بدء المختص."
+,
+  "video.joining": "جارٍ الانضمام..."
+,
+  "video.leave": "مغادرة"
+,
+  "video.leaveSession": "مغادرة الجلسة"
+,
+  "video.legacyDescription": "سجلات جلسات الفيديو السابقة وتسجيلاتها"
+,
+  "video.live": "مباشر"
+,
+  "video.microphone": "الميكروفون"
+,
+  "video.mute": "كتم"
+,
+  "video.muteMicrophone": "كتم الميكروفون"
+,
+  "video.network": "جودة الشبكة"
+,
+  "video.networkQualityWarning": "جودة الشبكة منخفضة، قد تتأثر المكالمة"
+,
+  "video.ongoingNow": "جاري الآن"
+,
+  "video.previousSessions": "جلسات الفيديو السابقة"
+,
+  "video.readyToJoin": "جاهز للانضمام"
+,
+  "video.record": "تسجيل"
+,
+  "video.recordingStatus": "حالة التسجيل"
+,
+  "video.rejoin": "العودة للجلسة"
+,
+  "video.rejoinDesc": "انقر للعودة ومتابعة الاستشارة."
+,
+  "video.rejoinQuestion": "العودة للجلسة؟"
+,
+  "video.screenShare": "مشاركة الشاشة"
+,
+  "video.sessionEnded": "انتهت الجلسة"
+,
+  "video.sessionEndedDesc": "لقد انتهت هذه الجلسة. شكراً لاستخدامك بوصلة."
+,
+  "video.speaker": "السماعة"
+,
+  "video.startCamera": "تشغيل الكاميرا"
+,
+  "video.startsAt": "يبدأ في"
+,
+  "video.stopCamera": "إيقاف الكاميرا"
+,
+  "video.stopRecording": "إيقاف التسجيل"
+,
+  "video.unmute": "إلغاء الكتم"
+,
+  "video.unmuteMicrophone": "إلغاء كتم الميكروفون"
+,
+  "video.videoSessionInvitation": "دعوة جلسة فيديو"
+,
+  "video.waitingForParticipants": "انتظار المشاركين..."
+,
+  "video.waitingForSpecialist": "انتظار المتخصص..."
+,
+  "video.waitingForSpecialistDesc": "سيتم الانضمام إلى الجلسة تلقائياً عند بدء المتخصص."
+,
+  "video.watchRecording": "مشاهدة التسجيل"
+,
+  "video.you": "أنت"
+,
+  "wallet.allFinancialTransactions": "جميع الحركات المالية"
+,
+  "wallet.allTransactionsDesc": "سجل بجميع المعاملات المالية"
+,
+  "wallet.available": "متاح"
+,
+  "wallet.availableBalance": "الرصيد المتاح"
+,
+  "wallet.collectedTaxes": "الضرائب المحصلة"
+,
+  "wallet.completedPayments": "مدفوعات مكتملة"
+,
+  "wallet.frozen": "مجمد"
+,
+  "wallet.frozenAmount": "مبلغ مجمد"
+,
+  "wallet.noFinancialTransactions": "لا توجد حركات مالية بعد"
+,
+  "wallet.paidToSpecialists": "مدفوع للمتخصصين"
+,
+  "wallet.platformWallet": "محفظة المنصة"
+,
+  "wallet.recentTransactions": "آخر الحركات"
+,
+  "wallet.recentTransactionsDesc": "أحدث المعاملات على محفظتك"
+,
+  "wallet.refundedPayments": "مسترجعة"
+,
+  "wallet.refundedToClients": "مسترجع للعملاء"
+,
+  "wallet.totalPlatformFees": "إجمالي رسوم المنصة"
+,
+  "wallet.type": "النوع"
 }

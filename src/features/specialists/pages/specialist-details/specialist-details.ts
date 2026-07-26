@@ -42,12 +42,14 @@ export class SpecialistDetailsPage implements OnInit {
   readonly isFavorited = signal(false);
   readonly favoriteToggling = signal(false);
 
-  readonly tabs: TabItem[] = [
-    { id: 'profile', label: 'الملف الشخصي' },
-    // { id: 'portfolio', label: 'معرض الأعمال' },
-    { id: 'reviews', label: 'التقييمات' },
-    { id: 'availability', label: 'الأوقات المتاحة' },
-  ];
+  readonly tabs = computed<TabItem[]>(() => {
+    const t = (key: string) => this.translationService.translate(key);
+    return [
+      { id: 'profile', label: t('specialist.details.tabProfile') },
+      { id: 'reviews', label: t('specialist.details.tabReviews') },
+      { id: 'availability', label: t('specialist.details.tabAvailability') },
+    ];
+  });
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

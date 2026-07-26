@@ -41,7 +41,7 @@
             </svg>
             <div class="text-sm">
               <p class="font-semibold" [class]="remainingMs() > 60000 ? 'text-amber-700' : 'text-red-700'">
-                {{ 'specialist.appointments.remainingPayment' | t:{ time: formatCountdown(remainingMs()) } }}
+                {{ 'specialist.appointments.remainingPayment' | t:formatCountdown(remainingMs()) }}
               </p>
               <p class="text-bosla-grey text-xs mt-0.5">{{ 'specialist.appointments.autoCancelWarning' | t }}</p>
             </div>

@@ -1021,7 +1021,7 @@
   "admin.appointments.noResults": "No appointments matching the search criteria",
   "admin.appointments.duration": "Duration",
   "admin.appointments.actions": "Actions",
-  "appointments.minute": "[{{ apt.durationMinutes }} د]",
+  "appointments.minute": "min",
   "admin.auditLogs.title": "Event Log",
   "admin.auditLogs.filterEntity": "Filter by entity type",
   "admin.auditLogs.filterEvent": "Filter by event type",
@@ -1589,7 +1589,7 @@
   "specialist.appointments.loadingStatus": "Loading appointment status...",
   "specialist.appointments.upcomingAppointment": "Appointment",
   "specialist.appointments.consultationSession": "Consultation Session",
-  "specialist.appointments.remainingPayment": "{{ time }} remaining to pay",
+  "specialist.appointments.remainingPayment": "{0} remaining to pay",
   "specialist.appointments.autoCancelWarning": "The booking will be automatically cancelled if payment is not made before the deadline.",
   "specialist.appointments.paymentExpired": "Payment time has expired",
   "specialist.appointments.autoCancelled": "The booking was automatically cancelled due to non-payment.",
@@ -1699,6 +1699,7 @@
   "admin.users.lastLogin": "Last Login",
   "common.notAvailable": "Not available",
   "admin.users.appointmentCount": "{0} appointment(s)",
+  "admin.users.appointmentCountLabel": "Appointments",
   "admin.specialists.ai": "AI Embedding",
   "admin.specialists.addSpecialistTitle": "Add New Specialist",
   "admin.specialists.createDesc": "Enter the new specialist details below. The account will be created and activated automatically with 'Pending' status.",
@@ -1903,4 +1904,386 @@
   "specialist.level.Senior": "Advanced",
   "specialist.level.Lead": "Expert",
   "common.noReviews": "No reviews"
+,
+  "admin.appointments.searchPlaceholder": "Search by name or appointment ID..."
+,
+  "admin.appointments.viewDetails": "View Details"
+,
+  "appointments.detailsHint": "View appointment details"
+,
+  "appointments.sessionInvitation": "Session Invitation"
+,
+  "appointments.sessionNotes": "Session Notes"
+,
+  "chat.selectConversationDesc": "Select a conversation to view messages"
+,
+  "common.account": "Account"
+,
+  "common.agreeToTerms": "I agree to the terms & conditions"
+,
+  "common.option1": "Option 1"
+,
+  "common.option2": "Option 2"
+,
+  "common.skip": "Skip"
+,
+  "common.testComponents": "Test Components"
+,
+  "favorites.browseSpecialists": "Browse Specialists"
+,
+  "favorites.emptyDesc": "You haven't added any specialists to favorites yet."
+,
+  "favorites.yourFavorites": "Favorites"
+,
+  "messaging.attachFile": "Attach File"
+,
+  "messaging.backToConversations": "Back to Conversations"
+,
+  "messaging.bookToStart": "Book an appointment to start a conversation"
+,
+  "messaging.checkConnection": "Check your internet connection"
+,
+  "messaging.deleteMessage": "Delete Message"
+,
+  "messaging.deleteMessageDesc": "Are you sure you want to delete this message?"
+,
+  "messaging.disconnected": "Disconnected"
+,
+  "messaging.findSpecialist": "Find a Specialist"
+,
+  "messaging.keyboardHint": "Press Enter to send"
+,
+  "messaging.loadConversationsError": "Failed to load conversations"
+,
+  "messaging.loadMessagesError": "Failed to load messages"
+,
+  "messaging.loadMessagesErrorDesc": "An error occurred while loading messages. Please try again."
+,
+  "messaging.messageCannotBeEmpty": "Cannot send an empty message"
+,
+  "messaging.noConversationSelected": "No conversation selected"
+,
+  "messaging.noResultsMatch": "No results matching {0}"
+,
+  "messaging.reconnecting": "Reconnecting..."
+,
+  "messaging.selectConversationToView": "Select a conversation to view messages"
+,
+  "messaging.sendMessage": "Send"
+,
+  "messaging.sharedFiles": "Shared Files"
+,
+  "messaging.sharedResources": "Shared Resources"
+,
+  "messaging.toggleConversationList": "Toggle conversation list"
+,
+  "messaging.toggleDetails": "Toggle details"
+,
+  "notifications.delete": "Delete"
+,
+  "portfolio.detail.approvedWork": "Approved Work"
+,
+  "portfolio.detail.backToSpecialist": "Back to Specialist"
+,
+  "portfolio.detail.loading": "Loading work..."
+,
+  "portfolio.detail.media": "Media"
+,
+  "portfolio.detail.notAvailable": "Work Not Available"
+,
+  "portfolio.detail.notAvailableDesc": "This work has been removed or is no longer available."
+,
+  "portfolio.detail.specialist": "Specialist"
+,
+  "portfolio.detail.viewLive": "View Live"
+,
+  "portfolio.detail.zoomImage": "Zoom Image"
+,
+  "specialist.appointments.accept": "Accept"
+,
+  "specialist.appointments.appointmentNumber": "Appointment No."
+,
+  "specialist.appointments.avgSessionPrice": "Avg Session Price"
+,
+  "specialist.appointments.cancelReasonHint": "Please enter cancellation reason (optional)"
+,
+  "specialist.appointments.cancelReasonPlaceholder": "Write cancellation reason..."
+,
+  "specialist.appointments.chat": "Chat"
+,
+  "specialist.appointments.clientNumber": "Client No."
+,
+  "specialist.appointments.completedSessions": "Completed Sessions"
+,
+  "specialist.appointments.confirmCancel": "Confirm Cancellation"
+,
+  "specialist.appointments.confirmReject": "Confirm Rejection"
+,
+  "specialist.appointments.deleteWarning": "This appointment will be permanently deleted. This action cannot be undone."
+,
+  "specialist.appointments.endTime": "End Time"
+,
+  "specialist.appointments.hideCancelled": "Hide Cancelled"
+,
+  "specialist.appointments.inProgress": "In Progress"
+,
+  "specialist.appointments.lateBy": "Late by"
+,
+  "specialist.appointments.missedBy": "Missed"
+,
+  "specialist.appointments.noCompletedEarnings": "No completed sessions to show earnings"
+,
+  "specialist.appointments.noPaymentsRecorded": "No payments recorded yet"
+,
+  "specialist.appointments.refresh": "Refresh"
+,
+  "specialist.appointments.rejectReasonHint": "Please enter rejection reason (optional)"
+,
+  "specialist.appointments.rejectReasonPlaceholder": "Write rejection reason..."
+,
+  "specialist.appointments.revenueSummary": "Revenue Summary"
+,
+  "specialist.appointments.revenueSummaryDesc": "Total earnings from completed sessions"
+,
+  "specialist.appointments.searchFound": "Found"
+,
+  "specialist.appointments.searchPlaceholder": "Search by client or service..."
+,
+  "specialist.appointments.searchResultFor": "results for"
+,
+  "specialist.appointments.service": "Service"
+,
+  "specialist.appointments.sessionCompleted": "Completed"
+,
+  "specialist.appointments.sessionInProgress": "In Progress"
+,
+  "specialist.appointments.showCancelled": "Show Cancelled"
+,
+  "specialist.appointments.showMore": "Show More"
+,
+  "specialist.appointments.sorry": "Sorry"
+,
+  "specialist.appointments.startsIn": "Starts in"
+,
+  "specialist.appointments.startTime": "Start Time"
+,
+  "specialist.appointments.unpaid": "Unpaid"
+,
+  "specialist.availability.deleteSchedule": "Delete Schedule"
+,
+  "specialist.viewProfile": "View Profile"
+,
+  "specialist.wallet.paymentDetails": "Payment Details"
+,
+  "specialist.wallet.withdrawFunds": "Withdraw Funds"
+,
+  "time.today": "Today"
+,
+  "time.tomorrow": "Tomorrow"
+,
+  "video.activeSession": "Active Session"
+,
+  "video.audioLevel": "Audio Level"
+,
+  "video.camera": "Camera"
+,
+  "video.cameraOff": "Camera Off"
+,
+  "video.confirmFinish": "End Session"
+,
+  "video.confirmFinishDesc": "Once ended, the session will close for all parties and cannot be rejoined."
+,
+  "video.confirmLeave": "Leave Session"
+,
+  "video.confirmLeaveDesc": "You can rejoin the session as long as it hasn't ended."
+,
+  "video.connection": "Connection Quality"
+,
+  "video.connectionFailed": "Connection Failed"
+,
+  "video.connectionFailedDesc": "Failed to connect to session server. Please check your internet connection."
+,
+  "video.deviceSettings": "Device Settings"
+,
+  "video.finish": "Finish"
+,
+  "video.finishConsultation": "End Consultation"
+,
+  "video.join": "Join"
+,
+  "video.joinDesc": "You will join automatically when the specialist starts the session."
+,
+  "video.joining": "Joining..."
+,
+  "video.leave": "Leave"
+,
+  "video.leaveSession": "Leave Session"
+,
+  "video.legacyDescription": "Previous video session recordings and logs"
+,
+  "video.live": "Live"
+,
+  "video.microphone": "Microphone"
+,
+  "video.mute": "Mute"
+,
+  "video.muteMicrophone": "Mute Microphone"
+,
+  "video.network": "Network Quality"
+,
+  "video.networkQualityWarning": "Poor network quality, call may be affected"
+,
+  "video.ongoingNow": "Ongoing Now"
+,
+  "video.previousSessions": "Previous Video Sessions"
+,
+  "video.readyToJoin": "Ready to Join"
+,
+  "video.record": "Record"
+,
+  "video.recordingStatus": "Recording Status"
+,
+  "video.rejoin": "Rejoin Session"
+,
+  "video.rejoinDesc": "Click to rejoin and continue the consultation."
+,
+  "video.rejoinQuestion": "Rejoin Session?"
+,
+  "video.screenShare": "Share Screen"
+,
+  "video.sessionEnded": "Session Ended"
+,
+  "video.sessionEndedDesc": "This session has ended. Thank you for using Bosla."
+,
+  "video.speaker": "Speaker"
+,
+  "video.startCamera": "Start Camera"
+,
+  "video.startsAt": "Starts at"
+,
+  "video.stopCamera": "Stop Camera"
+,
+  "video.stopRecording": "Stop Recording"
+,
+  "video.unmute": "Unmute"
+,
+  "video.unmuteMicrophone": "Unmute Microphone"
+,
+  "video.videoSessionInvitation": "Video Session Invitation"
+,
+  "video.waitingForParticipants": "Waiting for participants..."
+,
+  "video.waitingForSpecialist": "Waiting for specialist..."
+,
+  "video.waitingForSpecialistDesc": "You will join automatically when the specialist starts."
+,
+  "video.watchRecording": "Watch Recording"
+,
+  "video.you": "You"
+,
+  "wallet.allFinancialTransactions": "All Financial Transactions"
+,
+  "wallet.allTransactionsDesc": "All financial transaction records"
+,
+  "wallet.available": "Available"
+,
+  "wallet.availableBalance": "Available Balance"
+,
+  "wallet.collectedTaxes": "Collected Taxes"
+,
+  "wallet.completedPayments": "Completed Payments"
+,
+  "wallet.frozen": "Frozen"
+,
+  "wallet.frozenAmount": "Frozen Amount"
+,
+  "wallet.noFinancialTransactions": "No financial transactions yet"
+,
+  "wallet.paidToSpecialists": "Paid to Specialists"
+,
+  "wallet.platformWallet": "Platform Wallet"
+,
+  "wallet.recentTransactions": "Recent Transactions"
+,
+  "wallet.recentTransactionsDesc": "Latest transactions on your wallet"
+,
+  "wallet.refundedPayments": "Refunded"
+,
+  "wallet.refundedToClients": "Refunded to Clients"
+,
+  "wallet.totalPlatformFees": "Total Platform Fees"
+,
+  "wallet.type": "Type"
+,
+  "specialist.details.loading": "Loading specialist data..."
+,
+  "specialist.details.overview": "Overview"
+,
+  "specialist.details.bioTitle": "About"
+,
+  "specialist.details.bioEmpty": "The specialist hasn't added a bio yet."
+,
+  "specialist.details.skillsExpertise": "Skills & Expertise"
+,
+  "specialist.details.expertiseAreas": "Expertise Areas"
+,
+  "specialist.details.technicalSkills": "Technical & Practical Skills"
+,
+  "specialist.details.toolsAndSoftware": "Tools & Software"
+,
+  "specialist.details.industries": "Industries"
+,
+  "specialist.details.careerHistory": "Career History"
+,
+  "specialist.details.bookingPolicies": "Booking Policies & Terms"
+,
+  "specialist.details.bookingRules": "Booking Rules"
+,
+  "specialist.details.cancellationPolicyTitle": "Cancellation Policy"
+,
+  "specialist.details.clientReviews": "Client Reviews"
+,
+  "specialist.details.introVideo": "Intro Video"
+,
+  "specialist.details.introVideoDesc": "Get to know the specialist up close before booking your first session."
+,
+  "specialist.details.verified": "Verified Account"
+,
+  "specialist.details.language": "Primary Language"
+,
+  "specialist.details.gender": "Gender"
+,
+  "specialist.details.present": "Present"
+,
+  "specialist.details.maxBookingDelay": "Max booking notice:"
+,
+  "specialist.details.hours": "hours"
+,
+  "specialist.details.allowedCancel": "Cancellation is allowed"
+,
+  "specialist.details.notAllowedCancel": "Cancellation is not allowed"
+,
+  "specialist.details.cancelDeadline": "Cancellation deadline:"
+,
+  "specialist.details.viewDetails": "View Details"
+,
+  "specialist.details.viewProject": "Click to view full project"
+,
+  "specialist.details.noPortfolioWorks": "No Works"
+,
+  "specialist.details.noPortfolioDesc": "The specialist hasn't added any portfolio items yet."
+,
+  "specialist.details.noAvailability": "No Available Times"
+,
+  "specialist.details.noAvailabilityDesc": "The specialist hasn't added available times yet."
+,
+  "specialist.details.loadError": "Failed to load specialist data"
+,
+  "specialist.details.backToList": "Back to List"
+,
+  "specialist.details.tabProfile": "Profile"
+,
+  "specialist.details.tabReviews": "Reviews"
+,
+  "specialist.details.tabAvailability": "Available Times"
 }
